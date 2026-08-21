@@ -43,3 +43,40 @@ if ('IntersectionObserver' in window) {
 } else {
   reveals.forEach(item => item.classList.add('visible'));
 }
+
+// Doctor directory search and specialty filtering.
+const doctorSearch = document.querySelector('[data-doctor-search]');
+const specialtyFilters = [...document.querySelectorAll('[data-specialty-filter]')];
+const doctorCards = [...document.querySelectorAll('[data-doctor-card]')];
+const doctorResults = document.querySelector('[data-doctor-results]');
+const doctorEmpty = document.querySelector('[data-doctor-empty]');
+let activeSpecialty = 'all';
+
+function filterDoctors() {
+  if (!doctorCards.length) return;
+  const query = (doctorSearch?.value || '').trim().toLowerCase();
+  let visible = 0;
+
+  doctorCards.forEach(card => {
+    const name = (card.dataset.name || '').toLowerCase();
+    const specialty = (card.dataset.specialty || '').toLowerCase();
+    const matchesText = !query || name.includes(query) || specialty.includes(query);
+    const matchesSpecialty = activeSpecialty === 'all' || specialty.includes(activeSpecialty);
+    const show = matchesText && matchesSpecialty;
+    card.hidden = !show;
+    if (show) visible += 1;
+  });
+
+  if (doctorResults) doctorResults.textContent = `${visible} doctor${visible === 1 ? '' : 's'}`;
+  if (doctorEmpty) doctorEmpty.hidden = visible !== 0;
+}
+
+if (doctorSearch) doctorSearch.addEventListener('input', filterDoctors);
+specialtyFilters.forEach(button => {
+  button.addEventListener('click', () => {
+    activeSpecialty = button.dataset.specialtyFilter || 'all';
+    specialtyFilters.forEach(item => item.setAttribute('aria-pressed', String(item === button)));
+    filterDoctors();
+  });
+});
+filterDoctors();
