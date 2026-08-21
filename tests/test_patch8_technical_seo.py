@@ -19,6 +19,10 @@ PAGE_URLS = {
     'contact.html': 'https://silwadi.ae/contact.html',
     'doctors/dr-munir-silwadi.html': 'https://silwadi.ae/doctors/dr-munir-silwadi.html',
     'treatments/dental-implants.html': 'https://silwadi.ae/treatments/dental-implants.html',
+    'treatments/orthodontics.html': 'https://silwadi.ae/treatments/orthodontics.html',
+    'treatments/cosmetic-dentistry.html': 'https://silwadi.ae/treatments/cosmetic-dentistry.html',
+    'treatments/general-dentistry.html': 'https://silwadi.ae/treatments/general-dentistry.html',
+    'treatments/emergency-dentist.html': 'https://silwadi.ae/treatments/emergency-dentist.html',
 }
 
 
@@ -146,7 +150,7 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
         ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
         locs = [el.text for el in root.findall('sm:url/sm:loc', ns)]
         self.assertEqual(locs, list(PAGE_URLS.values()))
-        self.assertEqual(len(locs), 9)
+        self.assertEqual(len(locs), 13)
         self.assertTrue(all(url.startswith('https://silwadi.ae/') for url in locs))
         self.assertFalse(any('silwadidentalcentres.ae' in url for url in locs))
 
