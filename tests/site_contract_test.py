@@ -117,5 +117,32 @@ class PatchThreeTreatmentsContract(unittest.TestCase):
         self.assertIn('../treatments/dental-implants.html', profile)
 
 
+class PatchFourContactContract(unittest.TestCase):
+    def test_contact_page_is_real_consultation_destination(self):
+        path = ROOT / 'contact.html'
+        self.assertTrue(path.is_file(), 'contact.html')
+        html = read('contact.html')
+        self.assertIn('id="consultation"', html)
+        self.assertIn('Contact &amp; Consultations', html)
+        self.assertIn('+971 2 626 2042', html)
+        self.assertIn('info@silwadidentalcentres.ae', html)
+        self.assertIn('Bani Yas Tower', html)
+        self.assertIn('Insurance', html)
+        self.assertNotIn('<form', html.lower())
+
+    def test_shared_javascript_routes_consultation_ctas_to_contact(self):
+        js = read('app.js')
+        self.assertIn('routeConsultationCtas', js)
+        self.assertIn('contact.html#consultation', js)
+        self.assertIn('book a consultation', js.lower())
+        self.assertIn('consultationMail', js)
+
+    def test_contact_page_exposes_direct_call_and_email_fallbacks(self):
+        html = read('contact.html')
+        self.assertIn('href="tel:+97126262042"', html)
+        self.assertIn('href="mailto:info@silwadidentalcentres.ae?subject=Consultation%20Request"', html)
+        self.assertIn('Choose how you would like to contact the centre', html)
+
+
 if __name__ == '__main__':
     unittest.main()
