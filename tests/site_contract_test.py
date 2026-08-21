@@ -119,29 +119,70 @@ class PatchThreeTreatmentsContract(unittest.TestCase):
 
 class PatchFourContactContract(unittest.TestCase):
     def test_contact_page_is_real_consultation_destination(self):
-        path = ROOT / 'contact.html'
-        self.assertTrue(path.is_file(), 'contact.html')
-        html = read('contact.html')
+        path = ROOT / "contact.html"
+        self.assertTrue(path.is_file(), "contact.html")
+        html = read("contact.html")
         self.assertIn('id="consultation"', html)
-        self.assertIn('Contact &amp; Consultations', html)
-        self.assertIn('+971 2 626 2042', html)
-        self.assertIn('info@silwadidentalcentres.ae', html)
-        self.assertIn('Bani Yas Tower', html)
-        self.assertIn('Insurance', html)
-        self.assertNotIn('<form', html.lower())
+        self.assertIn("Contact &amp; Consultations", html)
+        self.assertIn("+971 2 626 2042", html)
+        self.assertIn("info@silwadidentalcentres.ae", html)
+        self.assertIn("Bani Yas Tower", html)
+        self.assertIn("Insurance", html)
+        self.assertNotIn("<form", html.lower())
 
     def test_shared_javascript_routes_consultation_ctas_to_contact(self):
-        js = read('app.js')
-        self.assertIn('routeConsultationCtas', js)
-        self.assertIn('contact.html#consultation', js)
-        self.assertIn('book a consultation', js.lower())
-        self.assertIn('consultationMail', js)
+        js = read("app.js")
+        self.assertIn("routeConsultationCtas", js)
+        self.assertIn("contact.html#consultation", js)
+        self.assertIn("book a consultation", js.lower())
+        self.assertIn("consultationMail", js)
 
     def test_contact_page_exposes_direct_call_and_email_fallbacks(self):
-        html = read('contact.html')
+        html = read("contact.html")
         self.assertIn('href="tel:+97126262042"', html)
         self.assertIn('href="mailto:info@silwadidentalcentres.ae?subject=Consultation%20Request"', html)
-        self.assertIn('Choose how you would like to contact the centre', html)
+        self.assertIn("Choose how you would like to contact the centre", html)
+
+
+class PatchFiveInstitutionalPagesContract(unittest.TestCase):
+    def test_about_page_has_institutional_story_structure(self):
+        path = ROOT / 'about.html'
+        self.assertTrue(path.is_file(), 'about.html')
+        html = read('about.html')
+        self.assertEqual(len(re.findall(r'<h1\b', html, re.I)), 1)
+        for phrase in ['Since 1980', 'Dr. Munir Silwadi', 'continuity of care', 'multidisciplinary']:
+            self.assertIn(phrase, html)
+        self.assertIn('href="contact.html#consultation"', html)
+
+    def test_digital_dentistry_page_explains_verified_workflows_responsibly(self):
+        path = ROOT / 'digital-dentistry.html'
+        self.assertTrue(path.is_file(), 'digital-dentistry.html')
+        html = read('digital-dentistry.html')
+        self.assertEqual(len(re.findall(r'<h1\b', html, re.I)), 1)
+        for phrase in ['CAD / CAM Dentistry', 'Intraoral Scanning', 'Guided Implant Planning', 'Digital Smile Planning']:
+            self.assertIn(phrase, html)
+        self.assertIn('selected cases', html.lower())
+        self.assertIn('planning', html.lower())
+        self.assertNotIn('guarantee', html.lower())
+        self.assertNotIn('superior outcomes', html.lower())
+        self.assertIn('href="contact.html#consultation"', html)
+
+    def test_root_page_navigation_uses_real_institutional_pages(self):
+        for rel in ['index.html', 'doctors.html', 'treatments.html', 'contact.html']:
+            html = read(rel)
+            self.assertIn('href="about.html"', html, rel)
+            self.assertIn('href="digital-dentistry.html"', html, rel)
+
+    def test_nested_page_navigation_uses_real_institutional_pages(self):
+        for rel in ['doctors/dr-munir-silwadi.html', 'treatments/dental-implants.html']:
+            html = read(rel)
+            self.assertIn('href="../about.html"', html, rel)
+            self.assertIn('href="../digital-dentistry.html"', html, rel)
+
+    def test_home_preview_links_to_institutional_pages(self):
+        html = read('index.html')
+        self.assertRegex(html, r'href="about\.html"[^>]*>Learn more about the centre')
+        self.assertRegex(html, r'href="digital-dentistry\.html"[^>]*>Explore digital dentistry')
 
 
 if __name__ == '__main__':
