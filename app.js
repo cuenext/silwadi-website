@@ -22,6 +22,23 @@ const doctors=[
 ["Dr. Ibrahem Abu Shanab","General Dentist","dr-ibrahem-abu-shanab.png",39],
 ["Dr. Krishnamurthy Katta Balajee","Specialist Orthodontist","dr-krishnamurthy-katta-balajee.png",40]
 ];
+
+const doctorStyle=document.createElement("style");
+doctorStyle.textContent=`
+.team-grid{gap:16px}
+.doctor-card{overflow:hidden;border:1px solid rgba(255,255,255,.10);border-radius:22px;background:rgba(255,255,255,.035);transition:transform .28s ease,background .28s ease,border-color .28s ease;box-shadow:0 18px 38px rgba(0,0,0,.08)}
+.doctor-card:hover{transform:translateY(-6px);background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18)}
+.doctor-photo-wrap{position:relative;overflow:hidden;aspect-ratio:4/5;height:auto;background:linear-gradient(180deg,#dceff2,#bddde2)}
+.doctor-photo{display:block;width:100%;height:100%;object-fit:cover;object-position:50% var(--doctor-focus,38%);transform:scale(1.10);transform-origin:50% var(--doctor-focus,38%);transition:transform .45s cubic-bezier(.2,.8,.2,1),filter .35s ease}
+.doctor-photo-wrap:after{content:"";position:absolute;inset:auto 0 0;height:28%;background:linear-gradient(to top,rgba(8,43,56,.22),transparent);pointer-events:none}
+.doctor-card:hover .doctor-photo{transform:scale(1.135)}
+.doctor-copy{min-height:96px;padding:18px 18px 20px;border-top:1px solid rgba(255,255,255,.08)}
+.doctor-copy h3{margin:0 0 7px;font-size:16px;line-height:1.2;letter-spacing:-.025em}
+.doctor-copy p{margin:0;color:#9dc0c6;font-size:10px;line-height:1.45}
+@media(max-width:720px){.doctor-photo-wrap{aspect-ratio:4/5;height:auto}.doctor-copy{min-height:88px;padding:15px}.doctor-copy h3{font-size:14px}}
+`;
+document.head.appendChild(doctorStyle);
+
 const treatmentNames=["Implantology","Orthodontics","Periodontics","Pediatric Dentistry","Endodontics","Cosmetic Dentistry","Preventive Care","Laser Dentistry","Prosthodontics"];
 document.getElementById("serviceGrid").innerHTML=services.map((s,i)=>`<article class="service-card reveal"><span class="service-index">${String(i+1).padStart(2,"0")}</span><div><h3>${s[0]}</h3><p>${s[1]}</p><div class="service-footer"><span>${s[2]}</span><div class="service-arrow">↗</div></div></div></article>`).join("");
 document.getElementById("teamGrid").innerHTML=doctors.map(d=>`<article class="doctor-card reveal"><div class="doctor-photo-wrap" style="--doctor-focus:${d[3]}%"><img src="assets/doctors/${d[2]}" alt="${d[0]}" class="doctor-photo" loading="lazy"></div><div class="doctor-copy"><h3>${d[0]}</h3><p>${d[1]}</p></div></article>`).join("");
