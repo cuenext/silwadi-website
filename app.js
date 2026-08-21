@@ -90,3 +90,18 @@ document.querySelectorAll('[data-faq-button]').forEach(button => {
     button.setAttribute('aria-expanded', String(open));
   });
 });
+
+// Route primary consultation CTAs through the dedicated contact destination.
+(function routeConsultationCtas() {
+  const path = window.location.pathname || '';
+  if (path.endsWith('/contact.html') || path.endsWith('contact.html')) return;
+  const nested = /\/(doctors|treatments)\/[^/]+\.html$/.test(path);
+  const target = nested ? '../contact.html#consultation' : 'contact.html#consultation';
+  document.querySelectorAll('a').forEach(link => {
+    const text = (link.textContent || '').trim().toLowerCase();
+    const href = link.getAttribute('href') || '';
+    const primaryConsultation = text.includes('book a consultation') || text.includes('book a consultation with');
+    const consultationMail = href.startsWith('mailto:') && /consultation/i.test(href);
+    if (primaryConsultation || consultationMail) link.setAttribute('href', target);
+  });
+})();
