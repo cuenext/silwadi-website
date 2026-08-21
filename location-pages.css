@@ -17,3 +17,7 @@
 .location-note{margin-top:18px}.location-actions{display:flex;gap:10px;flex-wrap:wrap}
 @media(max-width:920px){.location-detail__grid{grid-template-columns:1fr;gap:34px}.location-map,.location-map iframe{min-height:340px;height:340px}}
 @media(max-width:620px){.location-hero{padding:42px 0}.location-detail{padding:52px 0}.location-detail h2{font-size:30px}.location-facts div{grid-template-columns:1fr;gap:5px}.location-map,.location-map iframe{min-height:300px;height:300px}}
+
+.location-brand{margin:0 0 7px!important;color:var(--navy)!important;font-size:10px!important;font-weight:750}
+.location-service-area{margin-top:8px!important}
+.location-address{font-style:normal;color:var(--body);line-height:1.7}
