@@ -1,0 +1,64 @@
+/* PATCH 5 — ABOUT + DIGITAL DENTISTRY */
+.institutional-hero{padding:58px 0 54px;background:var(--quiet);border-bottom:1px solid var(--line)}
+.institutional-hero__grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(300px,.72fr);gap:68px;align-items:end}
+.institutional-hero h1{margin:0;color:var(--navy-deep);font-size:clamp(46px,5vw,66px);line-height:1.01;letter-spacing:-.05em;font-weight:620}
+.institutional-hero__lead{max-width:710px;margin:18px 0 0;color:var(--muted);font-size:14px;line-height:1.8}
+.institutional-hero__aside{padding:25px 26px;border-left:2px solid var(--teal);background:#fff}
+.institutional-hero__aside strong{display:block;color:var(--navy);font-size:19px;font-weight:650}
+.institutional-hero__aside span{display:block;margin-top:9px;color:var(--muted);font-size:11px;line-height:1.65}
+.institutional-section{padding:78px 0}
+.institutional-section--quiet{background:var(--quiet);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.story-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:78px;align-items:start}
+.story-kicker{position:sticky;top:128px}
+.story-kicker h2{margin:10px 0 18px;color:var(--navy-deep);font-size:clamp(34px,4vw,48px);line-height:1.05;letter-spacing:-.045em;font-weight:620}
+.story-kicker p{max-width:470px;margin:0;color:var(--muted);font-size:12px;line-height:1.8}
+.story-copy{display:grid;gap:28px}
+.story-block{padding-bottom:28px;border-bottom:1px solid var(--line)}
+.story-block:last-child{padding-bottom:0;border-bottom:0}
+.story-block h3{margin:0 0 10px;color:var(--navy);font-size:20px;font-weight:630;letter-spacing:-.025em}
+.story-block p{margin:0;color:var(--muted);font-size:12px;line-height:1.8}
+.institutional-facts{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);background:#fff}
+.institutional-fact{padding:28px 30px;border-right:1px solid var(--line)}
+.institutional-fact:last-child{border-right:0}
+.institutional-fact strong{display:block;color:var(--navy-deep);font-size:25px;font-weight:620;letter-spacing:-.035em}
+.institutional-fact span{display:block;margin-top:6px;color:var(--muted);font-size:10px;line-height:1.5}
+.section-intro{display:grid;grid-template-columns:.9fr 1.1fr;gap:58px;align-items:end;margin-bottom:34px}
+.section-intro h2{margin:9px 0 0;color:var(--navy-deep);font-size:clamp(34px,4vw,48px);line-height:1.04;letter-spacing:-.04em;font-weight:620}
+.section-intro>p{justify-self:end;max-width:620px;margin:0;color:var(--muted);font-size:12px;line-height:1.8}
+.principles-grid{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.principle{min-height:220px;padding:28px 30px;border-right:1px solid var(--line)}
+.principle:last-child{border-right:0}
+.principle span{display:block;color:var(--teal);font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.principle h3{margin:38px 0 9px;color:var(--navy);font-size:18px;font-weight:630}
+.principle p{margin:0;color:var(--muted);font-size:10px;line-height:1.65}
+.leadership-grid{display:grid;grid-template-columns:minmax(340px,.82fr) minmax(0,1.18fr);gap:58px;align-items:stretch}
+.leadership-photo{min-height:480px;background:#dcebed;overflow:hidden}
+.leadership-photo img{width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block}
+.leadership-copy{padding:22px 0;align-self:center}
+.leadership-copy h2{margin:9px 0 12px;color:var(--navy-deep);font-size:clamp(34px,4vw,48px);line-height:1.03;letter-spacing:-.04em;font-weight:620}
+.leadership-copy .role{display:block;margin-bottom:20px;color:var(--teal);font-size:11px;font-weight:700}
+.leadership-copy p{max-width:650px;margin:0 0 22px;color:var(--muted);font-size:12px;line-height:1.8}
+.care-model{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);background:#fff}
+.care-step{padding:24px;border-right:1px solid var(--line)}
+.care-step:last-child{border-right:0}
+.care-step span{display:block;color:var(--teal);font-size:9px;font-weight:800}
+.care-step strong{display:block;margin:18px 0 7px;color:var(--navy);font-size:14px}
+.care-step p{margin:0;color:var(--muted);font-size:9px;line-height:1.6}
+.workflow-list{border-top:1px solid var(--line)}
+.workflow-row{display:grid;grid-template-columns:90px minmax(220px,.7fr) minmax(0,1.3fr);gap:34px;padding:34px 0;border-bottom:1px solid var(--line);align-items:start}
+.workflow-row__index{color:var(--teal);font-size:10px;font-weight:800;letter-spacing:.1em}
+.workflow-row h2{margin:0;color:var(--navy-deep);font-size:25px;font-weight:620;letter-spacing:-.035em}
+.workflow-row__copy p{margin:0;color:var(--muted);font-size:11px;line-height:1.78}
+.workflow-use{display:grid;grid-template-columns:130px 1fr;gap:18px;margin-top:14px;padding-top:14px;border-top:1px solid #e8eeee}
+.workflow-use strong{color:var(--navy);font-size:9px;text-transform:uppercase;letter-spacing:.08em}
+.workflow-use span{color:var(--muted);font-size:9px;line-height:1.55}
+.digital-principle{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(320px,.9fr);gap:68px;align-items:center}
+.digital-principle h2{margin:9px 0 14px;color:var(--navy-deep);font-size:clamp(34px,4vw,48px);line-height:1.03;letter-spacing:-.04em;font-weight:620}
+.digital-principle p{margin:0;color:var(--muted);font-size:12px;line-height:1.8}
+.digital-note{padding:28px;border-left:2px solid var(--teal);background:#fff}
+.digital-note strong{display:block;color:var(--navy);font-size:17px}
+.digital-note span{display:block;margin-top:9px;color:var(--muted);font-size:10px;line-height:1.65}
+.related-care{display:flex;align-items:center;justify-content:space-between;gap:28px;padding:28px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.related-care div strong{display:block;color:var(--navy);font-size:16px}.related-care div span{display:block;margin-top:5px;color:var(--muted);font-size:10px}
+@media(max-width:1040px){.institutional-hero__grid,.story-grid,.section-intro,.leadership-grid,.digital-principle{grid-template-columns:1fr}.story-kicker{position:static}.institutional-facts,.principles-grid{grid-template-columns:1fr 1fr}.institutional-fact:nth-child(2),.principle:nth-child(2){border-right:0}.institutional-fact:last-child,.principle:last-child{grid-column:1/-1;border-top:1px solid var(--line)}.care-model{grid-template-columns:1fr 1fr}.care-step:nth-child(2){border-right:0}.care-step:nth-child(-n+2){border-bottom:1px solid var(--line)}.workflow-row{grid-template-columns:62px minmax(190px,.7fr) minmax(0,1.3fr)}}
+@media(max-width:720px){.institutional-hero{padding:42px 0}.institutional-hero__grid{gap:24px}.institutional-hero h1{font-size:42px}.institutional-section{padding:58px 0}.institutional-facts,.principles-grid,.care-model{grid-template-columns:1fr}.institutional-fact,.principle,.care-step{border-right:0!important;border-bottom:1px solid var(--line)}.institutional-fact:last-child,.principle:last-child,.care-step:last-child{border-bottom:0}.institutional-fact:last-child,.principle:last-child{grid-column:auto;border-top:0}.section-intro{gap:18px}.leadership-photo{min-height:410px}.workflow-row{grid-template-columns:1fr;gap:12px;padding:28px 0}.workflow-row h2{font-size:23px}.workflow-use{grid-template-columns:1fr;gap:6px}.related-care{align-items:flex-start;flex-direction:column}}
