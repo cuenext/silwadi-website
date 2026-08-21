@@ -44,6 +44,7 @@ if ('IntersectionObserver' in window) {
   reveals.forEach(item => item.classList.add('visible'));
 }
 
+
 // Doctor directory search and specialty filtering.
 const doctorSearch = document.querySelector('[data-doctor-search]');
 const specialtyFilters = [...document.querySelectorAll('[data-specialty-filter]')];
@@ -67,7 +68,10 @@ function filterDoctors() {
     if (show) visible += 1;
   });
 
-  if (doctorResults) doctorResults.textContent = `${visible} doctor${visible === 1 ? '' : 's'}`;
+  if (doctorResults) {
+    const unfiltered = !query && activeSpecialty === 'all';
+    doctorResults.textContent = unfiltered ? `${visible} dentists & specialists` : `${visible} clinician${visible === 1 ? '' : 's'}`;
+  }
   if (doctorEmpty) doctorEmpty.hidden = visible !== 0;
 }
 
@@ -80,6 +84,7 @@ specialtyFilters.forEach(button => {
   });
 });
 filterDoctors();
+
 
 // Shared FAQ accordion behavior.
 document.querySelectorAll('[data-faq-button]').forEach(button => {
