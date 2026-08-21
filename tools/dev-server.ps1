@@ -48,53 +48,110 @@ if ($git -and (Test-Path (Join-Path $repo ".git"))) {
 }
 
 # -------------------------------
-# Pure PowerShell static server
-# No Python / Node required
+# Find the laptop's active LAN IPv4 address.
 # -------------------------------
-$port = 5500
-$prefix = "http://127.0.0.1:$port/"
-$listener = New-Object System.Net.HttpListener
+$lanIp = $null
 
 try {
-    $listener.Prefixes.Add($prefix)
-    $listener.Start()
+    $lanIp = Get-NetIPConfiguration |
+        Where-Object { $_.IPv4DefaultGateway -and $_.IPv4Address } |
+        ForEach-Object { $_.IPv4Address.IPAddress } |
+        Where-Object {
+            $_ -and
+            $_ -ne "127.0.0.1" -and
+            $_ -notlike "169.254.*"
+        } |
+        Select-Object -First 1
 } catch {
-    Write-Host ""
-    Write-Host "[ERROR] Could not start the server on port $port." -ForegroundColor Red
-    Write-Host "Another program may already be using this port." -ForegroundColor Yellow
-    Write-Host ""
-    Write-Host "Try closing any old Silwadi server window, then run START-SILWADI.bat again." -ForegroundColor Yellow
-
-    if ($syncJob) {
-        Stop-Job $syncJob -ErrorAction SilentlyContinue
-        Remove-Job $syncJob -ErrorAction SilentlyContinue
-    }
-
-    Read-Host "Press Enter to close"
-    exit 1
+    # Older/limited Windows environments: use DNS as a fallback.
+    try {
+        $lanIp = [System.Net.Dns]::GetHostAddresses($env:COMPUTERNAME) |
+            Where-Object {
+                $_.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork -and
+                $_.IPAddressToString -ne "127.0.0.1" -and
+                $_.IPAddressToString -notlike "169.254.*"
+            } |
+            Select-Object -First 1 |
+            ForEach-Object { $_.IPAddressToString }
+    } catch {}
 }
 
-Write-Host "[SERVER] Running at $prefix" -ForegroundColor Green
+# -------------------------------
+# Pure PowerShell static server
+# No Python / Node required.
+# -------------------------------
+$port = 5500
+$laptopUrl = "http://127.0.0.1:$port/"
+$phoneUrl = if ($lanIp) { "http://${lanIp}:$port/" } else { $null }
+$networkPrefix = "http://+:$port/"
+$localPrefix = $laptopUrl
+$listener = New-Object System.Net.HttpListener
+$phoneAccessEnabled = $false
+
+# First try LAN mode. This requires ENABLE-PHONE-ACCESS.bat to have been run once.
+try {
+    $listener.Prefixes.Add($networkPrefix)
+    $listener.Start()
+    $phoneAccessEnabled = $true
+} catch {
+    try { $listener.Close() } catch {}
+
+    # Fall back to laptop-only mode so the normal preview still works.
+    $listener = New-Object System.Net.HttpListener
+
+    try {
+        $listener.Prefixes.Add($localPrefix)
+        $listener.Start()
+    } catch {
+        Write-Host ""
+        Write-Host "[ERROR] Could not start the server on port $port." -ForegroundColor Red
+        Write-Host "Another program may already be using this port." -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "Close any old Silwadi server window, then run START-SILWADI.bat again." -ForegroundColor Yellow
+
+        if ($syncJob) {
+            Stop-Job $syncJob -ErrorAction SilentlyContinue
+            Remove-Job $syncJob -ErrorAction SilentlyContinue
+        }
+
+        Read-Host "Press Enter to close"
+        exit 1
+    }
+}
+
+Write-Host "[SERVER] Laptop: $laptopUrl" -ForegroundColor Green
+
+if ($phoneAccessEnabled -and $phoneUrl) {
+    Write-Host "[PHONE ] Same Wi-Fi: $phoneUrl" -ForegroundColor Cyan
+    Write-Host "         Open that exact address on your phone." -ForegroundColor Gray
+} else {
+    Write-Host "[PHONE ] Phone access is not enabled yet." -ForegroundColor DarkYellow
+    Write-Host "         Run ENABLE-PHONE-ACCESS.bat once, then restart this server." -ForegroundColor Yellow
+}
+
 Write-Host "[SERVER] Keep this window open while previewing." -ForegroundColor Gray
 Write-Host "[SERVER] Press Ctrl+C to stop." -ForegroundColor Gray
 Write-Host ""
 
-Start-Process $prefix
+Start-Process $laptopUrl
 
 $mimeTypes = @{
-    ".html" = "text/html; charset=utf-8"
-    ".htm"  = "text/html; charset=utf-8"
-    ".css"  = "text/css; charset=utf-8"
-    ".js"   = "application/javascript; charset=utf-8"
-    ".json" = "application/json; charset=utf-8"
-    ".png"  = "image/png"
-    ".jpg"  = "image/jpeg"
-    ".jpeg" = "image/jpeg"
-    ".gif"  = "image/gif"
-    ".svg"  = "image/svg+xml"
-    ".webp" = "image/webp"
-    ".ico"  = "image/x-icon"
-    ".txt"  = "text/plain; charset=utf-8"
+    ".html"  = "text/html; charset=utf-8"
+    ".htm"   = "text/html; charset=utf-8"
+    ".css"   = "text/css; charset=utf-8"
+    ".js"    = "application/javascript; charset=utf-8"
+    ".json"  = "application/json; charset=utf-8"
+    ".png"   = "image/png"
+    ".jpg"   = "image/jpeg"
+    ".jpeg"  = "image/jpeg"
+    ".gif"   = "image/gif"
+    ".svg"   = "image/svg+xml"
+    ".webp"  = "image/webp"
+    ".ico"   = "image/x-icon"
+    ".woff"  = "font/woff"
+    ".woff2" = "font/woff2"
+    ".ttf"   = "font/ttf"
+    ".txt"   = "text/plain; charset=utf-8"
 }
 
 function Send-Response {
@@ -126,7 +183,18 @@ try {
                 $relative = "index.html"
             }
 
-            # Block path traversal
+            # Never expose Git metadata, local tools, or Windows launcher scripts over Wi-Fi.
+            if (
+                $relative -match '(^|[\\/])\.git([\\/]|$)' -or
+                $relative -match '(^|[\\/])tools([\\/]|$)' -or
+                $relative -match '\.(bat|ps1|cmd)$'
+            ) {
+                $msg = [System.Text.Encoding]::UTF8.GetBytes("403 Forbidden")
+                Send-Response $context 403 $msg "text/plain; charset=utf-8"
+                continue
+            }
+
+            # Block path traversal.
             $candidate = Join-Path $repo $relative
             $fullPath = [System.IO.Path]::GetFullPath($candidate)
             $repoFull = [System.IO.Path]::GetFullPath($repo)
@@ -151,8 +219,11 @@ try {
             $ext = [System.IO.Path]::GetExtension($fullPath).ToLowerInvariant()
             $contentType = $mimeTypes[$ext]
 
+            # Only serve known web asset types.
             if (-not $contentType) {
-                $contentType = "application/octet-stream"
+                $msg = [System.Text.Encoding]::UTF8.GetBytes("403 Forbidden")
+                Send-Response $context 403 $msg "text/plain; charset=utf-8"
+                continue
             }
 
             $bytes = [System.IO.File]::ReadAllBytes($fullPath)
