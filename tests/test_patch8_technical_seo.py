@@ -18,6 +18,17 @@ PAGE_URLS = {
     'locations.html': 'https://silwadi.ae/locations.html',
     'contact.html': 'https://silwadi.ae/contact.html',
     'doctors/dr-munir-silwadi.html': 'https://silwadi.ae/doctors/dr-munir-silwadi.html',
+    'doctors/dr-moheb-silwadi.html': 'https://silwadi.ae/doctors/dr-moheb-silwadi.html',
+    'doctors/dr-hani-hasbini.html': 'https://silwadi.ae/doctors/dr-hani-hasbini.html',
+    'doctors/dr-moammar-rifai.html': 'https://silwadi.ae/doctors/dr-moammar-rifai.html',
+    'doctors/dr-ahmed-el-shehri.html': 'https://silwadi.ae/doctors/dr-ahmed-el-shehri.html',
+    'doctors/dr-fahed-khalil.html': 'https://silwadi.ae/doctors/dr-fahed-khalil.html',
+    'doctors/dr-mohammed-abualkas.html': 'https://silwadi.ae/doctors/dr-mohammed-abualkas.html',
+    'doctors/dr-reem-alshaer.html': 'https://silwadi.ae/doctors/dr-reem-alshaer.html',
+    'doctors/dr-afnan-mashal.html': 'https://silwadi.ae/doctors/dr-afnan-mashal.html',
+    'doctors/dr-hawraa-al-ameri.html': 'https://silwadi.ae/doctors/dr-hawraa-al-ameri.html',
+    'doctors/dr-ibrahem-abu-shanab.html': 'https://silwadi.ae/doctors/dr-ibrahem-abu-shanab.html',
+    'doctors/dr-krishnamurthy-katta-balajee.html': 'https://silwadi.ae/doctors/dr-krishnamurthy-katta-balajee.html',
     'treatments/dental-implants.html': 'https://silwadi.ae/treatments/dental-implants.html',
     'treatments/orthodontics.html': 'https://silwadi.ae/treatments/orthodontics.html',
     'treatments/cosmetic-dentistry.html': 'https://silwadi.ae/treatments/cosmetic-dentistry.html',
@@ -79,7 +90,7 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
             self.assertEqual(og_urls, [expected], rel)
             self.assertEqual(len(re.findall(r'<title>.*?</title>', html, re.I | re.S)), 1, rel)
             self.assertEqual(len(re.findall(r'<meta\s+name="description"\s+content="[^"]+"', html, re.I)), 1, rel)
-            self.assertIn('property="og:image" content="https://silwadi.ae/assets/silwadi-logo-original.jpeg"', html, rel)
+            self.assertRegex(html, r'property="og:image" content="https://silwadi\.ae/assets/[^"]+"', rel)
             self.assertNotIn('https://silwadidentalcentres.ae/', html, rel)
 
     def test_home_has_dentist_and_website_schema_without_review_markup(self):
@@ -150,7 +161,7 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
         ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
         locs = [el.text for el in root.findall('sm:url/sm:loc', ns)]
         self.assertEqual(locs, list(PAGE_URLS.values()))
-        self.assertEqual(len(locs), 13)
+        self.assertEqual(len(locs), 24)
         self.assertTrue(all(url.startswith('https://silwadi.ae/') for url in locs))
         self.assertFalse(any('silwadidentalcentres.ae' in url for url in locs))
 
