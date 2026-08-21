@@ -88,5 +88,34 @@ class PatchTwoDoctorsContract(unittest.TestCase):
         self.assertIn('href="doctors.html"', html)
         self.assertIn('href="doctors/dr-munir-silwadi.html"', html)
 
+
+class PatchThreeTreatmentsContract(unittest.TestCase):
+    def test_treatments_directory_has_approved_groups(self):
+        html = read('treatments.html')
+        for heading in ['Implant &amp; Restorative', 'Smile &amp; Aesthetic', 'Specialist Dentistry', 'Routine Care']:
+            self.assertIn(heading, html)
+        for treatment in ['Dental Implants', 'Prosthodontics', 'Orthodontics', 'Endodontics', 'Periodontics', 'Pediatric Dentistry', 'General Dentistry', 'Preventive Care', 'Oral Hygiene']:
+            self.assertIn(treatment, html)
+        self.assertIn('href="treatments/dental-implants.html"', html)
+        self.assertEqual(len(re.findall(r'<h1\b', html, re.I)), 1)
+
+    def test_implants_page_has_responsible_treatment_structure(self):
+        html = read('treatments/dental-implants.html')
+        for heading in ['Dental Implants', 'What are dental implants?', 'Who may be suitable?', 'Planning your treatment', 'Digital planning', 'Doctors for implant care', 'Frequently asked questions']:
+            self.assertIn(heading, html)
+        self.assertIn('../doctors/dr-munir-silwadi.html', html)
+        self.assertIn('selected cases', html.lower())
+        self.assertIn('clinical assessment', html.lower())
+        self.assertNotIn('guarantee', html.lower())
+        self.assertEqual(len(re.findall(r'<h1\b', html, re.I)), 1)
+
+    def test_home_and_munir_profile_route_to_treatments(self):
+        home = read('index.html')
+        profile = read('doctors/dr-munir-silwadi.html')
+        self.assertIn('href="treatments.html"', home)
+        self.assertIn('href="treatments/dental-implants.html"', home)
+        self.assertIn('../treatments/dental-implants.html', profile)
+
+
 if __name__ == '__main__':
     unittest.main()
