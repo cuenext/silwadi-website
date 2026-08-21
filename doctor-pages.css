@@ -1,0 +1,50 @@
+/* PATCH 2 — DOCTORS DIRECTORY + CONSULTANT PROFILE */
+.page-hero{padding:58px 0 50px;background:var(--quiet);border-bottom:1px solid var(--line)}
+.breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:28px;color:var(--muted);font-size:11px}
+.breadcrumb a{color:var(--teal);font-weight:700}.breadcrumb span[aria-hidden="true"]{color:#9aadb2}
+.page-hero__grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.72fr);gap:64px;align-items:end}
+.page-hero h1{max-width:760px;margin:10px 0 16px;color:var(--navy);font-size:clamp(42px,5vw,64px);line-height:.98;letter-spacing:-.045em;font-weight:680}
+.page-hero__lead{max-width:680px;margin:0;color:var(--muted);font-size:15px;line-height:1.75}
+.page-hero__aside{padding-left:28px;border-left:1px solid var(--line-dark)}
+.page-hero__aside strong{display:block;color:var(--navy);font-size:18px}.page-hero__aside span{display:block;margin-top:7px;color:var(--muted);font-size:12px;line-height:1.6}
+
+.directory-section{padding:62px 0 92px}
+.directory-toolbar{display:grid;grid-template-columns:minmax(260px,.8fr) 1.7fr auto;gap:18px;align-items:center;margin-bottom:34px;padding-bottom:26px;border-bottom:1px solid var(--line)}
+.doctor-search{position:relative}.doctor-search label{display:block;margin-bottom:8px;color:var(--navy);font-size:11px;font-weight:750}.doctor-search input{width:100%;height:48px;padding:0 15px;border:1px solid var(--line-dark);border-radius:10px;background:#fff;color:var(--ink);outline:none}.doctor-search input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,124,144,.09)}
+.specialty-filters{display:flex;gap:8px;flex-wrap:wrap;align-self:end}.specialty-filter{min-height:39px;padding:0 13px;border:1px solid var(--line-dark);border-radius:9px;background:#fff;color:#48636b;font-size:10px;font-weight:750;cursor:pointer;transition:.18s}.specialty-filter:hover{border-color:#9eb8be;color:var(--navy)}.specialty-filter[aria-pressed="true"]{background:var(--navy);border-color:var(--navy);color:#fff}
+.directory-results{align-self:end;padding-bottom:11px;color:var(--muted);font-size:11px;white-space:nowrap}
+.doctor-directory-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.doctor-directory-card{display:grid;grid-template-columns:164px 1fr;min-height:205px;border:1px solid var(--line);background:#fff;overflow:hidden;transition:border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+.doctor-directory-card:hover{border-color:#bed1d5;box-shadow:0 14px 34px rgba(8,56,71,.06);transform:translateY(-2px)}
+.doctor-directory-card[hidden]{display:none}
+.doctor-directory-card__photo{position:relative;overflow:hidden;background:#e4f0f2}.doctor-directory-card__photo img{width:100%;height:100%;display:block;object-fit:cover;object-position:50% var(--doctor-focus,23%);transform:scale(1.035)}
+.doctor-directory-card__body{display:flex;flex-direction:column;justify-content:center;padding:24px 24px 22px}.doctor-directory-card__body h2{margin:0 0 7px;color:var(--navy);font-size:19px;line-height:1.15;letter-spacing:-.025em}.doctor-directory-card__specialty{margin:0;color:var(--teal);font-size:11px;font-weight:750;line-height:1.5}.doctor-directory-card__focus{margin:15px 0 0;color:var(--muted);font-size:11px;line-height:1.65}.doctor-directory-card__link{display:inline-flex;align-items:center;gap:7px;width:max-content;margin-top:18px;color:var(--navy);font-size:10px;font-weight:800}.doctor-directory-card__link span{color:var(--teal)}
+.directory-empty{margin:28px 0 0;padding:26px;border:1px solid var(--line);background:var(--quiet);text-align:center;color:var(--muted);font-size:13px}
+.directory-consult{margin-top:54px;padding:34px 36px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;gap:30px}.directory-consult h2{margin:0 0 8px;font-size:27px;letter-spacing:-.03em}.directory-consult p{max-width:610px;margin:0;color:#bdd3d7;font-size:12px;line-height:1.65}
+
+.consultant-page{background:#fff}.consultant-hero{padding:46px 0 72px;border-bottom:1px solid var(--line)}
+.consultant-layout{display:grid;grid-template-columns:minmax(300px,.76fr) minmax(0,1.24fr);gap:66px;align-items:start}
+.consultant-portrait{position:sticky;top:112px}.consultant-portrait__frame{height:520px;overflow:hidden;background:#dbeaec;border:1px solid var(--line)}.consultant-portrait__frame img{width:100%;height:100%;display:block;object-fit:cover;object-position:center 15%}.consultant-portrait__caption{padding:16px 0 0;color:var(--muted);font-size:10px;line-height:1.5}
+.consultant-info{padding-top:8px}.consultant-info h1{max-width:780px;margin:12px 0 10px;color:var(--navy);font-size:clamp(43px,5vw,66px);line-height:.98;letter-spacing:-.05em;font-weight:680}.consultant-specialty{margin:0;color:var(--teal);font-size:16px;font-weight:730;line-height:1.5}.consultant-intro{max-width:720px;margin:24px 0 0;color:var(--muted);font-size:14px;line-height:1.82}.consultant-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}
+.profile-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:42px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.profile-fact{padding:20px 20px 20px 0}.profile-fact+.profile-fact{padding-left:20px;border-left:1px solid var(--line)}.profile-fact strong{display:block;color:var(--navy);font-size:11px;text-transform:uppercase;letter-spacing:.08em}.profile-fact span{display:block;margin-top:7px;color:var(--muted);font-size:11px;line-height:1.55}
+.profile-content{padding:72px 0 90px}.profile-content-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.55fr);gap:70px;align-items:start}.profile-section{padding-bottom:48px;margin-bottom:46px;border-bottom:1px solid var(--line)}.profile-section:last-child{margin-bottom:0}.profile-section h2{margin:0 0 20px;color:var(--navy);font-size:30px;letter-spacing:-.035em}.profile-section>p{max-width:760px;margin:0;color:var(--muted);font-size:13px;line-height:1.8}
+.clinical-focus-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:23px}.clinical-focus-item{padding:17px 18px;border:1px solid var(--line);background:var(--quiet)}.clinical-focus-item strong{display:block;color:var(--navy);font-size:12px}.clinical-focus-item span{display:block;margin-top:5px;color:var(--muted);font-size:10px;line-height:1.55}
+.qualification-list{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}.qualification-list li{display:grid;grid-template-columns:22px 1fr;gap:12px;padding:15px 0;border-bottom:1px solid var(--line);color:#46626b;font-size:12px;line-height:1.55}.qualification-list li::before{content:"✓";color:var(--teal);font-weight:850}
+.profile-sidebar{position:sticky;top:112px}.profile-sidecard{padding:26px;border:1px solid var(--line);background:var(--quiet);margin-bottom:14px}.profile-sidecard h2{margin:0 0 10px;color:var(--navy);font-size:19px}.profile-sidecard p{margin:0;color:var(--muted);font-size:11px;line-height:1.7}.profile-sidecard .btn{width:100%;margin-top:18px}.profile-sidecard__links{display:grid;gap:10px;margin-top:16px}.profile-sidecard__links a{padding-top:10px;border-top:1px solid var(--line);color:var(--navy);font-size:10px;font-weight:760}
+.related-doctors{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}.related-doctor{padding:15px;border:1px solid var(--line);background:#fff}.related-doctor strong{display:block;color:var(--navy);font-size:11px}.related-doctor span{display:block;margin-top:5px;color:var(--muted);font-size:9px;line-height:1.5}
+
+@media(max-width:1024px){
+  .page-hero__grid{grid-template-columns:1fr;gap:30px}.page-hero__aside{padding-left:0;padding-top:20px;border-left:0;border-top:1px solid var(--line)}
+  .directory-toolbar{grid-template-columns:1fr}.specialty-filters{align-self:auto}.directory-results{padding-bottom:0}
+  .doctor-directory-grid{grid-template-columns:1fr}
+  .consultant-layout{grid-template-columns:.75fr 1.25fr;gap:36px}.consultant-portrait__frame{height:470px}
+  .profile-content-grid{grid-template-columns:1fr}.profile-sidebar{position:static;display:grid;grid-template-columns:1fr 1fr;gap:14px}.profile-sidecard{margin:0}
+}
+@media(max-width:720px){
+  .page-hero{padding:38px 0}.page-hero h1{font-size:42px}.directory-section{padding:44px 0 74px}
+  .specialty-filters{display:grid;grid-template-columns:1fr 1fr}.specialty-filter{width:100%;padding:0 8px}
+  .doctor-directory-card{grid-template-columns:112px 1fr;min-height:165px}.doctor-directory-card__body{padding:18px 16px}.doctor-directory-card__body h2{font-size:16px}.doctor-directory-card__focus{display:none}
+  .directory-consult{align-items:flex-start;flex-direction:column;padding:26px 22px}
+  .consultant-hero{padding:32px 0 55px}.consultant-layout{grid-template-columns:1fr;gap:34px}.consultant-portrait{position:static}.consultant-portrait__frame{height:430px}.consultant-info h1{font-size:45px}.profile-facts{grid-template-columns:1fr}.profile-fact,.profile-fact+.profile-fact{padding:15px 0;border-left:0;border-bottom:1px solid var(--line)}.profile-fact:last-child{border-bottom:0}
+  .profile-content{padding:52px 0 76px}.profile-content-grid{gap:38px}.clinical-focus-grid{grid-template-columns:1fr}.profile-sidebar{grid-template-columns:1fr}.related-doctors{grid-template-columns:1fr}
+}
