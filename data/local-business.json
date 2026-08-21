@@ -1,0 +1,26 @@
+{
+  "verified_on": "2026-08-22",
+  "brand_name": "Dr. Munir Silwadi Dental Centre",
+  "branch_label": "Bani Yas Tower",
+  "phone_display": "+971 2 626 2042",
+  "phone_e164": "+97126262042",
+  "email": "info@silwadidentalcentres.ae",
+  "address": "Al Hilal Bank, Bani Yas Tower, Building 117 C Floor, Sultan Bin Zayed The First St, W Corniche Road, Abu Dhabi, UAE",
+  "hours_display": "Sun–Wed 09:00–21:00 · Thu & Sat 09:00–18:00 · Friday closed",
+  "hours": {
+    "Sunday": "09:00-21:00",
+    "Monday": "09:00-21:00",
+    "Tuesday": "09:00-21:00",
+    "Wednesday": "09:00-21:00",
+    "Thursday": "09:00-18:00",
+    "Friday": "closed",
+    "Saturday": "09:00-18:00"
+  },
+  "service_area": "Abu Dhabi",
+  "maps_query": "Dr Munir Silwadi Dental Centre Bani Yas Tower Abu Dhabi",
+  "coming_soon": {
+    "name": "Al Raha Mall",
+    "address": "F14 & F15, Level 1, Al Raha Mall, Abu Dhabi, UAE",
+    "is_open": false
+  }
+}
