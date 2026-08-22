@@ -1,0 +1,39 @@
+name: Diagnose Patch 12 regression failure
+
+on:
+  push:
+    branches:
+      - patch-12-final-seo-launch-clean
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-12-final-seo-launch-clean
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run full suite and capture output
+        shell: bash
+        run: |
+          set +e
+          python -m unittest discover -s tests -p '*.py' -v > /tmp/tests.log 2>&1
+          status=$?
+          set -e
+          cp /tmp/tests.log docs/launch/PATCH12-TEST-DIAGNOSTIC.txt
+          printf '\nEXIT_CODE=%s\n' "$status" >> docs/launch/PATCH12-TEST-DIAGNOSTIC.txt
+      - name: Commit diagnostic and remove workflow
+        shell: bash
+        run: |
+          rm .github/workflows/patch12-test-diagnose.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/launch/PATCH12-TEST-DIAGNOSTIC.txt .github/workflows/patch12-test-diagnose.yml
+          git commit -m 'test: capture Patch 12 regression diagnostics'
+          git push origin HEAD:patch-12-final-seo-launch-clean
