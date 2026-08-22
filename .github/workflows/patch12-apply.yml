@@ -1,0 +1,109 @@
+name: Apply Patch 12 launch metadata
+
+on:
+  push:
+    branches:
+      - patch-12-final-seo-launch-clean
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-12-final-seo-launch-clean
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply metadata and sitemap lastmod
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.parse import urlparse
+          import re
+          import xml.etree.ElementTree as ET
+
+          root = Path('.')
+          ns_uri = 'http://www.sitemaps.org/schemas/sitemap/0.9'
+          ns = {'sm': ns_uri}
+          sitemap_path = root / 'sitemap.xml'
+          tree = ET.parse(sitemap_path)
+          sitemap = tree.getroot()
+
+          pages = []
+          for url_node in sitemap.findall('sm:url', ns):
+              loc_node = url_node.find('sm:loc', ns)
+              if loc_node is None or not loc_node.text:
+                  raise SystemExit('sitemap URL missing loc')
+              path = urlparse(loc_node.text.strip()).path
+              rel = 'index.html' if path == '/' else path.lstrip('/')
+              pages.append(rel)
+
+          if len(pages) != 24:
+              raise SystemExit(f'expected 24 pages, found {len(pages)}')
+
+          for rel in pages:
+              path = root / rel
+              html = path.read_text(encoding='utf-8')
+              expected_icon = '../favicon.svg' if '/' in rel else 'favicon.svg'
+
+              if 'name="robots" content="index,follow,max-image-preview:large"' not in html:
+                  replacement = (
+                      r'\1'
+                      '<meta name="robots" content="index,follow,max-image-preview:large">'
+                      f'<link rel="icon" href="{expected_icon}" type="image/svg+xml">'
+                  )
+                  html, count = re.subn(
+                      r'(<meta\s+name="viewport"\s+content="[^"]+"\s*/?>)',
+                      replacement,
+                      html,
+                      count=1,
+                      flags=re.I,
+                  )
+                  if count != 1:
+                      raise SystemExit(f'{rel}: viewport insertion point not found')
+              elif f'rel="icon" href="{expected_icon}" type="image/svg+xml"' not in html:
+                  raise SystemExit(f'{rel}: robots present but expected favicon missing')
+
+              if 'property="og:site_name" content="Silwadi Dental Center"' not in html:
+                  html, count = re.subn(
+                      r'(<meta\s+property="og:type"\s+content="[^"]+"\s*/?>)',
+                      r'\1<meta property="og:site_name" content="Silwadi Dental Center">',
+                      html,
+                      count=1,
+                      flags=re.I,
+                  )
+                  if count != 1:
+                      raise SystemExit(f'{rel}: og:type insertion point not found')
+
+              path.write_text(html, encoding='utf-8')
+
+          ET.register_namespace('', ns_uri)
+          for url_node in sitemap.findall('sm:url', ns):
+              existing = url_node.find('sm:lastmod', ns)
+              if existing is None:
+                  existing = ET.Element(f'{{{ns_uri}}}lastmod')
+                  url_node.insert(1, existing)
+              existing.text = '2026-08-22'
+          ET.indent(tree, space='  ')
+          tree.write(sitemap_path, encoding='utf-8', xml_declaration=True)
+          PY
+      - name: Remove RED marker and temporary apply workflow
+        shell: bash
+        run: |
+          rm -f docs/.patch12-red-confirmed
+          rm .github/workflows/patch12-apply.yml
+      - name: Commit applied Patch 12 metadata
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat: finalize search appearance and sitemap freshness'
+          git push origin HEAD:patch-12-final-seo-launch-clean
