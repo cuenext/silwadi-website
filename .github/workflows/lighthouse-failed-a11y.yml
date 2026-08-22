@@ -1,0 +1,50 @@
+name: Lighthouse Failed A11y
+
+on:
+  push:
+    branches:
+      - audit-lighthouse-prelaunch
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: audit-lighthouse-prelaunch
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run a11y diagnostic
+        shell: bash
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+          CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || true)
+          npx --yes lighthouse@latest http://127.0.0.1:8765/ --output=json --output-path=/tmp/home.json --chrome-path="$CHROME" --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' --only-categories=accessibility --quiet
+          node - <<'NODE' > docs/launch/LIGHTHOUSE-A11Y-FAILED.md
+          const fs=require('fs'); const d=JSON.parse(fs.readFileSync('/tmp/home.json','utf8'));
+          console.log('# Failed accessibility audits\n');
+          for (const ref of d.categories.accessibility.auditRefs) {
+            const a=d.audits[ref.id];
+            if (a && typeof a.score==='number' && a.score<1) {
+              console.log('## '+ref.id+' — '+a.title+'\n');
+              console.log('```json'); console.log(JSON.stringify(a,null,2)); console.log('```\n');
+            }
+          }
+          NODE
+      - name: Save and self-clean
+        if: always()
+        shell: bash
+        run: |
+          rm -f .github/workflows/lighthouse-failed-a11y.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/launch/LIGHTHOUSE-A11Y-FAILED.md .github/workflows/lighthouse-failed-a11y.yml
+          git commit -m 'docs: capture failed Lighthouse accessibility audits'
+          git push origin HEAD:audit-lighthouse-prelaunch
