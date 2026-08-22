@@ -1,0 +1,211 @@
+name: Prelaunch Lighthouse Audit
+
+on:
+  push:
+    branches:
+      - audit-lighthouse-prelaunch
+
+permissions:
+  contents: write
+
+jobs:
+  lighthouse:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: audit-lighthouse-prelaunch
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Start local site
+        shell: bash
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/silwadi-http.log 2>&1 &
+          echo $! > /tmp/silwadi-http.pid
+          sleep 2
+          curl --fail --silent http://127.0.0.1:8765/ >/dev/null
+
+      - name: Confirm Chrome
+        shell: bash
+        run: |
+          CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser || true)
+          if [ -z "$CHROME" ]; then
+            echo 'Chrome/Chromium not found on runner' >&2
+            exit 1
+          fi
+          echo "CHROME_PATH=$CHROME" >> "$GITHUB_ENV"
+          "$CHROME" --version
+
+      - name: Run mobile and desktop Lighthouse
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/lighthouse
+          pages=(
+            'home|/'
+            'doctors|/doctors.html'
+            'munir-profile|/doctors/dr-munir-silwadi.html'
+            'treatments|/treatments.html'
+            'implants|/treatments/dental-implants.html'
+            'locations|/locations.html'
+            'contact|/contact.html'
+          )
+          for item in "${pages[@]}"; do
+            name="${item%%|*}"
+            path="${item#*|}"
+            url="http://127.0.0.1:8765${path}"
+            echo "Lighthouse mobile: $name"
+            npx --yes lighthouse@latest "$url" \
+              --output=json \
+              --output-path="/tmp/lighthouse/${name}-mobile.json" \
+              --chrome-path="$CHROME_PATH" \
+              --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --quiet
+            echo "Lighthouse desktop: $name"
+            npx --yes lighthouse@latest "$url" \
+              --preset=desktop \
+              --output=json \
+              --output-path="/tmp/lighthouse/${name}-desktop.json" \
+              --chrome-path="$CHROME_PATH" \
+              --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+              --only-categories=performance,accessibility,best-practices,seo \
+              --quiet
+          done
+
+      - name: Build readable report
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from statistics import mean
+
+          src = Path('/tmp/lighthouse')
+          out = Path('docs/launch/PRELAUNCH-LIGHTHOUSE.md')
+          pages = [
+              ('home', 'Home'),
+              ('doctors', 'Doctors'),
+              ('munir-profile', 'Dr. Munir profile'),
+              ('treatments', 'Treatments'),
+              ('implants', 'Dental Implants'),
+              ('locations', 'Locations'),
+              ('contact', 'Contact'),
+          ]
+          modes = ['mobile', 'desktop']
+          rows = []
+          details = []
+          category_values = {m: {'performance': [], 'accessibility': [], 'best-practices': [], 'seo': []} for m in modes}
+
+          def pct(value):
+              return round((value or 0) * 100)
+
+          def metric(audits, key):
+              audit = audits.get(key, {})
+              return audit.get('displayValue') or '—'
+
+          for slug, label in pages:
+              for mode in modes:
+                  data = json.loads((src / f'{slug}-{mode}.json').read_text())
+                  cats = data['categories']
+                  scores = {k: pct(cats[k]['score']) for k in category_values[mode]}
+                  for k, v in scores.items():
+                      category_values[mode][k].append(v)
+                  audits = data['audits']
+                  rows.append((label, mode.title(), scores['performance'], scores['accessibility'], scores['best-practices'], scores['seo'], metric(audits,'first-contentful-paint'), metric(audits,'largest-contentful-paint'), metric(audits,'total-blocking-time'), metric(audits,'cumulative-layout-shift')))
+
+                  issues = []
+                  for ref in cats['accessibility'].get('auditRefs', []) + cats['best-practices'].get('auditRefs', []) + cats['seo'].get('auditRefs', []):
+                      audit = audits.get(ref['id'], {})
+                      score = audit.get('score')
+                      if isinstance(score, (int, float)) and score < 1 and audit.get('scoreDisplayMode') not in {'notApplicable','manual','informative'}:
+                          issues.append((audit.get('title', ref['id']), score, audit.get('displayValue','')))
+                  perf_audits = []
+                  for ref in cats['performance'].get('auditRefs', []):
+                      audit = audits.get(ref['id'], {})
+                      score = audit.get('score')
+                      if isinstance(score, (int,float)) and score < 0.9 and audit.get('scoreDisplayMode') in {'numeric','binary'}:
+                          perf_audits.append((audit.get('title',ref['id']), score, audit.get('displayValue','')))
+                  if issues or perf_audits:
+                      details.append((label, mode.title(), issues[:8], perf_audits[:8]))
+
+          lines = [
+              '# Pre-launch Lighthouse Audit',
+              '',
+              'Run date: 2026-08-22',
+              'Source commit: `b652caa1116c6c603688dc61fdf8e2150efa9604`',
+              'Environment: GitHub Actions Ubuntu runner, Chrome headless, Lighthouse CLI against the local static Patch 12 build.',
+              '',
+              '> These are pre-launch lab scores. Production hosting, caching, TLS, CDN and network delivery can change performance, so rerun against `https://silwadi.ae` after deployment.',
+              '',
+              '## Scores and Core Web Vitals lab metrics',
+              '',
+              '| Page | Mode | Perf | A11y | Best Practices | SEO | FCP | LCP | TBT | CLS |',
+              '|---|---|---:|---:|---:|---:|---:|---:|---:|---:|',
+          ]
+          for r in rows:
+              lines.append('| ' + ' | '.join(map(str, r)) + ' |')
+
+          lines += ['', '## Average category scores', '']
+          for mode in modes:
+              vals = category_values[mode]
+              lines.append(f"- **{mode.title()}** — Performance {mean(vals['performance']):.1f}, Accessibility {mean(vals['accessibility']):.1f}, Best Practices {mean(vals['best-practices']):.1f}, SEO {mean(vals['seo']):.1f}.")
+
+          if details:
+              lines += ['', '## Audits worth reviewing', '']
+              for label, mode, issues, perf in details:
+                  lines.append(f'### {label} — {mode}')
+                  if perf:
+                      lines.append('Performance:')
+                      for title, score, display in perf:
+                          suffix = f' — {display}' if display else ''
+                          lines.append(f'- {title} (score {score:.2f}){suffix}')
+                  if issues:
+                      lines.append('Accessibility / Best Practices / SEO:')
+                      for title, score, display in issues:
+                          suffix = f' — {display}' if display else ''
+                          lines.append(f'- {title} (score {score:.2f}){suffix}')
+                  lines.append('')
+          else:
+              lines += ['', '## Audits worth reviewing', '', 'No scored Accessibility, Best Practices or SEO failures were found, and no performance audit scored below 0.90.', '']
+
+          lines += [
+              '## Interpretation',
+              '',
+              '- Performance scores are lab measurements, not a promise of production Core Web Vitals.',
+              '- Accessibility, Best Practices and SEO scores are automated checks and do not replace manual clinical/content/accessibility review.',
+              '- The production Lighthouse rerun after DNS/hosting cutover is the launch-signoff measurement.',
+              '',
+          ]
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text('\n'.join(lines), encoding='utf-8')
+          print(out.read_text())
+          PY
+
+      - name: Self-clean and save report
+        if: always()
+        shell: bash
+        run: |
+          if [ ! -f docs/launch/PRELAUNCH-LIGHTHOUSE.md ]; then
+            cat > docs/launch/PRELAUNCH-LIGHTHOUSE.md <<'EOF'
+          # Pre-launch Lighthouse Audit
+
+          Run date: 2026-08-22
+          Overall: FAILED TO COMPLETE
+
+          The GitHub Actions Lighthouse run did not produce a complete report. Inspect the workflow logs before making any Lighthouse score claim.
+          EOF
+          fi
+          rm -f .github/workflows/prelaunch-lighthouse.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/launch/PRELAUNCH-LIGHTHOUSE.md .github/workflows/prelaunch-lighthouse.yml
+          git commit -m 'docs: record prelaunch Lighthouse audit'
+          git push origin HEAD:audit-lighthouse-prelaunch
