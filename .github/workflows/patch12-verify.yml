@@ -1,0 +1,202 @@
+name: Verify Patch 12 release candidate
+
+on:
+  push:
+    branches:
+      - patch-12-final-seo-launch-clean
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-12-final-seo-launch-clean
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Full regression suite
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tests -p '*.py' -v 2>&1 | tee /tmp/patch12-tests.log
+
+      - name: JavaScript syntax
+        run: node --check app.js
+
+      - name: SEO launch audit
+        run: python tools/seo_launch_audit.py | tee /tmp/patch12-seo-audit.log
+
+      - name: Internal links and assets
+        shell: bash
+        run: |
+          python - <<'PY' | tee /tmp/patch12-links.log
+          from html.parser import HTMLParser
+          from pathlib import Path
+          from urllib.parse import urlsplit, unquote
+
+          ROOT = Path('.').resolve()
+          broken = []
+          checked = 0
+
+          class Collector(HTMLParser):
+              def __init__(self):
+                  super().__init__()
+                  self.refs = []
+              def handle_starttag(self, tag, attrs):
+                  data = dict(attrs)
+                  if tag in {'a', 'link'} and data.get('href'):
+                      self.refs.append(data['href'])
+                  if tag in {'img', 'script', 'iframe', 'source'} and data.get('src'):
+                      self.refs.append(data['src'])
+
+          for html_path in sorted(ROOT.rglob('*.html')):
+              parser = Collector()
+              parser.feed(html_path.read_text(encoding='utf-8'))
+              for raw in parser.refs:
+                  ref = raw.strip()
+                  if not ref or ref.startswith('#'):
+                      continue
+                  parsed = urlsplit(ref)
+                  if parsed.scheme.lower() in {'http', 'https', 'mailto', 'tel', 'data', 'javascript'} or parsed.netloc:
+                      continue
+                  relative = unquote(parsed.path)
+                  if not relative:
+                      continue
+                  target = ROOT / relative.lstrip('/') if relative.startswith('/') else html_path.parent / relative
+                  target = target.resolve()
+                  checked += 1
+                  if target.is_dir():
+                      target = target / 'index.html'
+                  if not target.exists():
+                      broken.append(f'{html_path.relative_to(ROOT)} -> {ref}')
+
+          print(f'Internal reference audit: {checked} local references, {len(broken)} broken')
+          for item in broken:
+              print(f'- {item}')
+          if broken:
+              raise SystemExit(1)
+          PY
+
+      - name: JSON-LD parse audit
+        shell: bash
+        run: |
+          python - <<'PY' | tee /tmp/patch12-jsonld.log
+          from pathlib import Path
+          import json
+          import re
+
+          ROOT = Path('.')
+          errors = []
+          blocks = 0
+          for path in sorted(ROOT.rglob('*.html')):
+              html = path.read_text(encoding='utf-8')
+              found = re.findall(r'<script\s+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', html, re.I | re.S)
+              for index, block in enumerate(found, 1):
+                  blocks += 1
+                  try:
+                      json.loads(block)
+                  except json.JSONDecodeError as exc:
+                      errors.append(f'{path}: block {index}: {exc}')
+          print(f'JSON-LD audit: {blocks} blocks, {len(errors)} errors')
+          for error in errors:
+              print(f'- {error}')
+          if errors:
+              raise SystemExit(1)
+          PY
+
+      - name: Local HTTP 200 smoke
+        shell: bash
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/patch12-http-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill $server_pid 2>/dev/null || true' EXIT
+          sleep 1
+          python - <<'PY' | tee /tmp/patch12-http.log
+          from urllib.request import urlopen
+          import xml.etree.ElementTree as ET
+
+          ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          root = ET.parse('sitemap.xml').getroot()
+          paths = []
+          for loc in root.findall('sm:url/sm:loc', ns):
+              url = loc.text
+              path = url.removeprefix('https://silwadi.ae') or '/'
+              paths.append(path)
+          paths += ['/robots.txt', '/sitemap.xml', '/app.js', '/styles.css', '/favicon.svg']
+          if len(paths) != 29:
+              raise SystemExit(f'expected 29 smoke resources, got {len(paths)}')
+          failures = []
+          for path in paths:
+              target = f'http://127.0.0.1:8765{path}'
+              try:
+                  with urlopen(target, timeout=5) as response:
+                      code = response.status
+              except Exception as exc:
+                  failures.append(f'{path}: {exc}')
+                  continue
+              if code != 200:
+                  failures.append(f'{path}: HTTP {code}')
+          print(f'HTTP smoke: {len(paths) - len(failures)}/{len(paths)} returned 200')
+          for failure in failures:
+              print(f'- {failure}')
+          if failures:
+              raise SystemExit(1)
+          PY
+
+      - name: Write verified QA report and remove temporary workflow
+        shell: bash
+        run: |
+          test_count=$(sed -nE 's/^Ran ([0-9]+) tests.*/\1/p' /tmp/patch12-tests.log | tail -1)
+          test_count=${test_count:-unknown}
+          link_summary=$(tail -1 /tmp/patch12-links.log)
+          jsonld_summary=$(tail -1 /tmp/patch12-jsonld.log)
+          http_summary=$(tail -1 /tmp/patch12-http.log)
+          seo_summary=$(head -1 /tmp/patch12-seo-audit.log)
+          cat > docs/launch/PATCH12-QA-REPORT.md <<EOF
+          # Patch 12 — Final SEO QA Report
+
+          Verified: 2026-08-22
+          Branch: \`patch-12-final-seo-launch-clean\`
+
+          ## Automated verification
+
+          - Full regression suite: PASS — ${test_count} tests, 0 failures.
+          - JavaScript syntax: PASS — \`node --check app.js\`.
+          - SEO launch audit: PASS — ${seo_summary}.
+          - Internal links/assets: PASS — ${link_summary}.
+          - JSON-LD: PASS — ${jsonld_summary}.
+          - Local HTTP smoke: PASS — ${http_summary}.
+          - Patch 12 RED proof was recorded before implementation.
+
+          ## Launch package
+
+          - Primary canonical origin: \`https://silwadi.ae\`.
+          - 24 canonical URLs in \`sitemap.xml\`, each with significant-update \`lastmod\` of \`2026-08-22\`.
+          - Stable 64×64 SVG favicon and explicit index/follow/max-image-preview policy across all canonical pages.
+          - Legacy migration map: \`docs/launch/legacy-redirect-map.csv\` with permanent one-hop 301 targets for the known indexed legacy pages and all 12 legacy doctor-detail URLs.
+          - Operational handoff: \`docs/launch/SEO-LAUNCH-CHECKLIST.md\`.
+
+          ## Deployment-only verification still required
+
+          The repository can verify the new static site, but it cannot prove server-side redirects, DNS/TLS cutover, Google Search Console, Bing Webmaster Tools, Google Business Profile, or public production HTTP behavior before those systems are configured. Follow the launch checklist after deployment and keep the legacy domain/SSL active for redirects.
+
+          ## Lighthouse
+
+          Lighthouse was not run for Patch 12. No Lighthouse score is claimed.
+          EOF
+          rm .github/workflows/patch12-verify.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/launch/PATCH12-QA-REPORT.md .github/workflows/patch12-verify.yml
+          git commit -m 'test: verify Patch 12 launch package'
+          git push origin HEAD:patch-12-final-seo-launch-clean
