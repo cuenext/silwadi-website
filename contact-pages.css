@@ -12,7 +12,7 @@
 .contact-channels{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);background:#fff}
 .contact-channel{min-height:230px;padding:28px;border-right:1px solid var(--line);display:flex;flex-direction:column;justify-content:space-between}
 .contact-channel:last-child{border-right:0}
-.contact-channel__index{font-size:9px;color:#8aa0a6;font-weight:800;letter-spacing:.12em}
+.contact-channel__index{font-size:9px;color:var(--muted);font-weight:800;letter-spacing:.12em}
 .contact-channel h3{margin:28px 0 8px;color:var(--navy);font-size:20px;font-weight:620;letter-spacing:-.02em}
 .contact-channel p{margin:0;color:var(--muted);font-size:10px;line-height:1.65}
 .contact-channel a{margin-top:22px;color:var(--teal);font-size:10px;font-weight:800}
