@@ -67,8 +67,10 @@ class PatchThirteenLighthousePolish(unittest.TestCase):
             ('.legacy-seal span', '#ffffff'),
             ('.care-shortcuts span', '#ffffff'),
             ('.care-shortcuts em', '#ffffff'),
+            ('.treatment-path__index', '#ffffff'),
             ('.footer-grid a,.footer-grid span', '#f8fafb'),
             ('.footer-bottom', '#f8fafb'),
+            ('.location-status--muted', '#e7edef'),
         ]
         for selector, background in checks:
             self.assertGreaterEqual(
