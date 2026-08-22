@@ -32,7 +32,7 @@ def jsonld_nodes(rel):
 class PatchTenDoctorAuthority(unittest.TestCase):
     def test_all_twelve_profiles_exist_and_have_core_identity(self):
         for slug,(name,specialty,image) in DOCTORS.items():
-            rel=f'doctors/{slug}.html'; path=ROOT/rel; self.assertTrue(path.is_file(),rel); html=path.read_text(encoding='utf-8'); h1s=re.findall(r'<h1[^>]*>(.*?)</h1>',html,re.I|re.S); self.assertEqual(len(h1s),1,rel); self.assertEqual(re.sub(r'<[^>]+>','',h1s[0]).strip(),name,rel); self.assertIn(specialty,html,rel); self.assertIn(f'../assets/doctors/{image}',html,rel); self.assertIn('Bani Yas Tower, Abu Dhabi',html,rel); self.assertIn('../contact.html#consultation',html,rel); self.assertIn('../treatments.html',html,rel); self.assertLess(len(re.sub(r'<[^>]+>',' ',html).split()),650,rel)
+            rel=f'doctors/{slug}.html'; path=ROOT/rel; self.assertTrue(path.is_file(),rel); html=path.read_text(encoding='utf-8'); h1s=re.findall(r'<h1[^>]*>(.*?)</h1>',html,re.I|re.S); self.assertEqual(len(h1s),1,rel); self.assertEqual(re.sub(r'<[^>]+>','',h1s[0]).strip(),name,rel); self.assertIn(specialty,html,rel); self.assertIn(f"../assets/doctors/optimized/{image.replace('.png','.webp')}",html,rel); self.assertIn('Bani Yas Tower, Abu Dhabi',html,rel); self.assertIn('../contact.html#consultation',html,rel); self.assertIn('../treatments.html',html,rel); self.assertLess(len(re.sub(r'<[^>]+>',' ',html).split()),650,rel)
             for phrase in BANNED: self.assertNotIn(phrase,html.lower(),(rel,phrase))
     def test_every_profile_has_unique_metadata_breadcrumb_and_person_schema(self):
         titles=[]; descriptions=[]
