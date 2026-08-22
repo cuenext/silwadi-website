@@ -5,12 +5,121 @@ on:
 permissions:
   contents: read
 jobs:
-  patch15:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run Patch 15 contract
-        run: python -m unittest tests.test_patch15_homepage_redesign -v
+      - name: Install test-only dependency
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Full regression suite
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: JavaScript syntax
+        run: node --check app.js
+      - name: SEO launch audit
+        run: python tools/seo_launch_audit.py
+      - name: Internal references and JSON-LD
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          import json, re
+          root=Path('.').resolve(); refs=0; broken=[]; blocks=0
+          pattern=re.compile(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',re.I|re.S)
+          for page in sorted(root.rglob('*.html')):
+              text=page.read_text(encoding='utf-8')
+              for _,value in re.findall(r'\b(href|src)=["\']([^"\']+)["\']',text,re.I):
+                  if value.startswith(('#','mailto:','tel:','data:','javascript:','http://','https://','//')): continue
+                  clean=urlsplit(value).path
+                  if not clean: continue
+                  refs+=1; target=(page.parent/clean).resolve()
+                  if clean.endswith('/'): target/='index.html'
+                  if not target.exists(): broken.append(f'{page.relative_to(root)} -> {value}')
+              for raw in pattern.findall(text): blocks+=1; json.loads(raw)
+          if broken: print('\n'.join(broken)); raise SystemExit(1)
+          print(f'Internal references: {refs} local references, 0 broken')
+          print(f'JSON-LD: {blocks} blocks, 0 errors')
+          PY
+      - name: HTTP smoke
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+          python - <<'PY'
+          import urllib.request, xml.etree.ElementTree as ET
+          from urllib.parse import urlsplit
+          ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          tree=ET.parse('sitemap.xml'); urls=[]
+          for loc in tree.findall('.//s:loc',ns):
+              path=urlsplit(loc.text).path; urls.append('/' if path=='/' else path)
+          urls += ['/robots.txt','/sitemap.xml','/favicon.svg','/styles.css','/home-premium.css','/app.js']
+          for path in urls:
+              with urllib.request.urlopen('http://127.0.0.1:8765'+path,timeout=10) as response:
+                  if response.status != 200: raise SystemExit(f'{path}: {response.status}')
+          print(f'HTTP smoke: {len(urls)}/{len(urls)} returned 200')
+          PY
+
+  lighthouse:
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [mobile, desktop]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Start static site
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+      - name: Lighthouse Home ${{ matrix.mode }}
+        shell: bash
+        run: |
+          CHROME="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          EXTRA=""
+          if [ "${{ matrix.mode }}" = "desktop" ]; then EXTRA="--preset=desktop"; fi
+          timeout 150s npx --yes lighthouse@latest "http://127.0.0.1:8765/" \
+            --quiet --chrome-path="$CHROME" \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json --output-path=/tmp/lighthouse.json $EXTRA
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/lighthouse.json')); c=r['categories']; a=r['audits']
+          perf=round(c['performance']['score']*100); acc=round(c['accessibility']['score']*100)
+          bp=round(c['best-practices']['score']*100); seo=round(c['seo']['score']*100)
+          lcp=a['largest-contentful-paint']['numericValue']/1000; cls=a['cumulative-layout-shift']['numericValue']
+          contrast=a.get('color-contrast',{}).get('score'); target=a.get('target-size',{}).get('score')
+          print(f"Performance={perf} Accessibility={acc} BestPractices={bp} SEO={seo} LCP={lcp:.2f}s CLS={cls:.3f} Contrast={contrast} TargetSize={target}")
+          if acc != 100 or bp != 100 or seo != 100: raise SystemExit('deterministic Lighthouse category gate failed')
+          if contrast not in (1,None): raise SystemExit('contrast audit failed')
+          if target not in (1,None): raise SystemExit('target-size audit failed')
+          PY
+
+  screenshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start static site
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+      - name: Capture desktop and mobile hero
+        run: |
+          CHROME="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --window-size=1440,1100 --screenshot=/tmp/home-desktop.png http://127.0.0.1:8765/
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --window-size=390,844 --screenshot=/tmp/home-mobile.png http://127.0.0.1:8765/
+          file /tmp/home-desktop.png /tmp/home-mobile.png
+      - uses: actions/upload-artifact@v4
+        with:
+          name: patch15-home-screenshots
+          path: |
+            /tmp/home-desktop.png
+            /tmp/home-mobile.png
