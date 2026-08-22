@@ -1,0 +1,33 @@
+name: Patch 13 Apply Muted Fix
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-13-verification-clean
+          fetch-depth: 0
+      - name: Apply verified quiet-surface contrast fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! grep -q -- '--muted:#60777f;' styles.css; then
+            echo 'Muted fix already applied.'
+            exit 0
+          fi
+          sed -i 's/--muted:#60777f;/--muted:#5d737b;/' styles.css
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add styles.css
+          git commit -m 'fix: clear quiet-surface contrast threshold'
+          git push origin HEAD:patch-13-verification-clean
