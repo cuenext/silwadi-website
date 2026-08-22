@@ -20,10 +20,13 @@ jobs:
       - name: Full regression suite
         run: python -m unittest discover -s tests -p 'test_*.py' -v
       - name: JavaScript syntax
+        if: always()
         run: node --check app.js
       - name: SEO launch audit
+        if: always()
         run: python tools/seo_launch_audit.py
       - name: Internal references and JSON-LD
+        if: always()
         shell: bash
         run: |
           python - <<'PY'
@@ -47,6 +50,7 @@ jobs:
           print(f'JSON-LD: {blocks} blocks, 0 errors')
           PY
       - name: HTTP smoke
+        if: always()
         run: |
           python -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
           sleep 2
@@ -98,6 +102,10 @@ jobs:
           lcp=a['largest-contentful-paint']['numericValue']/1000; cls=a['cumulative-layout-shift']['numericValue']
           contrast=a.get('color-contrast',{}).get('score'); target=a.get('target-size',{}).get('score')
           print(f"Performance={perf} Accessibility={acc} BestPractices={bp} SEO={seo} LCP={lcp:.2f}s CLS={cls:.3f} Contrast={contrast} TargetSize={target}")
+          details=a.get('color-contrast',{}).get('details',{}) or {}
+          for item in details.get('items',[]) or []:
+              node=item.get('node',{}) or {}
+              print('CONTRAST_FAIL selector=',node.get('selector'),'snippet=',node.get('snippet'),'explanation=',node.get('explanation'))
           if acc != 100 or bp != 100 or seo != 100: raise SystemExit('deterministic Lighthouse category gate failed')
           if contrast not in (1,None): raise SystemExit('contrast audit failed')
           if target not in (1,None): raise SystemExit('target-size audit failed')
@@ -111,11 +119,12 @@ jobs:
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
           sleep 2
-      - name: Capture desktop and mobile hero
+      - name: Capture desktop and mobile hero after reveal
         run: |
           CHROME="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --window-size=1440,1100 --screenshot=/tmp/home-desktop.png http://127.0.0.1:8765/
-          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --window-size=390,844 --screenshot=/tmp/home-mobile.png http://127.0.0.1:8765/
+          sleep 1
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --window-size=1440,1100 --virtual-time-budget=1800 --screenshot=/tmp/home-desktop.png http://127.0.0.1:8765/
+          "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --window-size=390,844 --virtual-time-budget=1800 --screenshot=/tmp/home-mobile.png http://127.0.0.1:8765/
           file /tmp/home-desktop.png /tmp/home-mobile.png
       - uses: actions/upload-artifact@v4
         with:
