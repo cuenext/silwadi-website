@@ -1,0 +1,51 @@
+name: Lighthouse A11y Diagnostic
+
+on:
+  push:
+    branches:
+      - audit-lighthouse-prelaunch
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: audit-lighthouse-prelaunch
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Start site and run Lighthouse
+        shell: bash
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+          CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || true)
+          npx --yes lighthouse@latest http://127.0.0.1:8765/ --output=json --output-path=/tmp/home.json --chrome-path="$CHROME" --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' --only-categories=accessibility --quiet
+          node - <<'NODE' > docs/launch/LIGHTHOUSE-A11Y-RAW.md
+          const fs = require('fs');
+          const d = JSON.parse(fs.readFileSync('/tmp/home.json','utf8'));
+          const ids = ['tap-targets','color-contrast'];
+          console.log('# Lighthouse accessibility raw diagnostics\n');
+          for (const id of ids) {
+            console.log('## '+id+'\n');
+            console.log('```json');
+            console.log(JSON.stringify(d.audits[id], null, 2));
+            console.log('```\n');
+          }
+          NODE
+      - name: Save and self-clean
+        if: always()
+        shell: bash
+        run: |
+          rm -f .github/workflows/lighthouse-a11y-diagnostic.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/launch/LIGHTHOUSE-A11Y-RAW.md .github/workflows/lighthouse-a11y-diagnostic.yml
+          git commit -m 'docs: capture raw Lighthouse accessibility diagnostics'
+          git push origin HEAD:audit-lighthouse-prelaunch
