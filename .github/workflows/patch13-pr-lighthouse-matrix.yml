@@ -1,0 +1,111 @@
+name: Patch 13 Full Lighthouse Matrix
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    name: lighthouse (${{ matrix.mode }} — ${{ matrix.slug }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      max-parallel: 7
+      matrix:
+        include:
+          - mode: mobile
+            slug: home
+            path: /
+          - mode: mobile
+            slug: doctors
+            path: /doctors.html
+          - mode: mobile
+            slug: munir-profile
+            path: /doctors/dr-munir-silwadi.html
+          - mode: mobile
+            slug: treatments
+            path: /treatments.html
+          - mode: mobile
+            slug: implants
+            path: /treatments/dental-implants.html
+          - mode: mobile
+            slug: locations
+            path: /locations.html
+          - mode: mobile
+            slug: contact
+            path: /contact.html
+          - mode: desktop
+            slug: home
+            path: /
+          - mode: desktop
+            slug: doctors
+            path: /doctors.html
+          - mode: desktop
+            slug: munir-profile
+            path: /doctors/dr-munir-silwadi.html
+          - mode: desktop
+            slug: treatments
+            path: /treatments.html
+          - mode: desktop
+            slug: implants
+            path: /treatments/dental-implants.html
+          - mode: desktop
+            slug: locations
+            path: /locations.html
+          - mode: desktop
+            slug: contact
+            path: /contact.html
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Start static site
+        shell: bash
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+      - name: Lighthouse ${{ matrix.mode }} — ${{ matrix.slug }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)
+          PRESET=''
+          if [ '${{ matrix.mode }}' = 'desktop' ]; then PRESET='--preset=desktop'; fi
+          timeout 120s npx --yes lighthouse@latest 'http://127.0.0.1:8765${{ matrix.path }}' \
+            $PRESET \
+            --output=json --output-path=/tmp/lighthouse.json \
+            --chrome-path="$CHROME" \
+            --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+            --only-categories=performance,accessibility,best-practices,seo --quiet
+          node - <<'NODE'
+          const fs = require('fs');
+          const d = JSON.parse(fs.readFileSync('/tmp/lighthouse.json','utf8'));
+          const c = d.categories, a = d.audits;
+          const score = k => Math.round(c[k].score * 100);
+          const row = {
+            mode: '${{ matrix.mode }}', page: '${{ matrix.slug }}',
+            performance: score('performance'), accessibility: score('accessibility'),
+            bestPractices: score('best-practices'), seo: score('seo'),
+            fcp: a['first-contentful-paint']?.displayValue,
+            lcp: a['largest-contentful-paint']?.displayValue,
+            tbt: a['total-blocking-time']?.displayValue,
+            cls: a['cumulative-layout-shift']?.displayValue,
+            colorContrast: a['color-contrast']?.score,
+            targetSize: a['target-size']?.score,
+            targetSizeMode: a['target-size']?.scoreDisplayMode
+          };
+          console.log('PATCH13_LIGHTHOUSE ' + JSON.stringify(row));
+          const targetApplicable = row.targetSizeMode && row.targetSizeMode !== 'notApplicable';
+          if (row.performance < 95) throw new Error(`Performance ${row.performance} < 95`);
+          if (row.accessibility < 100) throw new Error(`Accessibility ${row.accessibility} < 100`);
+          if (row.bestPractices !== 100) throw new Error(`Best Practices ${row.bestPractices} != 100`);
+          if (row.seo !== 100) throw new Error(`SEO ${row.seo} != 100`);
+          if (row.colorContrast !== 1) throw new Error('color-contrast audit still failing');
+          if (targetApplicable && row.targetSize !== 1) throw new Error('target-size audit still failing');
+          NODE
