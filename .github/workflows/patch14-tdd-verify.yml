@@ -5,119 +5,121 @@ on:
 permissions:
   contents: write
 jobs:
-  test:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: patch-14-official-service-alignment
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Apply official-content alignment
+      - name: Refine patient-facing copy
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
 
-          def read(path):
-              return Path(path).read_text(encoding='utf-8')
-
-          def write(path, text):
-              Path(path).write_text(text, encoding='utf-8')
-
-          def replace_once(path, old, new):
-              text = read(path)
+          def replace(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
               if old not in text:
                   raise SystemExit(f'missing expected text in {path}: {old[:80]}')
-              write(path, text.replace(old, new, 1))
+              p.write_text(text.replace(old, new, 1), encoding='utf-8')
 
-          # Homepage: only feature verified official service lines and align values.
-          replace_once('index.html', '<span>Founder & specialist</span>', '<span>Specialist Prosthodontist</span>')
-          replace_once('index.html', '<strong>Insurance</strong><em>Ask about your plan</em>', '<strong>Insurance</strong><em>Insurance accepted</em>')
-          replace_once('index.html', '<h2>Care organised around what you need.</h2>', '<h2>Verified dental services at Silwadi.</h2>')
-          replace_once(
-              'index.html',
-              'For more than four decades, Silwadi Dental Center has cared for patients in Abu Dhabi with a simple focus: clear advice, careful planning and the right clinician for the job.',
-              'For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.'
+          replace('index.html', 'Verified dental services at Silwadi.', 'Dental services at Silwadi.')
+          replace(
+              'treatments.html',
+              '<meta property="og:description" content="Explore dental care at Silwadi Dental Center in Abu Dhabi, including implants, orthodontics, restorative dentistry, endodontics, periodontics and preventive care.">',
+              '<meta property="og:description" content="Explore Silwadi Dental Center services in Abu Dhabi, including implantology, orthodontics, periodontics, pedodontics, endodontics, cosmetic care and prosthodontics.">'
           )
-          home = read('index.html')
-          home_pattern = re.compile(r'<div class="treatment-paths">.*?</div><div class="section-link reveal"><a href="treatments.html">View all treatments <span>→</span></a></div>', re.S)
-          home_replacement = '''<div class="treatment-paths"><a class="treatment-path reveal" href="treatments/dental-implants.html"><span class="treatment-path__index">01</span><div><h3>Implantology</h3><p>Dental implant assessment, planning and implant-supported restorative care.</p></div><b aria-hidden="true">→</b></a><a class="treatment-path reveal" href="treatments/orthodontics.html"><span class="treatment-path__index">02</span><div><h3>Orthodontics</h3><p>Specialist care for braces, aligners, tooth alignment and bite correction.</p></div><b aria-hidden="true">→</b></a><a class="treatment-path reveal" href="treatments/cosmetic-dentistry.html"><span class="treatment-path__index">03</span><div><h3>Cosmetic Dentistry</h3><p>Aesthetic dental care including whitening, veneers and restorative smile planning after assessment.</p></div><b aria-hidden="true">→</b></a><a class="treatment-path reveal" href="treatments/general-dentistry.html"><span class="treatment-path__index">04</span><div><h3>Preventive Treatments</h3><p>Routine examinations, preventive planning and care that supports ongoing oral health.</p></div><b aria-hidden="true">→</b></a><a class="treatment-path reveal" href="treatments.html#periodontics"><span class="treatment-path__index">05</span><div><h3>Periodontics</h3><p>Specialist care for the gums and supporting tissues around the teeth.</p></div><b aria-hidden="true">→</b></a></div><div class="section-link reveal"><a href="treatments.html">View all 10 services <span>→</span></a></div>'''
-          home, count = home_pattern.subn(home_replacement, home, count=1)
-          if count != 1:
-              raise SystemExit('homepage treatment block replacement failed')
-          write('index.html', home)
-
-          # Treatments: use the ten service lines published by the official Silwadi site.
-          treatments = read('treatments.html')
-          treatments = treatments.replace(
-              'Explore dental care at Silwadi Dental Center in Abu Dhabi, including implants, orthodontics, restorative dentistry, endodontics, periodontics and preventive care.',
-              'Explore Silwadi Dental Center services in Abu Dhabi, including implantology, orthodontics, periodontics, pedodontics, endodontics, cosmetic care and prosthodontics.',
-              1,
-          )
-          treatments = treatments.replace(
-              'Explore dental care available through our Abu Dhabi team, or contact us if you are not sure where to start.',
+          replace(
+              'treatments.html',
               'Explore the dental service areas published by Silwadi Dental Center, or contact us if you are not sure where to start.',
-              1,
+              'Explore Silwadi Dental Center’s dental service areas, or contact us if you are not sure where to start.'
           )
-          treatments = treatments.replace(
-              '<strong>Multidisciplinary care</strong><span>General dentists and specialists across restorative, orthodontic, periodontal, endodontic and preventive dentistry.</span>',
-              '<strong>10 service areas</strong><span>General and specialist dental care across the service lines published by Silwadi Dental Center.</span>',
-              1,
+          replace(
+              'treatments.html',
+              'General and specialist dental care across the service lines published by Silwadi Dental Center.',
+              'General and specialist dental care across ten established service areas.'
           )
-          directory_pattern = re.compile(r'<section class="treatment-directory">.*?</section><section class="consultation-cta">', re.S)
-          directory_replacement = '''<section class="treatment-directory"><div class="container"><div class="treatment-group"><div class="treatment-group__intro"><span>01–02</span><h2>Implants &amp; Prosthodontics</h2></div><div class="treatment-list"><a href="treatments/dental-implants.html"><div><h3>Implantology</h3><p>Assessment, planning and implant-supported tooth replacement for suitable patients.</p></div><b>→</b></a><div class="treatment-row" id="prosthodontics"><div><h3>Prosthodontics</h3><p>Specialist restorative planning for crowns, bridges, dentures, veneers and implant-supported restorations.</p></div></div></div></div><div class="treatment-group"><div class="treatment-group__intro"><span>03–04</span><h2>Alignment &amp; Gum Health</h2></div><div class="treatment-list"><a href="treatments/orthodontics.html"><div><h3>Orthodontics</h3><p>Specialist care for braces, aligners, tooth alignment and bite correction.</p></div><b>→</b></a><div class="treatment-row" id="periodontics"><div><h3>Periodontics</h3><p>Diagnosis, prevention and treatment of conditions affecting the gums and supporting tissues.</p></div></div></div></div><div class="treatment-group"><div class="treatment-group__intro"><span>05–06</span><h2>Root Canal &amp; Children’s Care</h2></div><div class="treatment-list"><div class="treatment-row" id="endodontics"><div><h3>Endodontics</h3><p>Diagnosis and treatment of dental pulp and root canal conditions, including root canal therapy.</p></div></div><div class="treatment-row" id="pedodontics"><div><h3>Pedodontics</h3><p>Dental care for children from infancy through adolescence, including preventive and restorative care.</p></div></div></div></div><div class="treatment-group"><div class="treatment-group__intro"><span>07–08</span><h2>Cosmetic &amp; Prevention</h2></div><div class="treatment-list"><a href="treatments/cosmetic-dentistry.html"><div><h3>Cosmetic Dentistry</h3><p>Aesthetic care that may include whitening, veneers and restorative smile planning after assessment.</p></div><b>→</b></a><a href="treatments/general-dentistry.html"><div><h3>Preventive Treatments</h3><p>Routine examinations and preventive planning aimed at protecting teeth and gums over time.</p></div><b>→</b></a></div></div><div class="treatment-group"><div class="treatment-group__intro"><span>09–10</span><h2>Hygiene &amp; Laser</h2></div><div class="treatment-list"><a href="treatments/general-dentistry.html"><div><h3>Oral Hygiene</h3><p>Professional hygiene care and guidance that supports the prevention of decay and gum disease.</p></div><b>→</b></a><div class="treatment-row" id="laser-dentistry"><div><h3>Laser Dentistry</h3><p>Dental laser techniques used for selected procedures when clinically appropriate.</p></div></div></div></div></div></section><div class="container"><div class="urgent-guidance"><h2>Need urgent dental care?</h2><p>Emergency dental assessment is available during clinic hours. Call the centre for urgent scheduling or review our emergency guidance.</p><a class="text-link" href="treatments/emergency-dentist.html">Emergency dental care →</a></div></div><section class="consultation-cta">'''
-          treatments, count = directory_pattern.subn(directory_replacement, treatments, count=1)
-          if count != 1:
-              raise SystemExit('treatment directory replacement failed')
-          write('treatments.html', treatments)
-
-          # About: reflect the official patient-centred, compassionate, educational positioning.
-          about = read('about.html')
-          about = about.replace(
-              'Silwadi Dental Center has cared for patients in Abu Dhabi since 1980. Today, the centre brings general dentists and specialists together under one roof, with continuity of care across a multidisciplinary team.',
-              'Silwadi Dental Center has cared for patients in Abu Dhabi since 1980. The centre’s approach combines comprehensive dentistry with compassionate, patient-centred care, personalized treatment and clear communication.',
-              1,
+          replace(
+              'about.html',
+              'The official Silwadi philosophy puts patient comfort, individual needs and understandable treatment planning at the centre of care.',
+              'Patient comfort, individual needs and understandable treatment planning are central to the way the centre approaches care.'
           )
-          about = about.replace(
-              '<div class="story-kicker"><p class="eyebrow">Our story</p><h2>A centre built around continuity of care.</h2><p>The centre has grown with Abu Dhabi while keeping the patient experience simple: understand the problem, explain the options and involve the right clinician.</p></div><div class="story-copy"><article class="story-block"><h3>Long-standing care in Abu Dhabi</h3><p>More than four decades in Abu Dhabi has created something patients notice: familiarity, continuity and a team that can look beyond a single appointment.</p></article><article class="story-block"><h3>A multidisciplinary model</h3><p>General dentists and specialists work across the main dental disciplines. When specialist input is needed, it can be coordinated within the same team.</p></article><article class="story-block"><h3>Modern workflows, clinical purpose</h3><p>Digital tools are used when they make assessment, planning or communication clearer — not simply because they are new.</p></article></div>',
-              '<div class="story-kicker"><p class="eyebrow">Our approach</p><h2>Care centred on the patient.</h2><p>The official Silwadi philosophy puts patient comfort, individual needs and understandable treatment planning at the centre of care.</p></div><div class="story-copy"><article class="story-block"><h3>Patient-centred care</h3><p>Treatment is planned around each patient’s needs, with comfort and a compassionate clinical setting treated as priorities.</p></article><article class="story-block"><h3>Comprehensive dentistry</h3><p>The centre provides routine, cosmetic and specialist dental care across a multidisciplinary team.</p></article><article class="story-block"><h3>Education &amp; open communication</h3><p>Patient education and open communication are part of the centre’s stated approach, with procedures and options explained before treatment decisions are made.</p></article></div>',
-              1,
+          replace(
+              'about.html',
+              'Patient education and open communication are part of the centre’s stated approach, with procedures and options explained before treatment decisions are made.',
+              'Patient education and open communication are part of care, with procedures and options explained before treatment decisions are made.'
           )
-          about = about.replace(
-              '<header class="section-intro"><div><p class="eyebrow">How we work</p><h2>Professional care without unnecessary complexity.</h2></div><p>Our role is to make the clinical picture understandable and give patients a clear next step.</p></header><div class="principles-grid"><article class="principle"><span>01</span><h3>Clear communication</h3><p>Findings, options and next steps are explained in a way patients can understand before treatment decisions are made.</p></article><article class="principle"><span>02</span><h3>Multidisciplinary planning</h3><p>Cases can involve input from the appropriate general dentist or specialist when more than one discipline is relevant.</p></article><article class="principle"><span>03</span><h3>Continuity of care</h3><p>The aim is not only to address the immediate concern but to maintain a coherent plan for ongoing oral health.</p></article></div>',
-              '<header class="section-intro"><div><p class="eyebrow">How we work</p><h2>Personalized care with clear communication.</h2></div><p>The centre’s stated values emphasise patient comfort, education and treatment plans tailored to individual needs.</p></header><div class="principles-grid"><article class="principle"><span>01</span><h3>Personalized planning</h3><p>Clinical recommendations are tailored to the patient’s dental needs rather than presented as one standard solution.</p></article><article class="principle"><span>02</span><h3>Comfort &amp; compassion</h3><p>A compassionate setting and patient comfort are central to the way the official Silwadi site describes care.</p></article><article class="principle"><span>03</span><h3>Clear communication</h3><p>Findings, procedures and options are explained so patients can ask questions and understand their treatment plan.</p></article></div>',
-              1,
+          replace(
+              'about.html',
+              'The centre’s stated values emphasise patient comfort, education and treatment plans tailored to individual needs.',
+              'Patient comfort, education and treatment plans tailored to individual needs guide the way care is delivered.'
           )
-          write('about.html', about)
-
-          # Contact + locations: expose verified insurance and parking facts.
-          replace_once(
-              'contact.html',
-              'Coverage differs by provider and plan. Contact reception with your insurance details before your visit so the team can guide you.',
-              'The centre accepts insurance and submits most claims electronically on behalf of patients. Coverage varies by provider and plan, so contact reception with your insurance details before your visit.'
-          )
-          replace_once(
-              'contact.html',
-              '<div class="contact-detail"><strong>Opening hours</strong><span>Sun–Wed 09:00–21:00 · Thu &amp; Sat 09:00–18:00 · Friday closed</span></div>',
-              '<div class="contact-detail"><strong>Opening hours</strong><span>Sun–Wed 09:00–21:00 · Thu &amp; Sat 09:00–18:00 · Friday closed</span></div><div class="contact-detail"><strong>Parking</strong><span>Available</span></div>'
-          )
-          replace_once(
-              'locations.html',
-              '<div><dt>Opening hours</dt><dd>Sun–Wed 09:00–21:00 · Thu &amp; Sat 09:00–18:00 · Friday closed</dd></div>',
-              '<div><dt>Opening hours</dt><dd>Sun–Wed 09:00–21:00 · Thu &amp; Sat 09:00–18:00 · Friday closed</dd></div><div><dt>Parking</dt><dd>Available</dd></div>'
+          replace(
+              'about.html',
+              'A compassionate setting and patient comfort are central to the way the official Silwadi site describes care.',
+              'A compassionate setting and patient comfort are priorities throughout the visit.'
           )
           PY
       - name: Install test-only dependency
         run: python -m pip install --disable-pip-version-check pillow
-      - name: Run Patch 14 contract
-        run: python -m unittest tests.test_patch14_official_content_alignment -v
-      - name: Commit verified content changes
+      - name: Full regression suite
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: JavaScript syntax
+        run: node --check app.js
+      - name: SEO launch audit
+        run: python tools/seo_launch_audit.py
+      - name: Internal references and JSON-LD
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          import json, re
+          root = Path('.').resolve(); refs = 0; broken = []; blocks = 0
+          pattern = re.compile(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', re.I|re.S)
+          for page in sorted(root.rglob('*.html')):
+              text = page.read_text(encoding='utf-8')
+              for _, value in re.findall(r'\b(href|src)=["\']([^"\']+)["\']', text, re.I):
+                  if value.startswith(('#','mailto:','tel:','data:','javascript:','http://','https://','//')): continue
+                  clean = urlsplit(value).path
+                  if not clean: continue
+                  refs += 1
+                  target = (page.parent / clean).resolve()
+                  if clean.endswith('/'): target /= 'index.html'
+                  if not target.exists(): broken.append(f'{page.relative_to(root)} -> {value}')
+              for raw in pattern.findall(text): blocks += 1; json.loads(raw)
+          if broken: print('\n'.join(broken)); raise SystemExit(1)
+          print(f'Internal references: {refs} local references, 0 broken')
+          print(f'JSON-LD: {blocks} blocks, 0 errors')
+          PY
+      - name: HTTP smoke
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+          python - <<'PY'
+          import urllib.request, xml.etree.ElementTree as ET
+          from urllib.parse import urlsplit
+          ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          tree=ET.parse('sitemap.xml'); urls=[]
+          for loc in tree.findall('.//s:loc',ns):
+              path=urlsplit(loc.text).path; urls.append('/' if path=='/' else path)
+          urls += ['/robots.txt','/sitemap.xml','/favicon.svg','/styles.css','/app.js']
+          for path in urls:
+              with urllib.request.urlopen('http://127.0.0.1:8765'+path, timeout=10) as response:
+                  if response.status != 200: raise SystemExit(f'{path}: {response.status}')
+          print(f'HTTP smoke: {len(urls)}/{len(urls)} returned 200')
+          PY
+      - name: Commit refined verified content
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html treatments.html about.html contact.html locations.html
+          git add index.html treatments.html about.html
           git diff --cached --quiet && exit 0
-          git commit -m "feat: align site with official Silwadi services and values [skip ci]"
+          git commit -m "refine: keep official content patient-facing [skip ci]"
           git push origin HEAD:patch-14-official-service-alignment
