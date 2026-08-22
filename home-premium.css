@@ -2,7 +2,7 @@
    Homepage-only visual system. Shared clinical pages remain on styles.css. */
 
 .home-brand-logo{
-  width:154px;
+  width:112px;
   height:88px;
   display:flex;
   align-items:center;
@@ -202,7 +202,7 @@
 }
 .home-patient-nav a:first-child{border-left:1px solid var(--line)}
 .home-patient-nav a:hover{background:#f6fafa}
-.home-patient-nav small{color:#6c858d;font-size:10px;font-weight:800;letter-spacing:.08em}
+.home-patient-nav small{color:#526a73;font-size:10px;font-weight:800;letter-spacing:.08em}
 .home-patient-nav strong{color:#073443;font-size:13px;font-weight:700}
 .home-patient-nav b{color:#0d7c90;font-size:18px;font-weight:400}
 
@@ -272,10 +272,12 @@
 .home-service-feature__urgent span{color:#5d737b;font-size:11px}
 .home-service-feature__urgent a{display:inline-flex;align-items:center;min-height:48px;color:#0d7c90;font-size:11px;font-weight:750}
 
+#legacy{padding:0}
 .home-legacy-mark{
-  padding:104px 0!important;
-  background:#f2f6f6!important;
-  border-color:#e7eeee!important;
+  padding:104px 0;
+  background:#f2f6f6;
+  border-top:1px solid #e7eeee;
+  border-bottom:1px solid #e7eeee;
 }
 .home-legacy-mark__inner{
   display:grid;
@@ -442,7 +444,7 @@
 
 @media(max-width:840px){
   .header-inner{height:82px}
-  .home-brand-logo{width:128px;height:74px}
+  .home-brand-logo{width:82px;height:74px}
   .home-brand-hero{background:#052a36}
   .home-brand-hero::before{display:none}
   .home-brand-hero__inner{grid-template-columns:1fr;min-height:0}
@@ -473,7 +475,7 @@
 @media(max-width:720px){
   .container{width:min(var(--max),calc(100% - 32px))}
   .utility-strip__right span{display:none}
-  .home-brand-logo{width:112px;height:66px}
+  .home-brand-logo{width:74px;height:66px}
   .header-inner{height:74px}
   .home-brand-hero__copy{padding:55px 0 42px}
   .home-brand-hero__kicker{font-size:10px;margin-bottom:18px}
