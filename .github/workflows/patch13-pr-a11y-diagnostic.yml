@@ -11,33 +11,40 @@ permissions:
 jobs:
   diagnose:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Diagnose implant mobile contrast
+      - name: Diagnose remaining mobile contrast failures
         shell: bash
         run: |
           set -euo pipefail
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
           sleep 2
           CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)
-          timeout 120s npx --yes lighthouse@latest 'http://127.0.0.1:8765/treatments/dental-implants.html' \
-            --output=json --output-path=/tmp/lighthouse.json \
-            --chrome-path="$CHROME" \
-            --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
-            --only-categories=accessibility --quiet
+          for spec in 'treatments:/treatments.html' 'locations:/locations.html' 'contact:/contact.html'; do
+            slug="${spec%%:*}"
+            path="${spec#*:}"
+            timeout 120s npx --yes lighthouse@latest "http://127.0.0.1:8765${path}" \
+              --output=json --output-path="/tmp/${slug}.json" \
+              --chrome-path="$CHROME" \
+              --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+              --only-categories=accessibility --quiet
+          done
           node - <<'NODE'
           const fs=require('fs');
-          const d=JSON.parse(fs.readFileSync('/tmp/lighthouse.json','utf8'));
-          for (const id of ['color-contrast','target-size']) {
-            const a=d.audits[id];
-            console.log(`PATCH13_DIAG ${id} score=${a?.score} mode=${a?.scoreDisplayMode}`);
-            for (const item of a?.details?.items || []) {
-              const n=item.node || item.tapTarget || {};
-              console.log('PATCH13_DIAG_ITEM '+JSON.stringify({id,selector:n.selector,snippet:n.snippet,label:n.nodeLabel,explanation:n.explanation}));
+          for (const slug of ['treatments','locations','contact']) {
+            const d=JSON.parse(fs.readFileSync(`/tmp/${slug}.json`,'utf8'));
+            console.log(`PATCH13_PAGE ${slug} accessibility=${Math.round(d.categories.accessibility.score*100)}`);
+            for (const id of ['color-contrast','target-size']) {
+              const a=d.audits[id];
+              console.log(`PATCH13_DIAG ${slug} ${id} score=${a?.score} mode=${a?.scoreDisplayMode}`);
+              for (const item of a?.details?.items || []) {
+                const n=item.node || item.tapTarget || {};
+                console.log('PATCH13_DIAG_ITEM '+JSON.stringify({slug,id,selector:n.selector,snippet:n.snippet,label:n.nodeLabel,explanation:n.explanation}));
+              }
             }
           }
           NODE
