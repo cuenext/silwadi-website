@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
 permissions:
-  contents: write
+  contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -17,48 +17,6 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Apply verified homepage fixes
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          index = Path('index.html')
-          html = index.read_text(encoding='utf-8')
-          html = html.replace('src="assets/silwadi-logo-original.jpeg"', 'src="assets/silwadi-logo-official.png"')
-          html = html.replace('home-brand-hero__copy reveal', 'home-brand-hero__copy')
-          html = html.replace('home-brand-hero__visual reveal', 'home-brand-hero__visual')
-          html = html.replace(
-              '<section class="section section--quiet home-legacy-mark" id="legacy">\n      <div class="container home-legacy-mark__inner">',
-              '<section class="section section--quiet" id="legacy">\n      <div class="home-legacy-mark">\n        <div class="container home-legacy-mark__inner">'
-          )
-          html = html.replace(
-              '      </div>\n    </section>\n\n    <section class="section home-team-editorial" id="doctors">',
-              '        </div>\n      </div>\n    </section>\n\n    <section class="section home-team-editorial" id="doctors">',
-              1
-          )
-          index.write_text(html, encoding='utf-8')
-
-          css_path = Path('home-premium.css')
-          css = css_path.read_text(encoding='utf-8')
-          css = css.replace('.home-patient-nav small{color:#6c858d;', '.home-patient-nav small{color:#526a73;')
-          css = css.replace(
-              '.home-legacy-mark{\n  padding:104px 0!important;\n  background:#f2f6f6!important;\n  border-color:#e7eeee!important;\n}',
-              '#legacy{padding:0}\n.home-legacy-mark{\n  padding:104px 0;\n  background:#f2f6f6;\n  border-top:1px solid #e7eeee;\n  border-bottom:1px solid #e7eeee;\n}'
-          )
-          css = css.replace('.home-brand-logo{\n  width:154px;\n  height:88px;', '.home-brand-logo{\n  width:112px;\n  height:88px;')
-          css = css.replace('  .home-brand-logo{width:128px;height:74px}', '  .home-brand-logo{width:82px;height:74px}')
-          css = css.replace('  .home-brand-logo{width:112px;height:66px}', '  .home-brand-logo{width:74px;height:66px}')
-          css_path.write_text(css, encoding='utf-8')
-          PY
-      - name: Commit applied fixes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html home-premium.css
-          if ! git diff --cached --quiet; then
-            git commit -m "fix: polish Patch 15 homepage release [skip ci]"
-            git push origin HEAD:patch-15-homepage-redesign
-          fi
       - name: Install test-only dependency
         run: python -m pip install --disable-pip-version-check pillow
       - name: Full regression suite
@@ -164,10 +122,9 @@ jobs:
           CHROME="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --window-size=1440,1100 --screenshot=/tmp/home-desktop.png http://127.0.0.1:8765/
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --window-size=390,844 --screenshot=/tmp/home-mobile.png http://127.0.0.1:8765/
-          file /tmp/home-desktop.png /tmp/home-mobile.png
       - uses: actions/upload-artifact@v4
         with:
-          name: patch15-home-screenshots
+          name: patch15-home-screenshots-final
           path: |
             /tmp/home-desktop.png
             /tmp/home-mobile.png
