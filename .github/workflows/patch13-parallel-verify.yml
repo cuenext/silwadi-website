@@ -1,0 +1,263 @@
+name: Patch 13 Parallel Verification
+
+on:
+  push:
+    branches:
+      - patch-13-verification-clean
+
+permissions:
+  contents: write
+
+jobs:
+  regression:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-13-verification-clean
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --disable-pip-version-check pillow
+      - name: Full regression and static checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p qa-meta
+          python -m unittest discover -s tests -p 'test_*.py' -v 2>&1 | tee qa-meta/tests.txt
+          node --check app.js
+          echo 'JavaScript syntax: PASS' > qa-meta/js.txt
+          python tools/seo_launch_audit.py | tee qa-meta/seo.txt
+          python - <<'PY' | tee qa-meta/static.txt
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          import json, re
+          root = Path('.').resolve()
+          html_files = sorted(root.rglob('*.html'))
+          refs = 0
+          broken = []
+          for page in html_files:
+              text = page.read_text(encoding='utf-8')
+              for _, value in re.findall(r'\b(href|src)=["\']([^"\']+)["\']', text, re.I):
+                  if value.startswith(('#','mailto:','tel:','data:','javascript:','http://','https://','//')):
+                      continue
+                  clean = urlsplit(value).path
+                  if not clean:
+                      continue
+                  refs += 1
+                  target = (page.parent / clean).resolve()
+                  if clean.endswith('/'):
+                      target /= 'index.html'
+                  if not target.exists():
+                      broken.append(f'{page.relative_to(root)} -> {value}')
+          if broken:
+              print('\n'.join(broken)); raise SystemExit(1)
+          print(f'Internal references: {refs} local references, 0 broken')
+          pattern = re.compile(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', re.I|re.S)
+          blocks = 0
+          for page in html_files:
+              for raw in pattern.findall(page.read_text(encoding='utf-8')):
+                  blocks += 1; json.loads(raw)
+          print(f'JSON-LD: {blocks} blocks, 0 errors')
+          PY
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+          python - <<'PY' | tee qa-meta/http.txt
+          import urllib.request, xml.etree.ElementTree as ET
+          from urllib.parse import urlsplit
+          ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          tree=ET.parse('sitemap.xml')
+          urls=[]
+          for loc in tree.findall('.//s:loc',ns):
+              path=urlsplit(loc.text).path
+              urls.append('/' if path=='/' else path)
+          urls += ['/robots.txt','/sitemap.xml','/favicon.svg','/styles.css','/app.js']
+          for path in urls:
+              with urllib.request.urlopen('http://127.0.0.1:8765'+path,timeout=10) as r:
+                  if r.status != 200: raise SystemExit(f'{path}: {r.status}')
+          print(f'HTTP smoke: {len(urls)}/{len(urls)} returned 200')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: patch13-regression
+          path: qa-meta
+          if-no-files-found: error
+
+  lighthouse-mobile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-13-verification-clean
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Start site and run mobile matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+          CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)
+          mkdir -p lh-mobile
+          pages=('home|/' 'doctors|/doctors.html' 'munir-profile|/doctors/dr-munir-silwadi.html' 'treatments|/treatments.html' 'implants|/treatments/dental-implants.html' 'locations|/locations.html' 'contact|/contact.html')
+          for item in "${pages[@]}"; do
+            name="${item%%|*}"; path="${item#*|}"
+            echo "Mobile Lighthouse: $name"
+            timeout 120s npx --yes lighthouse@latest "http://127.0.0.1:8765${path}" \
+              --output=json --output-path="lh-mobile/${name}.json" \
+              --chrome-path="$CHROME" \
+              --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+              --only-categories=performance,accessibility,best-practices,seo --quiet
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: patch13-lighthouse-mobile
+          path: lh-mobile
+          if-no-files-found: error
+
+  lighthouse-desktop:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-13-verification-clean
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Start site and run desktop matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+          CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)
+          mkdir -p lh-desktop
+          pages=('home|/' 'doctors|/doctors.html' 'munir-profile|/doctors/dr-munir-silwadi.html' 'treatments|/treatments.html' 'implants|/treatments/dental-implants.html' 'locations|/locations.html' 'contact|/contact.html')
+          for item in "${pages[@]}"; do
+            name="${item%%|*}"; path="${item#*|}"
+            echo "Desktop Lighthouse: $name"
+            timeout 120s npx --yes lighthouse@latest "http://127.0.0.1:8765${path}" \
+              --preset=desktop --output=json --output-path="lh-desktop/${name}.json" \
+              --chrome-path="$CHROME" \
+              --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+              --only-categories=performance,accessibility,best-practices,seo --quiet
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: patch13-lighthouse-desktop
+          path: lh-desktop
+          if-no-files-found: error
+
+  report:
+    if: always() && github.actor != 'github-actions[bot]'
+    needs: [regression, lighthouse-mobile, lighthouse-desktop]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-13-verification-clean
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          path: /tmp/patch13-artifacts
+      - name: Build release report
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, re
+          from pathlib import Path
+          from statistics import mean
+
+          root=Path('/tmp/patch13-artifacts')
+          reg=root/'patch13-regression'
+          mobile=root/'patch13-lighthouse-mobile'
+          desktop=root/'patch13-lighthouse-desktop'
+          pages=[('home','Home'),('doctors','Doctors'),('munir-profile','Dr. Munir profile'),('treatments','Treatments'),('implants','Dental Implants'),('locations','Locations'),('contact','Contact')]
+          rows=[]; failed_known=[]; failed_a11y=[]
+          vals={m:{k:[] for k in ('performance','accessibility','best-practices','seo')} for m in ('mobile','desktop')}
+          missing=[]
+          def pct(v): return round((v or 0)*100)
+          def metric(a,k): return a.get(k,{}).get('displayValue') or '—'
+          for mode, folder in (('mobile',mobile),('desktop',desktop)):
+              for slug,label in pages:
+                  f=folder/f'{slug}.json'
+                  if not f.exists():
+                      missing.append(f'{mode}:{slug}'); continue
+                  d=json.loads(f.read_text()); c=d['categories']; a=d['audits']
+                  scores={k:pct(c[k]['score']) for k in vals[mode]}
+                  for k,v in scores.items(): vals[mode][k].append(v)
+                  rows.append((label,mode.title(),scores['performance'],scores['accessibility'],scores['best-practices'],scores['seo'],metric(a,'first-contentful-paint'),metric(a,'largest-contentful-paint'),metric(a,'total-blocking-time'),metric(a,'cumulative-layout-shift')))
+                  for aid in ('color-contrast','target-size'):
+                      audit=a.get(aid)
+                      if audit and audit.get('scoreDisplayMode')!='notApplicable' and audit.get('score') not in (1,None): failed_known.append(f'{label} {mode}: {aid}')
+                  for ref in c['accessibility'].get('auditRefs',[]):
+                      audit=a.get(ref['id'],{}); score=audit.get('score')
+                      if isinstance(score,(int,float)) and score<1 and audit.get('scoreDisplayMode') not in {'notApplicable','manual','informative'}:
+                          failed_a11y.append((label,mode.title(),ref['id'],audit.get('title',ref['id'])))
+
+          tests=(reg/'tests.txt').read_text(errors='replace') if (reg/'tests.txt').exists() else ''
+          ran=re.search(r'Ran (\d+) tests?',tests)
+          test_count=ran.group(1) if ran else 'unknown'
+          regression_ok=bool(ran and 'OK' in tests)
+          js=(reg/'js.txt').read_text().strip() if (reg/'js.txt').exists() else 'JavaScript syntax: MISSING'
+          seo=(reg/'seo.txt').read_text().strip().splitlines()[-1] if (reg/'seo.txt').exists() else 'SEO audit: MISSING'
+          static=(reg/'static.txt').read_text().strip().splitlines() if (reg/'static.txt').exists() else []
+          http=(reg/'http.txt').read_text().strip().splitlines()[-1] if (reg/'http.txt').exists() else 'HTTP smoke: MISSING'
+          complete=not missing and all(len(vals[m]['performance'])==7 for m in vals)
+          min_mobile=min(vals['mobile']['performance']) if vals['mobile']['performance'] else 0
+          bp=vals['mobile']['best-practices']+vals['desktop']['best-practices']
+          seo_scores=vals['mobile']['seo']+vals['desktop']['seo']
+          gate=regression_ok and complete and min_mobile>=95 and all(v==100 for v in bp) and all(v==100 for v in seo_scores) and not failed_known
+
+          lines=['# Patch 13 — Lighthouse QA Report','',f'Overall: **{"PASS" if gate else "FAIL"}**','', 'Run date: 2026-08-22','Environment: GitHub Actions Ubuntu runners; regression, mobile Lighthouse and desktop Lighthouse executed in parallel against the same static Patch 13 candidate.','', '## Repository verification','',f'- Full regression suite: **{test_count} tests, {"PASS" if regression_ok else "FAIL"}**',f'- {js}',f'- SEO launch audit: **{seo}**']
+          lines += [f'- {line}' for line in static]
+          lines += [f'- {http}','','## Lighthouse scores','','| Page | Mode | Performance | Accessibility | Best Practices | SEO | FCP | LCP | TBT | CLS |','|---|---|---:|---:|---:|---:|---:|---:|---:|---:|']
+          for r in sorted(rows,key=lambda x:([p[1] for p in pages].index(x[0]),0 if x[1]=='Mobile' else 1)):
+              lines.append('| '+' | '.join(map(str,r))+' |')
+          if missing: lines += ['','Missing Lighthouse outputs: '+', '.join(missing)]
+          lines += ['','## Average category scores','']
+          for mode in ('mobile','desktop'):
+              if vals[mode]['performance']:
+                  lines.append(f"- **{mode.title()}** — Performance {mean(vals[mode]['performance']):.1f}, Accessibility {mean(vals[mode]['accessibility']):.1f}, Best Practices {mean(vals[mode]['best-practices']):.1f}, SEO {mean(vals[mode]['seo']):.1f}.")
+          imp=next((r for r in rows if r[0]=='Dental Implants' and r[1]=='Mobile'),None)
+          lines += ['','## Dental Implants before / after','','- Patch 12 baseline: **Performance 82**, **LCP 5.0 s** (three-run median performance 82; median LCP 4.95 s).']
+          if imp: lines.append(f'- Patch 13: **Performance {imp[2]}**, **LCP {imp[7]}**.')
+          lines += ['','## Confirmed accessibility regressions','']
+          if failed_known: lines += [f'- FAIL — {x}' for x in failed_known]
+          else: lines += ['- `color-contrast`: **no failures in the completed representative matrix**','- `target-size`: **no failures in the completed representative matrix**']
+          lines += ['','## Remaining automated accessibility failures','']
+          if failed_a11y:
+              for item in dict.fromkeys(failed_a11y): lines.append(f'- {item[0]} — {item[1]}: `{item[2]}` — {item[3]}')
+          else: lines.append('No scored automated accessibility failures were reported in the completed representative matrix.')
+          lines += ['','## Release gate','',f'- Minimum mobile Performance: **{min_mobile}** (target ≥95)',f'- Best Practices: **{"PASS" if bp and all(v==100 for v in bp) else "FAIL"}**',f'- SEO: **{"PASS" if seo_scores and all(v==100 for v in seo_scores) else "FAIL"}**',f'- Confirmed contrast/target-size regressions cleared: **{"PASS" if not failed_known and complete else "FAIL"}**','', '> Production Lighthouse must still be rerun against `https://silwadi.ae` after deployment.','']
+          Path('docs/launch/PATCH13-LIGHTHOUSE-QA.md').write_text('\n'.join(lines),encoding='utf-8')
+          print('\n'.join(lines))
+          PY
+      - name: Self-clean verification branch and save report
+        shell: bash
+        run: |
+          rm -f .github/workflows/patch13-parallel-verify.yml
+          rm -f docs/.patch13-red-confirmed docs/.patch13-a11y-red-confirmed
+          find . -type d -name '__pycache__' -prune -exec rm -rf {} + || true
+          find . -type f -name '*.pyc' -delete || true
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'test: record Patch 13 parallel QA'
+          git push origin HEAD:patch-13-verification-clean
+      - name: Enforce release verdict
+        run: grep -q 'Overall: \*\*PASS\*\*' docs/launch/PATCH13-LIGHTHOUSE-QA.md
