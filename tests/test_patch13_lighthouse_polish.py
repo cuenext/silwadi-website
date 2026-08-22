@@ -80,6 +80,17 @@ class PatchThirteenLighthousePolish(unittest.TestCase):
                 selector,
             )
 
+    def test_secondary_page_indices_use_accessible_neutral(self):
+        treatment_css = read('treatment-pages.css')
+        contact_css = read('contact-pages.css')
+        self.assertIn('color:var(--muted)', rule(treatment_css, '.treatment-group__intro span'))
+        self.assertIn('color:var(--muted)', rule(contact_css, '.contact-channel__index'))
+
+    def test_location_preview_link_color_does_not_override_buttons(self):
+        css = read('styles.css')
+        self.assertNotRegex(css, r'(?:^|\})\.location-actions a\{')
+        self.assertIn('.locations-preview .location-actions a{color:var(--teal)', css)
+
     def test_footer_links_meet_minimum_target_size(self):
         css = read('styles.css')
         body = rule(css, '.footer-grid a')
