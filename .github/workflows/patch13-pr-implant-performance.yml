@@ -1,0 +1,48 @@
+name: Patch 13 Implant Performance Repeat
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  implant-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run three mobile Lighthouse samples
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+          CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)
+          for i in 1 2 3; do
+            timeout 120s npx --yes lighthouse@latest 'http://127.0.0.1:8765/treatments/dental-implants.html' \
+              --output=json --output-path="/tmp/implant-${i}.json" \
+              --chrome-path="$CHROME" \
+              --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+              --only-categories=performance,accessibility,best-practices,seo --quiet
+          done
+          node - <<'NODE'
+          const fs=require('fs');
+          const rows=[];
+          for (let i=1;i<=3;i++) {
+            const d=JSON.parse(fs.readFileSync(`/tmp/implant-${i}.json`,'utf8'));
+            const c=d.categories,a=d.audits;
+            rows.push({run:i,performance:Math.round(c.performance.score*100),accessibility:Math.round(c.accessibility.score*100),bestPractices:Math.round(c['best-practices'].score*100),seo:Math.round(c.seo.score*100),lcpMs:a['largest-contentful-paint'].numericValue,lcp:a['largest-contentful-paint'].displayValue,tbt:a['total-blocking-time'].displayValue,cls:a['cumulative-layout-shift'].displayValue});
+          }
+          const median=xs=>xs.slice().sort((a,b)=>a-b)[1];
+          for (const row of rows) console.log('PATCH13_IMPLANT_RUN '+JSON.stringify(row));
+          const summary={medianPerformance:median(rows.map(r=>r.performance)),medianLcpMs:median(rows.map(r=>r.lcpMs)),baselinePerformance:82,baselineLcpMs:4950};
+          console.log('PATCH13_IMPLANT_MEDIAN '+JSON.stringify(summary));
+          if (rows.some(r=>r.accessibility!==100 || r.bestPractices!==100 || r.seo!==100)) throw new Error('Deterministic Lighthouse categories regressed in implant repeat');
+          if (summary.medianLcpMs >= summary.baselineLcpMs) throw new Error('Implant LCP did not improve over Patch 12 baseline');
+          NODE
