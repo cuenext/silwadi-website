@@ -4,6 +4,10 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Python generated files
+__pycache__/
+*.py[cod]
+
 # Temporary files
 *.tmp
 *.log
