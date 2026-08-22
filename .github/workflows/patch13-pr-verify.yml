@@ -1,0 +1,159 @@
+name: Patch 13 PR Verification
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test-only image dependency
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Full regression suite
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: JavaScript syntax
+        run: node --check app.js
+      - name: SEO launch audit
+        run: python tools/seo_launch_audit.py
+      - name: Internal references and JSON-LD
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          import json, re
+          root = Path('.').resolve()
+          html_files = sorted(root.rglob('*.html'))
+          refs = 0
+          broken = []
+          pattern = re.compile(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', re.I|re.S)
+          blocks = 0
+          for page in html_files:
+              text = page.read_text(encoding='utf-8')
+              for _, value in re.findall(r'\b(href|src)=["\']([^"\']+)["\']', text, re.I):
+                  if value.startswith(('#','mailto:','tel:','data:','javascript:','http://','https://','//')):
+                      continue
+                  clean = urlsplit(value).path
+                  if not clean:
+                      continue
+                  refs += 1
+                  target = (page.parent / clean).resolve()
+                  if clean.endswith('/'):
+                      target /= 'index.html'
+                  if not target.exists():
+                      broken.append(f'{page.relative_to(root)} -> {value}')
+              for raw in pattern.findall(text):
+                  blocks += 1
+                  json.loads(raw)
+          if broken:
+              print('\n'.join(broken))
+              raise SystemExit(1)
+          print(f'Internal references: {refs} local references, 0 broken')
+          print(f'JSON-LD: {blocks} blocks, 0 errors')
+          PY
+      - name: HTTP smoke
+        shell: bash
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+          python - <<'PY'
+          import urllib.request, xml.etree.ElementTree as ET
+          from urllib.parse import urlsplit
+          ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          tree=ET.parse('sitemap.xml')
+          urls=[]
+          for loc in tree.findall('.//s:loc',ns):
+              path=urlsplit(loc.text).path
+              urls.append('/' if path=='/' else path)
+          urls += ['/robots.txt','/sitemap.xml','/favicon.svg','/styles.css','/app.js']
+          for path in urls:
+              with urllib.request.urlopen('http://127.0.0.1:8765'+path, timeout=10) as response:
+                  if response.status != 200:
+                      raise SystemExit(f'{path}: {response.status}')
+          print(f'HTTP smoke: {len(urls)}/{len(urls)} returned 200')
+          PY
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      max-parallel: 7
+      matrix:
+        mode: [mobile, desktop]
+        include:
+          - slug: home
+            path: /
+          - slug: doctors
+            path: /doctors.html
+          - slug: munir-profile
+            path: /doctors/dr-munir-silwadi.html
+          - slug: treatments
+            path: /treatments.html
+          - slug: implants
+            path: /treatments/dental-implants.html
+          - slug: locations
+            path: /locations.html
+          - slug: contact
+            path: /contact.html
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Start static site
+        shell: bash
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+      - name: Lighthouse ${{ matrix.mode }} — ${{ matrix.slug }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          CHROME=$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)
+          PRESET=''
+          if [ '${{ matrix.mode }}' = 'desktop' ]; then PRESET='--preset=desktop'; fi
+          timeout 120s npx --yes lighthouse@latest 'http://127.0.0.1:8765${{ matrix.path }}' \
+            $PRESET \
+            --output=json --output-path=/tmp/lighthouse.json \
+            --chrome-path="$CHROME" \
+            --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' \
+            --only-categories=performance,accessibility,best-practices,seo --quiet
+          node - <<'NODE'
+          const fs = require('fs');
+          const d = JSON.parse(fs.readFileSync('/tmp/lighthouse.json','utf8'));
+          const c = d.categories, a = d.audits;
+          const score = k => Math.round(c[k].score * 100);
+          const row = {
+            mode: '${{ matrix.mode }}', page: '${{ matrix.slug }}',
+            performance: score('performance'), accessibility: score('accessibility'),
+            bestPractices: score('best-practices'), seo: score('seo'),
+            fcp: a['first-contentful-paint']?.displayValue,
+            lcp: a['largest-contentful-paint']?.displayValue,
+            tbt: a['total-blocking-time']?.displayValue,
+            cls: a['cumulative-layout-shift']?.displayValue,
+            colorContrast: a['color-contrast']?.score,
+            targetSize: a['target-size']?.score
+          };
+          console.log('PATCH13_LIGHTHOUSE ' + JSON.stringify(row));
+          const targetApplicable = a['target-size'] && a['target-size'].scoreDisplayMode !== 'notApplicable';
+          if (row.performance < 95) throw new Error(`Performance ${row.performance} < 95`);
+          if (row.accessibility < 100) throw new Error(`Accessibility ${row.accessibility} < 100`);
+          if (row.bestPractices !== 100) throw new Error(`Best Practices ${row.bestPractices} != 100`);
+          if (row.seo !== 100) throw new Error(`SEO ${row.seo} != 100`);
+          if (row.colorContrast !== 1) throw new Error('color-contrast audit still failing');
+          if (targetApplicable && row.targetSize !== 1) throw new Error('target-size audit still failing');
+          NODE
