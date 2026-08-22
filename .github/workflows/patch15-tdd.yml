@@ -1,0 +1,16 @@
+name: Patch 15 TDD
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  patch15:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run Patch 15 contract
+        run: python -m unittest tests.test_patch15_homepage_redesign -v
