@@ -24,22 +24,35 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Full regression suite
+      - id: tests
+        name: Full regression suite
+        continue-on-error: true
         shell: bash
         run: |
           set -o pipefail
           python -m unittest discover -s tests -p '*.py' -v 2>&1 | tee /tmp/patch12-tests.log
 
-      - name: JavaScript syntax
-        run: node --check app.js
+      - id: js
+        name: JavaScript syntax
+        continue-on-error: true
+        shell: bash
+        run: node --check app.js 2>&1 | tee /tmp/patch12-js.log
 
-      - name: SEO launch audit
-        run: python tools/seo_launch_audit.py | tee /tmp/patch12-seo-audit.log
-
-      - name: Internal links and assets
+      - id: seo
+        name: SEO launch audit
+        continue-on-error: true
         shell: bash
         run: |
-          python - <<'PY' | tee /tmp/patch12-links.log
+          set -o pipefail
+          python tools/seo_launch_audit.py 2>&1 | tee /tmp/patch12-seo-audit.log
+
+      - id: links
+        name: Internal links and assets
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          python - <<'PY' 2>&1 | tee /tmp/patch12-links.log
           from html.parser import HTMLParser
           from pathlib import Path
           from urllib.parse import urlsplit, unquote
@@ -87,10 +100,13 @@ jobs:
               raise SystemExit(1)
           PY
 
-      - name: JSON-LD parse audit
+      - id: jsonld
+        name: JSON-LD parse audit
+        continue-on-error: true
         shell: bash
         run: |
-          python - <<'PY' | tee /tmp/patch12-jsonld.log
+          set -o pipefail
+          python - <<'PY' 2>&1 | tee /tmp/patch12-jsonld.log
           from pathlib import Path
           import json
           import re
@@ -114,14 +130,17 @@ jobs:
               raise SystemExit(1)
           PY
 
-      - name: Local HTTP 200 smoke
+      - id: http
+        name: Local HTTP 200 smoke
+        continue-on-error: true
         shell: bash
         run: |
+          set -o pipefail
           python -m http.server 8765 --bind 127.0.0.1 >/tmp/patch12-http-server.log 2>&1 &
           server_pid=$!
           trap 'kill $server_pid 2>/dev/null || true' EXIT
           sleep 1
-          python - <<'PY' | tee /tmp/patch12-http.log
+          python - <<'PY' 2>&1 | tee /tmp/patch12-http.log
           from urllib.request import urlopen
           import xml.etree.ElementTree as ET
 
@@ -129,17 +148,15 @@ jobs:
           root = ET.parse('sitemap.xml').getroot()
           paths = []
           for loc in root.findall('sm:url/sm:loc', ns):
-              url = loc.text
-              path = url.removeprefix('https://silwadi.ae') or '/'
+              path = loc.text.removeprefix('https://silwadi.ae') or '/'
               paths.append(path)
           paths += ['/robots.txt', '/sitemap.xml', '/app.js', '/styles.css', '/favicon.svg']
           if len(paths) != 29:
               raise SystemExit(f'expected 29 smoke resources, got {len(paths)}')
           failures = []
           for path in paths:
-              target = f'http://127.0.0.1:8765{path}'
               try:
-                  with urlopen(target, timeout=5) as response:
+                  with urlopen(f'http://127.0.0.1:8765{path}', timeout=5) as response:
                       code = response.status
               except Exception as exc:
                   failures.append(f'{path}: {exc}')
@@ -153,29 +170,42 @@ jobs:
               raise SystemExit(1)
           PY
 
-      - name: Write verified QA report and remove temporary workflow
+      - name: Record verification result and clean workflow
+        if: always()
         shell: bash
+        env:
+          TESTS: ${{ steps.tests.outcome }}
+          JS: ${{ steps.js.outcome }}
+          SEO: ${{ steps.seo.outcome }}
+          LINKS: ${{ steps.links.outcome }}
+          JSONLD: ${{ steps.jsonld.outcome }}
+          HTTP: ${{ steps.http.outcome }}
         run: |
-          test_count=$(sed -nE 's/^Ran ([0-9]+) tests.*/\1/p' /tmp/patch12-tests.log | tail -1)
+          overall=PASS
+          for outcome in "$TESTS" "$JS" "$SEO" "$LINKS" "$JSONLD" "$HTTP"; do
+            if [ "$outcome" != "success" ]; then overall=FAIL; fi
+          done
+          test_count=$(sed -nE 's/^Ran ([0-9]+) tests.*/\1/p' /tmp/patch12-tests.log 2>/dev/null | tail -1)
           test_count=${test_count:-unknown}
-          link_summary=$(tail -1 /tmp/patch12-links.log)
-          jsonld_summary=$(tail -1 /tmp/patch12-jsonld.log)
-          http_summary=$(tail -1 /tmp/patch12-http.log)
-          seo_summary=$(head -1 /tmp/patch12-seo-audit.log)
+          seo_summary=$(head -1 /tmp/patch12-seo-audit.log 2>/dev/null || true)
+          link_summary=$(tail -1 /tmp/patch12-links.log 2>/dev/null || true)
+          jsonld_summary=$(tail -1 /tmp/patch12-jsonld.log 2>/dev/null || true)
+          http_summary=$(tail -1 /tmp/patch12-http.log 2>/dev/null || true)
           cat > docs/launch/PATCH12-QA-REPORT.md <<EOF
           # Patch 12 — Final SEO QA Report
 
           Verified: 2026-08-22
+          Overall: ${overall}
           Branch: \`patch-12-final-seo-launch-clean\`
 
-          ## Automated verification
+          ## Gate outcomes
 
-          - Full regression suite: PASS — ${test_count} tests, 0 failures.
-          - JavaScript syntax: PASS — \`node --check app.js\`.
-          - SEO launch audit: PASS — ${seo_summary}.
-          - Internal links/assets: PASS — ${link_summary}.
-          - JSON-LD: PASS — ${jsonld_summary}.
-          - Local HTTP smoke: PASS — ${http_summary}.
+          - Full regression suite: ${TESTS} — ${test_count} tests discovered.
+          - JavaScript syntax: ${JS} — \`node --check app.js\`.
+          - SEO launch audit: ${SEO} — ${seo_summary:-no summary}.
+          - Internal links/assets: ${LINKS} — ${link_summary:-no summary}.
+          - JSON-LD: ${JSONLD} — ${jsonld_summary:-no summary}.
+          - Local HTTP smoke: ${HTTP} — ${http_summary:-no summary}.
           - Patch 12 RED proof was recorded before implementation.
 
           ## Launch package
@@ -183,20 +213,21 @@ jobs:
           - Primary canonical origin: \`https://silwadi.ae\`.
           - 24 canonical URLs in \`sitemap.xml\`, each with significant-update \`lastmod\` of \`2026-08-22\`.
           - Stable 64×64 SVG favicon and explicit index/follow/max-image-preview policy across all canonical pages.
-          - Legacy migration map: \`docs/launch/legacy-redirect-map.csv\` with permanent one-hop 301 targets for the known indexed legacy pages and all 12 legacy doctor-detail URLs.
+          - Legacy migration map: \`docs/launch/legacy-redirect-map.csv\`.
           - Operational handoff: \`docs/launch/SEO-LAUNCH-CHECKLIST.md\`.
 
           ## Deployment-only verification still required
 
-          The repository can verify the new static site, but it cannot prove server-side redirects, DNS/TLS cutover, Google Search Console, Bing Webmaster Tools, Google Business Profile, or public production HTTP behavior before those systems are configured. Follow the launch checklist after deployment and keep the legacy domain/SSL active for redirects.
+          The repository cannot prove server-side redirects, DNS/TLS cutover, Google Search Console, Bing Webmaster Tools, Google Business Profile, or public production behavior before those systems are configured. Keep the legacy domain/SSL active for redirects and follow the launch checklist after deployment.
 
           ## Lighthouse
 
           Lighthouse was not run for Patch 12. No Lighthouse score is claimed.
           EOF
-          rm .github/workflows/patch12-verify.yml
+          rm -f .github/workflows/patch12-verify.yml
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add docs/launch/PATCH12-QA-REPORT.md .github/workflows/patch12-verify.yml
-          git commit -m 'test: verify Patch 12 launch package'
+          git commit -m "test: record Patch 12 verification ${overall}"
           git push origin HEAD:patch-12-final-seo-launch-clean
+          if [ "$overall" != "PASS" ]; then exit 1; fi
