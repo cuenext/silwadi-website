@@ -61,6 +61,7 @@ class PatchThirteenLighthousePolish(unittest.TestCase):
     def test_light_surface_neutral_text_meets_wcag_aa(self):
         css = read('styles.css')
         muted = re.search(r'--muted\s*:\s*(#[0-9a-fA-F]{6})', css).group(1)
+        self.assertGreaterEqual(contrast(muted, '#f5f8f8'), 4.5)
         self.assertGreaterEqual(contrast(muted, '#f7fafb'), 4.5)
         self.assertGreaterEqual(contrast(muted, '#f8fafb'), 4.5)
         checks = [
