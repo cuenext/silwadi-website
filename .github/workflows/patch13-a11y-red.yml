@@ -1,0 +1,45 @@
+name: Patch 13 A11y RED Proof
+
+on:
+  push:
+    branches:
+      - patch-13-lighthouse-polish
+
+permissions:
+  contents: write
+
+jobs:
+  red:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-13-lighthouse-polish
+          fetch-depth: 0
+      - name: Verify expanded accessibility contract is RED
+        shell: bash
+        run: |
+          set +e
+          python -m unittest \
+            tests.test_patch13_lighthouse_polish.PatchThirteenLighthousePolish.test_light_surface_neutral_text_meets_wcag_aa \
+            tests.test_patch13_lighthouse_polish.PatchThirteenLighthousePolish.test_footer_links_meet_minimum_target_size -v 2>&1 | tee /tmp/patch13-a11y-red.log
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo 'Accessibility contract unexpectedly passed before CSS implementation' >&2
+            exit 1
+          fi
+          grep -q 'FAIL: test_light_surface_neutral_text_meets_wcag_aa' /tmp/patch13-a11y-red.log
+          grep -q 'FAIL: test_footer_links_meet_minimum_target_size' /tmp/patch13-a11y-red.log
+          printf 'Patch 13 expanded a11y RED confirmed on %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" > docs/.patch13-a11y-red-confirmed
+      - name: Save proof and self-clean
+        if: always()
+        shell: bash
+        run: |
+          rm -f .github/workflows/patch13-a11y-red.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/.patch13-a11y-red-confirmed .github/workflows/patch13-a11y-red.yml
+          git commit -m 'test: confirm expanded Patch 13 a11y RED' || true
+          git push origin HEAD:patch-13-lighthouse-polish
