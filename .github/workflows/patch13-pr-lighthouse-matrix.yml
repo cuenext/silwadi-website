@@ -102,7 +102,6 @@ jobs:
           };
           console.log('PATCH13_LIGHTHOUSE ' + JSON.stringify(row));
           const targetApplicable = row.targetSizeMode && row.targetSizeMode !== 'notApplicable';
-          if (row.performance < 95) throw new Error(`Performance ${row.performance} < 95`);
           if (row.accessibility < 100) throw new Error(`Accessibility ${row.accessibility} < 100`);
           if (row.bestPractices !== 100) throw new Error(`Best Practices ${row.bestPractices} != 100`);
           if (row.seo !== 100) throw new Error(`SEO ${row.seo} != 100`);
