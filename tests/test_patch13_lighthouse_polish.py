@@ -88,7 +88,7 @@ class PatchThirteenLighthousePolish(unittest.TestCase):
 
     def test_location_preview_link_color_does_not_override_buttons(self):
         css = read('styles.css')
-        self.assertNotRegex(css, r'\.location-actions a\{[^}]*color:var\(--teal\)')
+        self.assertNotRegex(css, r'(?:^|\})\.location-actions a\{')
         self.assertIn('.locations-preview .location-actions a{color:var(--teal)', css)
 
     def test_footer_links_meet_minimum_target_size(self):
