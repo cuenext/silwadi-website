@@ -1,0 +1,65 @@
+name: Patch 14 Release Verification
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test-only dependency
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Full regression suite
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: JavaScript syntax
+        run: node --check app.js
+      - name: SEO launch audit
+        run: python tools/seo_launch_audit.py
+      - name: Internal references and JSON-LD
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from urllib.parse import urlsplit
+          import json, re
+          root=Path('.').resolve(); refs=0; broken=[]; blocks=0
+          pattern=re.compile(r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',re.I|re.S)
+          for page in sorted(root.rglob('*.html')):
+              text=page.read_text(encoding='utf-8')
+              for _,value in re.findall(r'\b(href|src)=["\']([^"\']+)["\']',text,re.I):
+                  if value.startswith(('#','mailto:','tel:','data:','javascript:','http://','https://','//')): continue
+                  clean=urlsplit(value).path
+                  if not clean: continue
+                  refs+=1; target=(page.parent/clean).resolve()
+                  if clean.endswith('/'): target/='index.html'
+                  if not target.exists(): broken.append(f'{page.relative_to(root)} -> {value}')
+              for raw in pattern.findall(text): blocks+=1; json.loads(raw)
+          if broken: print('\n'.join(broken)); raise SystemExit(1)
+          print(f'Internal references: {refs} local references, 0 broken')
+          print(f'JSON-LD: {blocks} blocks, 0 errors')
+          PY
+      - name: HTTP smoke
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+          python - <<'PY'
+          import urllib.request, xml.etree.ElementTree as ET
+          from urllib.parse import urlsplit
+          ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          tree=ET.parse('sitemap.xml'); urls=[]
+          for loc in tree.findall('.//s:loc',ns):
+              path=urlsplit(loc.text).path; urls.append('/' if path=='/' else path)
+          urls += ['/robots.txt','/sitemap.xml','/favicon.svg','/styles.css','/app.js']
+          for path in urls:
+              with urllib.request.urlopen('http://127.0.0.1:8765'+path,timeout=10) as response:
+                  if response.status != 200: raise SystemExit(f'{path}: {response.status}')
+          print(f'HTTP smoke: {len(urls)}/{len(urls)} returned 200')
+          PY
