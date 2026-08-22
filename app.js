@@ -3,9 +3,17 @@ const menuButton = document.querySelector('[data-menu-button]');
 const mobileNav = document.querySelector('[data-mobile-nav]');
 
 if (header) {
-  window.addEventListener('scroll', () => {
+  let headerFramePending = false;
+  const syncHeaderState = () => {
     header.classList.toggle('scrolled', window.scrollY > 12);
+    headerFramePending = false;
+  };
+  window.addEventListener('scroll', () => {
+    if (headerFramePending) return;
+    headerFramePending = true;
+    requestAnimationFrame(syncHeaderState);
   }, { passive: true });
+  syncHeaderState();
 }
 
 function closeMenu() {
@@ -30,7 +38,10 @@ document.addEventListener('keydown', event => {
 });
 
 const reveals = document.querySelectorAll('.reveal');
-if ('IntersectionObserver' in window) {
+const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+if (reduceMotion || !('IntersectionObserver' in window)) {
+  reveals.forEach(item => item.classList.add('visible'));
+} else {
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -40,8 +51,6 @@ if ('IntersectionObserver' in window) {
     });
   }, { threshold: 0.08 });
   reveals.forEach(item => observer.observe(item));
-} else {
-  reveals.forEach(item => item.classList.add('visible'));
 }
 
 
