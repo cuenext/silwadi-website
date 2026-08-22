@@ -17,12 +17,14 @@ class PatchFifteenHomepageRedesign(unittest.TestCase):
         self.assertNotIn('href="home-trust.css"', self.home)
         self.assertTrue(self.css_path.exists())
 
-    def test_official_logo_is_used_without_legacy_crop_hack(self):
-        self.assertIn('assets/silwadi-logo-original.jpeg', self.home)
+    def test_uploaded_official_logo_is_used_without_legacy_crop_hack(self):
+        self.assertTrue((ROOT / "assets" / "silwadi-logo-official.png").exists())
+        self.assertIn('src="assets/silwadi-logo-official.png"', self.home)
         self.assertNotIn('class="brand-crop"', self.home)
+        self.assertNotIn('<img src="assets/silwadi-logo-original.jpeg"', self.home)
         self.assertRegex(
             self.home,
-            r'<img[^>]+src="assets/silwadi-logo-original\.jpeg"[^>]+alt="Silwadi Dental Center"[^>]+width="[0-9]+"[^>]+height="[0-9]+"',
+            r'<img[^>]+src="assets/silwadi-logo-official\.png"[^>]+alt="Silwadi Dental Center"[^>]+width="[0-9]+"[^>]+height="[0-9]+"',
         )
 
     def test_old_template_like_home_patterns_are_removed(self):
@@ -65,19 +67,22 @@ class PatchFifteenHomepageRedesign(unittest.TestCase):
             self.assertIn(value.lower(), text)
         self.assertNotIn('Founder', self.home)
 
-    def test_hero_portrait_stays_optimized_and_high_priority(self):
+    def test_hero_portrait_stays_optimized_high_priority_and_immediately_visible(self):
         self.assertRegex(
             self.home,
             r'<img[^>]+src="assets/doctors/optimized/dr-munir-silwadi\.webp"[^>]+width="720"[^>]+height="720"[^>]+fetchpriority="high"',
         )
+        self.assertNotIn('home-brand-hero__copy reveal', self.home)
+        self.assertNotIn('home-brand-hero__visual reveal', self.home)
 
-    def test_home_css_has_asymmetric_editorial_layout_and_mobile_composition(self):
+    def test_home_css_has_asymmetric_editorial_layout_mobile_composition_and_safe_nav_contrast(self):
         self.assertIn('.home-brand-hero', self.css)
         self.assertRegex(self.css, r'\.home-brand-hero__inner\s*\{[^}]*grid-template-columns\s*:\s*[^;}]+')
         self.assertIn('.home-service-feature', self.css)
         self.assertIn('.home-team-editorial', self.css)
         self.assertRegex(self.css, r'@media\s*\(max-width\s*:\s*720px\)')
         self.assertIn('min-height:48px', self.css.replace(' ', ''))
+        self.assertIn('.home-patient-nav small{color:#526a73', self.css.replace('\n', ''))
 
 
 if __name__ == '__main__':
