@@ -1,4 +1,4 @@
-name: Patch 13 Apply Muted Fix
+name: Patch 13 Apply Accessibility Fixes
 
 on:
   pull_request:
@@ -17,17 +17,33 @@ jobs:
         with:
           ref: patch-13-verification-clean
           fetch-depth: 0
-      - name: Apply verified quiet-surface contrast fix
+      - name: Apply verified Patch 13 accessibility fixes
         shell: bash
         run: |
           set -euo pipefail
-          if ! grep -q -- '--muted:#60777f;' styles.css; then
-            echo 'Muted fix already applied.'
+          changed=0
+          if grep -q -- '--muted:#60777f;' styles.css; then
+            sed -i 's/--muted:#60777f;/--muted:#5d737b;/' styles.css
+            changed=1
+          fi
+          if grep -qF '.location-actions a{color:var(--teal);font-size:10px;font-weight:750}' styles.css; then
+            sed -i 's/\.location-actions a{color:var(--teal);font-size:10px;font-weight:750}/.locations-preview .location-actions a{color:var(--teal);font-size:10px;font-weight:750}/' styles.css
+            changed=1
+          fi
+          if grep -qF '.treatment-group__intro span{color:#8b9da2;' treatment-pages.css; then
+            sed -i 's/\.treatment-group__intro span{color:#8b9da2;/.treatment-group__intro span{color:var(--muted);/' treatment-pages.css
+            changed=1
+          fi
+          if grep -qF '.contact-channel__index{font-size:9px;color:#8aa0a6;' contact-pages.css; then
+            sed -i 's/\.contact-channel__index{font-size:9px;color:#8aa0a6;/.contact-channel__index{font-size:9px;color:var(--muted);/' contact-pages.css
+            changed=1
+          fi
+          if [ "$changed" -eq 0 ]; then
+            echo 'Patch 13 accessibility fixes already applied.'
             exit 0
           fi
-          sed -i 's/--muted:#60777f;/--muted:#5d737b;/' styles.css
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add styles.css
-          git commit -m 'fix: clear quiet-surface contrast threshold'
+          git add styles.css treatment-pages.css contact-pages.css
+          git commit -m 'fix: clear remaining Lighthouse contrast failures'
           git push origin HEAD:patch-13-verification-clean
