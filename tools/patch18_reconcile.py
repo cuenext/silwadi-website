@@ -80,9 +80,13 @@ p12 = read("tests/test_patch12_launch_seo.py").replace(
 )
 write("tests/test_patch12_launch_seo.py", p12)
 
-# Keep footer discovery aligned with the new primary Services tab while retaining detailed treatment pages as internal targets.
+# Keep footer discovery aligned with Services while retaining the detailed treatment directory.
 for page in ROOT.rglob("*.html"):
     text = page.read_text(encoding="utf-8")
     prefix = "../" if page.parent.name in {"doctors", "treatments"} else ""
     text = text.replace(f'<div><h3>Care</h3><a href="{prefix}treatments.html">Treatments</a>', f'<div><h3>Care</h3><a href="{prefix}services.html">Services</a>')
+    services_link = f'<a href="{prefix}services.html">Services</a>'
+    treatment_link = f'<a href="{prefix}treatments.html">Treatment information</a>'
+    if services_link in text and treatment_link not in text:
+        text = text.replace(services_link, services_link + treatment_link, 1)
     page.write_text(text, encoding="utf-8")
