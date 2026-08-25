@@ -41,6 +41,17 @@ class Patch18ServicesAboutImagery(unittest.TestCase):
                 missing.append(str(page.relative_to(ROOT)))
         self.assertEqual([], missing)
 
+    def test_home_keeps_approved_identity_and_adds_restrained_service_imagery(self):
+        html = self.read("index.html")
+        self.assertIn("Advanced dentistry.", html)
+        self.assertIn("Established trust.", html)
+        self.assertIn('href="home-trust.css"', html)
+        self.assertNotIn('href="home-premium.css"', html)
+        self.assertIn('class="home-service-visuals', html)
+        images = re.findall(r'<div class="home-service-visuals[^>]*>[\s\S]*?</div>', html)
+        self.assertTrue(images)
+        self.assertGreaterEqual(images[0].count('assets/services/'), 3)
+
     def test_google_review_cards_show_individual_star_rows(self):
         html = self.read("index.html")
         cards = re.findall(r'<article class="google-review-card.*?</article>', html, re.S)
