@@ -13,7 +13,7 @@
 
 ## Automated verification
 
-Latest Patch 18 verification before final visual gate:
+Final Patch 18 candidate verification:
 
 - Patch 18 contract: PASS
 - Full Python regression suite: **94 tests, 0 failures**
@@ -23,9 +23,21 @@ Latest Patch 18 verification before final visual gate:
 
 ## Lighthouse / visual QA
 
-Home and About passed the desktop/mobile deterministic Lighthouse gates during Patch 18 visual QA. A Services SEO issue was identified in the `link-text` audit because nine buttons used identical visible text. The regression contract was tightened and the Services links were changed to visible, service-specific labels such as **“Learn More about Prosthodontics.”**
+A Services SEO issue was identified during QA because nine buttons initially used identical visible `Learn More` text. Lighthouse's `link-text` audit scored the page at 92 even when the links had service-specific `aria-label` values. The regression contract was tightened and the visible buttons were changed to service-specific labels such as **“Learn More about Prosthodontics.”**
 
-Final desktop/mobile Home, Services and About visual/Lighthouse verification is run on the post-fix candidate before merge.
+Post-fix visual verification passed on the final site candidate:
+
+- Fully loaded screenshot capture: PASS
+- Home — mobile Lighthouse: PASS
+- Home — desktop Lighthouse: PASS
+- Services — mobile Lighthouse: PASS
+- Services — desktop Lighthouse: PASS
+- About — mobile Lighthouse: PASS
+- About — desktop Lighthouse: PASS
+- Deterministic Accessibility / Best Practices / SEO gates: PASS
+- Contrast and target-size gates: PASS
+
+Temporary Patch 18 CI workflows and generation/reconciliation helpers were removed before integration into `main`.
 
 ## Launch note
 
