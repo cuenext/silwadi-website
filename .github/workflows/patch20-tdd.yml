@@ -1,0 +1,16 @@
+name: Patch 20 TDD
+on:
+  push:
+    branches:
+      - patch-20-ui-polish
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-20-ui-polish
+      - name: Patch 20 contract
+        run: python -m unittest tests.test_patch20_ui_polish -v
