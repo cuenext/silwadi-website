@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
 permissions:
-  contents: read
+  contents: write
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -17,6 +17,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Apply Patch 16 refresh
+        run: python tools/apply_patch16.py
+      - name: Commit generated Patch 16 changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "feat: apply Patch 16 truth reviews and Raha refresh [skip ci]"
+            git push origin HEAD:patch-15-homepage-redesign
+          fi
       - name: Install test-only dependency
         run: python -m pip install --disable-pip-version-check pillow
       - name: Full regression suite
@@ -67,6 +78,7 @@ jobs:
           PY
 
   lighthouse:
+    needs: verify
     strategy:
       fail-fast: false
       matrix:
@@ -108,6 +120,7 @@ jobs:
           PY
 
   screenshots:
+    needs: verify
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -124,7 +137,7 @@ jobs:
           "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --window-size=390,844 --screenshot=/tmp/home-mobile.png http://127.0.0.1:8765/
       - uses: actions/upload-artifact@v4
         with:
-          name: patch15-home-screenshots-final
+          name: patch16-home-screenshots
           path: |
             /tmp/home-desktop.png
             /tmp/home-mobile.png
