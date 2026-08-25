@@ -51,10 +51,13 @@ class Patch18ServicesAboutImagery(unittest.TestCase):
         self.assertIn("Established trust.", html)
         self.assertIn('href="home-trust.css"', html)
         self.assertNotIn('href="home-premium.css"', html)
-        self.assertIn('class="home-service-visuals', html)
-        images = re.findall(r'<div class="home-service-visuals[^>]*>[\s\S]*?</div>', html)
-        self.assertTrue(images)
-        self.assertGreaterEqual(images[0].count('assets/services/'), 3)
+        self.assertNotIn('class="home-service-visuals', html)
+        treatment_section = html.split('id="treatments"', 1)[1].split('id="legacy"', 1)[0]
+        rows = re.findall(r'<a class="treatment-path[^>]*>.*?</a>', treatment_section, re.S)
+        self.assertEqual(5, len(rows))
+        for row in rows:
+            self.assertIn('class="treatment-path__thumb"', row)
+            self.assertIn('assets/services/', row)
 
     def test_google_review_cards_show_individual_star_rows(self):
         html = self.read("index.html")
