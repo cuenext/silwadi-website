@@ -22,7 +22,9 @@ jobs:
       - name: Install test dependency
         run: python -m pip install --disable-pip-version-check pillow
       - name: Apply Patch 20
-        run: python tools/patch20_apply.py
+        run: |
+          python tools/patch20_apply.py
+          python tools/patch20_about_unique.py
       - name: Commit candidate
         shell: bash
         run: |
