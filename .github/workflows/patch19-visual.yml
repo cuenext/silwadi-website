@@ -30,7 +30,7 @@ jobs:
           const { chromium } = require('playwright-core');
           (async()=>{
             const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH,args:['--no-sandbox','--disable-dev-shm-usage']});
-            const desktop=await browser.newPage({viewportSize:{width:1440,height:900}});
+            const desktop=await browser.newPage({viewport:{width:1440,height:900}});
             await desktop.emulateMedia({reducedMotion:'reduce'});
             await desktop.goto('http://127.0.0.1:8765/index.html',{waitUntil:'networkidle'});
             await desktop.screenshot({path:'/tmp/patch19-shots/home-desktop.png',fullPage:false});
@@ -46,7 +46,7 @@ jobs:
             await endo.screenshot({path:'/tmp/patch19-shots/endodontics-card.png'});
             await desktop.close();
 
-            const mobile=await browser.newPage({viewportSize:{width:390,height:844}});
+            const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,deviceScaleFactor:1});
             await mobile.emulateMedia({reducedMotion:'reduce'});
             await mobile.goto('http://127.0.0.1:8765/index.html',{waitUntil:'networkidle'});
             await mobile.screenshot({path:'/tmp/patch19-shots/home-mobile-actionbar.png',fullPage:false});
