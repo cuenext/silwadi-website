@@ -65,7 +65,7 @@ class PatchFifteenHomepageRedesign(unittest.TestCase):
         text = self.home.lower()
         for value in required:
             self.assertIn(value.lower(), text)
-        self.assertIn('View all 10 services', self.home)
+        self.assertIn('View all services', self.home)
         self.assertNotIn('Founder', self.home)
 
     def test_hero_portrait_stays_optimized_and_high_priority(self):

@@ -56,6 +56,6 @@ class PatchNineTreatmentSEO(unittest.TestCase):
     def test_sitemap_contains_all_primary_treatment_urls_once(self):
         root=ET.fromstring(read('sitemap.xml')); ns={'sm':'http://www.sitemaps.org/schemas/sitemap/0.9'}; locs=[el.text for el in root.findall('sm:url/sm:loc',ns)]
         for rel in PRIMARY: self.assertEqual(locs.count(f'https://silwadi.ae/{rel}'),1,rel)
-        self.assertEqual(len(locs),23)
+        self.assertEqual(len(locs),24)
 
 if __name__=='__main__': unittest.main()

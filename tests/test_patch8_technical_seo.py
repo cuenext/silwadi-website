@@ -33,6 +33,7 @@ PAGE_URLS = {
     'treatments/cosmetic-dentistry.html': 'https://silwadi.ae/treatments/cosmetic-dentistry.html',
     'treatments/general-dentistry.html': 'https://silwadi.ae/treatments/general-dentistry.html',
     'treatments/emergency-dentist.html': 'https://silwadi.ae/treatments/emergency-dentist.html',
+    'services.html': 'https://silwadi.ae/services.html',
 }
 
 
@@ -161,7 +162,7 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
         ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
         locs = [el.text for el in root.findall('sm:url/sm:loc', ns)]
         self.assertEqual(locs, list(PAGE_URLS.values()))
-        self.assertEqual(len(locs), 23)
+        self.assertEqual(len(locs), 24)
         self.assertTrue(all(url.startswith('https://silwadi.ae/') for url in locs))
         self.assertFalse(any('silwadidentalcentres.ae' in url for url in locs))
 

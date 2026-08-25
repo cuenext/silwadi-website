@@ -58,7 +58,7 @@ class PatchTenDoctorAuthority(unittest.TestCase):
     def test_sitemap_contains_all_doctor_profiles_once(self):
         root=ET.fromstring(read('sitemap.xml')); ns={'sm':'http://www.sitemaps.org/schemas/sitemap/0.9'}; locs=[el.text for el in root.findall('sm:url/sm:loc',ns)]
         for slug in DOCTORS: self.assertEqual(locs.count(f'https://silwadi.ae/doctors/{slug}.html'),1,slug)
-        self.assertEqual(len(locs),23)
+        self.assertEqual(len(locs),24)
     def test_directory_consultation_uses_contact_page_and_result_label_is_human(self):
         directory=read('doctors.html'); self.assertIn('href="contact.html#consultation"',directory); self.assertNotIn('subject=Doctor%20Consultation%20Request',directory); app=read('app.js'); self.assertIn('dentists & specialists',app); self.assertNotIn('doctor${visible === 1 ?',app)
 

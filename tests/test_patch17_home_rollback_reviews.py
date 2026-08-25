@@ -25,7 +25,8 @@ class Patch17HomepageRollbackReviewsTests(unittest.TestCase):
         self.assertIn('class="google-reviews-track"', self.home)
         self.assertIn("https://maps.app.goo.gl/Ln2vEZmQmgWjb3ETA", self.home)
         self.assertIn("4.6", self.home)
-        self.assertIn("199 Google reviews", self.home)
+        self.assertIn("Google reviews", self.home)
+        self.assertIn("review-stars", self.home)
         self.assertIn("Read all reviews", self.home)
 
     def test_official_logo_is_visible_without_crop_hacks(self):

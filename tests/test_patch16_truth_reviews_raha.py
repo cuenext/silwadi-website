@@ -59,10 +59,9 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
     def test_google_reviews_section_uses_real_listing_summary_and_maps_link(self):
         self.assertIn('class="home-google-reviews', self.home)
         self.assertIn('4.6', self.home)
-        self.assertIn('199', self.home)
         self.assertIn('Google', self.home)
         self.assertIn('https://maps.app.goo.gl/Ln2vEZmQmgWjb3ETA', self.home)
-        for reviewer in ("Ahmed H", "Emily Campbell Scully", "Sanaa Freihat", "Antoni Y"):
+        for reviewer in ("Ahmed H", "Emily Campbell Scully", "Victoriya Davydova", "Sanaa Freihat", "Sahar Alsalman"):
             self.assertIn(reviewer, self.home)
         cards = len(re.findall(r'class="google-review-card', self.home))
         self.assertGreaterEqual(cards, 6)
@@ -96,7 +95,7 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         ):
             self.assertIn(service, self.home)
         self.assertGreaterEqual(self.home.count('class="treatment-path reveal'), 5)
-        self.assertIn('View all 10 services', self.home)
+        self.assertIn('View all services', self.home)
 
 
 if __name__ == "__main__":

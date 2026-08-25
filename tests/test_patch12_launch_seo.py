@@ -33,6 +33,7 @@ PAGE_URLS = {
     'treatments/cosmetic-dentistry.html': 'https://silwadi.ae/treatments/cosmetic-dentistry.html',
     'treatments/general-dentistry.html': 'https://silwadi.ae/treatments/general-dentistry.html',
     'treatments/emergency-dentist.html': 'https://silwadi.ae/treatments/emergency-dentist.html',
+    'services.html': 'https://silwadi.ae/services.html',
 }
 
 LEGACY_DOCTORS = {
@@ -130,7 +131,7 @@ class PatchTwelveLaunchSEOContract(unittest.TestCase):
             'https://silwadidentalcentres.ae/about-us.php': 'https://silwadi.ae/about.html',
             'https://silwadidentalcentres.ae/contact-us.php': 'https://silwadi.ae/contact.html',
             'https://silwadidentalcentres.ae/doctors.php': 'https://silwadi.ae/doctors.html',
-            'https://silwadidentalcentres.ae/services.php': 'https://silwadi.ae/treatments.html',
+            'https://silwadidentalcentres.ae/services.php': 'https://silwadi.ae/services.html',
             'https://silwadidentalcentres.ae/faq.php': 'https://silwadi.ae/treatments.html',
         }
         expected = {**expected_top, **LEGACY_DOCTORS}
@@ -169,7 +170,7 @@ class PatchTwelveLaunchSEOContract(unittest.TestCase):
             capture_output=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn('23 pages', result.stdout)
+        self.assertIn('24 pages', result.stdout)
         self.assertIn('0 errors', result.stdout)
 
 
