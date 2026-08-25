@@ -25,6 +25,7 @@ jobs:
         run: |
           python tools/patch19_apply.py
           python tools/patch19_fix_mobile.py
+          python tools/patch19_reconcile.py
       - name: Commit candidate
         shell: bash
         run: |
@@ -32,7 +33,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           if ! git diff --cached --quiet; then
-            git commit -m "feat: apply Patch 19 WhatsApp and services UX [skip ci]"
+            git commit -m "feat: reconcile Patch 19 WhatsApp and services UX [skip ci]"
             git push origin HEAD:patch-19-whatsapp-services-nav
           fi
       - name: Patch 19 contract
