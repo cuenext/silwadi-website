@@ -6,12 +6,7 @@ on:
 permissions:
   contents: read
 jobs:
-  lighthouse-diagnostic:
-    strategy:
-      fail-fast: false
-      matrix:
-        page: [services.html]
-        mode: [mobile, desktop]
+  lighthouse-seo-diagnostic:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,28 +19,26 @@ jobs:
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
           sleep 2
-      - name: Lighthouse diagnostic
+      - name: Services SEO diagnostic
         shell: bash
         run: |
           CHROME="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          EXTRA=""
-          if [ "${{ matrix.mode }}" = "desktop" ]; then EXTRA="--preset=desktop"; fi
-          timeout 160s npx --yes lighthouse@latest "http://127.0.0.1:8765/${{ matrix.page }}" \
+          timeout 160s npx --yes lighthouse@latest "http://127.0.0.1:8765/services.html" \
             --quiet --chrome-path="$CHROME" \
             --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
-            --only-categories=performance,accessibility,best-practices,seo \
-            --output=json --output-path=/tmp/lighthouse.json $EXTRA
+            --only-categories=seo \
+            --output=json --output-path=/tmp/lighthouse.json
           python3 - <<'PY'
           import json
-          r=json.load(open('/tmp/lighthouse.json')); c=r['categories']; a=r['audits']
-          print('CATEGORIES', {k: round(v['score']*100) for k,v in c.items()})
-          for category in c.values():
-              for ref in category.get('auditRefs',[]):
-                  audit=a.get(ref['id'],{})
-                  score=audit.get('score')
-                  if score is not None and score < 1:
-                      print('FAIL', ref['id'], 'score=', score, 'title=', audit.get('title'), 'display=', audit.get('displayValue'))
-                      details=audit.get('details') or {}
-                      for item in (details.get('items') or [])[:8]:
-                          print(' ITEM', item)
+          r=json.load(open('/tmp/lighthouse.json')); c=r['categories']['seo']; a=r['audits']
+          print('SEO', round(c['score']*100))
+          for ref in c.get('auditRefs',[]):
+              audit=a.get(ref['id'],{})
+              score=audit.get('score')
+              if score is not None and score < 1:
+                  print('FAIL', ref['id'], 'score=', score, 'title=', audit.get('title'), 'display=', audit.get('displayValue'))
+                  details=audit.get('details') or {}
+                  items=details.get('items') or []
+                  if isinstance(items,list):
+                      for item in items[:12]: print(' ITEM', item)
           PY
