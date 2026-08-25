@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
 permissions:
-  contents: read
+  contents: write
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -17,6 +17,44 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Apply final review copy and contrast polish
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          index = Path('index.html')
+          html = index.read_text(encoding='utf-8')
+          replacements = {
+            'Recent public Google reviews for the Corniche location. Review excerpts are shortened for this page.': 'Selected themes from recent public Google reviews for the Corniche location. Read the full reviews on Google Maps.',
+            '“Dr. Krishna is an excellent doctor. Very professional and experienced, and the whole process was smooth and comfortable.”': 'Highlighted Dr. Krishna’s professionalism, experience and a smooth, comfortable treatment process.',
+            '“Dr. Lujain was so friendly and knowledgeable. She put me at ease straight away.”': 'Praised Dr. Lujain for being friendly, knowledgeable and reassuring from the start.',
+            '“One of the best experiences I’ve had with a dentist. Dr. Moheb is calm and patient.”': 'Described a very positive dental experience and appreciated Dr. Moheb’s calm, patient manner.',
+            '“The reception team was so welcoming and friendly.”': 'Highlighted the warm, friendly welcome from the reception team.',
+            '“My cleaning was relaxing and pain free, very professional.”': 'Praised a comfortable and professional cleaning experience.',
+            '“Dr Krishna is a very experienced orthodontist.”': 'Highlighted Dr. Krishna’s orthodontic experience.',
+          }
+          for old, new in replacements.items():
+              if old not in html:
+                  raise SystemExit(f'missing expected review copy: {old}')
+              html = html.replace(old, new)
+          index.write_text(html, encoding='utf-8')
+
+          css_path = Path('home-premium.css')
+          css = css_path.read_text(encoding='utf-8')
+          old = '.google-rating-card__stars{grid-column:1/-1;color:#f5b51b;'
+          new = '.google-rating-card__stars{grid-column:1/-1;color:#946000;'
+          if old not in css:
+              raise SystemExit('missing expected Google stars color')
+          css_path.write_text(css.replace(old, new), encoding='utf-8')
+          PY
+      - name: Commit final review polish
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html home-premium.css
+          if ! git diff --cached --quiet; then
+            git commit -m "fix: polish Google review summaries and contrast [skip ci]"
+            git push origin HEAD:patch-15-homepage-redesign
+          fi
       - name: Install test-only dependency
         run: python -m pip install --disable-pip-version-check pillow
       - name: Full regression suite
