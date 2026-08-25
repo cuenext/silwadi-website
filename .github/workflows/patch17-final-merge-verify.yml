@@ -1,4 +1,4 @@
-name: Patch 17 Exact Merge Verification
+name: Patch 17 Main Verification
 on:
   push:
     branches:
@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: e1342d81366c95e74f8d0c07734c2837b31a13f8
+          ref: main
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
