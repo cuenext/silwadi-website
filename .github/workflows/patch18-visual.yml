@@ -6,7 +6,59 @@ on:
 permissions:
   contents: read
 jobs:
-  lighthouse-seo-diagnostic:
+  screenshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-18-services-about-imagery
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install capture dependency
+        run: npm install --no-save playwright-core
+      - name: Start static site
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+      - name: Capture fully loaded Home Services About
+        shell: bash
+        run: |
+          export CHROME_PATH="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          mkdir -p /tmp/patch18-final-shots
+          node <<'JS'
+          const { chromium } = require('playwright-core');
+          const fs = require('fs');
+          (async()=>{
+            const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH,args:['--no-sandbox','--disable-dev-shm-usage']});
+            for (const mode of ['desktop','mobile']) {
+              const viewport=mode==='desktop'?{width:1440,height:900}:{width:390,height:844};
+              const page=await browser.newPage({viewportSize:viewport});
+              await page.emulateMedia({reducedMotion:'reduce'});
+              for (const name of ['index','services','about']) {
+                await page.goto(`http://127.0.0.1:8765/${name}.html`,{waitUntil:'networkidle'});
+                await page.evaluate(async()=>{for(let y=0;y<document.body.scrollHeight;y+=600){scrollTo(0,y);await new Promise(r=>setTimeout(r,80));}scrollTo(0,0);});
+                await page.waitForTimeout(400);
+                await page.screenshot({path:`/tmp/patch18-final-shots/${name}-${mode}.png`,fullPage:true});
+              }
+              await page.close();
+            }
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: patch18-final-visuals
+          path: |
+            /tmp/patch18-final-shots/*.png
+            assets/services/*.webp
+
+  lighthouse:
+    strategy:
+      fail-fast: false
+      matrix:
+        page: [index.html, services.html, about.html]
+        mode: [mobile, desktop]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,26 +71,26 @@ jobs:
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
           sleep 2
-      - name: Services SEO diagnostic
+      - name: Lighthouse
         shell: bash
         run: |
           CHROME="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          timeout 160s npx --yes lighthouse@latest "http://127.0.0.1:8765/services.html" \
+          EXTRA=""
+          if [ "${{ matrix.mode }}" = "desktop" ]; then EXTRA="--preset=desktop"; fi
+          timeout 160s npx --yes lighthouse@latest "http://127.0.0.1:8765/${{ matrix.page }}" \
             --quiet --chrome-path="$CHROME" \
             --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
-            --only-categories=seo \
-            --output=json --output-path=/tmp/lighthouse.json
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json --output-path=/tmp/lighthouse.json $EXTRA
           python3 - <<'PY'
           import json
-          r=json.load(open('/tmp/lighthouse.json')); c=r['categories']['seo']; a=r['audits']
-          print('SEO', round(c['score']*100))
-          for ref in c.get('auditRefs',[]):
-              audit=a.get(ref['id'],{})
-              score=audit.get('score')
-              if score is not None and score < 1:
-                  print('FAIL', ref['id'], 'score=', score, 'title=', audit.get('title'), 'display=', audit.get('displayValue'))
-                  details=audit.get('details') or {}
-                  items=details.get('items') or []
-                  if isinstance(items,list):
-                      for item in items[:12]: print(' ITEM', item)
+          r=json.load(open('/tmp/lighthouse.json')); c=r['categories']; a=r['audits']
+          perf=round(c['performance']['score']*100); acc=round(c['accessibility']['score']*100)
+          bp=round(c['best-practices']['score']*100); seo=round(c['seo']['score']*100)
+          lcp=a['largest-contentful-paint']['numericValue']/1000; cls=a['cumulative-layout-shift']['numericValue']
+          contrast=a.get('color-contrast',{}).get('score'); target=a.get('target-size',{}).get('score')
+          print(f"Performance={perf} Accessibility={acc} BestPractices={bp} SEO={seo} LCP={lcp:.2f}s CLS={cls:.3f} Contrast={contrast} TargetSize={target}")
+          if acc != 100 or bp != 100 or seo != 100: raise SystemExit('deterministic Lighthouse category gate failed')
+          if contrast not in (1,None): raise SystemExit('contrast audit failed')
+          if target not in (1,None): raise SystemExit('target-size audit failed')
           PY
