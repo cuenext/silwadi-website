@@ -29,6 +29,25 @@ if ".home-service-visuals{" not in home_css:
     home_css += '''\n.home-service-visuals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:0 0 28px}.home-service-visuals a{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;border-radius:14px;background:#edf3f4;border:1px solid #dce6e8}.home-service-visuals img{width:100%;height:100%;object-fit:cover;transition:transform .35s ease}.home-service-visuals a:hover img{transform:scale(1.025)}.home-service-visuals span{position:absolute;left:12px;bottom:12px;padding:7px 10px;border-radius:9px;background:rgba(255,255,255,.94);color:#083847;font-size:10px;font-weight:800;box-shadow:0 5px 18px rgba(8,56,71,.08)}\n@media(max-width:620px){.home-service-visuals{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px}.home-service-visuals a{flex:0 0 78%;scroll-snap-align:start}}\n@media(prefers-reduced-motion:reduce){.home-service-visuals img{transition:none}}\n'''
 write("home-reviews.css", home_css)
 
+# Give the visible Learn More buttons service-specific accessible names for users and search engines.
+services_page = read("services.html")
+service_links = {
+    "Prosthodontics": "treatments.html#prosthodontics",
+    "Periodontics": "treatments.html#periodontics",
+    "Endodontics": "treatments.html#endodontics",
+    "Orthodontics": "treatments/orthodontics.html",
+    "Pedodontics": "treatments.html#pedodontics",
+    "Cosmetics": "treatments/cosmetic-dentistry.html",
+    "Teeth Whitening": "treatments/teeth-whitening.html",
+    "Laser Dentistry": "treatments.html#laser-dentistry",
+    "Preventive Dentistry": "treatments/general-dentistry.html",
+}
+for service, href in service_links.items():
+    old = f'<a class="btn btn--secondary service-card__link" href="{href}">Learn More</a>'
+    new = f'<a class="btn btn--secondary service-card__link" href="{href}" aria-label="Learn more about {service}">Learn More</a>'
+    services_page = services_page.replace(old, new)
+write("services.html", services_page)
+
 # User-confirmed current Bani Yas address: remove the obsolete landmark from the data source.
 local_path = ROOT / "data/local-business.json"
 local = json.loads(local_path.read_text(encoding="utf-8"))
