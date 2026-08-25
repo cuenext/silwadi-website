@@ -4,14 +4,37 @@ on:
     branches:
       - patch-18-services-about-imagery
 permissions:
-  contents: read
+  contents: write
 jobs:
-  red:
+  green:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: patch-18-services-about-imagery
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install image dependency
+        run: python -m pip install --disable-pip-version-check pillow
+      - name: Apply Patch 18
+        run: python tools/patch18_apply.py
+      - name: Commit generated production files
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "feat: add visual services and richer Silwadi content [skip ci]"
+            git push origin HEAD:patch-18-services-about-imagery
+          fi
       - name: Patch 18 contract
         run: python -m unittest tests.test_patch18_services_about_imagery -v
+      - name: Full regression suite
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: JavaScript syntax
+        run: node --check app.js
+      - name: SEO audit
+        run: python tools/seo_launch_audit.py
