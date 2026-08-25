@@ -29,7 +29,10 @@ old = old.replace(
 )
 old = old.replace('<a href="digital-dentistry.html">Digital Dentistry</a>', '')
 old = re.sub(r'<section class="section digital-section" id="digital">.*?</section>', '', old, flags=re.S)
-old = old.replace('Al Raha Mall coming soon', 'Bani Yas Tower + Al Raha Mall')
+old = old.replace(
+    '<div><strong>Bani Yas Tower</strong><span>Al Raha Mall coming soon</span></div>',
+    '<div><strong>Two locations</strong><span>Bani Yas Tower + Al Raha Mall</span></div>'
+)
 old = old.replace(
     'Bani Yas Tower is open now. Our Al Raha Mall branch is coming soon.',
     'Silwadi welcomes patients at Bani Yas Tower and Al Raha Mall.'
