@@ -1,4 +1,5 @@
 from pathlib import Path
+import html as html_lib
 import re
 import unittest
 
@@ -50,11 +51,12 @@ class Patch19WhatsAppServicesNav(unittest.TestCase):
             if not nav:
                 continue
             nav_html = nav.group(0)
+            nav_text = html_lib.unescape(nav_html)
             if 'class="nav-services"' not in nav_html or 'class="services-mega"' not in nav_html:
                 missing.append(str(page.relative_to(ROOT)))
                 continue
             for service in SERVICES:
-                if service not in nav_html:
+                if service not in nav_text:
                     missing.append(f"{page.relative_to(ROOT)}::{service}")
             self.assertNotIn('>Treatment information<', nav_html)
         self.assertEqual([], missing)
@@ -63,8 +65,9 @@ class Patch19WhatsAppServicesNav(unittest.TestCase):
         html = self.read("index.html")
         match = re.search(r'<details class="mobile-services".*?</details>', html, re.S)
         self.assertIsNotNone(match)
+        mobile_text = html_lib.unescape(match.group(0))
         for service in SERVICES:
-            self.assertIn(service, match.group(0))
+            self.assertIn(service, mobile_text)
 
     def test_prosthodontics_and_implantology_are_explained_distinctly(self):
         html = self.read("services.html")
