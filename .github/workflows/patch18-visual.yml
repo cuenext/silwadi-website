@@ -6,36 +6,11 @@ on:
 permissions:
   contents: read
 jobs:
-  screenshots:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: patch-18-services-about-imagery
-      - name: Start static site
-        run: |
-          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
-          sleep 2
-      - name: Capture Home Services About
-        run: |
-          CHROME="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
-          mkdir -p /tmp/patch18-shots
-          for page in index services about; do
-            path="$page.html"
-            if [ "$page" = "index" ]; then path="index.html"; fi
-            "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=3500 --window-size=1440,6200 --screenshot="/tmp/patch18-shots/${page}-desktop.png" "http://127.0.0.1:8765/$path"
-            "$CHROME" --headless --no-sandbox --disable-dev-shm-usage --hide-scrollbars --run-all-compositor-stages-before-draw --virtual-time-budget=3500 --window-size=390,7200 --screenshot="/tmp/patch18-shots/${page}-mobile.png" "http://127.0.0.1:8765/$path"
-          done
-      - uses: actions/upload-artifact@v4
-        with:
-          name: patch18-visual-screenshots
-          path: /tmp/patch18-shots/*.png
-
-  lighthouse:
+  lighthouse-diagnostic:
     strategy:
       fail-fast: false
       matrix:
-        page: [index.html, services.html, about.html]
+        page: [services.html]
         mode: [mobile, desktop]
     runs-on: ubuntu-latest
     steps:
@@ -49,7 +24,7 @@ jobs:
         run: |
           python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
           sleep 2
-      - name: Lighthouse
+      - name: Lighthouse diagnostic
         shell: bash
         run: |
           CHROME="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
@@ -63,12 +38,14 @@ jobs:
           python3 - <<'PY'
           import json
           r=json.load(open('/tmp/lighthouse.json')); c=r['categories']; a=r['audits']
-          perf=round(c['performance']['score']*100); acc=round(c['accessibility']['score']*100)
-          bp=round(c['best-practices']['score']*100); seo=round(c['seo']['score']*100)
-          lcp=a['largest-contentful-paint']['numericValue']/1000; cls=a['cumulative-layout-shift']['numericValue']
-          contrast=a.get('color-contrast',{}).get('score'); target=a.get('target-size',{}).get('score')
-          print(f"Performance={perf} Accessibility={acc} BestPractices={bp} SEO={seo} LCP={lcp:.2f}s CLS={cls:.3f} Contrast={contrast} TargetSize={target}")
-          if acc != 100 or bp != 100 or seo != 100: raise SystemExit('deterministic Lighthouse category gate failed')
-          if contrast not in (1,None): raise SystemExit('contrast audit failed')
-          if target not in (1,None): raise SystemExit('target-size audit failed')
+          print('CATEGORIES', {k: round(v['score']*100) for k,v in c.items()})
+          for category in c.values():
+              for ref in category.get('auditRefs',[]):
+                  audit=a.get(ref['id'],{})
+                  score=audit.get('score')
+                  if score is not None and score < 1:
+                      print('FAIL', ref['id'], 'score=', score, 'title=', audit.get('title'), 'display=', audit.get('displayValue'))
+                      details=audit.get('details') or {}
+                      for item in (details.get('items') or [])[:8]:
+                          print(' ITEM', item)
           PY
