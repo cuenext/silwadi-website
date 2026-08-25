@@ -17,42 +17,25 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Apply final review copy and contrast polish
+      - name: Apply review avatar contrast fix
         run: |
           python - <<'PY'
           from pathlib import Path
-          index = Path('index.html')
-          html = index.read_text(encoding='utf-8')
-          replacements = {
-            'Recent public Google reviews for the Corniche location. Review excerpts are shortened for this page.': 'Selected themes from recent public Google reviews for the Corniche location. Read the full reviews on Google Maps.',
-            '“Dr. Krishna is an excellent doctor. Very professional and experienced, and the whole process was smooth and comfortable.”': 'Highlighted Dr. Krishna’s professionalism, experience and a smooth, comfortable treatment process.',
-            '“Dr. Lujain was so friendly and knowledgeable. She put me at ease straight away.”': 'Praised Dr. Lujain for being friendly, knowledgeable and reassuring from the start.',
-            '“One of the best experiences I’ve had with a dentist. Dr. Moheb is calm and patient.”': 'Described a very positive dental experience and appreciated Dr. Moheb’s calm, patient manner.',
-            '“The reception team was so welcoming and friendly.”': 'Highlighted the warm, friendly welcome from the reception team.',
-            '“My cleaning was relaxing and pain free, very professional.”': 'Praised a comfortable and professional cleaning experience.',
-            '“Dr Krishna is a very experienced orthodontist.”': 'Highlighted Dr. Krishna’s orthodontic experience.',
-          }
-          for old, new in replacements.items():
-              if old not in html:
-                  raise SystemExit(f'missing expected review copy: {old}')
-              html = html.replace(old, new)
-          index.write_text(html, encoding='utf-8')
-
-          css_path = Path('home-premium.css')
-          css = css_path.read_text(encoding='utf-8')
-          old = '.google-rating-card__stars{grid-column:1/-1;color:#f5b51b;'
-          new = '.google-rating-card__stars{grid-column:1/-1;color:#946000;'
+          path = Path('home-premium.css')
+          css = path.read_text(encoding='utf-8')
+          old = 'background:#e7f3f4;color:#0b7f91;font-size:11px'
+          new = 'background:#e7f3f4;color:#075f6d;font-size:11px'
           if old not in css:
-              raise SystemExit('missing expected Google stars color')
-          css_path.write_text(css.replace(old, new), encoding='utf-8')
+              raise SystemExit('missing expected review avatar color')
+          path.write_text(css.replace(old, new), encoding='utf-8')
           PY
-      - name: Commit final review polish
+      - name: Commit review avatar contrast fix
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html home-premium.css
+          git add home-premium.css
           if ! git diff --cached --quiet; then
-            git commit -m "fix: polish Google review summaries and contrast [skip ci]"
+            git commit -m "fix: improve review avatar contrast [skip ci]"
             git push origin HEAD:patch-15-homepage-redesign
           fi
       - name: Install test-only dependency
@@ -141,6 +124,10 @@ jobs:
           lcp=a['largest-contentful-paint']['numericValue']/1000; cls=a['cumulative-layout-shift']['numericValue']
           contrast=a.get('color-contrast',{}).get('score'); target=a.get('target-size',{}).get('score')
           print(f"Performance={perf} Accessibility={acc} BestPractices={bp} SEO={seo} LCP={lcp:.2f}s CLS={cls:.3f} Contrast={contrast} TargetSize={target}")
+          details=a.get('color-contrast',{}).get('details',{}) or {}
+          for item in details.get('items',[]) or []:
+              node=item.get('node',{}) or {}
+              print('CONTRAST_FAIL selector=',node.get('selector'),'snippet=',node.get('snippet'),'explanation=',node.get('explanation'))
           if acc != 100 or bp != 100 or seo != 100: raise SystemExit('deterministic Lighthouse category gate failed')
           if contrast not in (1,None): raise SystemExit('contrast audit failed')
           if target not in (1,None): raise SystemExit('target-size audit failed')
