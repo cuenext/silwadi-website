@@ -14,7 +14,6 @@ PAGE_URLS = {
     'doctors.html': 'https://silwadi.ae/doctors.html',
     'treatments.html': 'https://silwadi.ae/treatments.html',
     'about.html': 'https://silwadi.ae/about.html',
-    'digital-dentistry.html': 'https://silwadi.ae/digital-dentistry.html',
     'locations.html': 'https://silwadi.ae/locations.html',
     'contact.html': 'https://silwadi.ae/contact.html',
     'doctors/dr-munir-silwadi.html': 'https://silwadi.ae/doctors/dr-munir-silwadi.html',
@@ -79,7 +78,7 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
         self.assertEqual(data['origin'], 'https://silwadi.ae')
         self.assertEqual(data['dentist_id'], 'https://silwadi.ae/#dentist')
         self.assertEqual(data['website_id'], 'https://silwadi.ae/#website')
-        self.assertEqual(data['default_social_image'], 'https://silwadi.ae/assets/silwadi-logo-original.jpeg')
+        self.assertEqual(data['default_social_image'], 'https://silwadi.ae/assets/silwadi-logo-official.png')
 
     def test_all_pages_have_configured_canonical_and_og_urls(self):
         for rel, expected in PAGE_URLS.items():
@@ -114,15 +113,16 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
             self.assertFalse(has_key_deep(block, 'aggregateRating'))
             self.assertFalse(has_key_deep(block, 'review'))
 
-    def test_contact_and_locations_reference_same_active_dentist_only(self):
+    def test_contact_and_locations_reference_both_active_branches(self):
         for rel in ['contact.html', 'locations.html']:
             practice_nodes = [n for n in nodes(rel) if n.get('@type') == 'Dentist']
-            self.assertEqual(len(practice_nodes), 1, rel)
+            self.assertEqual(len(practice_nodes), 2, rel)
             self.assertEqual(practice_nodes[0]['@id'], 'https://silwadi.ae/#dentist', rel)
-            serialized = json.dumps(practice_nodes[0]).lower()
-            self.assertNotIn('al raha', serialized, rel)
-            self.assertFalse(has_key_deep(practice_nodes[0], 'aggregateRating'))
-            self.assertFalse(has_key_deep(practice_nodes[0], 'review'))
+            self.assertEqual(practice_nodes[1]['@id'], 'https://silwadi.ae/#dentist-al-raha', rel)
+            self.assertEqual(practice_nodes[1]['telephone'], '+97126662408', rel)
+            for node in practice_nodes:
+                self.assertFalse(has_key_deep(node, 'aggregateRating'))
+                self.assertFalse(has_key_deep(node, 'review'))
 
     def test_non_home_pages_have_breadcrumb_schema(self):
         for rel in PAGE_URLS:
@@ -161,7 +161,7 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
         ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
         locs = [el.text for el in root.findall('sm:url/sm:loc', ns)]
         self.assertEqual(locs, list(PAGE_URLS.values()))
-        self.assertEqual(len(locs), 24)
+        self.assertEqual(len(locs), 23)
         self.assertTrue(all(url.startswith('https://silwadi.ae/') for url in locs))
         self.assertFalse(any('silwadidentalcentres.ae' in url for url in locs))
 

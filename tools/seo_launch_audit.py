@@ -109,8 +109,8 @@ def audit():
             if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
                 errors.append(f'sitemap.xml: invalid lastmod {value} for {loc.text.strip()}')
 
-    if len(locs) != 24:
-        errors.append(f'sitemap.xml: expected 24 canonical URLs, found {len(locs)}')
+    if len(locs) != 23:
+        errors.append(f'sitemap.xml: expected 23 canonical URLs, found {len(locs)}')
     if len(locs) != len(set(locs)):
         errors.append('sitemap.xml: duplicate canonical URLs found')
     if any(not url.startswith(f'{ORIGIN}/') for url in locs):

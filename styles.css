@@ -164,3 +164,10 @@ img{max-width:100%}
   *,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}
   .reveal{opacity:1!important;transform:none!important}
 }
+
+
+/* Patch 16 sitewide brand */
+.site-brand-logo{display:flex;align-items:center;justify-content:center;width:82px;height:72px;flex:0 0 82px;overflow:visible}
+.site-brand-logo img{display:block;width:68px;height:68px;object-fit:contain;object-position:center}
+.site-footer-logo{display:block;width:108px;height:108px;object-fit:contain;margin:0 0 10px}
+@media(max-width:720px){.site-brand-logo{width:68px;height:62px;flex-basis:68px}.site-brand-logo img{width:58px;height:58px}.site-footer-logo{width:92px;height:92px}}

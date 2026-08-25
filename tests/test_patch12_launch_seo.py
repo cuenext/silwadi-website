@@ -7,14 +7,13 @@ import unittest
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-LAUNCH_DATE = '2026-08-22'
+LAUNCH_DATE = '2026-08-25'
 
 PAGE_URLS = {
     'index.html': 'https://silwadi.ae/',
     'doctors.html': 'https://silwadi.ae/doctors.html',
     'treatments.html': 'https://silwadi.ae/treatments.html',
     'about.html': 'https://silwadi.ae/about.html',
-    'digital-dentistry.html': 'https://silwadi.ae/digital-dentistry.html',
     'locations.html': 'https://silwadi.ae/locations.html',
     'contact.html': 'https://silwadi.ae/contact.html',
     'doctors/dr-munir-silwadi.html': 'https://silwadi.ae/doctors/dr-munir-silwadi.html',
@@ -170,7 +169,7 @@ class PatchTwelveLaunchSEOContract(unittest.TestCase):
             capture_output=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn('24 pages', result.stdout)
+        self.assertIn('23 pages', result.stdout)
         self.assertIn('0 errors', result.stdout)
 
 

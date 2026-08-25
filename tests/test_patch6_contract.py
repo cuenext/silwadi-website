@@ -28,7 +28,7 @@ class PatchSixHumanCopyAndLocationsContract(unittest.TestCase):
             'multidisciplinary clinical workflows',
         ]
         pages = [
-            'index.html', 'doctors.html', 'about.html', 'digital-dentistry.html',
+            'index.html', 'doctors.html', 'about.html',
             'treatments.html', 'treatments/dental-implants.html', 'contact.html'
         ]
         for rel in pages:
@@ -36,7 +36,7 @@ class PatchSixHumanCopyAndLocationsContract(unittest.TestCase):
             for phrase in banned:
                 self.assertNotIn(phrase, text, f'{rel}: {phrase}')
 
-    def test_locations_page_has_active_and_coming_soon_branches(self):
+    def test_locations_page_has_two_active_branches(self):
         path = ROOT / 'locations.html'
         self.assertTrue(path.is_file(), 'locations.html')
         html = read('locations.html')
@@ -45,14 +45,15 @@ class PatchSixHumanCopyAndLocationsContract(unittest.TestCase):
         self.assertIn('+971 2 626 2042', html)
         self.assertIn('Sun–Wed 09:00–21:00', html)
         self.assertIn('Al Raha Mall', html)
-        self.assertIn('Coming Soon', html)
+        self.assertIn('Now open', html)
+        self.assertIn('+971 2 666 2408', html)
         self.assertIn('google.com/maps', html)
         self.assertIn('contact.html#consultation', html)
 
     def test_all_primary_navigation_routes_locations_to_real_page(self):
         root_pages = [
             'index.html', 'doctors.html', 'treatments.html', 'about.html',
-            'digital-dentistry.html', 'contact.html', 'locations.html'
+            'contact.html', 'locations.html'
         ]
         for rel in root_pages:
             html = read(rel)
@@ -66,11 +67,12 @@ class PatchSixHumanCopyAndLocationsContract(unittest.TestCase):
             html = read(rel)
             self.assertIn('href="../locations.html"', html, rel)
 
-    def test_locations_page_does_not_claim_unverified_parking_or_open_al_raha(self):
+    def test_locations_page_keeps_parking_claim_conservative_and_raha_open(self):
         html = read('locations.html').lower()
         self.assertNotIn('free parking', html)
         self.assertNotIn('valet', html)
-        self.assertNotRegex(html, r'al raha[^<]{0,120}(open now|now open|current location)')
+        self.assertIn('now open', html)
+        self.assertIn('+971 2 666 2408', html)
 
 
 if __name__ == '__main__':

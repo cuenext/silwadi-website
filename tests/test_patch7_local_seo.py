@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 ROOT_PAGES = [
     'index.html', 'doctors.html', 'treatments.html', 'about.html',
-    'digital-dentistry.html', 'locations.html', 'contact.html'
+    'locations.html', 'contact.html'
 ]
 NESTED_PAGES = [
     'doctors/dr-munir-silwadi.html',
@@ -32,7 +32,8 @@ class PatchSevenLocalSEOContract(unittest.TestCase):
         self.assertEqual(data['branch_label'], 'Bani Yas Tower')
         self.assertEqual(data['phone_e164'], '+97126262042')
         self.assertEqual(data['service_area'], 'Abu Dhabi')
-        self.assertFalse(data['coming_soon']['is_open'])
+        self.assertTrue(data['al_raha']['is_open'])
+        self.assertEqual(data['al_raha']['phone_e164'], '+97126662408')
 
     def test_contact_and_locations_use_identical_nap(self):
         data = self.local_data()
@@ -74,10 +75,11 @@ class PatchSevenLocalSEOContract(unittest.TestCase):
             self.assertIn('Abu Dhabi', description.group(1), rel)
             self.assertNotIn('dentist abu dhabi dentist abu dhabi', html.lower(), rel)
 
-    def test_al_raha_remains_non_operational(self):
+    def test_al_raha_is_operational(self):
         html = read('locations.html').lower()
-        self.assertIn('coming soon', html)
-        self.assertNotRegex(html, r'al raha[^<]{0,160}(open now|now open|current location)')
+        self.assertIn('now open', html)
+        self.assertIn('+971 2 666 2408', html)
+        self.assertNotIn('coming soon', html)
 
     def test_unverified_corniche_branch_name_is_not_used_as_nap(self):
         for rel in ROOT_PAGES + NESTED_PAGES:

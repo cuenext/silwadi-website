@@ -44,7 +44,7 @@ class PatchFifteenHomepageRedesign(unittest.TestCase):
             'home-service-feature',
             'home-team-editorial',
             'home-legacy-mark',
-            'home-digital-band',
+            'home-google-reviews',
             'home-location-split',
         ):
             self.assertIn(token, self.home)
