@@ -12,7 +12,7 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         cls.about = (ROOT / "about.html").read_text(encoding="utf-8")
         cls.locations = (ROOT / "locations.html").read_text(encoding="utf-8")
         cls.contact = (ROOT / "contact.html").read_text(encoding="utf-8")
-        cls.css = (ROOT / "home-premium.css").read_text(encoding="utf-8")
+        cls.css = (ROOT / "home-reviews.css").read_text(encoding="utf-8")
         cls.app = (ROOT / "app.js").read_text(encoding="utf-8")
         cls.sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
         cls.public_html = [p for p in ROOT.rglob("*.html") if ".github" not in p.parts]
@@ -85,18 +85,18 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
             self.assertNotIn('brand-crop', text, page.as_posix())
             self.assertNotIn('footer-logo-crop', text, page.as_posix())
 
-    def test_home_services_present_clean_verified_service_cards(self):
-        self.assertIn('home-service-grid', self.home)
+    def test_home_services_use_verified_compact_treatment_paths(self):
+        self.assertIn('class="treatment-paths"', self.home)
         for service in (
             "Implantology",
             "Orthodontics",
             "Periodontics",
-            "Endodontics",
             "Cosmetic Dentistry",
-            "Prosthodontics",
+            "Preventive Treatments",
         ):
             self.assertIn(service, self.home)
-        self.assertGreaterEqual(self.home.count('class="home-service-card'), 6)
+        self.assertGreaterEqual(self.home.count('class="treatment-path reveal'), 5)
+        self.assertIn('View all 10 services', self.home)
 
 
 if __name__ == "__main__":
