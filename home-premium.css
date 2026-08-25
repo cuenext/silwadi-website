@@ -568,7 +568,7 @@
 .google-reviews-group{display:flex;gap:18px;padding-right:18px}
 .google-review-card{width:350px;min-height:220px;padding:24px;border:1px solid #dce6e8;border-radius:20px;background:#fff;box-shadow:0 8px 28px rgba(8,56,71,.055);display:flex;flex-direction:column}
 .google-review-card__top{display:flex;align-items:center;gap:12px;margin-bottom:21px}
-.review-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e7f3f4;color:#0b7f91;font-size:11px;font-weight:800;flex:0 0 42px}
+.review-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e7f3f4;color:#075f6d;font-size:11px;font-weight:800;flex:0 0 42px}
 .google-review-card__top div{display:flex;flex-direction:column;gap:3px}.google-review-card__top strong{color:#083847;font-size:12px}.google-review-card__top span{color:#60777f;font-size:9px}
 .google-review-card p{margin:0;color:#435f68;font-size:12px;line-height:1.72}
 @keyframes reviews-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
