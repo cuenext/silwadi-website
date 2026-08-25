@@ -1,0 +1,134 @@
+name: Patch 20 Visual Verification
+on:
+  push:
+    branches:
+      - patch-20-ui-polish
+permissions:
+  contents: read
+jobs:
+  screenshots:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-20-ui-polish
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install capture dependency
+        run: npm install --no-save playwright-core
+      - name: Start site
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+      - name: Capture polished states
+        shell: bash
+        run: |
+          export CHROME_PATH="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          mkdir -p /tmp/patch20-shots
+          node <<'JS'
+          const { chromium } = require('playwright-core');
+          (async()=>{
+            const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH,args:['--no-sandbox','--disable-dev-shm-usage']});
+            const desktop=await browser.newPage({viewport:{width:1440,height:900}});
+            await desktop.emulateMedia({reducedMotion:'reduce'});
+            await desktop.goto('http://127.0.0.1:8765/index.html',{waitUntil:'networkidle'});
+            await desktop.screenshot({path:'/tmp/patch20-shots/home-header-desktop.png',fullPage:false});
+            await desktop.hover('.nav-services__trigger');
+            await desktop.waitForTimeout(200);
+            await desktop.screenshot({path:'/tmp/patch20-shots/services-menu-desktop.png',fullPage:false});
+            await desktop.goto('http://127.0.0.1:8765/index.html',{waitUntil:'networkidle'});
+            const treatments=desktop.locator('#treatments');
+            await treatments.scrollIntoViewIfNeeded();
+            await desktop.waitForTimeout(150);
+            await treatments.screenshot({path:'/tmp/patch20-shots/home-services-desktop.png'});
+            const reviews=desktop.locator('#reviews');
+            await reviews.scrollIntoViewIfNeeded();
+            await desktop.waitForTimeout(150);
+            await reviews.screenshot({path:'/tmp/patch20-shots/reviews-desktop.png'});
+            const locations=desktop.locator('#locations');
+            await locations.scrollIntoViewIfNeeded();
+            await desktop.waitForTimeout(100);
+            await locations.screenshot({path:'/tmp/patch20-shots/locations-desktop.png'});
+            await desktop.goto('http://127.0.0.1:8765/about.html',{waitUntil:'networkidle'});
+            await desktop.evaluate(async()=>{for(let y=0;y<document.body.scrollHeight;y+=500){scrollTo(0,y);await new Promise(r=>setTimeout(r,35));}scrollTo(0,0)});
+            await desktop.screenshot({path:'/tmp/patch20-shots/about-desktop.png',fullPage:true});
+            await desktop.close();
+
+            const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true,deviceScaleFactor:1});
+            await mobile.emulateMedia({reducedMotion:'reduce'});
+            await mobile.goto('http://127.0.0.1:8765/index.html',{waitUntil:'networkidle'});
+            await mobile.screenshot({path:'/tmp/patch20-shots/home-mobile.png',fullPage:false});
+            await mobile.click('[data-menu-button]');
+            await mobile.click('.mobile-services summary');
+            await mobile.waitForTimeout(100);
+            await mobile.screenshot({path:'/tmp/patch20-shots/services-menu-mobile.png',fullPage:false});
+            await mobile.goto('http://127.0.0.1:8765/index.html',{waitUntil:'networkidle'});
+            const mobileTreatments=mobile.locator('#treatments');
+            await mobileTreatments.scrollIntoViewIfNeeded();
+            await mobileTreatments.screenshot({path:'/tmp/patch20-shots/home-services-mobile.png'});
+            const mobileReviews=mobile.locator('#reviews');
+            await mobileReviews.scrollIntoViewIfNeeded();
+            await mobileReviews.screenshot({path:'/tmp/patch20-shots/reviews-mobile.png'});
+            await mobile.close();
+            await browser.close();
+          })().catch(e=>{console.error(e);process.exit(1)});
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: patch20-visuals
+          path: /tmp/patch20-shots/*.png
+
+  lighthouse:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - page: index.html
+            mode: mobile
+          - page: index.html
+            mode: desktop
+          - page: services.html
+            mode: mobile
+          - page: services.html
+            mode: desktop
+          - page: about.html
+            mode: mobile
+          - page: about.html
+            mode: desktop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-20-ui-polish
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Start site
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+      - name: Lighthouse
+        shell: bash
+        run: |
+          CHROME="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          EXTRA=""
+          if [ "${{ matrix.mode }}" = "desktop" ]; then EXTRA="--preset=desktop"; fi
+          timeout 160s npx --yes lighthouse@latest "http://127.0.0.1:8765/${{ matrix.page }}" \
+            --quiet --chrome-path="$CHROME" \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --only-categories=performance,accessibility,best-practices,seo \
+            --output=json --output-path=/tmp/lighthouse.json $EXTRA
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/lighthouse.json')); c=r['categories']; a=r['audits']
+          perf=round(c['performance']['score']*100); acc=round(c['accessibility']['score']*100)
+          bp=round(c['best-practices']['score']*100); seo=round(c['seo']['score']*100)
+          lcp=a['largest-contentful-paint']['numericValue']/1000; cls=a['cumulative-layout-shift']['numericValue']
+          contrast=a.get('color-contrast',{}).get('score'); target=a.get('target-size',{}).get('score')
+          print(f"Performance={perf} Accessibility={acc} BestPractices={bp} SEO={seo} LCP={lcp:.2f}s CLS={cls:.3f} Contrast={contrast} TargetSize={target}")
+          if perf < 90: raise SystemExit('performance below 90')
+          if acc != 100 or bp != 100 or seo != 100: raise SystemExit('deterministic category gate failed')
+          if contrast not in (1,None): raise SystemExit('contrast audit failed')
+          if target not in (1,None): raise SystemExit('target-size audit failed')
+          PY
