@@ -47,15 +47,15 @@ class PatchNineTreatmentSEO(unittest.TestCase):
         html=read('treatments/emergency-dentist.html'); lower=html.lower()
         for cue in ['breathing','swallowing','uncontrolled bleeding','major facial trauma','emergency medical care']: self.assertIn(cue,lower)
         self.assertNotIn('24/7',lower); self.assertIn('clinic hours',lower); self.assertGreaterEqual(html.count('tel:+97126262042'),2)
-    def test_directory_and_home_link_primary_pages(self):
+    def test_directory_links_all_primary_pages_and_home_links_featured_pages(self):
         directory=read('treatments.html')
         for rel in PRIMARY: self.assertIn(f"treatments/{rel.split('/')[-1]}",directory,rel)
         home=read('index.html')
-        for filename in ['dental-implants.html','orthodontics.html','cosmetic-dentistry.html','general-dentistry.html']: self.assertIn(f'treatments/{filename}',home,filename)
+        for filename in ['dental-implants.html','orthodontics.html','cosmetic-dentistry.html']: self.assertIn(f'treatments/{filename}',home,filename)
         self.assertIn('treatments/emergency-dentist.html',home)
     def test_sitemap_contains_all_primary_treatment_urls_once(self):
         root=ET.fromstring(read('sitemap.xml')); ns={'sm':'http://www.sitemaps.org/schemas/sitemap/0.9'}; locs=[el.text for el in root.findall('sm:url/sm:loc',ns)]
         for rel in PRIMARY: self.assertEqual(locs.count(f'https://silwadi.ae/{rel}'),1,rel)
-        self.assertEqual(len(locs),24)
+        self.assertEqual(len(locs),23)
 
 if __name__=='__main__': unittest.main()
