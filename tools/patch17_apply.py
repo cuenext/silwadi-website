@@ -1,0 +1,78 @@
+from pathlib import Path
+import re
+import subprocess
+
+current = Path('index.html').read_text(encoding='utf-8')
+match = re.search(r'<section class="home-google-reviews".*?</section>', current, re.S)
+if not match:
+    raise SystemExit('Could not find current Google reviews section')
+reviews = match.group(0)
+
+old = subprocess.check_output(
+    ['git', 'show', '2c7b72f6321ff79cdb6e24652e364e422d801ad3:index.html'],
+    text=True,
+)
+
+old = old.replace(
+    'Visit Dr. Munir Silwadi Dental Centre in Abu Dhabi for general and specialist dental care at Bani Yas Tower. Established since 1980.',
+    'Visit Dr. Munir Silwadi Dental Centre in Abu Dhabi for general and specialist dental care at Bani Yas Tower and Al Raha Mall. Established since 1980.'
+)
+old = old.replace('https://silwadi.ae/assets/silwadi-logo-original.jpeg', 'https://silwadi.ae/assets/silwadi-logo-official.png')
+old = old.replace('assets/silwadi-logo-original.jpeg', 'assets/silwadi-logo-official.png')
+old = old.replace(
+    '<link rel="stylesheet" href="home-trust.css">',
+    '<link rel="stylesheet" href="home-trust.css"><link rel="stylesheet" href="home-reviews.css">'
+)
+old = old.replace(
+    '<a class="brand" href="#home" aria-label="Silwadi Dental Center home"><span class="brand-crop"><img src="assets/silwadi-logo-official.png" alt="Silwadi Dental Center"></span></a>',
+    '<a class="brand site-brand-logo home-trust-brand" href="#home" aria-label="Silwadi Dental Center home"><img src="assets/silwadi-logo-official.png" alt="Silwadi Dental Center" width="600" height="600" decoding="async"></a>'
+)
+old = old.replace('<a href="digital-dentistry.html">Digital Dentistry</a>', '')
+old = re.sub(r'<section class="section digital-section" id="digital">.*?</section>', '', old, flags=re.S)
+old = old.replace('Al Raha Mall coming soon', 'Bani Yas Tower + Al Raha Mall')
+old = old.replace(
+    'Bani Yas Tower is open now. Our Al Raha Mall branch is coming soon.',
+    'Silwadi welcomes patients at Bani Yas Tower and Al Raha Mall.'
+)
+old = re.sub(
+    r'<article class="location-card reveal"><span class="location-status location-status--muted">Coming soon</span><h3>Al Raha Mall</h3><p>F14 & F15, Level 1, Al Raha Mall, Abu Dhabi, UAE\.</p><div class="location-actions"><a href="mailto:info@silwadidentalcentres\.ae\?subject=Al%20Raha%20Mall%20Branch">Branch enquiry</a></div></article>',
+    '<article class="location-card location-card--current reveal"><span class="location-status">Now open</span><h3>Al Raha Mall</h3><p>F14 & F15, Level 1, Al Raha Mall, Abu Dhabi, UAE.</p><div class="location-actions"><a href="tel:+97126662408">+971 2 666 2408</a><a href="locations.html">Location details</a></div></article>',
+    old,
+)
+marker = '<section class="section" id="locations">'
+if marker not in old:
+    raise SystemExit('Could not find homepage locations marker')
+old = old.replace(marker, reviews + marker, 1)
+Path('index.html').write_text(old, encoding='utf-8')
+
+Path('home-reviews.css').write_text('''
+.home-trust-brand{width:104px;height:76px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.home-trust-brand img{display:block;width:100%;height:100%;object-fit:contain}
+.home-google-reviews{padding:96px 0 102px;background:#f7f9fa;overflow:hidden;border-top:1px solid #e3eaec;border-bottom:1px solid #e3eaec}
+.home-google-reviews__head{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:64px;align-items:end;margin-bottom:38px}
+.home-google-reviews__head h2{margin:8px 0 11px;color:#083847;font-size:clamp(34px,4vw,50px);line-height:1.05;letter-spacing:-.04em}
+.home-google-reviews__head>div>p:not(.eyebrow){max-width:600px;margin:0;color:#526a73;font-size:13px;line-height:1.72}
+.google-rating-card{padding:22px 24px;border:1px solid #d8e3e5;border-radius:18px;background:#fff;box-shadow:0 12px 32px rgba(8,56,71,.06);display:grid;grid-template-columns:1fr auto;align-items:end;gap:6px 14px;color:#083847}
+.google-rating-card__brand{grid-column:1/-1;font-size:16px;font-weight:750;letter-spacing:-.02em}
+.google-rating-card__stars{grid-column:1/-1;color:#946000;letter-spacing:2px;font-size:15px}
+.google-rating-card strong{font-size:42px;line-height:1;font-weight:700;letter-spacing:-.05em}
+.google-rating-card>span:nth-of-type(3){color:#526a73;font-size:10px;align-self:center}
+.google-rating-card b{grid-column:1/-1;margin-top:8px;color:#0b7182;font-size:10px}
+.google-reviews-viewport{width:100%;overflow:hidden;padding:4px 0 10px}
+.google-reviews-track{display:flex;width:max-content;animation:reviews-marquee 46s linear infinite;will-change:transform}
+.google-reviews-track:hover,.google-reviews-track:focus-within{animation-play-state:paused}
+.google-reviews-group{display:flex;gap:16px;padding-right:16px}
+.google-review-card{width:340px;min-height:212px;padding:24px;border:1px solid #dce5e7;border-radius:18px;background:#fff;box-shadow:0 8px 26px rgba(8,56,71,.05);display:flex;flex-direction:column}
+.google-review-card__top{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.google-review-card__top .review-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#e7f3f4;color:#075f6d;font-size:11px;font-weight:800;flex:0 0 42px}
+.google-review-card__top div{display:flex;flex-direction:column;gap:3px}
+.google-review-card__top strong{color:#083847;font-size:12px}
+.google-review-card__top div>span{color:#526a73;font-size:9px}
+.google-review-card p{margin:0;color:#435f68;font-size:12px;line-height:1.72}
+@keyframes reviews-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.featured-doctors .doctor-card__photo{overflow:hidden}
+.featured-doctors .doctor-card__photo img{transition:transform .35s ease}
+.featured-doctors .doctor-card:hover .doctor-card__photo img{transform:scale(1.025)}
+@media(max-width:760px){.home-trust-brand{width:84px;height:64px}.home-google-reviews{padding:70px 0 76px}.home-google-reviews__head{grid-template-columns:1fr;gap:22px;margin-bottom:28px}.google-rating-card{max-width:290px}.google-review-card{width:280px;min-height:202px;padding:20px}}
+@media(prefers-reduced-motion:reduce){.google-reviews-viewport{overflow-x:auto}.google-reviews-track{animation:none;will-change:auto}}
+'''.strip() + '\n', encoding='utf-8')
