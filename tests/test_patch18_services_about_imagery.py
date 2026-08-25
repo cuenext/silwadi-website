@@ -24,6 +24,7 @@ class Patch18ServicesAboutImagery(unittest.TestCase):
         html = self.read("services.html")
         for service in SERVICES:
             self.assertIn(service, html)
+            self.assertIn(f'aria-label="Learn more about {service}"', html)
         self.assertGreaterEqual(html.count('class="service-card'), 9)
         self.assertGreaterEqual(html.count('class="service-card__image'), 9)
         self.assertGreaterEqual(html.count('Learn More'), 9)
