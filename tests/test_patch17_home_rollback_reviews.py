@@ -28,9 +28,10 @@ class Patch17HomepageRollbackReviewsTests(unittest.TestCase):
         self.assertIn("199 Google reviews", self.home)
         self.assertIn("Read all reviews", self.home)
 
-    def test_official_logo_is_visible_without_crop_hack(self):
+    def test_official_logo_is_visible_without_crop_hacks(self):
         self.assertIn('src="assets/silwadi-logo-official.png"', self.home)
         self.assertNotIn("brand-crop", self.home)
+        self.assertNotIn("footer-logo-crop", self.home)
 
     def test_al_raha_is_open_on_homepage(self):
         self.assertIn("Al Raha Mall", self.home)
