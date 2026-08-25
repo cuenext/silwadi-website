@@ -1,4 +1,5 @@
 from pathlib import Path
+import html as html_lib
 import re
 import unittest
 
@@ -22,10 +23,11 @@ class Patch18ServicesAboutImagery(unittest.TestCase):
 
     def test_services_page_has_nine_image_led_services_and_learn_more_links(self):
         html = self.read("services.html")
+        rendered = html_lib.unescape(html)
         for service in SERVICES:
-            self.assertIn(service, html)
-            self.assertIn(f'aria-label="Learn more about {service}"', html)
-            self.assertIn(f'>Learn More about {service}</a>', html)
+            self.assertIn(service, rendered)
+            self.assertIn(f'aria-label="Learn more about {service}"', rendered)
+            self.assertIn(f'>Learn More about {service}</a>', rendered)
         self.assertGreaterEqual(html.count('class="service-card'), 9)
         self.assertGreaterEqual(html.count('class="service-card__image'), 9)
         self.assertGreaterEqual(html.count('Learn More'), 9)
@@ -39,7 +41,7 @@ class Patch18ServicesAboutImagery(unittest.TestCase):
         for page in pages:
             text = page.read_text(encoding="utf-8")
             nav_match = re.search(r'<nav class="site-nav".*?</nav>', text, re.S)
-            if nav_match and not re.search(r'<a\s+href="(?:\.\./)?services\.html"[^>]*>Services</a>', nav_match.group(0)):
+            if nav_match and not re.search(r'href="(?:\.\./)?services\.html"[^>]*>Services(?:\s|<)', nav_match.group(0)):
                 missing.append(str(page.relative_to(ROOT)))
         self.assertEqual([], missing)
 
