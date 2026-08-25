@@ -36,7 +36,8 @@ class Patch18ServicesAboutImagery(unittest.TestCase):
         missing = []
         for page in pages:
             text = page.read_text(encoding="utf-8")
-            if 'class="site-nav"' in text and 'href="services.html">Services</a>' not in text and 'href="../services.html">Services</a>' not in text:
+            nav_match = re.search(r'<nav class="site-nav".*?</nav>', text, re.S)
+            if nav_match and not re.search(r'<a\s+href="(?:\.\./)?services\.html"[^>]*>Services</a>', nav_match.group(0)):
                 missing.append(str(page.relative_to(ROOT)))
         self.assertEqual([], missing)
 
