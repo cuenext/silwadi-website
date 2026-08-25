@@ -1,7 +1,7 @@
 name: Patch 17 Verification
 on:
-  pull_request:
-    branches: [main]
+  push:
+    branches: [patch-17-home-rollback-reviews]
 permissions:
   contents: write
 jobs:
@@ -32,54 +32,35 @@ jobs:
               text=True,
           )
 
-          # Keep the pre-redesign homepage identity, but retain current factual corrections.
           old = old.replace(
               'Visit Dr. Munir Silwadi Dental Centre in Abu Dhabi for general and specialist dental care at Bani Yas Tower. Established since 1980.',
               'Visit Dr. Munir Silwadi Dental Centre in Abu Dhabi for general and specialist dental care at Bani Yas Tower and Al Raha Mall. Established since 1980.'
           )
-          old = old.replace(
-              'https://silwadi.ae/assets/silwadi-logo-original.jpeg',
-              'https://silwadi.ae/assets/silwadi-logo-official.png'
-          )
-          old = old.replace('assets/silwadi-logo-original.jpeg', 'assets/silwadi-logo-official.png')
-          old = old.replace(
-              '<link rel="stylesheet" href="home-trust.css">',
-              '<link rel="stylesheet" href="home-trust.css"><link rel="stylesheet" href="home-reviews.css">'
-          )
+          old = old.replace('https://silwadi.ae/assets/silwadi-logo-original.jpeg','https://silwadi.ae/assets/silwadi-logo-official.png')
+          old = old.replace('assets/silwadi-logo-original.jpeg','assets/silwadi-logo-official.png')
+          old = old.replace('<link rel="stylesheet" href="home-trust.css">','<link rel="stylesheet" href="home-trust.css"><link rel="stylesheet" href="home-reviews.css">')
           old = old.replace(
               '<a class="brand" href="#home" aria-label="Silwadi Dental Center home"><span class="brand-crop"><img src="assets/silwadi-logo-official.png" alt="Silwadi Dental Center"></span></a>',
               '<a class="brand site-brand-logo home-trust-brand" href="#home" aria-label="Silwadi Dental Center home"><img src="assets/silwadi-logo-official.png" alt="Silwadi Dental Center" width="600" height="600" decoding="async"></a>'
           )
-
-          # Digital workflows remain supported inside clinician/treatment content, but not as a standalone service.
           old = old.replace('<a href="digital-dentistry.html">Digital Dentistry</a>', '')
           old = re.sub(r'<section class="section digital-section" id="digital">.*?</section>', '', old, flags=re.S)
-
-          # Al Raha is open now.
-          old = old.replace('Al Raha Mall coming soon', 'Bani Yas Tower + Al Raha Mall')
-          old = old.replace(
-              'Bani Yas Tower is open now. Our Al Raha Mall branch is coming soon.',
-              'Silwadi welcomes patients at Bani Yas Tower and Al Raha Mall.'
-          )
+          old = old.replace('Al Raha Mall coming soon','Bani Yas Tower + Al Raha Mall')
+          old = old.replace('Bani Yas Tower is open now. Our Al Raha Mall branch is coming soon.','Silwadi welcomes patients at Bani Yas Tower and Al Raha Mall.')
           old = re.sub(
               r'<article class="location-card reveal"><span class="location-status location-status--muted">Coming soon</span><h3>Al Raha Mall</h3><p>F14 & F15, Level 1, Al Raha Mall, Abu Dhabi, UAE\.</p><div class="location-actions"><a href="mailto:info@silwadidentalcentres\.ae\?subject=Al%20Raha%20Mall%20Branch">Branch enquiry</a></div></article>',
               '<article class="location-card location-card--current reveal"><span class="location-status">Now open</span><h3>Al Raha Mall</h3><p>F14 & F15, Level 1, Al Raha Mall, Abu Dhabi, UAE.</p><div class="location-actions"><a href="tel:+97126662408">+971 2 666 2408</a><a href="locations.html">Location details</a></div></article>',
               old,
           )
-
-          # Keep the moving Google review section from the approved update.
           marker = '<section class="section" id="locations">'
           if marker not in old:
               raise SystemExit('Could not find homepage locations marker')
           old = old.replace(marker, reviews + marker, 1)
-
           Path('index.html').write_text(old, encoding='utf-8')
 
           Path('home-reviews.css').write_text(r'''
 .home-trust-brand{width:104px;height:76px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
 .home-trust-brand img{display:block;width:100%;height:100%;object-fit:contain}
-
-/* Keep the original homepage visual language; only the reviews section is new. */
 .home-google-reviews{padding:96px 0 102px;background:#f7f9fa;overflow:hidden;border-top:1px solid #e3eaec;border-bottom:1px solid #e3eaec}
 .home-google-reviews__head{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:64px;align-items:end;margin-bottom:38px}
 .home-google-reviews__head h2{margin:8px 0 11px;color:#083847;font-size:clamp(34px,4vw,50px);line-height:1.05;letter-spacing:-.04em}
@@ -102,19 +83,10 @@ jobs:
 .google-review-card__top div>span{color:#526a73;font-size:9px}
 .google-review-card p{margin:0;color:#435f68;font-size:12px;line-height:1.72}
 @keyframes reviews-marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-
-/* Slightly richer use of the real clinician photography without changing the old layout. */
 .featured-doctors .doctor-card__photo{overflow:hidden}
 .featured-doctors .doctor-card__photo img{transition:transform .35s ease}
 .featured-doctors .doctor-card:hover .doctor-card__photo img{transform:scale(1.025)}
-
-@media(max-width:760px){
-  .home-trust-brand{width:84px;height:64px}
-  .home-google-reviews{padding:70px 0 76px}
-  .home-google-reviews__head{grid-template-columns:1fr;gap:22px;margin-bottom:28px}
-  .google-rating-card{max-width:290px}
-  .google-review-card{width:280px;min-height:202px;padding:20px}
-}
+@media(max-width:760px){.home-trust-brand{width:84px;height:64px}.home-google-reviews{padding:70px 0 76px}.home-google-reviews__head{grid-template-columns:1fr;gap:22px;margin-bottom:28px}.google-rating-card{max-width:290px}.google-review-card{width:280px;min-height:202px;padding:20px}}
 @media(prefers-reduced-motion:reduce){.google-reviews-viewport{overflow-x:auto}.google-reviews-track{animation:none;will-change:auto}}
 '''.strip() + '\n', encoding='utf-8')
           PY
