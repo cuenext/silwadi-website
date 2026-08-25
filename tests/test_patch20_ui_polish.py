@@ -43,13 +43,13 @@ class Patch20UiPolish(unittest.TestCase):
         css = self.read("styles.css")
         self.assertRegex(css, r'\.nowrap-place\{[^}]*white-space:nowrap')
 
-    def test_about_page_does_not_repeat_dr_munir_image(self):
+    def test_about_page_uses_no_repeated_main_images(self):
         html = self.read("about.html")
         self.assertEqual(html.count('assets/doctors/optimized/dr-munir-silwadi.webp'), 1)
-        mosaic = html.split('class="about-image-mosaic"', 1)[1].split('</div>', 1)[0]
-        sources = re.findall(r'<img[^>]+src="([^"]+)"', mosaic)
-        self.assertEqual(len(sources), len(set(sources)))
-        self.assertGreaterEqual(len(sources), 3)
+        main = re.search(r'<main.*?</main>', html, flags=re.S).group(0)
+        sources = re.findall(r'<img[^>]+src="([^"]+)"', main)
+        self.assertGreaterEqual(len(sources), 7)
+        self.assertEqual(len(sources), len(set(sources)), sources)
 
     def test_services_mega_menu_uses_glass_cards_without_option_arrows(self):
         html = self.read("index.html")
