@@ -22,7 +22,9 @@ jobs:
       - name: Install image dependency
         run: python -m pip install --disable-pip-version-check pillow
       - name: Apply Patch 19
-        run: python tools/patch19_apply.py
+        run: |
+          python tools/patch19_apply.py
+          python tools/patch19_fix_mobile.py
       - name: Commit candidate
         shell: bash
         run: |
