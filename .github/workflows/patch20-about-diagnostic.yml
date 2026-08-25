@@ -1,0 +1,48 @@
+name: Patch 20 About Performance Diagnostic
+on:
+  push:
+    branches:
+      - patch-20-ui-polish
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-20-ui-polish
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Start site
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/http.log 2>&1 &
+          sleep 2
+      - name: Diagnose mobile About performance
+        shell: bash
+        run: |
+          CHROME="$(command -v google-chrome-stable || command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          npx --yes lighthouse@latest http://127.0.0.1:8765/about.html --quiet \
+            --chrome-path="$CHROME" --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --only-categories=performance --output=json --output-path=/tmp/lh.json
+          python3 - <<'PY'
+          import json
+          r=json.load(open('/tmp/lh.json'))
+          a=r['audits']; c=r['categories']['performance']
+          print('PERFORMANCE', round(c['score']*100))
+          for k in ['first-contentful-paint','largest-contentful-paint','speed-index','total-blocking-time','cumulative-layout-shift','interactive']:
+              x=a.get(k,{})
+              print(k, 'score=',x.get('score'),'display=',x.get('displayValue'),'numeric=',x.get('numericValue'))
+          print('--- weighted refs ---')
+          for ref in c['auditRefs']:
+              if ref.get('weight',0)>0:
+                  x=a.get(ref['id'],{})
+                  print(ref['id'],'weight=',ref['weight'],'score=',x.get('score'),'display=',x.get('displayValue'))
+          print('--- opportunities/diagnostics with savings ---')
+          for k,x in a.items():
+              d=x.get('details') or {}
+              savings=d.get('overallSavingsMs') or d.get('overallSavingsBytes')
+              if savings or (x.get('score') is not None and x.get('score') < .9 and x.get('scoreDisplayMode') not in ('notApplicable','manual')):
+                  print(k,'score=',x.get('score'),'display=',x.get('displayValue'),'savings=',savings,'title=',x.get('title'))
+          PY
