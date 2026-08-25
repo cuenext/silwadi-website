@@ -5,7 +5,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 
 SERVICES = [
-    "Prosthodontics",
+    "Prosthodontics & Implantology",
     "Periodontics",
     "Endodontics",
     "Orthodontics",

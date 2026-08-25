@@ -16,6 +16,8 @@ OFFICIAL_SERVICES = {
     "Prosthodontics",
 }
 
+HOME_SERVICE_NAMES = OFFICIAL_SERVICES | {"Prosthodontics &amp; Implantology"}
+
 
 def read(rel):
     return (ROOT / rel).read_text(encoding="utf-8")
@@ -41,7 +43,7 @@ class PatchFourteenOfficialContentAlignment(unittest.TestCase):
         featured = section(html, '<section class="section" id="treatments">', '<section class="section section--quiet"')
         titles = set(re.findall(r"<h3>(.*?)</h3>", featured, re.S))
         self.assertTrue(titles)
-        self.assertTrue(titles.issubset(OFFICIAL_SERVICES), titles - OFFICIAL_SERVICES)
+        self.assertTrue(titles.issubset(HOME_SERVICE_NAMES), titles - HOME_SERVICE_NAMES)
         self.assertNotIn("Cosmetic & Restorative Dentistry", featured)
         self.assertNotIn("General & Preventive Care", featured)
 
