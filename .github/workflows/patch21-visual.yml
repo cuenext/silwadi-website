@@ -1,4 +1,5 @@
 name: Patch 21 Visual Verification
+# Refreshed after the accessibility fix so this run verifies the corrected candidate.
 on:
   push:
     branches:
