@@ -119,3 +119,50 @@ document.querySelectorAll('[data-faq-button]').forEach(button => {
     if (primaryConsultation || consultationMail) link.setAttribute('href', target);
   });
 })();
+
+
+// Expandable Google review dialog.
+const reviewDialog = document.querySelector('[data-review-dialog]');
+const reviewClose = document.querySelector('[data-review-close]');
+const reviewTriggers = [...document.querySelectorAll('[data-review-expand]')];
+
+function openReviewDialog(card) {
+  if (!reviewDialog || !card) return;
+  const name = card.querySelector('.google-review-card__top strong')?.textContent?.trim() || 'Patient review';
+  const avatar = card.querySelector('.review-avatar')?.textContent?.trim() || '';
+  const text = card.querySelector('p')?.textContent?.trim() || '';
+  const stars = card.querySelector('.review-stars');
+  const starText = stars?.textContent?.trim() || '★★★★★';
+  const starLabel = stars?.getAttribute('aria-label') || '5 out of 5 stars';
+  const dialogName = reviewDialog.querySelector('[data-review-name]');
+  const dialogAvatar = reviewDialog.querySelector('[data-review-avatar]');
+  const dialogText = reviewDialog.querySelector('[data-review-text]');
+  const dialogStars = reviewDialog.querySelector('[data-review-stars]');
+  if (dialogName) dialogName.textContent = name;
+  if (dialogAvatar) dialogAvatar.textContent = avatar;
+  if (dialogText) dialogText.textContent = text;
+  if (dialogStars) {
+    dialogStars.textContent = starText;
+    dialogStars.setAttribute('aria-label', starLabel);
+  }
+  if (typeof reviewDialog.showModal === 'function') reviewDialog.showModal();
+  else reviewDialog.setAttribute('open', '');
+}
+
+reviewTriggers.forEach(card => {
+  card.addEventListener('click', () => openReviewDialog(card));
+  card.addEventListener('keydown', event => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openReviewDialog(card);
+    }
+  });
+});
+
+reviewClose?.addEventListener('click', () => reviewDialog?.close());
+reviewDialog?.addEventListener('click', event => {
+  if (event.target === reviewDialog) reviewDialog.close();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && reviewDialog?.open) reviewDialog.close();
+});

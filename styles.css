@@ -193,3 +193,18 @@ img{max-width:100%}
 .mobile-services__links a:active{transform:scale(.975);background:#fff!important;box-shadow:inset 0 2px 8px rgba(8,56,71,.08)}
 @media(max-width:720px){.treatment-path{grid-template-columns:30px 54px minmax(0,1fr) 22px;gap:12px;padding:14px 6px}.treatment-path:hover{padding-left:8px;padding-right:8px}}
 @media(prefers-reduced-motion:reduce){.treatment-path,.services-mega__grid>a,.mobile-services__links a{transition:none!important}.services-mega__grid>a::before{display:none}.treatment-path:hover,.site-nav .services-mega__grid>a:hover,.site-nav .services-mega__grid>a:focus-visible,.mobile-services__links a:active{transform:none!important}}
+
+
+/* Patch 21: footer hours + official social */
+.site-footer .footer-grid{grid-template-columns:1.4fr .72fr .72fr 1.08fr 1.18fr;gap:34px}
+.footer-opening-hours{display:flex!important;flex-direction:column;gap:5px}
+.footer-opening-hours h3{margin-bottom:9px}
+.footer-opening-hours span{color:#60777f;font-size:9px;line-height:1.4}
+.footer-opening-hours strong{color:#183f4a;font-size:10px;font-weight:700;line-height:1.45;margin-bottom:5px}
+.footer-opening-hours__closed{margin-top:2px;color:#31545e!important;font-weight:700}
+.footer-social-link{display:inline-flex!important;align-items:center;gap:8px;width:max-content;max-width:100%;margin-top:14px;padding:8px 10px;border:1px solid #d7e4e6;border-radius:10px;background:#fff;color:#31545e!important;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.footer-social-link svg{width:16px;height:16px;flex:0 0 16px;color:#0d7c90}.footer-social-link span{font-size:9px!important}.footer-social-link strong{color:#083847;font-weight:750}
+.footer-social-link:hover{transform:translateY(-1px);border-color:#bdd6da;box-shadow:0 7px 18px rgba(8,56,71,.06)}
+@media(max-width:980px){.site-footer .footer-grid{grid-template-columns:1.3fr 1fr 1fr;gap:32px}.footer-brand-block{grid-column:1/-1}}
+@media(max-width:620px){.site-footer .footer-grid{grid-template-columns:1fr;gap:26px}.footer-brand-block{grid-column:auto}.footer-social-link{margin-top:10px}}
+@media(prefers-reduced-motion:reduce){.footer-social-link{transition:none}.footer-social-link:hover{transform:none}}
