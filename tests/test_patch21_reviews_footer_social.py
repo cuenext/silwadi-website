@@ -42,6 +42,15 @@ class Patch21ReviewsFooterSocial(unittest.TestCase):
         self.assertIn("data-review-open", app)
         self.assertIn("data-review-dialog-close", app)
 
+    def test_interactive_reviews_keep_visible_text_as_accessible_name(self):
+        home = self.read("index.html")
+        first_group = re.search(r'<div class="google-reviews-group">(.*?)</div><div class="google-reviews-group" aria-hidden="true">', home, re.S)
+        self.assertIsNotNone(first_group)
+        cards = re.findall(r'<article class="google-review-card"[^>]*data-review-open[^>]*>', first_group.group(1))
+        self.assertGreaterEqual(len(cards), 5)
+        for card in cards:
+            self.assertNotIn('aria-label=', card, "Visible review text should provide the button accessible name")
+
     def test_sitewide_footer_has_verified_bani_yas_hours(self):
         required = [
             "Bani Yas Tower hours",
@@ -61,6 +70,13 @@ class Patch21ReviewsFooterSocial(unittest.TestCase):
         for path, html in self.public_pages_with_footer():
             self.assertIn(url, html, f"{path} missing official Instagram URL")
             self.assertIn("@dr.munirsilwadidental", html, f"{path} missing Instagram handle")
+            instagram = re.search(r'<a class="footer-instagram"[^>]*>', html)
+            self.assertIsNotNone(instagram, f"{path} missing Instagram link")
+            self.assertNotIn('aria-label=', instagram.group(0), f"{path} should use the visible Instagram handle as its name")
+
+    def test_footer_hours_text_uses_accessible_contrast(self):
+        css = self.read("styles.css")
+        self.assertRegex(css, r'\.footer-hours em\{color:#526a73\}')
 
 
 if __name__ == "__main__":
