@@ -1,0 +1,19 @@
+name: Patch 21 TDD
+on:
+  push:
+    branches:
+      - patch-21-reviews-footer-socials
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-21-reviews-footer-socials
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Patch 21 contract
+        run: python -m unittest tests.test_patch21_reviews_footer_socials -v
