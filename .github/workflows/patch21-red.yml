@@ -1,0 +1,19 @@
+name: Patch 21 RED
+on:
+  push:
+    branches:
+      - patch-21-reviews-footer-social
+permissions:
+  contents: read
+jobs:
+  red:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: patch-21-reviews-footer-social
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Patch 21 contract should fail before implementation
+        run: python -m unittest tests.test_patch21_reviews_footer_social -v
