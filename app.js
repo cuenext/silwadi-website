@@ -119,3 +119,48 @@ document.querySelectorAll('[data-faq-button]').forEach(button => {
     if (primaryConsultation || consultationMail) link.setAttribute('href', target);
   });
 })();
+
+
+// Expand Google review excerpts into an accessible reading dialog.
+const reviewDialog = document.querySelector('[data-review-dialog]');
+const reviewDialogClose = document.querySelector('[data-review-dialog-close]');
+const reviewDialogName = document.querySelector('[data-review-dialog-name]');
+const reviewDialogText = document.querySelector('[data-review-dialog-text]');
+const reviewDialogStars = document.querySelector('[data-review-dialog-stars]');
+const reviewDialogAvatar = document.querySelector('[data-review-dialog-avatar]');
+let lastReviewTrigger = null;
+
+function openReviewDialog(card) {
+  if (!reviewDialog || !card) return;
+  const name = card.querySelector('.google-review-card__top strong')?.textContent?.trim() || 'Patient review';
+  const text = card.querySelector('p')?.textContent?.trim() || '';
+  const stars = card.querySelector('.review-stars');
+  const avatar = card.querySelector('.review-avatar')?.textContent?.trim() || '';
+  if (reviewDialogName) reviewDialogName.textContent = name;
+  if (reviewDialogText) reviewDialogText.textContent = text;
+  if (reviewDialogAvatar) reviewDialogAvatar.textContent = avatar;
+  if (reviewDialogStars && stars) {
+    reviewDialogStars.textContent = stars.textContent || '';
+    reviewDialogStars.setAttribute('aria-label', stars.getAttribute('aria-label') || 'Google review rating');
+  }
+  lastReviewTrigger = card;
+  if (typeof reviewDialog.showModal === 'function') reviewDialog.showModal();
+  else reviewDialog.setAttribute('open', '');
+}
+
+document.querySelectorAll('[data-review-open]').forEach(card => {
+  card.addEventListener('click', () => openReviewDialog(card));
+  card.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    openReviewDialog(card);
+  });
+});
+
+reviewDialogClose?.addEventListener('click', () => reviewDialog?.close());
+reviewDialog?.addEventListener('click', event => {
+  if (event.target === reviewDialog) reviewDialog.close();
+});
+reviewDialog?.addEventListener('close', () => {
+  if (lastReviewTrigger?.isConnected && lastReviewTrigger.tabIndex >= 0) lastReviewTrigger.focus();
+});

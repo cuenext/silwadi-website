@@ -49,3 +49,28 @@
 .treatment-path:hover .treatment-path__thumb img{transform:scale(1.06);filter:saturate(1.04)}
 @media(max-width:620px){.treatment-path__thumb{width:54px;border-radius:10px}}
 @media(prefers-reduced-motion:reduce){.google-rating-card,.google-review-card,.treatment-path__thumb img{transition:none}.google-rating-card:hover,.google-review-card:hover{transform:none}.treatment-path:hover .treatment-path__thumb img{transform:none}}
+
+
+/* Patch 21: aggregate half-star + readable review dialog */
+.google-rating-card__stars{display:flex;align-items:center;gap:2px;letter-spacing:0}
+.rating-star{position:relative;display:inline-block;width:1em;color:#d6dee0;line-height:1}
+.rating-star--full{color:#f5b301}
+.rating-star--half::before{content:"★";position:absolute;inset:0 auto 0 0;width:50%;overflow:hidden;color:#f5b301}
+.google-review-card[data-review-open]{cursor:pointer}
+.google-review-card[data-review-open]:focus-visible{outline:3px solid rgba(13,124,144,.32);outline-offset:4px}
+.review-dialog{width:min(620px,calc(100% - 32px));max-height:min(82vh,720px);padding:0;border:0;border-radius:24px;background:transparent;color:#173943;overflow:visible}
+.review-dialog::backdrop{background:rgba(5,42,54,.54);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.review-dialog__surface{position:relative;padding:34px 36px 32px;border:1px solid rgba(210,226,229,.95);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(248,252,252,.98));box-shadow:0 32px 90px rgba(5,42,54,.28);animation:review-dialog-in .2s ease-out}
+.review-dialog__close{position:absolute;top:16px;right:16px;width:38px;height:38px;border:1px solid #d6e2e4;border-radius:50%;background:#fff;color:#083847;font-size:24px;line-height:1;cursor:pointer;transition:transform .18s ease,background .18s ease}
+.review-dialog__close:hover{background:#f2f7f7;transform:scale(1.04)}
+.review-dialog__eyebrow{margin:0 0 20px;color:#0d7c90;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
+.review-dialog__identity{display:flex;align-items:center;gap:14px;padding-right:44px}
+.review-dialog__identity .review-avatar{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 50px;background:#e7f3f4;color:#075f6d;font-size:12px;font-weight:800}
+.review-dialog__identity h3{margin:0 0 7px;color:#083847;font-size:22px;line-height:1.15;letter-spacing:-.025em}
+.review-dialog__identity .review-stars{display:block;color:#f5b301;font-size:16px;letter-spacing:2px}
+.review-dialog__surface>p{margin:26px 0 24px;color:#36545e;font-size:17px;line-height:1.72}
+.review-dialog__maps{display:inline-flex;min-height:42px;align-items:center;padding:0 15px;border:1px solid #d5e2e4;border-radius:11px;background:#fff;color:#0b7182;font-size:11px;font-weight:750;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+.review-dialog__maps:hover{transform:translateY(-1px);border-color:#bdd4d8;box-shadow:0 8px 20px rgba(8,56,71,.08)}
+@keyframes review-dialog-in{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+@media(max-width:620px){.review-dialog{width:calc(100% - 22px)}.review-dialog__surface{padding:28px 22px 24px;border-radius:20px}.review-dialog__surface>p{font-size:16px;line-height:1.68}.review-dialog__identity h3{font-size:19px}}
+@media(prefers-reduced-motion:reduce){.review-dialog__surface{animation:none}.review-dialog__close,.review-dialog__maps{transition:none}.review-dialog__close:hover,.review-dialog__maps:hover{transform:none}}
