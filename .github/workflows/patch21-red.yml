@@ -22,7 +22,9 @@ jobs:
       - name: Install test dependency
         run: python -m pip install --disable-pip-version-check pillow
       - name: Apply Patch 21
-        run: python tools/patch21_apply.py
+        run: |
+          python tools/patch21_apply.py
+          python tools/patch21_a11y_fix.py
       - name: Commit candidate
         shell: bash
         run: |
