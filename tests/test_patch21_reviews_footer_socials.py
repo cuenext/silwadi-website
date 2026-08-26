@@ -17,7 +17,7 @@ class Patch21ReviewsFooterSocials(unittest.TestCase):
         ]
 
     def test_google_summary_visually_uses_four_full_and_one_half_star(self):
-        rating = re.search(r'<div class="google-rating-card".*?</div>', self.home, re.S)
+        rating = re.search(r'<a class="google-rating-card".*?</a>', self.home, re.S)
         self.assertIsNotNone(rating)
         block = rating.group(0)
         self.assertIn('aria-label="4.6 out of 5 stars"', block)
