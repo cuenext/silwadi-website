@@ -27,8 +27,8 @@ class Patch21ReviewsFooterSocials(unittest.TestCase):
 
     def test_review_cards_are_tappable_and_open_accessible_dialog(self):
         cards = re.findall(r'class="google-review-card[^\"]*"', self.home)
-        self.assertGreaterEqual(len(cards), 6)
-        self.assertGreaterEqual(self.home.count('data-review-expand'), 6)
+        self.assertGreaterEqual(len(cards), 10)  # five visible + five aria-hidden marquee copies
+        self.assertEqual(self.home.count('data-review-expand'), 5)
         self.assertIn('<dialog class="review-dialog"', self.home)
         self.assertIn('data-review-dialog', self.home)
         self.assertIn('data-review-close', self.home)
