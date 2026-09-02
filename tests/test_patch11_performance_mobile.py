@@ -49,13 +49,17 @@ class PatchElevenPerformanceMobile(unittest.TestCase):
     def test_directory_and_profiles_use_optimized_portraits(self):
         directory = read('doctors.html')
         self.assertNotRegex(directory, r'<img[^>]+src="assets/doctors/[^/\"]+\.png"')
-        self.assertGreaterEqual(directory.count('assets/doctors/optimized/'), 12)
-        self.assertGreaterEqual(directory.count('loading="lazy"'), 12)
+        self.assertGreaterEqual(directory.count('assets/doctors/optimized/'), 8)
+        self.assertGreaterEqual(directory.count('loading="lazy"'), 8)
+        self.assertEqual(directory.count('doctor-directory-card__photo--placeholder'), 7)
         for page in sorted((ROOT / 'doctors').glob('*.html')):
             html = page.read_text(encoding='utf-8')
-            self.assertIn('../assets/doctors/optimized/', html, page.name)
-            self.assertRegex(html, r'<img[^>]+width="\d+"[^>]+height="\d+"', page.name)
-            self.assertIn('decoding="async"', html, page.name)
+            if 'doctor-profile-placeholder' in html:
+                self.assertNotRegex(html, r'<img[^>]+src="\.\./assets/doctors/optimized/', page.name)
+            else:
+                self.assertIn('../assets/doctors/optimized/', html, page.name)
+                self.assertRegex(html, r'<img[^>]+width="\d+"[^>]+height="\d+"', page.name)
+                self.assertIn('decoding="async"', html, page.name)
 
     def test_map_keeps_lazy_loading_and_stable_dimensions(self):
         html = read('locations.html')

@@ -7,7 +7,7 @@ import unittest
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
-LAUNCH_DATE = '2026-08-25'
+LAUNCH_DATE = '2026-09-02'
 
 PAGE_URLS = {
     'index.html': 'https://silwadi.ae/',
@@ -22,12 +22,15 @@ PAGE_URLS = {
     'doctors/dr-moammar-rifai.html': 'https://silwadi.ae/doctors/dr-moammar-rifai.html',
     'doctors/dr-ahmed-el-shehri.html': 'https://silwadi.ae/doctors/dr-ahmed-el-shehri.html',
     'doctors/dr-fahed-khalil.html': 'https://silwadi.ae/doctors/dr-fahed-khalil.html',
-    'doctors/dr-mohammed-abualkas.html': 'https://silwadi.ae/doctors/dr-mohammed-abualkas.html',
-    'doctors/dr-reem-alshaer.html': 'https://silwadi.ae/doctors/dr-reem-alshaer.html',
     'doctors/dr-afnan-mashal.html': 'https://silwadi.ae/doctors/dr-afnan-mashal.html',
-    'doctors/dr-hawraa-al-ameri.html': 'https://silwadi.ae/doctors/dr-hawraa-al-ameri.html',
-    'doctors/dr-ibrahem-abu-shanab.html': 'https://silwadi.ae/doctors/dr-ibrahem-abu-shanab.html',
     'doctors/dr-krishnamurthy-katta-balajee.html': 'https://silwadi.ae/doctors/dr-krishnamurthy-katta-balajee.html',
+    'doctors/dr-ehab-hassouneh.html': 'https://silwadi.ae/doctors/dr-ehab-hassouneh.html',
+    'doctors/dr-sara-ismail.html': 'https://silwadi.ae/doctors/dr-sara-ismail.html',
+    'doctors/dr-nasr-keshkiea.html': 'https://silwadi.ae/doctors/dr-nasr-keshkiea.html',
+    'doctors/dr-dana-awad.html': 'https://silwadi.ae/doctors/dr-dana-awad.html',
+    'doctors/dr-kashmira-pawar-jayprakash.html': 'https://silwadi.ae/doctors/dr-kashmira-pawar-jayprakash.html',
+    'doctors/dr-nachiket-shah.html': 'https://silwadi.ae/doctors/dr-nachiket-shah.html',
+    'doctors/dr-lana-masoud.html': 'https://silwadi.ae/doctors/dr-lana-masoud.html',
     'treatments/dental-implants.html': 'https://silwadi.ae/treatments/dental-implants.html',
     'treatments/orthodontics.html': 'https://silwadi.ae/treatments/orthodontics.html',
     'treatments/cosmetic-dentistry.html': 'https://silwadi.ae/treatments/cosmetic-dentistry.html',
@@ -43,11 +46,11 @@ LEGACY_DOCTORS = {
     'https://silwadidentalcentres.ae/doctors-details/dr-moammar-rifai.php': 'https://silwadi.ae/doctors/dr-moammar-rifai.html',
     'https://silwadidentalcentres.ae/doctors-details/dr-ahmed-farouk-ghel.php': 'https://silwadi.ae/doctors/dr-ahmed-el-shehri.html',
     'https://silwadidentalcentres.ae/doctors-details/dr-fahd-elia-abi-khalil.php': 'https://silwadi.ae/doctors/dr-fahed-khalil.html',
-    'https://silwadidentalcentres.ae/doctors-details/dr-mohammeda-a-abualkas.php': 'https://silwadi.ae/doctors/dr-mohammed-abualkas.html',
-    'https://silwadidentalcentres.ae/doctors-details/dr-reem-h-e-alshaer.php': 'https://silwadi.ae/doctors/dr-reem-alshaer.html',
+    'https://silwadidentalcentres.ae/doctors-details/dr-mohammeda-a-abualkas.php': 'https://silwadi.ae/doctors.html',
+    'https://silwadidentalcentres.ae/doctors-details/dr-reem-h-e-alshaer.php': 'https://silwadi.ae/doctors.html',
     'https://silwadidentalcentres.ae/doctors-details/dr-afnan-ibrahim-mohamed-mashal.php': 'https://silwadi.ae/doctors/dr-afnan-mashal.html',
-    'https://silwadidentalcentres.ae/doctors-details/Dr-Hawraa-Al-Ameri.php': 'https://silwadi.ae/doctors/dr-hawraa-al-ameri.html',
-    'https://silwadidentalcentres.ae/doctors-details/Dr-Ibrahem-Abu-Shanab.php': 'https://silwadi.ae/doctors/dr-ibrahem-abu-shanab.html',
+    'https://silwadidentalcentres.ae/doctors-details/Dr-Hawraa-Al-Ameri.php': 'https://silwadi.ae/doctors.html',
+    'https://silwadidentalcentres.ae/doctors-details/Dr-Ibrahem-Abu-Shanab.php': 'https://silwadi.ae/doctors.html',
     'https://silwadidentalcentres.ae/doctors-details/Dr-Krishnamurthy-Katta-Balajee.php': 'https://silwadi.ae/doctors/dr-krishnamurthy-katta-balajee.html',
 }
 
@@ -170,7 +173,7 @@ class PatchTwelveLaunchSEOContract(unittest.TestCase):
             capture_output=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn('24 pages', result.stdout)
+        self.assertIn('27 pages', result.stdout)
         self.assertIn('0 errors', result.stdout)
 
 

@@ -39,7 +39,7 @@ class PatchNineTreatmentSEO(unittest.TestCase):
             count=read(rel).count('data-faq-item'); self.assertGreaterEqual(count,2,rel); self.assertLessEqual(count,4,rel)
     def test_orthodontics_has_braces_clear_aligners_and_verified_team(self):
         html=read('treatments/orthodontics.html'); lower=html.lower(); self.assertIn('braces',lower); self.assertIn('clear aligners',lower)
-        for name in ['Dr. Hani Hasbini','Dr. Moammer Rifai','Dr. Krishnamurthy Katta Balajee']: self.assertIn(name,html)
+        for name in ['Dr. Hani Hasbini','Dr. Moammar Mohamed Rifai','Dr. Krishnamurthy Balajee']: self.assertIn(name,html)
         self.assertIn('../doctors.html',html)
     def test_implants_routes_to_munir_profile(self):
         html=read('treatments/dental-implants.html'); self.assertIn('../doctors/dr-munir-silwadi.html',html); self.assertIn('Dr. Munir Silwadi',html)
@@ -56,6 +56,6 @@ class PatchNineTreatmentSEO(unittest.TestCase):
     def test_sitemap_contains_all_primary_treatment_urls_once(self):
         root=ET.fromstring(read('sitemap.xml')); ns={'sm':'http://www.sitemaps.org/schemas/sitemap/0.9'}; locs=[el.text for el in root.findall('sm:url/sm:loc',ns)]
         for rel in PRIMARY: self.assertEqual(locs.count(f'https://silwadi.ae/{rel}'),1,rel)
-        self.assertEqual(len(locs),24)
+        self.assertEqual(len(locs),27)
 
 if __name__=='__main__': unittest.main()

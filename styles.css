@@ -103,6 +103,7 @@ img{max-width:100%}
 .legacy-facts>div{display:grid;grid-template-columns:150px 1fr;gap:24px;padding:22px 4px;border-bottom:1px solid var(--line-dark);align-items:baseline}.legacy-facts strong{color:var(--navy);font-size:18px;font-weight:650}.legacy-facts span{color:var(--muted);font-size:11px;line-height:1.5}
 
 .featured-doctors{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.language-switch{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:40px;padding:0 12px;border:1px solid rgba(8,56,71,.22);border-radius:999px;background:#fff;color:var(--navy);font:inherit;font-size:13px;font-weight:800;line-height:1;cursor:pointer;transition:border-color .2s ease,background .2s ease,color .2s ease}.language-switch:hover,.language-switch:focus-visible{border-color:var(--teal);background:var(--quiet);color:var(--teal);outline:none}.language-ar{font-family:Tahoma,Arial,sans-serif}.language-ar .site-nav,.language-ar .mobile-nav__panel,.language-ar main,.language-ar .site-footer{text-align:right}.language-ar .services-mega__grid a,.language-ar .treatment-path,.language-ar .doctor-card__body,.language-ar .doctor-directory-card__body{text-align:right}.language-ar .text-link span,.language-ar .doctor-directory-card__link span{transform:scaleX(-1)}
 .doctor-card{border:1px solid var(--line);background:#fff;transition:transform .22s,box-shadow .22s}
 .doctor-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
 .doctor-card__photo{aspect-ratio:4/5;overflow:hidden;background:#d9e9ec}

@@ -70,7 +70,8 @@ function filterDoctors() {
   doctorCards.forEach(card => {
     const name = (card.dataset.name || '').toLowerCase();
     const specialty = (card.dataset.specialty || '').toLowerCase();
-    const matchesText = !query || name.includes(query) || specialty.includes(query);
+    const arabicSearch = (card.dataset.arSearch || '').toLowerCase();
+    const matchesText = !query || name.includes(query) || specialty.includes(query) || arabicSearch.includes(query);
     const matchesSpecialty = activeSpecialty === 'all' || specialty.includes(activeSpecialty);
     const show = matchesText && matchesSpecialty;
     card.hidden = !show;
@@ -79,7 +80,9 @@ function filterDoctors() {
 
   if (doctorResults) {
     const unfiltered = !query && activeSpecialty === 'all';
-    doctorResults.textContent = unfiltered ? `${visible} dentists & specialists` : `${visible} clinician${visible === 1 ? '' : 's'}`;
+    const language = window.SilwadiLanguage?.getLanguage?.() || 'en';
+    const englishLabel = unfiltered ? `${visible} dentists & specialists` : `${visible} clinician${visible === 1 ? '' : 's'}`;
+    doctorResults.textContent = window.SilwadiLanguage?.translate?.(englishLabel, language) || englishLabel;
   }
   if (doctorEmpty) doctorEmpty.hidden = visible !== 0;
 }
@@ -93,6 +96,7 @@ specialtyFilters.forEach(button => {
   });
 });
 filterDoctors();
+document.addEventListener('silwadi:languagechange', filterDoctors);
 
 
 // Shared FAQ accordion behavior.
@@ -166,3 +170,5 @@ reviewDialog?.addEventListener('click', event => {
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && reviewDialog?.open) reviewDialog.close();
 });
+
+window.SilwadiLanguage?.init?.();

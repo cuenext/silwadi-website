@@ -52,7 +52,7 @@ class PatchFifteenHomepageRedesign(unittest.TestCase):
     def test_home_preserves_verified_clinic_facts_and_featured_services(self):
         required = (
             'since 1980',
-            '12 dentists',
+            '15 dentists',
             'Implantology',
             'Orthodontics',
             'Periodontics',

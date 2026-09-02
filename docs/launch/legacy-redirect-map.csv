@@ -2,7 +2,7 @@ source_url,target_url,status,notes
 https://silwadidentalcentres.ae/,https://silwadi.ae/,301,Legacy home to new home
 https://silwadidentalcentres.ae/index.php,https://silwadi.ae/,301,Legacy index to new home
 https://silwadidentalcentres.ae/?lang=en,https://silwadi.ae/,301,Legacy English home to new home
-https://silwadidentalcentres.ae/?lang=ar,https://silwadi.ae/,301,Legacy Arabic home to current launch home; add an Arabic target later if introduced
+https://silwadidentalcentres.ae/?lang=ar,https://silwadi.ae/,301,Legacy Arabic home; the destination now includes an Arabic language switch
 https://silwadidentalcentres.ae/about-us.php,https://silwadi.ae/about.html,301,About page
 https://silwadidentalcentres.ae/contact-us.php,https://silwadi.ae/contact.html,301,Contact page
 https://silwadidentalcentres.ae/doctors.php,https://silwadi.ae/doctors.html,301,Doctor directory
@@ -14,9 +14,9 @@ https://silwadidentalcentres.ae/doctors-details/dr-hani-bahijie-hasbini.php,http
 https://silwadidentalcentres.ae/doctors-details/dr-moammar-rifai.php,https://silwadi.ae/doctors/dr-moammar-rifai.html,301,Dr. Moammar Rifai
 https://silwadidentalcentres.ae/doctors-details/dr-ahmed-farouk-ghel.php,https://silwadi.ae/doctors/dr-ahmed-el-shehri.html,301,Dr. Ahmed El Shehri
 https://silwadidentalcentres.ae/doctors-details/dr-fahd-elia-abi-khalil.php,https://silwadi.ae/doctors/dr-fahed-khalil.html,301,Dr. Fahed Khalil
-https://silwadidentalcentres.ae/doctors-details/dr-mohammeda-a-abualkas.php,https://silwadi.ae/doctors/dr-mohammed-abualkas.html,301,Dr. Mohammed Abualkas
-https://silwadidentalcentres.ae/doctors-details/dr-reem-h-e-alshaer.php,https://silwadi.ae/doctors/dr-reem-alshaer.html,301,Dr. Reem Alshaer
+https://silwadidentalcentres.ae/doctors-details/dr-mohammeda-a-abualkas.php,https://silwadi.ae/doctors.html,301,Former profile; redirect to current doctor directory
+https://silwadidentalcentres.ae/doctors-details/dr-reem-h-e-alshaer.php,https://silwadi.ae/doctors.html,301,Former profile; redirect to current doctor directory
 https://silwadidentalcentres.ae/doctors-details/dr-afnan-ibrahim-mohamed-mashal.php,https://silwadi.ae/doctors/dr-afnan-mashal.html,301,Dr. Afnan Mashal
-https://silwadidentalcentres.ae/doctors-details/Dr-Hawraa-Al-Ameri.php,https://silwadi.ae/doctors/dr-hawraa-al-ameri.html,301,Dr. Hawra'a Al Ameri
-https://silwadidentalcentres.ae/doctors-details/Dr-Ibrahem-Abu-Shanab.php,https://silwadi.ae/doctors/dr-ibrahem-abu-shanab.html,301,Dr. Ibrahem Abu Shanab
+https://silwadidentalcentres.ae/doctors-details/Dr-Hawraa-Al-Ameri.php,https://silwadi.ae/doctors.html,301,Former profile; redirect to current doctor directory
+https://silwadidentalcentres.ae/doctors-details/Dr-Ibrahem-Abu-Shanab.php,https://silwadi.ae/doctors.html,301,Former profile; redirect to current doctor directory
 https://silwadidentalcentres.ae/doctors-details/Dr-Krishnamurthy-Katta-Balajee.php,https://silwadi.ae/doctors/dr-krishnamurthy-katta-balajee.html,301,Dr. Krishnamurthy Katta Balajee

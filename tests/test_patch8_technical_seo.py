@@ -22,12 +22,15 @@ PAGE_URLS = {
     'doctors/dr-moammar-rifai.html': 'https://silwadi.ae/doctors/dr-moammar-rifai.html',
     'doctors/dr-ahmed-el-shehri.html': 'https://silwadi.ae/doctors/dr-ahmed-el-shehri.html',
     'doctors/dr-fahed-khalil.html': 'https://silwadi.ae/doctors/dr-fahed-khalil.html',
-    'doctors/dr-mohammed-abualkas.html': 'https://silwadi.ae/doctors/dr-mohammed-abualkas.html',
-    'doctors/dr-reem-alshaer.html': 'https://silwadi.ae/doctors/dr-reem-alshaer.html',
     'doctors/dr-afnan-mashal.html': 'https://silwadi.ae/doctors/dr-afnan-mashal.html',
-    'doctors/dr-hawraa-al-ameri.html': 'https://silwadi.ae/doctors/dr-hawraa-al-ameri.html',
-    'doctors/dr-ibrahem-abu-shanab.html': 'https://silwadi.ae/doctors/dr-ibrahem-abu-shanab.html',
     'doctors/dr-krishnamurthy-katta-balajee.html': 'https://silwadi.ae/doctors/dr-krishnamurthy-katta-balajee.html',
+    'doctors/dr-ehab-hassouneh.html': 'https://silwadi.ae/doctors/dr-ehab-hassouneh.html',
+    'doctors/dr-sara-ismail.html': 'https://silwadi.ae/doctors/dr-sara-ismail.html',
+    'doctors/dr-nasr-keshkiea.html': 'https://silwadi.ae/doctors/dr-nasr-keshkiea.html',
+    'doctors/dr-dana-awad.html': 'https://silwadi.ae/doctors/dr-dana-awad.html',
+    'doctors/dr-kashmira-pawar-jayprakash.html': 'https://silwadi.ae/doctors/dr-kashmira-pawar-jayprakash.html',
+    'doctors/dr-nachiket-shah.html': 'https://silwadi.ae/doctors/dr-nachiket-shah.html',
+    'doctors/dr-lana-masoud.html': 'https://silwadi.ae/doctors/dr-lana-masoud.html',
     'treatments/dental-implants.html': 'https://silwadi.ae/treatments/dental-implants.html',
     'treatments/orthodontics.html': 'https://silwadi.ae/treatments/orthodontics.html',
     'treatments/cosmetic-dentistry.html': 'https://silwadi.ae/treatments/cosmetic-dentistry.html',
@@ -162,7 +165,7 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
         ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
         locs = [el.text for el in root.findall('sm:url/sm:loc', ns)]
         self.assertEqual(locs, list(PAGE_URLS.values()))
-        self.assertEqual(len(locs), 24)
+        self.assertEqual(len(locs), 27)
         self.assertTrue(all(url.startswith('https://silwadi.ae/') for url in locs))
         self.assertFalse(any('silwadidentalcentres.ae' in url for url in locs))
 

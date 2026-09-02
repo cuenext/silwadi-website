@@ -80,7 +80,7 @@ class Patch18ServicesAboutImagery(unittest.TestCase):
         required = [
             "since 1980",
             "multi-specialty",
-            "12 dentists",
+            "15 dentists",
             "Bani Yas Tower",
             "Al Raha Mall",
             "Dr. Munir Silwadi",

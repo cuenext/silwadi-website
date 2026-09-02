@@ -49,21 +49,24 @@ class PatchTwoDoctorsContract(unittest.TestCase):
         html = read('doctors.html')
         for name in [
             'Dr. Munir Silwadi', 'Dr. Moheb Silwadi', 'Dr. Hani Hasbini',
-            'Dr. Moammer Rifai', 'Dr. Ahmed El Shehri', 'Dr. Fahed Khalil',
-            'Dr. Mohammed Abualkas', 'Dr. Reem Alshaer', 'Dr. Afnan Mashal',
-            "Dr. Hawra'a Al Ameri", 'Dr. Ibrahem Abu Shanab',
-            'Dr. Krishnamurthy Katta Balajee'
+            'Dr. Moammar Mohamed Rifai', 'Dr. Ahmed El Shehri',
+            'Dr. Fahed Abi Khalil', 'Dr. Afnan Mashal',
+            'Dr. Krishnamurthy Balajee', 'Dr. Ehab Hassouneh Bassam A',
+            'Dr. Sara Ismail', 'Dr. Nasr Keshkiea', 'Dr. Dana Awad',
+            'Dr. Kashmira Pawar Jayprakash', 'Dr. Nachiket Shah',
+            'Dr. Lana Masoud'
         ]:
             self.assertIn(name, html)
         self.assertIn('data-doctor-search', html)
         self.assertIn('data-specialty-filter', html)
         self.assertIn('href="doctors/dr-munir-silwadi.html"', html)
-        self.assertEqual(html.count('data-doctor-card'), 12)
+        self.assertEqual(html.count('data-doctor-card'), 15)
 
     def test_doctor_directory_uses_real_assets_and_accessible_images(self):
         html = read('doctors.html')
         for src in re.findall(r'<img[^>]+src="([^"]+)"', html, re.I):
             self.assertTrue((ROOT / src).is_file(), src)
+        self.assertEqual(html.count('doctor-card__placeholder'), 7)
         for tag in re.findall(r'<img\b[^>]*>', html, re.I):
             self.assertRegex(tag, r'\balt="[^"]+"')
 

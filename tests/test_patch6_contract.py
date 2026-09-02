@@ -12,11 +12,11 @@ def read(name):
 class PatchSixHumanCopyAndLocationsContract(unittest.TestCase):
     def test_home_replaces_bland_doctor_stat_with_team_proof(self):
         html = read('index.html')
-        self.assertIn('12 dentists &amp; specialists', html)
+        self.assertIn('15 dentists &amp; specialists', html)
         self.assertIn('One established clinical team.', html)
         self.assertIn('Meet the team', html)
         self.assertGreaterEqual(html.count('team-proof__avatar'), 4)
-        self.assertNotIn('<strong>12 doctors</strong><span>General &amp; specialist care</span>', html)
+        self.assertNotIn('<strong>15 doctors</strong><span>General &amp; specialist care</span>', html)
 
     def test_public_copy_avoids_banned_ai_filler(self):
         banned = [
