@@ -66,8 +66,7 @@ class ApprovedDoctorRosterContract(unittest.TestCase):
             "Philosophy of Care",
         ]:
             self.assertIn(phrase, html)
-        self.assertIn("doctor-profile-placeholder", html)
-        self.assertNotRegex(html, r'dr-dana-awad\.(?:png|jpe?g|webp)')
+        self.assertIn("../assets/doctors/optimized/dr-dana-awad.webp", html)
 
 
 class ArabicLanguageExperienceContract(unittest.TestCase):

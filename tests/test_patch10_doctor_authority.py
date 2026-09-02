@@ -9,10 +9,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCTORS = {
     'dr-afnan-mashal': ('Dr. Afnan Mashal', 'General Dentist', 'dr-afnan-mashal.webp', 'Bani Yas Tower, Abu Dhabi'),
     'dr-moheb-silwadi': ('Dr. Moheb Silwadi', 'General Dentist', 'dr-moheb-silwadi.webp', 'Al Raha Mall, Abu Dhabi'),
-    'dr-ehab-hassouneh': ('Dr. Ehab Hassouneh Bassam A', 'General Dentist', None, 'Al Raha Mall, Abu Dhabi'),
+    'dr-ehab-hassouneh': ('Dr. Ehab Hassouneh Bassam A', 'General Dentist', 'dr-ehab-hassouneh.webp', 'Al Raha Mall, Abu Dhabi'),
     'dr-sara-ismail': ('Dr. Sara Ismail', 'General Dentist', None, 'Al Raha Mall, Abu Dhabi'),
     'dr-nasr-keshkiea': ('Dr. Nasr Keshkiea', 'General Dentist', None, 'Bani Yas Tower, Abu Dhabi'),
-    'dr-dana-awad': ('Dr. Dana Awad', 'General Dentist', None, 'Bani Yas Tower, Abu Dhabi'),
+    'dr-dana-awad': ('Dr. Dana Awad', 'General Dentist', 'dr-dana-awad.webp', 'Bani Yas Tower, Abu Dhabi'),
     'dr-munir-silwadi': ('Dr. Munir Silwadi', 'Specialist Prosthodontist & Implantologist', 'dr-munir-silwadi.webp', 'Both locations, Abu Dhabi'),
     'dr-ahmed-el-shehri': ('Dr. Ahmed El Shehri', 'Endodontist', 'dr-ahmed-el-shehri.webp', 'Bani Yas Tower, Abu Dhabi'),
     'dr-fahed-khalil': ('Dr. Fahed Abi Khalil', 'Periodontist & Implantologist', 'dr-fahed-khalil.webp', 'Bani Yas Tower, Abu Dhabi'),
@@ -57,7 +57,11 @@ class PatchTenDoctorAuthority(unittest.TestCase):
             nodes = jsonld_nodes(rel); person = next((n for n in nodes if n.get('@type') == 'Person'), None); crumbs = next((n for n in nodes if n.get('@type') == 'BreadcrumbList'), None)
             self.assertIsNotNone(person, rel); self.assertIsNotNone(crumbs, rel); self.assertEqual(person['name'], name, rel); self.assertEqual(person['jobTitle'], specialty, rel)
             self.assertEqual(person['url'], canonical, rel); self.assertEqual(person['worksFor']['@id'], 'https://silwadi.ae/#dentist', rel)
-            if image: self.assertEqual(person['image'], f'https://silwadi.ae/assets/doctors/{image.replace(".webp", ".png")}', rel)
+            if image:
+                expected = f'https://silwadi.ae/assets/doctors/{image.replace(".webp", ".png")}'
+                if slug in {'dr-dana-awad', 'dr-ehab-hassouneh'}:
+                    expected = f'https://silwadi.ae/assets/doctors/optimized/{image}'
+                self.assertEqual(person['image'], expected, rel)
             else: self.assertNotIn('image', person, rel)
             self.assertEqual(len(crumbs['itemListElement']), 3, rel); titles.append(title.group(1).strip()); descriptions.append(desc.group(1).strip())
         self.assertEqual(len(titles), len(set(titles))); self.assertEqual(len(descriptions), len(set(descriptions)))

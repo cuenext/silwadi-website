@@ -49,9 +49,9 @@ class PatchElevenPerformanceMobile(unittest.TestCase):
     def test_directory_and_profiles_use_optimized_portraits(self):
         directory = read('doctors.html')
         self.assertNotRegex(directory, r'<img[^>]+src="assets/doctors/[^/\"]+\.png"')
-        self.assertGreaterEqual(directory.count('assets/doctors/optimized/'), 8)
-        self.assertGreaterEqual(directory.count('loading="lazy"'), 8)
-        self.assertEqual(directory.count('doctor-directory-card__photo--placeholder'), 7)
+        self.assertGreaterEqual(directory.count('assets/doctors/optimized/'), 10)
+        self.assertGreaterEqual(directory.count('loading="lazy"'), 10)
+        self.assertEqual(directory.count('doctor-directory-card__photo--placeholder'), 5)
         for page in sorted((ROOT / 'doctors').glob('*.html')):
             html = page.read_text(encoding='utf-8')
             if 'doctor-profile-placeholder' in html:
