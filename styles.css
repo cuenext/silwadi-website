@@ -217,7 +217,7 @@ img{max-width:100%}
 
 /* Patch 1: contact affordances */
 .footer-contact-link{display:inline-flex!important;align-items:center;gap:8px;min-height:28px;max-width:100%}
-.footer-contact-link .contact-icon{width:16px;height:16px;flex:0 0 16px;color:var(--teal);transition:color .2s ease,transform .2s ease}
-.footer-contact-link:hover .contact-icon,.footer-contact-link:focus-visible .contact-icon{color:var(--navy);transform:translateY(-1px)}
+.footer-contact-link .contact-icon{width:16px;height:16px;flex:0 0 16px;color:currentColor;transition:color .2s ease,transform .2s ease}
+.footer-contact-link:hover .contact-icon,.footer-contact-link:focus-visible .contact-icon{transform:translateY(-1px)}
 @media(max-width:620px){.footer-contact-link{gap:10px;min-height:32px}.footer-contact-link .contact-icon{width:18px;height:18px;flex-basis:18px}}
 @media(prefers-reduced-motion:reduce){.care-shortcuts a,.footer-contact-link .contact-icon{transition:none}.care-shortcuts a:hover,.care-shortcuts a:focus-visible,.footer-contact-link:hover .contact-icon,.footer-contact-link:focus-visible .contact-icon{transform:none}}
