@@ -416,5 +416,33 @@
   Object.assign(arabic, {"Our story":"قصتنا","A familiar name in Abu Dhabi dentistry.":"اسمٌ مألوف في طب الأسنان بأبوظبي.","Silwadi Dental Centre has cared for patients in Abu Dhabi since 1980. What began with Dr. Munir Silwadi continues today through a team of general dentists and specialists working together.":"يعتني مركز السيلوي لطب الأسنان بمرضى أبوظبي منذ عام 1980. وما بدأه الدكتور منير السيلوي يستمر اليوم من خلال فريق من أطباء الأسنان العامين والاختصاصيين الذين يعملون معاً.","We keep the experience simple: listen carefully, explain your options clearly and build a treatment plan around you.":"نحافظ على بساطة التجربة: نستمع باهتمام، ونشرح خياراتك بوضوح، ونضع خطة علاج تناسبك.","Learn about Dr. Munir Silwadi":"تعرّف إلى الدكتور منير السيلوي","Silwadi Dental Centre opens in Abu Dhabi.":"افتتاح مركز السيلوي لطب الأسنان في أبوظبي.","General dentists and specialists care for families across two locations.":"أطباء عامون واختصاصيون يعتنون بالعائلات في موقعين."});
   Object.assign(arabic, {"Everything your smile needs in one place":"كل ما تحتاجه ابتسامتك في مكان واحد","General dentistry and specialist care for children and adults, delivered by an experienced team.":"طب أسنان عام ومتخصص للأطفال والكبار، يقدمه فريق ذو خبرة."});
   Object.assign(arabic, {"Care for every smile in Abu Dhabi":"رعاية لكل ابتسامة في أبوظبي","From check-ups to specialist treatment, our team is here to make dental care feel simple.":"من الفحوصات الدورية إلى العلاجات المتخصصة، نحرص على أن تكون رعاية أسنانك سهلة وواضحة."});
+  Object.assign(arabic, {
+    "Important notice": "تنبيه مهم",
+    "To our valued patients, please beware of false online offers promising free treatments at Silwadi Dental Centre.": "مرضانا الكرام، يرجى الحذر من العروض الإلكترونية المضللة التي تعد بعلاجات مجانية في مركز السيلوي لطب الأسنان.",
+    "Book your appointment": "احجز موعدك",
+    "Share a few details and our appointments team will confirm availability with you.": "أدخل بعض التفاصيل وسيتواصل معك فريق المواعيد لتأكيد التوفر.",
+    "Full name": "الاسم الكامل",
+    "Mobile": "رقم الهاتف المحمول",
+    "Treatment": "العلاج",
+    "Preferred appointment date": "التاريخ المفضل للموعد",
+    "Preferred appointment time": "الوقت المفضل للموعد",
+    "Preferred clinic": "العيادة المفضلة",
+    "Notes / other queries": "ملاحظات / استفسارات أخرى",
+    "Please choose": "يرجى الاختيار",
+    "General Dentistry": "طب الأسنان العام",
+    "Preventive Dentistry": "طب الأسنان الوقائي",
+    "Cosmetic Dentistry": "طب الأسنان التجميلي",
+    "Dental Implants": "زراعة الأسنان",
+    "Orthodontics": "تقويم الأسنان",
+    "Periodontics": "علاج اللثة",
+    "Endodontics": "علاج الجذور",
+    "Paediatric Dentistry": "طب أسنان الأطفال",
+    "Other / Not sure": "أخرى / لست متأكداً",
+    "Bani Yas Tower": "برج بني ياس",
+    "Al Raha Mall": "الراحة مول",
+    "Send appointment request": "إرسال طلب موعد",
+    "Your email app is opening with the appointment request.": "سيتم فتح تطبيق البريد الإلكتروني مع طلب الموعد."
+  });
+
   return { init, applyLanguage, getLanguage, translate };
 });
