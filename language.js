@@ -412,5 +412,6 @@
   }
 
   Object.assign(arabic, {"Serving Abu Dhabi families with care that feels personal.":"نخدم عائلات أبوظبي برعاية إنسانية تشعر معها بالاهتمام.","For more than four decades, Silwadi Dental Centre has welcomed Abu Dhabi families with clear advice, trusted expertise and thoughtful care at every visit.":"على مدى أكثر من أربعة عقود، رحّب مركز السيلوي لطب الأسنان بعائلات أبوظبي من خلال نصائح واضحة وخبرة موثوقة ورعاية مدروسة في كل زيارة."});
+  Object.assign(arabic, {"Care for every smile in Abu Dhabi":"رعاية لكل ابتسامة في أبوظبي","Since 1980, our dentists have welcomed Abu Dhabi families with clear advice and thoughtful care.":"منذ عام 1980، يرحّب أطباؤنا بعائلات أبوظبي من خلال نصائح واضحة ورعاية مدروسة."});
   return { init, applyLanguage, getLanguage, translate };
 });
