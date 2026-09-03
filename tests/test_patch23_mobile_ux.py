@@ -30,8 +30,8 @@ class Patch23MobileUx(unittest.TestCase):
     def test_contact_links_get_phone_and_email_icons_sitewide(self):
         js = self.read("app.js")
         self.assertIn("function enhanceContactLinks()", js)
-        self.assertIn(".footer-address a[href^=\"tel:\"]", js)
-        self.assertIn(".footer-address a[href^=\"mailto:\"]", js)
+        self.assertIn("a[href^=\"tel:\"]", js)
+        self.assertIn("a[href^=\"mailto:\"]", js)
         self.assertIn("classList.add('footer-contact-link')", js)
         self.assertIn("class=\"contact-icon\"", js)
         for path in ("index.html", "contact.html", "locations.html"):
