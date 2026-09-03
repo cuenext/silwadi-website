@@ -128,9 +128,13 @@ document.querySelectorAll('[data-consultation-form]').forEach(form => {
     const name = String(data.get('name') || '').trim();
     const email = String(data.get('email') || '').trim();
     const phone = String(data.get('phone') || '').trim();
-    const subject = String(data.get('subject') || 'Consultation request').trim();
+    const treatment = String(data.get('treatment') || '').trim();
+    const date = String(data.get('date') || '').trim();
+    const time = String(data.get('time') || '').trim();
+    const clinic = String(data.get('clinic') || '').trim();
+    const subject = treatment ? `Appointment request - ${treatment}` : 'Consultation request';
     const message = String(data.get('message') || '').trim();
-    const body = [`Name: ${name}`, `Email: ${email}`, `Phone: ${phone}`, '', message].join('\\n');
+    const body = [`Name: ${name}`, `Email: ${email}`, `Phone: ${phone}`, `Treatment: ${treatment || 'Not specified'}`, `Preferred date: ${date || 'Not specified'}`, `Preferred time: ${time || 'Not specified'}`, `Preferred clinic: ${clinic || 'Not specified'}`, '', `Notes: ${message || 'None'}`].join('\\n');
     window.location.href = `mailto:appointment@silwadidentalcenter.ae?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     const status = form.querySelector('[data-consultation-status]');
     if (status) status.textContent = 'Your email app is opening with the appointment request.';
@@ -153,7 +157,7 @@ document.querySelectorAll('[data-faq-button]').forEach(button => {
   const path = window.location.pathname || '';
   if (path.endsWith('/contact.html') || path.endsWith('contact.html')) return;
   const nested = /\/(doctors|treatments)\/[^/]+\.html$/.test(path);
-  const target = nested ? '../contact.html#consultation' : 'contact.html#consultation';
+  const target = nested ? '../contact.html#consultation-form' : 'contact.html#consultation-form';
   document.querySelectorAll('a').forEach(link => {
     const text = (link.textContent || '').trim().toLowerCase();
     const href = link.getAttribute('href') || '';
