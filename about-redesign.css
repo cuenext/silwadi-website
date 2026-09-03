@@ -6,3 +6,5 @@
 
 /* Refined hero heading scale */
 .about-hero h1{font-size:clamp(38px,4.5vw,58px);line-height:1.06;max-width:560px;letter-spacing:-.02em}@media(max-width:700px){.about-hero h1{font-size:clamp(36px,10vw,48px);max-width:420px}}
+
+.about-hero__nowrap{white-space:nowrap}
