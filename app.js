@@ -37,7 +37,7 @@ if (menuButton && mobileNav) {
 function enhanceContactLinks() {
   const phoneIcon = '<svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7.2 2.5h3.1l1.1 5.1-2.1 1.7a14.8 14.8 0 0 0 5.4 5.4l1.7-2.1 5.1 1.1v3.1c0 1.1-.9 2-2 2C11.4 18.8 5.2 12.6 5.2 4.5c0-1.1.9-2 2-2Z"/></svg>';
   const emailIcon = '<svg class="contact-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M3 5h18v14H3V5Zm2 2v.7l7 4.6 7-4.6V7l-7 4.6L5 7Z"/></svg>';
-  document.querySelectorAll('.footer-address a[href^="tel:"], .footer-address a[href^="mailto:"], .contact-detail a[href^="tel:"], .contact-detail a[href^="mailto:"], .location-facts a[href^="tel:"], .location-facts a[href^="mailto:"]').forEach(link => {
+  document.querySelectorAll('a[href^="tel:"], a[href^="mailto:"]').forEach(link => {
     if (link.querySelector('.contact-icon')) return;
     link.classList.add('footer-contact-link');
     link.insertAdjacentHTML('afterbegin', link.matches('a[href^="tel:"]') ? phoneIcon : emailIcon);
