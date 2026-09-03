@@ -275,6 +275,15 @@
     'Talk to our team': 'تحدث مع فريقنا',
     'Speak with reception': 'تواصل مع الاستقبال',
     'Check availability': 'تحقق من المواعيد المتاحة',
+    'Care for every patient': 'رعاية لكل مريض',
+    'Thoughtful spaces, modern tools and a welcoming team.': 'مساحات مدروسة وتقنيات حديثة وفريق يرحّب بالجميع.',
+    'Our published clinic profile describes a centre designed for comfortable care across generations, with dedicated support for children and People of Determination.': 'يوضح الملف التعريفي المنشور للمركز أنه مصمم لتقديم رعاية مريحة لجميع أفراد الأسرة، مع دعم مخصص للأطفال وأصحاب الهمم.',
+    'Children’s dentistry': 'طب أسنان الأطفال',
+    'A dedicated children’s zone creates a calmer, more familiar environment for young patients and families.': 'توفر منطقة الأطفال بيئة أكثر هدوءاً وألفةً للمرضى الصغار وعائلاتهم.',
+    'Accessible care': 'رعاية ميسّرة',
+    'Three dedicated rooms and an accessible layout support People of Determination with dignity and comfort.': 'تدعم ثلاث غرف مخصصة وتصميم ميسّر أصحاب الهمم بما يحفظ كرامتهم وراحتهم.',
+    'Digital dentistry': 'طب الأسنان الرقمي',
+    'Digital X-rays, CAD/CAM, 3D printing, laser dentistry and intraoral imaging support careful treatment planning.': 'تدعم الأشعة الرقمية وتقنيات CAD/CAM والطباعة ثلاثية الأبعاد وطب الأسنان بالليزر والتصوير داخل الفم تخطيط العلاج بدقة.',
   };
 
   const normalize = value => String(value ?? '').replace(/\s+/g, ' ').trim();
