@@ -62,6 +62,28 @@ const doctorResults = document.querySelector('[data-doctor-results]');
 const doctorEmpty = document.querySelector('[data-doctor-empty]');
 let activeSpecialty = 'all';
 
+// Keep the unfiltered directory aligned with the clinic's requested featured order.
+const preferredDoctorOrder = [
+  'Dr. Munir Silwadi',
+  'Dr. Moheb Silwadi',
+  'Dr. Ahmed El Shehri',
+  'Dr. Hani Hasbini',
+  'Dr. Dana Awad',
+  'Dr. Afnan Mashal',
+];
+const doctorGrid = document.querySelector('.doctor-directory-grid');
+if (doctorGrid && doctorCards.length) {
+  const orderIndex = name => {
+    const index = preferredDoctorOrder.indexOf(name);
+    return index === -1 ? preferredDoctorOrder.length : index;
+  };
+  doctorCards.sort((a, b) => {
+    const positionDifference = orderIndex(a.dataset.name) - orderIndex(b.dataset.name);
+    return positionDifference || (a.dataset.name || '').localeCompare(b.dataset.name || '');
+  });
+  doctorCards.forEach(card => doctorGrid.appendChild(card));
+}
+
 function filterDoctors() {
   if (!doctorCards.length) return;
   const query = (doctorSearch?.value || '').trim().toLowerCase();
@@ -97,6 +119,23 @@ specialtyFilters.forEach(button => {
 });
 filterDoctors();
 document.addEventListener('silwadi:languagechange', filterDoctors);
+
+// Prepare consultation requests in the visitor's email app for the appointments team.
+document.querySelectorAll('[data-consultation-form]').forEach(form => {
+  form.addEventListener('submit', event => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const name = String(data.get('name') || '').trim();
+    const email = String(data.get('email') || '').trim();
+    const phone = String(data.get('phone') || '').trim();
+    const subject = String(data.get('subject') || 'Consultation request').trim();
+    const message = String(data.get('message') || '').trim();
+    const body = [`Name: ${name}`, `Email: ${email}`, `Phone: ${phone}`, '', message].join('\\n');
+    window.location.href = `mailto:appointment@silwadidentalcenter.ae?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const status = form.querySelector('[data-consultation-status]');
+    if (status) status.textContent = 'Your email app is opening with the appointment request.';
+  });
+});
 
 
 // Shared FAQ accordion behavior.
