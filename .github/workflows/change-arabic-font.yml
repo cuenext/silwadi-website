@@ -1,4 +1,4 @@
-name: Change Arabic font
+name: Contact page calm redesign
 
 on:
   push:
@@ -13,65 +13,151 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Update Arabic font styling
+      - name: Simplify contact page layout
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
           import re
 
-          p = Path('styles.css')
-          s = p.read_text(encoding='utf-8')
+          contact = Path('contact.html')
+          html = contact.read_text(encoding='utf-8')
 
-          new_import = "@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap');"
-          lines = s.splitlines()
-          if lines and lines[0].startswith('@import url('):
-              lines[0] = new_import
-              s = '\n'.join(lines) + '\n'
-          elif "family=Tajawal" not in s[:500]:
-              s = new_import + '\n\n' + s
+          top_pattern = re.compile(
+              r'<section class="contact-hero">[\s\S]*?</section>\s*\n\s*<section class="consultation-section" id="consultation">[\s\S]*?</section>',
+              re.M,
+          )
+          replacement = '''<section class="contact-hero contact-hero--calm"><div class="container"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true">/</span><span>Contact</span></nav><div class="contact-hero__grid"><div><p class="eyebrow">Contact</p><h1>How can we help?</h1><p class="contact-hero__lead">For appointments or questions, our reception team can guide you to the right next step.</p></div></div></div></section>
 
-          marker_start = '/* Arabic font refresh: Tajawal */'
-          marker_end = '/* End Arabic font refresh */'
-          s = re.sub(r'\n/\* Arabic font refresh: Tajawal \*/[\s\S]*?/\* End Arabic font refresh \*/\n?', '\n', s)
+    <section class="consultation-section consultation-section--calm" id="consultation"><div class="container"><div class="consultation-intro"><div><p class="eyebrow">Choose one option</p><h2>Contact the centre.</h2></div><p>Call for urgent help, WhatsApp for quick booking, or send the form if you prefer written details.</p></div><div class="contact-channels contact-channels--calm">
+      <article class="contact-channel"><span class="contact-channel__index">Call</span><div><h3>Speak with reception</h3><p>Best for appointments and direct assistance.</p></div><a href="tel:+97126262042">+971 2 626 2042 →</a></article>
+      <article class="contact-channel"><span class="contact-channel__index">WhatsApp</span><div><h3>Message us</h3><p>Send your preferred date and a short note.</p></div><a href="https://wa.me/971506260418?text=Hello%20Silwadi%20Dental%20Centre%2C%20I%27d%20like%20to%20book%20a%20consultation." target="_blank" rel="noopener">Open WhatsApp →</a></article>
+      <article class="contact-channel"><span class="contact-channel__index">Form</span><div><h3>Request a consultation</h3><p>Share your details and the team will follow up.</p></div><a href="#consultation-form">Complete form →</a></article>
+    </div></div></section>'''
+          html2, count = top_pattern.subn(replacement, html, count=1)
+          if count == 0:
+              if 'contact-hero--calm' not in html:
+                  raise SystemExit('Contact top section not found')
+              html2 = html
+          contact.write_text(html2, encoding='utf-8')
 
-          override_lines = [
-              marker_start,
-              'body.language-ar,',
-              'html[lang="ar"] body,',
-              'html[dir="rtl"] body{',
-              '  font-family:"Tajawal",Tahoma,Arial,sans-serif!important;',
-              '  letter-spacing:0!important;',
-              '}',
-              'body.language-ar h1, body.language-ar h2, body.language-ar h3, body.language-ar h4, body.language-ar h5, body.language-ar h6,',
-              'body.language-ar .btn, body.language-ar .site-nav, body.language-ar .mobile-nav, body.language-ar .eyebrow, body.language-ar .language-switch,',
-              'html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3, html[lang="ar"] h4, html[lang="ar"] h5, html[lang="ar"] h6,',
-              'html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3, html[dir="rtl"] h4, html[dir="rtl"] h5, html[dir="rtl"] h6{',
-              '  font-family:"Tajawal",Tahoma,Arial,sans-serif!important;',
-              '  letter-spacing:0!important;',
-              '}',
-              'body.language-ar h1, html[lang="ar"] h1, html[dir="rtl"] h1{',
-              '  font-weight:800!important;',
-              '  line-height:1.08;',
-              '}',
-              'body.language-ar h2, html[lang="ar"] h2, html[dir="rtl"] h2{',
-              '  font-weight:800!important;',
-              '  line-height:1.16;',
-              '}',
-              'body.language-ar p, body.language-ar a, body.language-ar span, body.language-ar strong, body.language-ar small,',
-              'html[lang="ar"] p, html[lang="ar"] a, html[lang="ar"] span, html[lang="ar"] strong, html[lang="ar"] small{',
-              '  font-family:"Tajawal",Tahoma,Arial,sans-serif;',
-              '}',
-              marker_end,
-          ]
-          s = s.rstrip() + '\n\n' + '\n'.join(override_lines) + '\n'
-          p.write_text(s, encoding='utf-8')
+          css_path = Path('contact-pages.css')
+          css = css_path.read_text(encoding='utf-8')
+          css = re.sub(r'\n/\* Contact page calm redesign \*/[\s\S]*?/\* End contact page calm redesign \*/\n?', '\n', css)
+          override = '''
+/* Contact page calm redesign */
+.contact-hero--calm{
+  background:#f8fbfa;
+  border-bottom:1px solid rgba(8,56,71,.08);
+  padding:70px 0 60px;
+}
+.contact-hero--calm .breadcrumb{margin-bottom:34px;}
+.contact-hero--calm .contact-hero__grid{display:block;max-width:760px;}
+.contact-hero--calm h1{
+  max-width:720px;
+  margin:0;
+  color:#062f3b;
+  font-size:clamp(42px,5.2vw,68px);
+  line-height:1.02;
+  letter-spacing:-.055em;
+}
+.contact-hero--calm .contact-hero__lead{
+  max-width:650px;
+  margin-top:18px;
+  color:#5a737c;
+  font-size:16px;
+  line-height:1.7;
+}
+.contact-hero--calm .contact-hero__aside{display:none!important;}
+.consultation-section--calm{padding:64px 0;background:#fff;}
+.consultation-section--calm .consultation-intro{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:44px;
+  margin-bottom:24px;
+}
+.consultation-section--calm .consultation-intro h2{
+  max-width:500px;
+  margin:0;
+  color:#073847;
+  font-size:clamp(30px,3.2vw,42px);
+  line-height:1.08;
+  letter-spacing:-.04em;
+}
+.consultation-section--calm .consultation-intro > p{
+  max-width:520px;
+  margin:0;
+  color:#607982;
+  font-size:14px;
+  line-height:1.7;
+}
+.contact-channels--calm{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+  border:0;
+}
+.contact-channels--calm .contact-channel{
+  min-height:auto;
+  padding:24px;
+  border:1px solid rgba(8,56,71,.10);
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 10px 26px rgba(8,56,71,.04);
+}
+.contact-channels--calm .contact-channel + .contact-channel{border-left:1px solid rgba(8,56,71,.10);}
+.contact-channels--calm .contact-channel__index{
+  display:inline-flex;
+  width:auto;
+  margin-bottom:22px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#edf7f7;
+  color:#087f8e;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.02em;
+  text-transform:none;
+}
+.contact-channels--calm .contact-channel h3{
+  margin:0 0 9px;
+  color:#073847;
+  font-size:20px;
+  line-height:1.25;
+  letter-spacing:-.02em;
+}
+.contact-channels--calm .contact-channel p{
+  margin:0;
+  color:#617980;
+  font-size:13px;
+  line-height:1.6;
+}
+.contact-channels--calm .contact-channel a{
+  margin-top:24px;
+  color:#087f8e;
+  font-size:13px;
+  font-weight:800;
+}
+@media (max-width:900px){
+  .contact-hero--calm{padding:42px 0 44px;}
+  .contact-hero--calm .breadcrumb{margin-bottom:24px;}
+  .contact-hero--calm h1{font-size:clamp(38px,12vw,54px);letter-spacing:-.045em;}
+  .consultation-section--calm{padding:48px 0;}
+  .consultation-section--calm .consultation-intro{display:block;margin-bottom:20px;}
+  .consultation-section--calm .consultation-intro > p{margin-top:12px;}
+  .contact-channels--calm{grid-template-columns:1fr;gap:12px;}
+  .contact-channels--calm .contact-channel{padding:21px;border-radius:15px;}
+}
+/* End contact page calm redesign */
+'''
+          css_path.write_text(css.rstrip() + '\n\n' + override + '\n', encoding='utf-8')
           PY
-      - name: Commit Arabic font update
+      - name: Commit contact redesign
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add styles.css
-          git commit -m "Change Arabic site font to Tajawal" || echo "No changes to commit"
+          git add contact.html contact-pages.css
+          git commit -m "Simplify contact page layout" || echo "No changes to commit"
           git push
