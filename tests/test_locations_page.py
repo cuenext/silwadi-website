@@ -24,6 +24,18 @@ class LocationsPageTests(unittest.TestCase):
         self.assertIn('assets/locations/bani-yas-treatment-room.webp', bani_yas)
         self.assertIn('width="1000" height="557"', bani_yas)
 
+    def test_bani_yas_includes_embedded_google_map_below_photo(self):
+        match = re.search(r'<section[^>]*id="bani-yas".*?</section>', HTML, re.S)
+        self.assertIsNotNone(match)
+        bani_yas = match.group(0)
+        photo_pos = bani_yas.find('assets/locations/bani-yas-treatment-room.webp')
+        map_pos = bani_yas.find('class="location-map location-map--bani"')
+        self.assertGreaterEqual(photo_pos, 0)
+        self.assertGreater(map_pos, photo_pos)
+        self.assertIn('google.com/maps/embed', bani_yas)
+        self.assertIn('Bani Yas Tower', bani_yas)
+        self.assertRegex(CSS, r'\.location-branch__visual-stack\{[^}]*display:grid[^}]*gap:18px')
+
     def test_al_raha_exterior_belongs_to_branch_section_and_gallery_has_four_interior_images(self):
         match = re.search(r'<section[^>]*id="al-raha".*?</section>', HTML, re.S)
         self.assertIsNotNone(match)
