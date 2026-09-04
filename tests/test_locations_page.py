@@ -22,7 +22,7 @@ class LocationsPageTests(unittest.TestCase):
         self.assertIsNotNone(match)
         bani_yas = match.group(0)
         self.assertIn('assets/locations/bani-yas-treatment-room.webp', bani_yas)
-        self.assertIn('width="900" height="555"', bani_yas)
+        self.assertIn('width="1000" height="557"', bani_yas)
 
     def test_al_raha_exterior_belongs_to_branch_section_and_gallery_has_four_interior_images(self):
         match = re.search(r'<section[^>]*id="al-raha".*?</section>', HTML, re.S)
@@ -38,7 +38,7 @@ class LocationsPageTests(unittest.TestCase):
         expected_gallery = {
             'al-raha-treatment-room.webp': 'width="520" height="380"',
             'al-raha-reception.webp': 'width="520" height="377"',
-            'al-raha-children-room.webp': 'width="520" height="377"',
+            'al-raha-children-room.webp': 'width="700" height="453"',
             'al-raha-waiting-area.webp': 'width="520" height="377"',
         }
         for filename, dimensions in expected_gallery.items():
