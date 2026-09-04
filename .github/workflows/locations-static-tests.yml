@@ -1,0 +1,17 @@
+name: Locations static tests
+
+on:
+  pull_request:
+    paths:
+      - 'locations.html'
+      - 'location-pages.css'
+      - 'tests/test_locations_page.py'
+      - '.github/workflows/locations-static-tests.yml'
+
+jobs:
+  locations-page:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Locations page checks
+        run: python3 -m unittest discover -s tests -p 'test_*.py' -v
