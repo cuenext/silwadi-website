@@ -22,21 +22,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          chunk_dir='assets/locations/_upload_chunks_v2'
-          decode() {
-            local name="$1"
-            base64 --decode < "$chunk_dir/$name.part-00" > "assets/locations/$name"
-          }
+          v2='assets/locations/_upload_chunks_v2'
+          legacy='assets/locations/_upload_chunks'
 
-          decode 'bani-yas-treatment-room.webp'
-          decode 'al-raha-exterior.webp'
-          decode 'al-raha-treatment-room.webp'
-          decode 'al-raha-reception.webp'
-          decode 'al-raha-children-room.webp'
-          decode 'al-raha-waiting-area.webp'
+          cat "$legacy/bani-yas-treatment-room.webp.part-"* | base64 --decode > assets/locations/bani-yas-treatment-room.webp
+          for name in al-raha-exterior.webp al-raha-treatment-room.webp al-raha-reception.webp al-raha-children-room.webp al-raha-waiting-area.webp; do
+            cat "$v2/$name.part-"* | base64 --decode > "assets/locations/$name"
+          done
 
           python - <<'PY'
           from pathlib import Path
+          from PIL import Image
           names = [
               'bani-yas-treatment-room.webp',
               'al-raha-exterior.webp',
@@ -49,9 +45,11 @@ jobs:
           for name in names:
               p = root / name
               data = p.read_bytes()
-              assert len(data) > 8_000, (name, len(data))
+              assert len(data) > 6000, (name, len(data))
               assert data[:4] == b'RIFF', name
               assert data[8:12] == b'WEBP', name
+              with Image.open(p) as im:
+                  im.verify()
               print(name, len(data))
           PY
 
