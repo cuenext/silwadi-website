@@ -1,0 +1,36 @@
+name: Apply premium homepage hero
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch homepage
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          p = Path('index.html')
+          html = p.read_text(encoding='utf-8')
+          style = '<style id="premium-home-hero-styles">.premium-home-hero{position:relative;min-height:calc(100vh - 88px);overflow:hidden;background:#071d2f;color:#fff;display:flex;align-items:center}.premium-home-hero__media{position:absolute;inset:0;z-index:0}.premium-home-hero__media img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block}.premium-home-hero__shade{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(5,22,37,.98) 0%,rgba(8,33,54,.92) 27%,rgba(10,42,68,.66) 48%,rgba(10,42,68,.2) 68%,rgba(10,42,68,.04) 100%)}.premium-home-hero__inner{position:relative;z-index:2;width:100%;padding:6.6rem 0 5.2rem}.premium-home-hero__copy{max-width:47rem}.premium-home-hero__eyebrow{margin:0 0 1.15rem;font-size:1.05rem;font-weight:700;letter-spacing:.16em;color:rgba(255,255,255,.92)}.premium-home-hero__accent{display:block;width:4rem;height:.24rem;border-radius:999px;background:linear-gradient(90deg,#19d2d2,#76f5ee);margin:0 0 1.5rem}.premium-home-hero h1{margin:0;font-family:Georgia,serif;font-size:clamp(3.5rem,6.6vw,6.9rem);line-height:.92;letter-spacing:-.06em;color:#fff;text-shadow:0 18px 44px rgba(0,0,0,.3)}.premium-home-hero h1 span{display:block;color:#78f3ef}.premium-home-hero__lead{max-width:43rem;margin:1.55rem 0 0;color:rgba(255,255,255,.9);font-size:clamp(1.05rem,1.55vw,1.28rem);line-height:1.6}.premium-home-hero__actions{display:flex;flex-wrap:wrap;gap:1rem;margin-top:2.15rem}.premium-home-hero__actions .btn{min-height:4rem;padding-inline:1.7rem;font-size:1.03rem;border-radius:.65rem}.premium-home-hero__actions .btn--primary{background:linear-gradient(135deg,#13d5d0,#0b91bd);box-shadow:0 22px 45px rgba(11,145,189,.28)}.premium-home-hero__actions .btn--secondary{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.72);color:#fff}.premium-home-hero__trust{display:flex;align-items:center;gap:1.3rem;flex-wrap:wrap;margin:2.3rem 0 0;padding:0;list-style:none;color:#fff}.premium-home-hero__trust li{display:flex;align-items:center;gap:.8rem;min-width:11.5rem}.premium-home-hero__icon{display:grid;place-items:center;flex:0 0 3.2rem;width:3.2rem;height:3.2rem;border-radius:999px;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.13);font-size:1.2rem}.premium-home-hero__trust strong{display:block;font-size:.98rem;line-height:1.28;font-weight:650}.premium-home-hero__tagline{position:absolute;left:50%;bottom:1.45rem;transform:translateX(-50%);font-size:.7rem;letter-spacing:.58em;text-transform:uppercase;color:rgba(255,255,255,.55);white-space:nowrap}.premium-home-hero__down{position:absolute;left:50%;bottom:.7rem;transform:translateX(-50%);color:rgba(255,255,255,.75);font-size:1.5rem}.home-hero{display:none!important}@media(max-width:980px){.premium-home-hero{min-height:auto}.premium-home-hero__media img{object-position:68% center}.premium-home-hero__shade{background:linear-gradient(180deg,rgba(5,22,37,.78) 0%,rgba(5,22,37,.73) 36%,rgba(5,22,37,.92) 100%)}.premium-home-hero__inner{padding:6rem 0 4.5rem}.premium-home-hero__copy{max-width:100%}.premium-home-hero__tagline{display:none}}@media(max-width:640px){.premium-home-hero__media img{object-position:72% center}.premium-home-hero__inner{padding:5rem 0 3.6rem}.premium-home-hero h1{font-size:clamp(3rem,18vw,4.4rem)}.premium-home-hero__actions{flex-direction:column}.premium-home-hero__actions .btn{width:100%;justify-content:center}.premium-home-hero__trust{display:grid;grid-template-columns:1fr}}</style>'
+          hero = '<section class="premium-home-hero" id="home" aria-labelledby="premiumHomeHeroTitle"><picture class="premium-home-hero__media"><img src="assets/home/dr-munir-hero.webp?v=20260905-home-hero-1" alt="Dr. Munir Silwadi at Dr. Munir Silwadi Dental Centre" width="1815" height="867" decoding="async" fetchpriority="high"></picture><div class="premium-home-hero__shade" aria-hidden="true"></div><div class="container premium-home-hero__inner"><div class="premium-home-hero__copy reveal visible"><p class="premium-home-hero__eyebrow">Dr. Munir Silwadi Dental Centre</p><span class="premium-home-hero__accent" aria-hidden="true"></span><h1 id="premiumHomeHeroTitle">How can we <span>help you?</span></h1><p class="premium-home-hero__lead">From routine check-ups to specialist dental care, our Abu Dhabi team is here to help you find the right treatment with clarity and confidence.</p><div class="premium-home-hero__actions"><a class="btn btn--primary" href="contact.html#consultation-form">Book an Appointment <span aria-hidden="true">→</span></a><a class="btn btn--secondary" href="services.html">Explore Services <span aria-hidden="true">→</span></a></div><ul class="premium-home-hero__trust" aria-label="Clinic highlights"><li><span class="premium-home-hero__icon" aria-hidden="true">✓</span><strong>Serving patients<br>since 1980</strong></li><li><span class="premium-home-hero__icon" aria-hidden="true">⌖</span><strong>Bani Yas Tower<br>&amp; Al Raha Mall</strong></li><li><span class="premium-home-hero__icon" aria-hidden="true">☎</span><strong>Reception-led<br>booking</strong></li></ul></div><div class="premium-home-hero__tagline" aria-hidden="true">Healthier smiles&nbsp;&nbsp; A brighter tomorrow</div><div class="premium-home-hero__down" aria-hidden="true">⌄</div></div></section>'
+          html = re.sub(r'<style id="premium-home-hero-styles">.*?</style>', '', html, flags=re.S)
+          html = html.replace('</head>', style + '</head>', 1)
+          if '<section class="premium-home-hero"' in html:
+              html = re.sub(r'<section class="premium-home-hero"[\s\S]*?</section>(?=<section class="team-proof|<nav class="care-shortcuts|<section class="section")', hero, html, count=1)
+          else:
+              html = re.sub(r'<section class="home-hero" id="home">[\s\S]*?</section>(?=<section class="team-proof)', hero, html, count=1)
+          html = html.replace('src="app.js"', 'src="app.js?v=20260905-home-hero-1"')
+          p.write_text(html, encoding='utf-8')
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Apply premium homepage hero" || exit 0
+          git push
