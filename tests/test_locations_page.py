@@ -32,7 +32,8 @@ class LocationsPageTests(unittest.TestCase):
         map_pos = bani_yas.find('class="location-map location-map--bani"')
         self.assertGreaterEqual(photo_pos, 0)
         self.assertGreater(map_pos, photo_pos)
-        self.assertIn('google.com/maps/embed', bani_yas)
+        self.assertIn('google.com/maps?q=', bani_yas)
+        self.assertIn('output=embed', bani_yas)
         self.assertIn('Bani Yas Tower', bani_yas)
         self.assertRegex(CSS, r'\.location-branch__visual-stack\{[^}]*display:grid[^}]*gap:18px')
 
