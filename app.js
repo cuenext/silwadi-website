@@ -234,4 +234,39 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Escape' && reviewDialog?.open) reviewDialog.close();
 });
 
+// Swap uploaded doctor portraits into the remaining placeholder frames.
+(function replaceUploadedDoctorPortraits() {
+  const portraits = {
+    'Dr. Sara Ismail': 'dr-sara-ismail.webp',
+    'Dr. Kashmira Pawar Jayprakash': 'dr-kashmira-pawar-jayprakash.webp',
+    'Dr. Nachiket Shah': 'dr-nachiket-shah.webp',
+  };
+  const path = window.location.pathname || '';
+  const nestedDoctorProfile = /\/doctors\/[^/]+\.html$/.test(path);
+  const basePath = nestedDoctorProfile ? '../assets/doctors/optimized/' : 'assets/doctors/optimized/';
+
+  Object.entries(portraits).forEach(([doctorName, fileName]) => {
+    document.querySelectorAll(`[aria-label="${doctorName}"]`).forEach(frame => {
+      const isDirectoryPhoto = frame.classList.contains('doctor-directory-card__photo');
+      const isProfilePhoto = frame.classList.contains('consultant-portrait__frame');
+      if (!isDirectoryPhoto && !isProfilePhoto) return;
+
+      frame.classList.remove('doctor-directory-card__photo--placeholder', 'doctor-profile-placeholder');
+      frame.removeAttribute('role');
+      frame.innerHTML = '';
+
+      const image = document.createElement('img');
+      image.src = `${basePath}${fileName}?v=20260904-portraits`;
+      image.alt = doctorName;
+      image.width = isProfilePhoto ? 720 : 600;
+      image.height = isProfilePhoto ? 720 : 600;
+      image.decoding = 'async';
+      if (isProfilePhoto) image.fetchPriority = 'high';
+      else image.loading = 'lazy';
+
+      frame.appendChild(image);
+    });
+  });
+})();
+
 window.SilwadiLanguage?.init?.();
