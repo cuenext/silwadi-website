@@ -8,6 +8,12 @@
   const attributeOriginals = typeof WeakMap === 'function' ? new WeakMap() : null;
   let currentLanguage = 'en';
   let languageButton = null;
+  const seoOriginals = {
+    title: null,
+    description: null,
+    ogTitle: null,
+    ogDescription: null,
+  };
 
   const arabic = {
     'Skip to content': 'انتقل إلى المحتوى',
@@ -314,10 +320,281 @@
 
   const normalize = value => String(value ?? '').replace(/\s+/g, ' ').trim();
 
+  const arabicSeo = {
+    'index.html': {
+      title: 'طبيب أسنان في أبوظبي | مركز الدكتور منير السلوادي لطب الأسنان',
+      description: 'رعاية أسنان عامة وتخصصية في أبوظبي لدى مركز الدكتور منير السلوادي لطب الأسنان، في برج بني ياس والراحة مول، منذ عام 1980.',
+    },
+    'services.html': {
+      title: 'خدمات طب الأسنان في أبوظبي | مركز سلوادي لطب الأسنان',
+      description: 'تعرّف إلى خدمات طب الأسنان في مركز سلوادي بأبوظبي، من زراعة وتركيبات الأسنان إلى التقويم وعلاج اللثة والجذور ورعاية الأطفال والوقاية.',
+    },
+    'treatments.html': {
+      title: 'علاجات الأسنان في أبوظبي | مركز سلوادي لطب الأسنان',
+      description: 'استكشف مجالات علاج الأسنان في مركز سلوادي بأبوظبي، أو تواصل مع فريق الاستقبال لمساعدتك في اختيار نقطة البداية المناسبة.',
+    },
+    'doctors.html': {
+      title: 'أطباء الأسنان والاختصاصيون في أبوظبي | سلوادي',
+      description: 'تعرّف إلى أطباء الأسنان والاختصاصيين في مركز سلوادي بأبوظبي ضمن تخصصات التقويم واللثة والجذور والتركيبات وطب الأسنان العام.',
+    },
+    'about.html': {
+      title: 'عن مركز سلوادي لطب الأسنان في أبوظبي | منذ 1980',
+      description: 'تعرّف إلى قصة مركز سلوادي لطب الأسنان في أبوظبي، الذي يقدّم رعاية عامة وتخصصية للعائلات منذ عام 1980.',
+    },
+    'locations.html': {
+      title: 'فروع عيادات الأسنان في أبوظبي | بني ياس والراحة | سلوادي',
+      description: 'اعثر على تفاصيل فرعي مركز سلوادي لطب الأسنان في برج بني ياس والراحة مول بأبوظبي، بما في ذلك أرقام التواصل والاتجاهات.',
+    },
+    'contact.html': {
+      title: 'تواصل مع مركز سلوادي لطب الأسنان في أبوظبي | فرعان',
+      description: 'تواصل مع مركز سلوادي لطب الأسنان في أبوظبي لحجز موعد أو الاستفسار عن فرعي برج بني ياس والراحة مول والتأمين.',
+    },
+    'dr-afnan-mashal.html': {
+      title: 'د. أفنان مشعل | طبيب أسنان عام في أبوظبي | مركز سلوادي لطب الأسنان',
+      description: 'تعرّف إلى د. أفنان مشعل، طبيب أسنان عام في مركز سلوادي بأبوظبي، واطّلع على مجالات اهتمامه وبيانات الملف وطلب الموعد.',
+    },
+    'dr-ahmed-el-shehri.html': {
+      title: 'د. أحمد الشهري | اختصاصي علاج الجذور في أبوظبي | مركز سلوادي',
+      description: 'تعرّف إلى د. أحمد الشهري، اختصاصي علاج الجذور في مركز سلوادي بأبوظبي، واطّلع على مجالات اهتمامه وتفاصيل الاستشارة.',
+    },
+    'dr-dana-awad.html': {
+      title: 'د. دانا عوض | طبيبة أسنان عامة في أبوظبي | مركز سلوادي',
+      description: 'تعرّف إلى د. دانا عوض، طبيبة أسنان عامة في مركز سلوادي بأبوظبي، مع اهتمام بالوقاية والترميم وطب الأسنان التجميلي.',
+    },
+    'dr-ehab-hassouneh.html': {
+      title: 'د. إيهاب حسونة بسام | طبيب أسنان عام في أبوظبي | مركز سلوادي',
+      description: 'تعرّف إلى د. إيهاب حسونة بسام، طبيب أسنان عام في مركز سلوادي بأبوظبي، واطّلع على مجالات الرعاية ومعلومات الموعد.',
+    },
+    'dr-fahed-khalil.html': {
+      title: 'د. فهد أبي خليل | اختصاصي أمراض اللثة وزراعة الأسنان في أبوظبي | سلوادي',
+      description: 'تعرّف إلى د. فهد أبي خليل، اختصاصي أمراض اللثة وزراعة الأسنان في مركز سلوادي بأبوظبي، واطّلع على تفاصيل الاستشارة.',
+    },
+    'dr-hani-hasbini.html': {
+      title: 'د. هاني حسبيني | استشاري تقويم الأسنان في أبوظبي | مركز سلوادي',
+      description: 'تعرّف إلى د. هاني حسبيني، استشاري تقويم الأسنان في مركز سلوادي بأبوظبي، واطّلع على مجالات اهتمامه وتفاصيل الموعد.',
+    },
+    'dr-kashmira-pawar-jayprakash.html': {
+      title: 'د. كاشميرا باوار جايبراكاش | اختصاصية طب أسنان الأطفال في أبوظبي | سلوادي',
+      description: 'تعرّف إلى د. كاشميرا باوار جايبراكاش، اختصاصية طب أسنان الأطفال في مركز سلوادي بأبوظبي، واطّلع على معلومات الملف والموعد.',
+    },
+    'dr-krishnamurthy-katta-balajee.html': {
+      title: 'د. كريشنامورثي بالاجي | اختصاصي تقويم الأسنان في أبوظبي | سلوادي',
+      description: 'تعرّف إلى د. كريشنامورثي بالاجي، اختصاصي تقويم الأسنان في مركز سلوادي بأبوظبي، واطّلع على مجالات الرعاية وتفاصيل الاستشارة.',
+    },
+    'dr-lana-masoud.html': {
+      title: 'د. لانا مسعود | اختصاصية علاج الجذور في أبوظبي | مركز سلوادي',
+      description: 'تعرّف إلى د. لانا مسعود، اختصاصية علاج الجذور في مركز سلوادي بأبوظبي، واطّلع على مجالات الرعاية وتفاصيل الموعد.',
+    },
+    'dr-moammar-rifai.html': {
+      title: 'د. معمر محمد الرفاعي | اختصاصي تقويم الأسنان في أبوظبي | سلوادي',
+      description: 'تعرّف إلى د. معمر محمد الرفاعي، اختصاصي تقويم الأسنان في مركز سلوادي بأبوظبي، واطّلع على مجالات اهتمامه وتفاصيل الاستشارة.',
+    },
+    'dr-moheb-silwadi.html': {
+      title: 'د. مهيب سلوادي | طبيب أسنان عام في أبوظبي | مركز سلوادي',
+      description: 'تعرّف إلى د. مهيب سلوادي، طبيب أسنان عام في مركز سلوادي بأبوظبي، واطّلع على معلومات الملف وطلب الموعد.',
+    },
+    'dr-munir-silwadi.html': {
+      title: 'د. منير سلوادي | اختصاصي التركيبات وزراعة الأسنان في أبوظبي | سلوادي',
+      description: 'تعرّف إلى د. منير سلوادي، اختصاصي التركيبات وزراعة الأسنان في مركز سلوادي بأبوظبي، مع اهتمام بزراعة الأسنان والرعاية الترميمية.',
+    },
+    'dr-nachiket-shah.html': {
+      title: 'د. ناشيكيت شاه | اختصاصي أمراض اللثة وزراعة الأسنان في أبوظبي | سلوادي',
+      description: 'تعرّف إلى د. ناشيكيت شاه، اختصاصي أمراض اللثة وزراعة الأسنان في مركز سلوادي بأبوظبي، واطّلع على معلومات الاستشارة.',
+    },
+    'dr-nasr-keshkiea.html': {
+      title: 'د. نصر كشكية | طبيب أسنان عام في أبوظبي | مركز سلوادي',
+      description: 'تعرّف إلى د. نصر كشكية، طبيب أسنان عام في مركز سلوادي بأبوظبي، واطّلع على مجالات الرعاية وتفاصيل الموعد.',
+    },
+    'dr-sara-ismail.html': {
+      title: 'د. سارة إسماعيل | طبيبة أسنان عامة في أبوظبي | مركز سلوادي',
+      description: 'تعرّف إلى د. سارة إسماعيل، طبيبة أسنان عامة في مركز سلوادي بأبوظبي، واطّلع على مجالات الرعاية وتفاصيل الموعد.',
+    },
+    'cosmetic-dentistry.html': {
+      title: 'طب الأسنان التجميلي في أبوظبي | مركز سلوادي لطب الأسنان',
+      description: 'استكشف طب الأسنان التجميلي في أبوظبي، بما في ذلك القشور والتبييض وتخطيط الابتسامة الترميمي بعد التقييم السريري في مركز سلوادي.',
+    },
+    'dental-implants.html': {
+      title: 'زراعة الأسنان في أبوظبي | مركز سلوادي لطب الأسنان',
+      description: 'هل تفكر في زراعة الأسنان في أبوظبي؟ تعرّف إلى التقييم والتخطيط الرقمي والرعاية الترميمية في مركز سلوادي.',
+    },
+    'emergency-dentist.html': {
+      title: 'طبيب أسنان للحالات الطارئة في أبوظبي | مركز سلوادي',
+      description: 'تحتاج إلى رعاية أسنان عاجلة في أبوظبي؟ اتصل بمركز سلوادي لمعرفة المواعيد المتاحة وتقييم ألم الأسنان أو كسرها وغيرها من الحالات العاجلة.',
+    },
+    'general-dentistry.html': {
+      title: 'طب الأسنان العام في أبوظبي | مركز سلوادي لطب الأسنان',
+      description: 'رعاية أسنان عامة في أبوظبي للفحوصات والحشوات والوقاية والمشكلات اليومية في مركز سلوادي ببرج بني ياس.',
+    },
+    'orthodontics.html': {
+      title: 'تقويم الأسنان والصفافات في أبوظبي | مركز سلوادي',
+      description: 'رعاية تقويم الأسنان في أبوظبي للأطفال واليافعين والكبار، بما في ذلك التقويم والصفافات الشفافة بعد تقييم الاختصاصي في مركز سلوادي.',
+    },
+  };
+
+  function pageKey() {
+    const locationObject = typeof window !== 'undefined' ? window.location : null;
+    const pathname = String(locationObject?.pathname || '').replace(/\/+/g, '/');
+    const cleanPath = pathname.replace(/\/$/, '');
+    return cleanPath ? cleanPath.split('/').pop() : 'index.html';
+  }
+
+  function locationHref() {
+    const locationObject = typeof window !== 'undefined' ? window.location : null;
+    return String(locationObject?.href || locationObject?.pathname || 'https://silwadi.ae/');
+  }
+
+  function getRequestedLanguage() {
+    const locationObject = typeof window !== 'undefined' ? window.location : null;
+    const search = String(locationObject?.search || '');
+    const match = search.match(/[?&]lang=(ar|en)(?:&|$)/i);
+    return match ? match[1].toLowerCase() : null;
+  }
+
+  function pageUrlObject(value) {
+    try {
+      return new URL(value, locationHref());
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function isPageUrl(url) {
+    return Boolean(url && (url.pathname === '/' || /\.html?$/i.test(url.pathname)));
+  }
+
+  function withLanguageQuery(href, language) {
+    const value = String(href || '');
+    if (!value || value.startsWith('#') || /^(?:mailto:|tel:|javascript:|data:|blob:)/i.test(value)) return value;
+    const url = pageUrlObject(value);
+    const base = pageUrlObject(locationHref());
+    if (!url || !base || url.origin !== base.origin || !isPageUrl(url)) return value;
+
+    const hashIndex = value.indexOf('#');
+    const hash = hashIndex === -1 ? '' : value.slice(hashIndex);
+    const beforeHash = hashIndex === -1 ? value : value.slice(0, hashIndex);
+    const pathEnd = beforeHash.indexOf('?');
+    const rawPath = pathEnd === -1 ? beforeHash : beforeHash.slice(0, pathEnd);
+    const params = url.searchParams;
+    params.delete('lang');
+    if (language === 'ar') params.set('lang', 'ar');
+    const query = params.toString();
+    return `${rawPath}${query ? `?${query}` : ''}${hash}`;
+  }
+
+  function historyUrl(language) {
+    const url = pageUrlObject(locationHref());
+    if (!url || !isPageUrl(url)) return null;
+    url.searchParams.delete('lang');
+    if (language === 'ar') url.searchParams.set('lang', 'ar');
+    return `${url.pathname}${url.search}${url.hash}`;
+  }
+
+  function updateCurrentUrl(language) {
+    const target = historyUrl(language);
+    const locationObject = typeof window !== 'undefined' ? window.location : null;
+    const historyObject = typeof window !== 'undefined' ? window.history : null;
+    if (!target || !locationObject || !historyObject || typeof historyObject.replaceState !== 'function') return;
+    const current = `${locationObject.pathname || ''}${locationObject.search || ''}${locationObject.hash || ''}`;
+    if (target !== current) historyObject.replaceState({}, '', target);
+  }
+
+  function decorateInternalLinks(language) {
+    if (typeof document === 'undefined') return;
+    document.querySelectorAll?.('a[href]').forEach(link => {
+      const href = link.getAttribute?.('href');
+      if (!href) return;
+      const next = withLanguageQuery(href, language);
+      if (next !== href) link.setAttribute('href', next);
+    });
+  }
+
+  function metaContent(selector) {
+    const element = document.querySelector?.(selector);
+    if (!element) return null;
+    return element.getAttribute?.('content') ?? element.content ?? null;
+  }
+
+  function setMetaContent(selector, value, name) {
+    if (typeof document === 'undefined' || value == null) return;
+    let element = document.querySelector?.(selector);
+    if (!element && name && document.createElement && document.head?.appendChild) {
+      element = document.createElement('meta');
+      element.setAttribute('name', name);
+      document.head.appendChild(element);
+    }
+    if (!element) return;
+    if ('content' in element) element.content = value;
+    element.setAttribute?.('content', value);
+  }
+
+  function captureSeoOriginals() {
+    if (typeof document === 'undefined') return;
+    if (seoOriginals.title === null) seoOriginals.title = document.title || '';
+    if (seoOriginals.description === null) seoOriginals.description = metaContent('meta[name="description"]') || '';
+    if (seoOriginals.ogTitle === null) seoOriginals.ogTitle = metaContent('meta[property="og:title"]') || '';
+    if (seoOriginals.ogDescription === null) seoOriginals.ogDescription = metaContent('meta[property="og:description"]') || '';
+  }
+
+  function canonicalUrl() {
+    const canonical = document.querySelector?.('link[rel="canonical"]');
+    const href = canonical?.getAttribute?.('href') || '';
+    const url = pageUrlObject(href || locationHref());
+    if (!url) return '';
+    url.search = '';
+    url.hash = '';
+    return url.href;
+  }
+
+  function upsertAlternate(hreflang, href) {
+    if (typeof document === 'undefined' || !document.head?.appendChild) return;
+    const selector = `link[rel="alternate"][hreflang="${hreflang}"]`;
+    let link = document.querySelector?.(selector);
+    if (!link && document.createElement) {
+      link = document.createElement('link');
+      link.setAttribute('rel', 'alternate');
+      link.setAttribute('hreflang', hreflang);
+      document.head.appendChild(link);
+    }
+    link?.setAttribute?.('href', href);
+  }
+
+  function updateLocalizedSeo(language) {
+    if (typeof document === 'undefined') return;
+    captureSeoOriginals();
+    const cleanCanonical = canonicalUrl();
+    const translation = arabicSeo[pageKey()];
+    if (language === 'ar') {
+      const title = translation?.title || translate(seoOriginals.title, 'ar');
+      const description = translation?.description || translate(seoOriginals.description, 'ar');
+      document.title = title || seoOriginals.title;
+      setMetaContent('meta[name="description"]', description || seoOriginals.description);
+      setMetaContent('meta[property="og:title"]', title || seoOriginals.ogTitle);
+      setMetaContent('meta[property="og:description"]', description || seoOriginals.ogDescription);
+      setMetaContent('meta[name="content-language"]', 'ar', 'content-language');
+    } else {
+      document.title = seoOriginals.title || document.title;
+      setMetaContent('meta[name="description"]', seoOriginals.description);
+      setMetaContent('meta[property="og:title"]', seoOriginals.ogTitle);
+      setMetaContent('meta[property="og:description"]', seoOriginals.ogDescription);
+      setMetaContent('meta[name="content-language"]', 'en', 'content-language');
+    }
+    if (cleanCanonical) {
+      upsertAlternate('en', cleanCanonical);
+      upsertAlternate('ar', withLanguageQuery(cleanCanonical, 'ar'));
+    }
+  }
+
   function translate(value, language = currentLanguage) {
     const clean = normalize(value);
     if (language !== 'ar' || !clean) return clean;
     if (arabic[clean]) return arabic[clean];
+    const caseInsensitiveKey = Object.keys(arabic).find(key => key.toLocaleLowerCase() === clean.toLocaleLowerCase());
+    if (caseInsensitiveKey) return arabic[caseInsensitiveKey];
+    const learnMoreMatch = clean.match(/^Learn More about (.+)$/i);
+    if (learnMoreMatch) {
+      const service = translate(learnMoreMatch[1], 'ar');
+      return `تعرّف إلى ${service}`;
+    }
     const countMatch = clean.match(/^(\d+) dentists & specialists$/);
     if (countMatch) return `${countMatch[1]} طبيباً واختصاصياً`;
     const clinicianMatch = clean.match(/^(\d+) clinicians?$/);
@@ -373,11 +650,15 @@
       }
     }
 
-    document.querySelectorAll?.('[placeholder], [aria-label], [title]').forEach(element => {
-      ['placeholder', 'aria-label', 'title'].forEach(attribute => {
+    document.querySelectorAll?.('[placeholder], [aria-label], [title], [alt]').forEach(element => {
+      ['placeholder', 'aria-label', 'title', 'alt'].forEach(attribute => {
         if (element.hasAttribute(attribute)) translateAttribute(element, attribute, currentLanguage);
       });
     });
+
+    updateLocalizedSeo(currentLanguage);
+    updateCurrentUrl(currentLanguage);
+    decorateInternalLinks(currentLanguage);
 
     if (languageButton) {
       languageButton.textContent = currentLanguage === 'ar' ? 'English' : 'عربي';
@@ -398,7 +679,8 @@
     if (typeof document === 'undefined') return 'en';
     let saved = null;
     try { saved = localStorage.getItem(STORAGE_KEY); } catch (_) {}
-    currentLanguage = saved === 'ar' ? 'ar' : 'en';
+    const requested = getRequestedLanguage();
+    currentLanguage = requested || (saved === 'ar' ? 'ar' : 'en');
     const headerActions = document.querySelector('.header-actions');
     if (headerActions && !document.querySelector('[data-language-switch]')) {
       languageButton = document.createElement('button');
@@ -411,14 +693,14 @@
     return applyLanguage(currentLanguage);
   }
 
-  Object.assign(arabic, {"Serving Abu Dhabi families with care that feels personal.":"نخدم عائلات أبوظبي برعاية إنسانية تشعر معها بالاهتمام.","For more than four decades, Silwadi Dental Centre has welcomed Abu Dhabi families with clear advice, trusted expertise and thoughtful care at every visit.":"على مدى أكثر من أربعة عقود، رحّب مركز السيلوي لطب الأسنان بعائلات أبوظبي من خلال نصائح واضحة وخبرة موثوقة ورعاية مدروسة في كل زيارة."});
+  Object.assign(arabic, {"Serving Abu Dhabi families with care that feels personal.":"نخدم عائلات أبوظبي برعاية إنسانية تشعر معها بالاهتمام.","For more than four decades, Silwadi Dental Centre has welcomed Abu Dhabi families with clear advice, trusted expertise and thoughtful care at every visit.":"على مدى أكثر من أربعة عقود، رحّب مركز السلوادي لطب الأسنان بعائلات أبوظبي من خلال نصائح واضحة وخبرة موثوقة ورعاية مدروسة في كل زيارة."});
   Object.assign(arabic, {"Care for every smile in Abu Dhabi":"رعاية لكل ابتسامة في أبوظبي","Since 1980, our dentists have welcomed Abu Dhabi families with clear advice and thoughtful care.":"منذ عام 1980، يرحّب أطباؤنا بعائلات أبوظبي من خلال نصائح واضحة ورعاية مدروسة."});
-  Object.assign(arabic, {"Our story":"قصتنا","A familiar name in Abu Dhabi dentistry.":"اسمٌ مألوف في طب الأسنان بأبوظبي.","Silwadi Dental Centre has cared for patients in Abu Dhabi since 1980. What began with Dr. Munir Silwadi continues today through a team of general dentists and specialists working together.":"يعتني مركز السيلوي لطب الأسنان بمرضى أبوظبي منذ عام 1980. وما بدأه الدكتور منير السيلوي يستمر اليوم من خلال فريق من أطباء الأسنان العامين والاختصاصيين الذين يعملون معاً.","We keep the experience simple: listen carefully, explain your options clearly and build a treatment plan around you.":"نحافظ على بساطة التجربة: نستمع باهتمام، ونشرح خياراتك بوضوح، ونضع خطة علاج تناسبك.","Learn about Dr. Munir Silwadi":"تعرّف إلى الدكتور منير السيلوي","Silwadi Dental Centre opens in Abu Dhabi.":"افتتاح مركز السيلوي لطب الأسنان في أبوظبي.","General dentists and specialists care for families across two locations.":"أطباء عامون واختصاصيون يعتنون بالعائلات في موقعين."});
+  Object.assign(arabic, {"Our story":"قصتنا","A familiar name in Abu Dhabi dentistry.":"اسمٌ مألوف في طب الأسنان بأبوظبي.","Silwadi Dental Centre has cared for patients in Abu Dhabi since 1980. What began with Dr. Munir Silwadi continues today through a team of general dentists and specialists working together.":"يعتني مركز السلوادي لطب الأسنان بمرضى أبوظبي منذ عام 1980. وما بدأه الدكتور منير السلوادي يستمر اليوم من خلال فريق من أطباء الأسنان العامين والاختصاصيين الذين يعملون معاً.","We keep the experience simple: listen carefully, explain your options clearly and build a treatment plan around you.":"نحافظ على بساطة التجربة: نستمع باهتمام، ونشرح خياراتك بوضوح، ونضع خطة علاج تناسبك.","Learn about Dr. Munir Silwadi":"تعرّف إلى الدكتور منير السلوادي","Silwadi Dental Centre opens in Abu Dhabi.":"افتتاح مركز السلوادي لطب الأسنان في أبوظبي.","General dentists and specialists care for families across two locations.":"أطباء عامون واختصاصيون يعتنون بالعائلات في موقعين."});
   Object.assign(arabic, {"Everything your smile needs in one place":"كل ما تحتاجه ابتسامتك في مكان واحد","General dentistry and specialist care for children and adults, delivered by an experienced team.":"طب أسنان عام ومتخصص للأطفال والكبار، يقدمه فريق ذو خبرة."});
   Object.assign(arabic, {"Care for every smile in Abu Dhabi":"رعاية لكل ابتسامة في أبوظبي","From check-ups to specialist treatment, our team is here to make dental care feel simple.":"من الفحوصات الدورية إلى العلاجات المتخصصة، نحرص على أن تكون رعاية أسنانك سهلة وواضحة."});
   Object.assign(arabic, {
     "Important notice": "تنبيه مهم",
-    "To our valued patients, please beware of false online offers promising free treatments at Silwadi Dental Centre.": "مرضانا الكرام، يرجى الحذر من العروض الإلكترونية المضللة التي تعد بعلاجات مجانية في مركز السيلوي لطب الأسنان.",
+    "To our valued patients, please beware of false online offers promising free treatments at Silwadi Dental Centre.": "مرضانا الكرام، يرجى الحذر من العروض الإلكترونية المضللة التي تعد بعلاجات مجانية في مركز السلوادي لطب الأسنان.",
     "Book your appointment": "احجز موعدك",
     "Share a few details and our appointments team will confirm availability with you.": "أدخل بعض التفاصيل وسيتواصل معك فريق المواعيد لتأكيد التوفر.",
     "Full name": "الاسم الكامل",
@@ -444,5 +726,114 @@
     "Your email app is opening with the appointment request.": "سيتم فتح تطبيق البريد الإلكتروني مع طلب الموعد."
   });
 
-  return { init, applyLanguage, getLanguage, translate };
+  Object.assign(arabic, {
+    "Dental services for every smile in": "خدمات أسنان لكل ابتسامة في",
+    "From preventive visits to specialist treatment, Silwadi Dental Center brings general dentists and specialists together across a broad range of dental care.": "من الزيارات الوقائية إلى العلاج التخصصي، يجمع مركز سلوادي لطب الأسنان أطباء عامين واختصاصيين لتقديم مجالات متنوعة من رعاية الأسنان.",
+    "Start here": "ابدأ من هنا",
+    "Start with what you need.": "ابدأ بما تحتاج إليه.",
+    "Not sure which service fits? Begin with the reason you are visiting and follow the link that feels closest. Your dentist will confirm the right next step.": "لست متأكداً من الخدمة المناسبة؟ ابدأ بسبب زيارتك، وسيساعدك طبيب الأسنان في تحديد الخطوة التالية.",
+    "For growing smiles": "لابتسامات صغيرة تكبر بصحة",
+    "Children’s dental care": "رعاية أسنان الأطفال",
+    "Gentle visits, prevention and restorative care for children.": "زيارات هادئة ورعاية وقائية وترميمية للأطفال.",
+    "Restore confidence": "استعد راحتك",
+    "Replace or repair teeth": "تعويض الأسنان أو ترميمها",
+    "Implants, crowns, bridges and dentures planned around your bite.": "زراعة وتيجان وجسور وأطقم تُخطط بما يناسب إطباقك.",
+    "Protect your smile": "احمِ ابتسامتك",
+    "Prevention and hygiene": "الوقاية والعناية اليومية",
+    "Examinations, hygiene guidance and early support for healthy gums.": "فحوصات وإرشادات للعناية اليومية ودعم مبكر لصحة اللثة.",
+    "A clear place to begin.": "بداية واضحة لرعايتك.",
+    "Browse the service areas below for a plain-language overview. Every card leads to the next useful step, and reception can help if you are unsure where to begin.": "تعرّف إلى مجالات الخدمة أدناه بلغة واضحة. كل بطاقة تقودك إلى الخطوة التالية، ويمكن للاستقبال مساعدتك إذا لم تعرف من أين تبدأ.",
+    "focuses on planning and surgically placing dental implants—artificial tooth roots that support replacement teeth.": "يهتم بتخطيط زراعة الأسنان ووضعها جراحياً، وهي جذور صناعية تدعم الأسنان التعويضية.",
+    "focuses on restoring or replacing teeth with crowns, bridges, veneers, dentures and implant-supported restorations, including full-mouth rehabilitation.": "يهتم بترميم الأسنان أو تعويضها بالتيجان والجسور والقشور والأطقم والتركيبات المدعومة بالزراعة، بما في ذلك إعادة تأهيل الفم بالكامل.",
+    "Specialist gum care for periodontal disease and the supporting tissues around the teeth, including non-surgical and surgical treatment when indicated.": "رعاية تخصصية لأمراض اللثة والأنسجة الداعمة حول الأسنان، مع علاج غير جراحي أو جراحي عند الحاجة.",
+    "Diagnosis and treatment of conditions affecting the dental pulp and root canal system, including root canal therapy and retreatment.": "تشخيص وعلاج الحالات التي تصيب لب السن وقنوات الجذر، بما في ذلك علاج الجذور وإعادة العلاج.",
+    "Specialist orthodontic care for tooth alignment and bite correction using braces, aligners, retainers and other appliances where appropriate.": "رعاية تخصصية لتصحيح اصطفاف الأسنان والإطباق باستخدام التقويم والصفافات والمثبتات وغيرها عند ملاءمتها.",
+    "Dental care for children from infancy through adolescence, including preventive care, fluoride, sealants and restorative treatment.": "رعاية أسنان الأطفال من مرحلة الرضاعة حتى المراهقة، وتشمل الوقاية والفلورايد والحشوات الوقائية والعلاج الترميمي.",
+    "Aesthetic dental care including veneers, smile design and restorative options selected after a clinical assessment of the teeth and bite.": "رعاية تجميلية تشمل القشور وتصميم الابتسامة وخيارات ترميمية تُختار بعد تقييم الأسنان والإطباق.",
+    "Professional whitening options for suitable patients, planned after an examination to assess the teeth, existing restorations and the cause of discoloration.": "خيارات تبييض احترافية للمرضى المناسبين، تُخطط بعد فحص الأسنان والتركيبات الموجودة وسبب تغير اللون.",
+    "Dental laser techniques used for selected soft- and hard-tissue procedures when clinically appropriate.": "تقنيات الليزر المستخدمة في إجراءات مختارة للأنسجة الرخوة والصلبة عندما تكون مناسبة سريرياً.",
+    "Routine examinations, professional hygiene guidance and preventive planning designed to protect teeth and gums and identify problems early.": "فحوصات دورية وإرشادات احترافية للعناية بالفم وتخطيط وقائي لحماية الأسنان واللثة واكتشاف المشكلات مبكراً.",
+    "Not sure which service you need?": "لست متأكداً من الخدمة التي تحتاجها؟",
+    "Tell reception what you would like help with and the team can guide your appointment enquiry.": "أخبر الاستقبال بما تحتاج إليه، وسيساعدك الفريق في توجيه طلب موعدك.",
+    "Dental care": "رعاية الأسنان",
+    "Explore Silwadi Dental Center’s dental service areas, or contact us if you are not sure where to start.": "استكشف مجالات رعاية الأسنان في مركز سلوادي، أو تواصل معنا إذا لم تعرف من أين تبدأ.",
+    "10 service areas": "10 مجالات للرعاية",
+    "General and specialist dental care across ten established service areas.": "رعاية أسنان عامة وتخصصية ضمن عشرة مجالات واضحة.",
+    "Choose a service that matches your next step.": "اختر الخدمة التي تناسب خطوتك التالية.",
+    "Start with the concern that brought you here. Each option opens a focused guide or takes you to the related service on our main services page.": "ابدأ من السبب الذي دفعك إلى زيارة الموقع. يفتح كل خيار دليلاً مختصراً أو ينقلك إلى الخدمة ذات الصلة.",
+    "Restore and replace": "رمّم وعوّض",
+    "Rebuild a comfortable bite.": "استعد إطباقاً مريحاً.",
+    "Plans for missing, damaged or heavily worn teeth.": "خطط للأسنان المفقودة أو المتضررة أو شديدة التآكل.",
+    "Implant planning and replacement teeth for suitable patients.": "تخطيط للزراعة وأسنان تعويضية للمرضى المناسبين.",
+    "Crowns, bridges, dentures and other restorative options.": "تيجان وجسور وأطقم وخيارات ترميمية أخرى.",
+    "Align and protect": "صحّح واحمِ",
+    "Look after your foundations.": "اعتنِ بالأساس الذي يحمي ابتسامتك.",
+    "Specialist care for alignment, gums and the tissues that support your teeth.": "رعاية تخصصية لاصطفاف الأسنان واللثة والأنسجة الداعمة.",
+    "Braces, clear aligners and bite correction after assessment.": "تقويم وصفافات شفافة وتصحيح للإطباق بعد التقييم.",
+    "Diagnosis and treatment for gums and supporting tissues.": "تشخيص وعلاج اللثة والأنسجة الداعمة.",
+    "Family care": "رعاية لجميع أفراد الأسرة",
+    "Support every stage of a smile.": "دعم كل مرحلة من مراحل الابتسامة.",
+    "Gentle, practical care for children and treatment for tooth pain.": "رعاية هادئة وعملية للأطفال وعلاج لألم الأسنان.",
+    "Root canal and pulp care when a tooth is painful or infected.": "علاج الجذور واللب عندما يكون السن مؤلماً أو مصاباً بالعدوى.",
+    "Dental visits designed for children from infancy to adolescence.": "زيارات أسنان مناسبة للأطفال من الرضاعة حتى المراهقة.",
+    "Smile and prevention": "الابتسامة والوقاية",
+    "Feel good about your daily care.": "اجعل عنايتك اليومية أبسط.",
+    "Evidence-led options to improve appearance and protect oral health.": "خيارات تستند إلى التقييم لتحسين المظهر وحماية صحة الفم.",
+    "Veneers, whitening and restorative smile planning after review.": "قشور وتبييض وتخطيط ترميمي للابتسامة بعد المراجعة.",
+    "Examinations and early support for healthier teeth and gums.": "فحوصات ودعم مبكر لأسنان ولثة أكثر صحة.",
+    "Professional cleaning and guidance for an easier home routine.": "تنظيف احترافي وإرشادات لروتين منزلي أسهل.",
+    "Laser-assisted techniques for selected procedures when suitable.": "تقنيات بمساعدة الليزر لإجراءات مختارة عند ملاءمتها.",
+    "Need a little help?": "هل تحتاج إلى بعض المساعدة؟",
+    "Tell us what is bothering you.": "أخبرنا ما الذي يزعجك.",
+    "Reception can guide your enquiry to the right dentist or specialist. You do not need to know the treatment name before you contact us.": "يمكن للاستقبال توجيه استفسارك إلى طبيب الأسنان أو الاختصاصي المناسب. لا تحتاج إلى معرفة اسم العلاج قبل التواصل معنا.",
+    "Talk to reception": "تحدث مع الاستقبال",
+    "Emergency dental assessment is available during clinic hours. Call the centre for urgent scheduling or review our emergency guidance.": "يتوفر تقييم الأسنان العاجل خلال ساعات العمل. اتصل بالمركز لتحديد موعد عاجل أو اطّلع على إرشادات الحالات الطارئة.",
+    "Emergency dental care →": "رعاية أسنان عاجلة ←",
+    "Need guidance?": "هل تحتاج إلى توجيه؟",
+    "Not sure which treatment applies?": "لست متأكداً من العلاج المناسب؟",
+    "Our reception team can help direct your enquiry to the appropriate dentist or specialist.": "يمكن لفريق الاستقبال توجيه استفسارك إلى طبيب الأسنان أو الاختصاصي المناسب.",
+    "Natural care, clear next steps.": "رعاية واضحة وخطوات بسيطة.",
+    "Advanced dentistry.": "خبرة راسخة.",
+    "Established trust.": "ثقة منذ عام 1980.",
+    "Care for every smile in Abu Dhabi": "رعاية لكل ابتسامة في أبوظبي",
+    "Since 1980, our dentists have welcomed Abu Dhabi families with clear advice and thoughtful care.": "منذ عام 1980، يرحّب أطباؤنا بعائلات أبوظبي بنصائح واضحة ورعاية مدروسة.",
+    "Care that feels considered.": "رعاية تُقدّم باهتمام.",
+    "A familiar name in Abu Dhabi dentistry.": "اسم يعرفه أهل أبوظبي في طب الأسنان.",
+    "People of Determination": "أصحاب الهمم"
+  });
+
+  Object.assign(arabic, {
+    "Open navigation": "فتح القائمة",
+    "Mobile navigation": "القائمة المتنقلة",
+    "Primary navigation": "التنقل الرئيسي",
+    "Breadcrumb": "مسار التنقل",
+    "Quick contact": "تواصل سريع",
+    "Patient shortcuts": "اختصارات المرضى",
+    "Patient review excerpts": "مقتطفات من تقييمات المرضى",
+    "Selected members of the Silwadi dental team": "نماذج من فريق سلوادي لطب الأسنان",
+    "Centre trust information": "معلومات عن المركز وثقة المرضى",
+    "Established since 1980": "خبرة منذ عام 1980",
+    "Profile highlights": "أبرز المعلومات",
+    "Treatment overview": "نظرة عامة على العلاج",
+    "Filter doctors by specialty": "تصفية الأطباء حسب التخصص",
+    "Read Silwadi reviews on Google Maps": "اقرأ تقييمات سلوادي على خرائط Google",
+    "Silwadi Dental Center home": "الصفحة الرئيسية لمركز سلوادي لطب الأسنان",
+    "Chat with Silwadi Dental Center on WhatsApp": "تواصل مع مركز سلوادي لطب الأسنان عبر واتساب",
+    "WhatsApp Silwadi Dental Center": "تواصل مع مركز سلوادي لطب الأسنان عبر واتساب",
+    "Follow Silwadi Dental Center on Instagram": "تابع مركز سلوادي لطب الأسنان على Instagram",
+    "Open patient review": "فتح تقييم المريض",
+    "Close review": "إغلاق التقييم",
+    "4.6 out of 5 stars": "4.6 من 5 نجوم",
+    "5 out of 5 stars": "5 من 5 نجوم",
+    "Choose a starting point": "اختر نقطة البداية",
+    "Map showing Dr. Munir Silwadi Dental Centre at Al Raha Mall, Abu Dhabi": "خريطة توضح موقع مركز الدكتور منير السلوادي لطب الأسنان في الراحة مول بأبوظبي",
+    "Map showing Dr. Munir Silwadi Dental Centre at Bani Yas Tower, Abu Dhabi": "خريطة توضح موقع مركز الدكتور منير السلوادي لطب الأسنان في برج بني ياس بأبوظبي",
+    "Cosmetic dentistry": "طب الأسنان التجميلي",
+    "Orthodontic care": "رعاية تقويم الأسنان",
+    "Periodontal care": "رعاية اللثة",
+    "Preventive dental care": "رعاية الأسنان الوقائية",
+    "Prosthodontics and implantology": "تركيبات وزراعة الأسنان",
+  });
+
+  return { init, applyLanguage, getLanguage, getRequestedLanguage, translate, withLanguageQuery };
 });
