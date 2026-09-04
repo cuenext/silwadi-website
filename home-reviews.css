@@ -73,7 +73,7 @@
 
 /* Arabic review layout: preserve readable RTL flow while keeping names and Google branding clear. */
 .language-ar .home-google-reviews{direction:rtl}
-.language-ar .google-reviews-track{animation-direction:reverse}
+
 .language-ar .google-review-card__top{direction:rtl}
 .language-ar .google-review-card__top div,.language-ar .google-rating-card{text-align:right}
 .language-ar .review-dialog__close{right:auto;left:16px}

@@ -3,7 +3,7 @@
   const { hostname, pathname, search, hash } = window.location;
   const isSilwadiDomain = hostname === 'silwadi.ae' || hostname === 'www.silwadi.ae';
 
-  if (isSilwadiDomain && /\/index\.html$/.test(pathname)) {
+  if (isSilwadiDomain && pathname === '/index.html') {
     window.location.replace(`https://silwadi.ae/${search}${hash}`);
     return;
   }
