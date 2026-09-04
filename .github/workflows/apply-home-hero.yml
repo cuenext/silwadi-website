@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch homepage hero sans font and lower fade
+      - name: Patch homepage hero mobile layout
         run: |
           python3 <<'PY'
           from pathlib import Path
@@ -25,7 +25,7 @@ jobs:
           p = Path('index.html')
           html = p.read_text(encoding='utf-8')
 
-          version = '20260905-hero-sans-darkfade-1'
+          version = '20260905-hero-mobile-1'
 
           style = f'''<style id="premium-home-hero-styles">
           @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
@@ -52,7 +52,9 @@ jobs:
           .premium-home-hero__tagline,.premium-home-hero__down{{display:none!important}}
           .home-hero{{display:none!important}}
           @media(max-width:1100px){{.premium-home-hero__copy{{margin-left:clamp(1rem,4vw,3rem)}}.premium-home-hero__shade{{background:linear-gradient(90deg,rgba(2,14,25,.985) 0%,rgba(4,23,40,.92) 42%,rgba(9,39,64,.58) 100%)}}}}
-          @media(max-width:760px){{.premium-home-hero{{min-height:auto}}.premium-home-hero__media img{{object-position:67% center;filter:saturate(.92) contrast(1.04) brightness(.78)}}.premium-home-hero__shade{{background:linear-gradient(180deg,rgba(2,14,25,.66) 0%,rgba(3,17,30,.82) 38%,rgba(3,17,30,.96) 100%)}}.premium-home-hero::before{{height:7rem;background:linear-gradient(180deg,rgba(246,251,252,0) 0%,rgba(246,251,252,0) 70%,rgba(246,251,252,.24) 86%,#f6fbfc 100%)}}.premium-home-hero__inner{{padding:5.25rem 1.25rem 5rem}}.premium-home-hero__copy{{margin-left:0}}.premium-home-hero h1{{font-size:clamp(2.5rem,12.6vw,3.85rem);letter-spacing:-.055em;max-width:12ch}}.premium-home-hero__lead{{font-size:1rem;line-height:1.62}}.premium-home-hero__actions{{flex-direction:column}}.premium-home-hero__actions .btn{{width:100%;justify-content:center}}.premium-home-hero__trust{{display:grid;grid-template-columns:1fr;gap:.85rem}}.premium-home-hero__trust li{{min-width:0}}}}
+          @media(max-width:760px){{.premium-home-hero{{min-height:calc(100svh - 74px);align-items:flex-end;background:#f6fbfc}}.premium-home-hero__media img{{object-position:72% top;filter:saturate(.92) contrast(1.04) brightness(.82)}}.premium-home-hero__shade{{background:linear-gradient(180deg,rgba(2,14,25,.05) 0%,rgba(2,14,25,.18) 24%,rgba(2,14,25,.62) 53%,rgba(2,14,25,.95) 100%),linear-gradient(90deg,rgba(2,14,25,.74) 0%,rgba(2,14,25,.28) 44%,rgba(2,14,25,0) 100%)}}.premium-home-hero::before{{height:5.4rem;background:linear-gradient(180deg,rgba(246,251,252,0) 0%,rgba(246,251,252,0) 74%,rgba(246,251,252,.22) 88%,#f6fbfc 100%)}}.premium-home-hero__inner{{width:100%;padding:clamp(15rem,45svh,22rem) 1.12rem 3.85rem}}.premium-home-hero__copy{{max-width:100%;margin-left:0}}.premium-home-hero__eyebrow{{margin-bottom:.72rem;font-size:.73rem;line-height:1.35;letter-spacing:.085em;color:rgba(232,251,253,.92)}}.premium-home-hero__accent{{width:2.7rem;height:.18rem;margin-bottom:.95rem}}.premium-home-hero h1{{font-size:clamp(2.28rem,11.4vw,3.25rem);line-height:1;letter-spacing:-.055em;max-width:9.8ch;text-wrap:balance}}.premium-home-hero h1 span{{color:#a8f0f3}}.premium-home-hero__lead{{max-width:29rem;margin-top:1rem;font-size:.94rem;line-height:1.56;color:rgba(238,249,251,.88)}}.premium-home-hero__actions{{flex-direction:column;gap:.72rem;margin-top:1.35rem}}.premium-home-hero__actions .btn{{width:100%;min-height:3.18rem;justify-content:center;border-radius:.72rem;font-size:.93rem;padding-inline:1rem}}.premium-home-hero__trust{{display:grid;grid-template-columns:1fr;gap:.62rem;margin-top:1.25rem}}.premium-home-hero__trust li{{min-width:0;padding:.62rem .72rem;border-radius:1rem;background:rgba(255,255,255,.075);border:1px solid rgba(221,248,252,.13);backdrop-filter:blur(8px)}}.premium-home-hero__icon{{flex-basis:2.32rem;width:2.32rem;height:2.32rem;font-size:.9rem}}.premium-home-hero__trust strong{{font-size:.84rem;line-height:1.22}}}}
+          @media(max-width:430px){{.premium-home-hero__media img{{object-position:70% top}}.premium-home-hero__inner{{padding-top:clamp(14.2rem,43svh,19rem);padding-bottom:3.45rem}}.premium-home-hero h1{{font-size:clamp(2.18rem,11.6vw,3rem);max-width:9.4ch}}.premium-home-hero__lead{{font-size:.91rem}}}}
+          @media(max-width:760px) and (orientation:landscape){{.premium-home-hero{{min-height:auto}}.premium-home-hero__inner{{padding:4rem 1.25rem 3.5rem}}.premium-home-hero__trust{{grid-template-columns:repeat(3,minmax(0,1fr))}}.premium-home-hero__trust li{{padding:.55rem}}}}
           </style>'''
 
           hero = f'''<section class="premium-home-hero" id="home" aria-labelledby="premiumHomeHeroTitle"><picture class="premium-home-hero__media"><img src="assets/munir-home-hero?v={version}" alt="Dr. Munir Silwadi at Dr. Munir Silwadi Dental Centre" width="1815" height="867" decoding="async" fetchpriority="high"></picture><div class="premium-home-hero__shade" aria-hidden="true"></div><div class="container premium-home-hero__inner"><div class="premium-home-hero__copy reveal visible"><p class="premium-home-hero__eyebrow">Dr. Munir Silwadi Dental Centre</p><span class="premium-home-hero__accent" aria-hidden="true"></span><h1 id="premiumHomeHeroTitle">How can we <span>help you?</span></h1><p class="premium-home-hero__lead">From routine check-ups to specialist dental care, our Abu Dhabi team is here to help you find the right treatment with clarity and confidence.</p><div class="premium-home-hero__actions"><a class="btn btn--primary" href="contact.html#consultation-form">Book an Appointment <span aria-hidden="true">→</span></a><a class="btn btn--secondary" href="services.html">Explore Services <span aria-hidden="true">→</span></a></div><ul class="premium-home-hero__trust" aria-label="Clinic highlights"><li><span class="premium-home-hero__icon" aria-hidden="true">✓</span><strong>Serving patients<br>since 1980</strong></li><li><span class="premium-home-hero__icon" aria-hidden="true">⌖</span><strong>Bani Yas Tower<br>&amp; Al Raha Mall</strong></li><li><span class="premium-home-hero__icon" aria-hidden="true">☎</span><strong>Reception-led<br>booking</strong></li></ul></div></div></section>'''
@@ -75,5 +77,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Switch homepage hero headline to clean sans" || exit 0
+          git commit -m "Refine homepage hero mobile layout" || exit 0
           git push
