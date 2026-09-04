@@ -1,0 +1,30 @@
+name: Locations static tests
+
+on:
+  pull_request:
+    paths:
+      - 'locations.html'
+      - 'location-pages.css'
+      - 'tests/test_locations_page.py'
+      - 'tests/test_patch6_contract.py'
+      - 'tests/test_patch7_local_seo.py'
+      - 'tests/test_patch8_technical_seo.py'
+      - 'tests/test_patch14_official_content_alignment.py'
+      - 'tests/test_patch16_truth_reviews_raha.py'
+      - 'tests/test_patch25_quality_seo.py'
+      - '.github/workflows/locations-static-tests.yml'
+
+jobs:
+  locations-page:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run Locations page checks
+        run: |
+          python3 tests/test_locations_page.py -v
+          python3 tests/test_patch6_contract.py -v
+          python3 tests/test_patch7_local_seo.py -v
+          python3 tests/test_patch8_technical_seo.py -v
+          python3 tests/test_patch14_official_content_alignment.py -v
+          python3 tests/test_patch16_truth_reviews_raha.py -v
+          python3 tests/test_patch25_quality_seo.py -v

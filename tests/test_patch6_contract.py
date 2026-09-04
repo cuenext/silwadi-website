@@ -41,14 +41,16 @@ class PatchSixHumanCopyAndLocationsContract(unittest.TestCase):
         self.assertTrue(path.is_file(), 'locations.html')
         html = read('locations.html')
         self.assertEqual(len(re.findall(r'<h1\b', html, re.I)), 1)
+        self.assertIn('id="bani-yas"', html)
         self.assertIn('Bani Yas Tower', html)
         self.assertIn('+971 2 626 2042', html)
         self.assertIn('Sun–Wed 09:00–21:00', html)
+        self.assertIn('id="al-raha"', html)
         self.assertIn('Al Raha Mall', html)
-        self.assertIn('Now open', html)
         self.assertIn('+971 2 666 2408', html)
         self.assertIn('google.com/maps', html)
         self.assertIn('contact.html#consultation', html)
+        self.assertNotIn('class="location-state"', html)
 
     def test_all_primary_navigation_routes_locations_to_real_page(self):
         root_pages = [
@@ -67,11 +69,13 @@ class PatchSixHumanCopyAndLocationsContract(unittest.TestCase):
             html = read(rel)
             self.assertIn('href="../locations.html"', html, rel)
 
-    def test_locations_page_keeps_parking_claim_conservative_and_raha_open(self):
+    def test_locations_page_keeps_parking_claim_conservative_and_raha_operational(self):
         html = read('locations.html').lower()
         self.assertNotIn('free parking', html)
         self.assertNotIn('valet', html)
-        self.assertIn('now open', html)
+        self.assertNotIn('coming soon', html)
+        self.assertNotIn('not yet open', html)
+        self.assertIn('id="al-raha"', html)
         self.assertIn('+971 2 666 2408', html)
 
 
