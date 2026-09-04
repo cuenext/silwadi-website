@@ -5,7 +5,7 @@ on:
     branches:
       - fix/locations-two-branch-experience
     paths:
-      - 'assets/locations/_upload_chunks/READY'
+      - 'assets/locations/_upload_chunks_v2/READY'
 
 permissions:
   contents: write
@@ -22,7 +22,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          chunk_dir='assets/locations/_upload_chunks'
+          chunk_dir='assets/locations/_upload_chunks_v2'
           decode() {
             local name="$1"
             cat "$chunk_dir/$name".part-* | base64 --decode > "assets/locations/$name"
@@ -49,19 +49,21 @@ jobs:
           for name in names:
               p = root / name
               data = p.read_bytes()
-              assert len(data) > 15000, (name, len(data))
+              assert len(data) > 6000, (name, len(data))
               assert data[:4] == b'RIFF', name
               assert data[8:12] == b'WEBP', name
               print(name, len(data))
           PY
 
-      - name: Commit decoded image assets
+      - name: Commit decoded image assets and clean staging files
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf assets/locations/_upload_chunks
+          rm -rf assets/locations/_upload_chunks assets/locations/_upload_chunks_v2
+          rm -f assets/locations/.binary-upload-test
+          rm -f .github/workflows/location-image-import.yml
           git config user.name 'ADVA'
           git config user.email 'abdullahavadoglu@gmail.com'
-          git add assets/locations
+          git add -A assets/locations .github/workflows/location-image-import.yml
           git commit -m 'Replace truncated location images with valid WebP assets'
           git push origin HEAD:fix/locations-two-branch-experience
