@@ -1,0 +1,167 @@
+name: Simplify contact page
+
+on:
+  push:
+    paths:
+      - '.github/workflows/simplify-contact-page.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Calm down contact page
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          contact = Path('contact.html')
+          html = contact.read_text(encoding='utf-8')
+
+          old_hero = re.compile(r'<section class="contact-hero">[\s\S]*?</section>\s*\n\s*<section class="consultation-section" id="consultation">[\s\S]*?</section>', re.M)
+          new_top = '''<section class="contact-hero contact-hero--calm"><div class="container"><nav class="breadcrumb" aria-label="Breadcrumb"><a href="index.html">Home</a><span aria-hidden="true">/</span><span>Contact</span></nav><div class="contact-hero__grid"><div><p class="eyebrow">Contact</p><h1>How can we help?</h1><p class="contact-hero__lead">For appointments or questions, our reception team can guide you to the right next step.</p></div></div></div></section>
+
+    <section class="consultation-section consultation-section--calm" id="consultation"><div class="container"><div class="consultation-intro"><div><p class="eyebrow">Choose one option</p><h2>Contact the centre.</h2></div><p>Call for urgent help, WhatsApp for quick booking, or send the form if you prefer written details.</p></div><div class="contact-channels contact-channels--calm">
+      <article class="contact-channel"><span class="contact-channel__index">Call</span><div><h3>Speak with reception</h3><p>Best for appointments and direct assistance.</p></div><a href="tel:+97126262042">+971 2 626 2042 →</a></article>
+      <article class="contact-channel"><span class="contact-channel__index">WhatsApp</span><div><h3>Message us</h3><p>Send your preferred date and a short note.</p></div><a href="https://wa.me/971506260418?text=Hello%20Silwadi%20Dental%20Centre%2C%20I%27d%20like%20to%20book%20a%20consultation." target="_blank" rel="noopener">Open WhatsApp →</a></article>
+      <article class="contact-channel"><span class="contact-channel__index">Form</span><div><h3>Request a consultation</h3><p>Share your details and the team will follow up.</p></div><a href="#consultation-form">Complete form →</a></article>
+    </div></div></section>'''
+          html2, n = old_hero.subn(new_top, html, count=1)
+          if n == 0:
+              raise SystemExit('Could not find contact hero + consultation section')
+          contact.write_text(html2, encoding='utf-8')
+
+          css_path = Path('contact-pages.css')
+          css = css_path.read_text(encoding='utf-8')
+          override = r'''
+/* Contact page calm redesign */
+.contact-hero--calm{
+  background:#f7faf9;
+  border-bottom:1px solid rgba(8,56,71,.08);
+  padding:72px 0 64px;
+}
+.contact-hero--calm .breadcrumb{
+  margin-bottom:38px;
+}
+.contact-hero--calm .contact-hero__grid{
+  display:block;
+  max-width:760px;
+}
+.contact-hero--calm h1{
+  max-width:720px;
+  font-size:clamp(42px,5.6vw,72px);
+  line-height:.98;
+  letter-spacing:-.065em;
+  margin:0;
+  color:#062f3b;
+}
+.contact-hero--calm .contact-hero__lead{
+  margin-top:20px;
+  max-width:680px;
+  font-size:17px;
+  line-height:1.75;
+  color:#56717b;
+}
+.contact-hero--calm .contact-hero__aside{
+  display:none!important;
+}
+.consultation-section--calm{
+  padding:72px 0;
+  background:#fff;
+}
+.consultation-section--calm .consultation-intro{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:40px;
+  margin-bottom:28px;
+}
+.consultation-section--calm .consultation-intro h2{
+  max-width:520px;
+  font-size:clamp(30px,3.4vw,46px);
+  line-height:1.05;
+  letter-spacing:-.045em;
+  margin:0;
+}
+.consultation-section--calm .consultation-intro > p{
+  max-width:520px;
+  margin:0;
+  font-size:15px;
+  line-height:1.7;
+  color:#607982;
+}
+.contact-channels--calm{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+  border:0;
+}
+.contact-channels--calm .contact-channel{
+  min-height:auto;
+  padding:26px;
+  border:1px solid rgba(8,56,71,.12);
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 14px 32px rgba(8,56,71,.045);
+}
+.contact-channels--calm .contact-channel + .contact-channel{
+  border-left:1px solid rgba(8,56,71,.12);
+}
+.contact-channels--calm .contact-channel__index{
+  display:inline-flex;
+  width:auto;
+  margin-bottom:28px;
+  padding:7px 11px;
+  border-radius:999px;
+  background:#ecf7f7;
+  color:#087f8e;
+  font-size:11px;
+  letter-spacing:.04em;
+  text-transform:none;
+}
+.contact-channels--calm .contact-channel h3{
+  margin:0 0 10px;
+  font-size:21px;
+  line-height:1.2;
+  letter-spacing:-.025em;
+  color:#073847;
+}
+.contact-channels--calm .contact-channel p{
+  margin:0;
+  font-size:14px;
+  line-height:1.65;
+  color:#617980;
+}
+.contact-channels--calm .contact-channel a{
+  margin-top:28px;
+  font-size:13px;
+  font-weight:800;
+  color:#087f8e;
+}
+@media (max-width:900px){
+  .contact-hero--calm{padding:44px 0 48px;}
+  .contact-hero--calm .breadcrumb{margin-bottom:26px;}
+  .contact-hero--calm h1{font-size:clamp(38px,13vw,56px);letter-spacing:-.055em;}
+  .consultation-section--calm{padding:52px 0;}
+  .consultation-section--calm .consultation-intro{display:block;margin-bottom:22px;}
+  .consultation-section--calm .consultation-intro > p{margin-top:12px;}
+  .contact-channels--calm{grid-template-columns:1fr;gap:12px;}
+  .contact-channels--calm .contact-channel{padding:22px;border-radius:16px;}
+  .contact-channels--calm .contact-channel__index{margin-bottom:20px;}
+}
+/* End contact page calm redesign */
+'''
+          css = re.sub(r'\n/\* Contact page calm redesign \*/[\s\S]*?/\* End contact page calm redesign \*/\n?', '\n', css)
+          css_path.write_text(css.rstrip() + '\n\n' + override + '\n', encoding='utf-8')
+          PY
+      - name: Commit calm contact page
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add contact.html contact-pages.css
+          git commit -m "Simplify contact page layout" || echo "No changes to commit"
+          git push
