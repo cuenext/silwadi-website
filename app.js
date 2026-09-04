@@ -1,3 +1,22 @@
+// Keep the canonical homepage URL clean and refresh cached homepage styles after launch.
+(function normalizeHomepageUrlAndAssets() {
+  const { hostname, pathname, search, hash } = window.location;
+  const isSilwadiDomain = hostname === 'silwadi.ae' || hostname === 'www.silwadi.ae';
+
+  if (isSilwadiDomain && /\/index\.html$/.test(pathname)) {
+    window.location.replace(`https://silwadi.ae/${search}${hash}`);
+    return;
+  }
+
+  if (isSilwadiDomain && pathname === '/') {
+    const homepageStyles = new Set(['styles.css', 'home-trust.css', 'home-reviews.css']);
+    document.querySelectorAll('link[rel="stylesheet"]').forEach(link => {
+      const href = link.getAttribute('href') || '';
+      if (homepageStyles.has(href)) link.setAttribute('href', `${href}?v=20260905-live2`);
+    });
+  }
+})();
+
 const header = document.getElementById('siteHeader');
 const menuButton = document.querySelector('[data-menu-button]');
 const mobileNav = document.querySelector('[data-mobile-nav]');
