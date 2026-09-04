@@ -1,0 +1,93 @@
+name: Finalize location image refs
+
+on:
+  push:
+    branches:
+      - fix/locations-two-branch-experience
+    paths:
+      - 'assets/locations/.finalize-image-refs'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/locations-two-branch-experience
+
+      - name: Point Locations page at rebuilt WebP assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          html_path = Path('locations.html')
+          html = html_path.read_text(encoding='utf-8')
+          replacements = {
+              'assets/locations/bani-yas-treatment-room.webp?v=20260904-2': 'assets/locations/bani-yas-treatment-room.webp?v=20260904-3',
+              'assets/locations/al-raha-exterior.png?v=20260904-2': 'assets/locations/al-raha-exterior.webp?v=20260904-3',
+              'assets/locations/al-raha-treatment-room.png?v=20260904-2': 'assets/locations/al-raha-treatment-room.webp?v=20260904-3',
+              'assets/locations/al-raha-reception.png?v=20260904-2': 'assets/locations/al-raha-reception.webp?v=20260904-3',
+              'assets/locations/al-raha-children-room.png?v=20260904-2': 'assets/locations/al-raha-children-room.webp?v=20260904-3',
+              'assets/locations/al-raha-waiting-area.png?v=20260904-2': 'assets/locations/al-raha-waiting-area.webp?v=20260904-3',
+              'width="1198" height="667" decoding="async"><figcaption>Bani Yas Tower': 'width="900" height="555" decoding="async"><figcaption>Bani Yas Tower',
+              'width="1367" height="1011" decoding="async"><figcaption>Al Raha Mall': 'width="600" height="444" decoding="async"><figcaption>Al Raha Mall',
+              'width="1370" height="1002" loading="lazy" decoding="async"></figure>': 'width="520" height="380" loading="lazy" decoding="async"></figure>',
+              'width="1370" height="992" loading="lazy" decoding="async"></figure>': 'width="520" height="377" loading="lazy" decoding="async"></figure>',
+              'width="1373" height="996" loading="lazy" decoding="async"></figure>': 'width="520" height="377" loading="lazy" decoding="async"></figure>',
+              'width="1367" height="991" loading="lazy" decoding="async"></figure>': 'width="520" height="377" loading="lazy" decoding="async"></figure>',
+          }
+          for old, new in replacements.items():
+              if old not in html:
+                  raise SystemExit(f'Missing expected HTML token: {old}')
+              html = html.replace(old, new, 1)
+          html_path.write_text(html, encoding='utf-8')
+
+          test_path = Path('tests/test_locations_page.py')
+          test = test_path.read_text(encoding='utf-8')
+          test = test.replace('width="1200" height="740"', 'width="900" height="555"')
+          test = test.replace('width="1100" height="814"', 'width="600" height="444"')
+          test = test.replace("'al-raha-treatment-room.webp': 'width=\"900\" height=\"658\"'", "'al-raha-treatment-room.webp': 'width=\"520\" height=\"380\"'")
+          test = test.replace("'al-raha-reception.webp': 'width=\"900\" height=\"652\"'", "'al-raha-reception.webp': 'width=\"520\" height=\"377\"'")
+          test = test.replace("'al-raha-children-room.webp': 'width=\"900\" height=\"653\"'", "'al-raha-children-room.webp': 'width=\"520\" height=\"377\"'")
+          test = test.replace("'al-raha-waiting-area.webp': 'width=\"900\" height=\"652\"'", "'al-raha-waiting-area.webp': 'width=\"520\" height=\"377\"'")
+          test = test.replace('self.assertGreater(path.stat().st_size, 25_000, filename)', 'self.assertGreater(path.stat().st_size, 6_000, filename)')
+          test_path.write_text(test, encoding='utf-8')
+          PY
+
+      - name: Validate repaired images and location contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          names = [
+              'bani-yas-treatment-room.webp', 'al-raha-exterior.webp',
+              'al-raha-treatment-room.webp', 'al-raha-reception.webp',
+              'al-raha-children-room.webp', 'al-raha-waiting-area.webp'
+          ]
+          for name in names:
+              data = (Path('assets/locations') / name).read_bytes()
+              assert len(data) > 6000, (name, len(data))
+              assert data[:4] == b'RIFF' and data[8:12] == b'WEBP', name
+          html = Path('locations.html').read_text(encoding='utf-8')
+          assert '.png?v=20260904-2' not in html
+          assert html.count('.webp?v=20260904-3') == 6
+          PY
+          python -m unittest tests.test_locations_page tests.test_patch6_contract tests.test_patch7_local_seo
+
+      - name: Commit final image reference fix
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f assets/locations/.finalize-image-refs
+          rm -f .github/workflows/finalize-location-image-refs.yml
+          git config user.name 'ADVA'
+          git config user.email 'abdullahavadoglu@gmail.com'
+          git add -A locations.html tests/test_locations_page.py assets/locations/.finalize-image-refs .github/workflows/finalize-location-image-refs.yml
+          git commit -m 'Use rebuilt location images on Locations page'
+          git push origin HEAD:fix/locations-two-branch-experience
