@@ -16,6 +16,13 @@ class LocationsPageTests(unittest.TestCase):
         self.assertIn('id="al-raha"', HTML)
         self.assertNotIn('class="location-state"', HTML)
 
+    def test_bani_yas_uses_the_approved_corniche_clinic_photo(self):
+        match = re.search(r'<section[^>]*id="bani-yas".*?</section>', HTML, re.S)
+        self.assertIsNotNone(match)
+        bani_yas = match.group(0)
+        self.assertIn('assets/locations/bani-yas-treatment-room.webp', bani_yas)
+        self.assertIn('width="1198" height="667"', bani_yas)
+
     def test_al_raha_exterior_belongs_to_branch_section_and_gallery_has_four_interior_images(self):
         match = re.search(r'<section[^>]*id="al-raha".*?</section>', HTML, re.S)
         self.assertIsNotNone(match)
@@ -33,6 +40,7 @@ class LocationsPageTests(unittest.TestCase):
             'al-raha-waiting-area.png',
         ):
             self.assertIn(filename, gallery_html)
+            self.assertRegex(gallery_html, re.escape(filename) + r'\?v=[^" ]+')
 
     def test_official_al_raha_videos_are_present(self):
         self.assertIn('INb7BccskzU', HTML)
@@ -46,9 +54,12 @@ class LocationsPageTests(unittest.TestCase):
         self.assertIn('tel:+97126662408', al_raha)
         self.assertIn('Get Directions', al_raha)
 
-    def test_gallery_uses_balanced_two_column_desktop_and_single_column_mobile_layout(self):
+    def test_gallery_uses_compact_landscape_frames_on_desktop_and_mobile(self):
         self.assertIn('grid-template-columns:repeat(2,minmax(0,1fr))', CSS)
+        self.assertRegex(CSS, r'\.branch-gallery__grid\{[^}]*max-width:980px[^}]*margin-inline:auto')
+        self.assertRegex(CSS, r'\.branch-gallery__item img\{[^}]*height:clamp\(190px,22vw,280px\)[^}]*object-fit:cover')
         self.assertRegex(CSS, r'@media\(max-width:620px\).*?\.branch-gallery__grid\{grid-template-columns:1fr', re.S)
+        self.assertRegex(CSS, r'@media\(max-width:620px\).*?\.branch-gallery__item img\{height:210px', re.S)
 
     def test_locations_rtl_rules_exist(self):
         self.assertIn('html[dir="rtl"] body.language-ar .location-branch', CSS)
