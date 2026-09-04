@@ -1,4 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="Silwadi Dental Center">
-  <rect width="64" height="64" rx="14" fill="#083847"/>
-  <text x="32" y="43" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700" fill="#ffffff">S</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 256 256" role="img" aria-label="Silwadi Dental Center">
+  <defs>
+    <linearGradient id="silwadiMark" x1="34" y1="20" x2="222" y2="236" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b7b8f"/>
+      <stop offset="0.48" stop-color="#2b8796"/>
+      <stop offset="0.62" stop-color="#b7c3c7"/>
+      <stop offset="1" stop-color="#eef2f3"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#silwadiMark)" fill-rule="evenodd" d="M51 28 L42 34 L36 52 L36 71 L39 75 L39 86 L42 89 L47 113 L53 125 L55 148 L58 151 L58 168 L61 171 L61 182 L64 185 L70 208 L87 227 L96 233 L102 233 L112 220 L112 193 L115 189 L115 181 L120 171 L126 166 L135 174 L140 184 L146 223 L156 233 L165 233 L171 230 L191 210 L200 189 L202 166 L196 143 L202 138 L202 128 L216 91 L216 83 L219 80 L219 46 L216 40 L207 31 L204 31 L206 38 L199 48 L191 41 L181 41 L180 39 L194 28 L193 25 L186 25 L182 28 L168 30 L150 42 L140 52 L132 52 L86 25 L66 22 Z M74 129 L76 128 L81 136 L91 139 L117 112 L136 131 L158 144 L170 156 L176 171 L176 186 L168 205 L164 209 L158 207 L156 192 L153 189 L150 177 L145 175 L140 165 L133 162 L129 164 L128 158 L123 157 L114 160 L108 166 L96 194 L96 208 L92 210 L84 196 L82 181 L79 178 L79 167 L76 164 L76 144 L73 141 Z M176 54 L188 54 L195 69 L195 95 L193 97 L193 108 L190 111 L189 130 L182 127 L165 110 L162 110 L148 96 L145 90 L145 80 L151 68 L162 60 Z"/>
 </svg>
