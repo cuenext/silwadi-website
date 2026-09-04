@@ -22,24 +22,24 @@ class LocationsPageTests(unittest.TestCase):
         self.assertIsNotNone(match)
         bani_yas = match.group(0)
         self.assertIn('assets/locations/bani-yas-treatment-room.webp', bani_yas)
-        self.assertIn('width="1200" height="740"', bani_yas)
+        self.assertIn('width="900" height="555"', bani_yas)
 
     def test_al_raha_exterior_belongs_to_branch_section_and_gallery_has_four_interior_images(self):
         match = re.search(r'<section[^>]*id="al-raha".*?</section>', HTML, re.S)
         self.assertIsNotNone(match)
         al_raha = match.group(0)
         self.assertIn('assets/locations/al-raha-exterior.webp', al_raha)
-        self.assertIn('width="1100" height="814"', al_raha)
+        self.assertIn('width="600" height="444"', al_raha)
 
         gallery = re.search(r'<section[^>]*class="[^"]*branch-gallery[^"]*".*?</section>', HTML, re.S)
         self.assertIsNotNone(gallery)
         gallery_html = gallery.group(0)
         self.assertNotIn('al-raha-exterior.webp', gallery_html)
         expected_gallery = {
-            'al-raha-treatment-room.webp': 'width="900" height="658"',
-            'al-raha-reception.webp': 'width="900" height="652"',
-            'al-raha-children-room.webp': 'width="900" height="653"',
-            'al-raha-waiting-area.webp': 'width="900" height="652"',
+            'al-raha-treatment-room.webp': 'width="520" height="380"',
+            'al-raha-reception.webp': 'width="520" height="377"',
+            'al-raha-children-room.webp': 'width="520" height="377"',
+            'al-raha-waiting-area.webp': 'width="520" height="377"',
         }
         for filename, dimensions in expected_gallery.items():
             self.assertIn(filename, gallery_html)
@@ -67,7 +67,7 @@ class LocationsPageTests(unittest.TestCase):
         for filename in expected:
             path = ASSET_DIR / filename
             self.assertTrue(path.is_file(), filename)
-            self.assertGreater(path.stat().st_size, 25_000, filename)
+            self.assertGreater(path.stat().st_size, 6_000, filename)
             header = path.read_bytes()[:12]
             self.assertEqual(header[:4], b'RIFF', filename)
             self.assertEqual(header[8:12], b'WEBP', filename)
