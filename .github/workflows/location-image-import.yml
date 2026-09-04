@@ -1,0 +1,67 @@
+name: Location image import
+
+on:
+  push:
+    branches:
+      - fix/locations-two-branch-experience
+    paths:
+      - 'assets/locations/_upload_chunks/READY'
+
+permissions:
+  contents: write
+
+jobs:
+  decode-location-images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/locations-two-branch-experience
+
+      - name: Decode and validate location images
+        shell: bash
+        run: |
+          set -euo pipefail
+          chunk_dir='assets/locations/_upload_chunks'
+          decode() {
+            local name="$1"
+            cat "$chunk_dir/$name".part-* | base64 --decode > "assets/locations/$name"
+          }
+
+          decode 'bani-yas-treatment-room.webp'
+          decode 'al-raha-exterior.webp'
+          decode 'al-raha-treatment-room.webp'
+          decode 'al-raha-reception.webp'
+          decode 'al-raha-children-room.webp'
+          decode 'al-raha-waiting-area.webp'
+
+          python - <<'PY'
+          from pathlib import Path
+          names = [
+              'bani-yas-treatment-room.webp',
+              'al-raha-exterior.webp',
+              'al-raha-treatment-room.webp',
+              'al-raha-reception.webp',
+              'al-raha-children-room.webp',
+              'al-raha-waiting-area.webp',
+          ]
+          root = Path('assets/locations')
+          for name in names:
+              p = root / name
+              data = p.read_bytes()
+              assert len(data) > 15000, (name, len(data))
+              assert data[:4] == b'RIFF', name
+              assert data[8:12] == b'WEBP', name
+              print(name, len(data))
+          PY
+
+      - name: Commit decoded image assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf assets/locations/_upload_chunks
+          git config user.name 'ADVA'
+          git config user.email 'abdullahavadoglu@gmail.com'
+          git add assets/locations
+          git commit -m 'Replace truncated location images with valid WebP assets'
+          git push origin HEAD:fix/locations-two-branch-experience
