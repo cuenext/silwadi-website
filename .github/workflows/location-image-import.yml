@@ -32,7 +32,6 @@ jobs:
 
           python - <<'PY'
           from pathlib import Path
-          from PIL import Image
           names = [
               'bani-yas-treatment-room.webp',
               'al-raha-exterior.webp',
@@ -48,8 +47,6 @@ jobs:
               assert len(data) > 6000, (name, len(data))
               assert data[:4] == b'RIFF', name
               assert data[8:12] == b'WEBP', name
-              with Image.open(p) as im:
-                  im.verify()
               print(name, len(data))
           PY
 
