@@ -3,6 +3,7 @@ import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+ASSET_DIR = ROOT / "assets" / "locations"
 HTML = (ROOT / "locations.html").read_text(encoding="utf-8")
 CSS = (ROOT / "location-pages.css").read_text(encoding="utf-8")
 
@@ -21,26 +22,52 @@ class LocationsPageTests(unittest.TestCase):
         self.assertIsNotNone(match)
         bani_yas = match.group(0)
         self.assertIn('assets/locations/bani-yas-treatment-room.webp', bani_yas)
-        self.assertIn('width="1198" height="667"', bani_yas)
+        self.assertIn('width="1908" height="1177"', bani_yas)
 
     def test_al_raha_exterior_belongs_to_branch_section_and_gallery_has_four_interior_images(self):
         match = re.search(r'<section[^>]*id="al-raha".*?</section>', HTML, re.S)
         self.assertIsNotNone(match)
         al_raha = match.group(0)
-        self.assertIn('assets/locations/al-raha-exterior.png', al_raha)
+        self.assertIn('assets/locations/al-raha-exterior.webp', al_raha)
 
         gallery = re.search(r'<section[^>]*class="[^"]*branch-gallery[^"]*".*?</section>', HTML, re.S)
         self.assertIsNotNone(gallery)
         gallery_html = gallery.group(0)
-        self.assertNotIn('al-raha-exterior.png', gallery_html)
+        self.assertNotIn('al-raha-exterior.webp', gallery_html)
         for filename in (
+            'al-raha-treatment-room.webp',
+            'al-raha-reception.webp',
+            'al-raha-children-room.webp',
+            'al-raha-waiting-area.webp',
+        ):
+            self.assertIn(filename, gallery_html)
+            self.assertRegex(gallery_html, re.escape(filename) + r'\?v=[^" ]+')
+
+        for old_png in (
+            'al-raha-exterior.png',
             'al-raha-treatment-room.png',
             'al-raha-reception.png',
             'al-raha-children-room.png',
             'al-raha-waiting-area.png',
         ):
-            self.assertIn(filename, gallery_html)
-            self.assertRegex(gallery_html, re.escape(filename) + r'\?v=[^" ]+')
+            self.assertNotIn(old_png, HTML)
+
+    def test_location_image_assets_are_complete_webps(self):
+        expected = (
+            'bani-yas-treatment-room.webp',
+            'al-raha-exterior.webp',
+            'al-raha-treatment-room.webp',
+            'al-raha-reception.webp',
+            'al-raha-children-room.webp',
+            'al-raha-waiting-area.webp',
+        )
+        for filename in expected:
+            path = ASSET_DIR / filename
+            self.assertTrue(path.is_file(), filename)
+            self.assertGreater(path.stat().st_size, 50_000, filename)
+            header = path.read_bytes()[:12]
+            self.assertEqual(header[:4], b'RIFF', filename)
+            self.assertEqual(header[8:12], b'WEBP', filename)
 
     def test_official_al_raha_videos_are_present(self):
         self.assertIn('INb7BccskzU', HTML)
