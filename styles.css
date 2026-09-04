@@ -221,3 +221,80 @@ img{max-width:100%}
 .footer-contact-link:hover .contact-icon,.footer-contact-link:focus-visible .contact-icon{transform:translateY(-1px)}
 @media(max-width:620px){.footer-contact-link{gap:10px;min-height:32px}.footer-contact-link .contact-icon{width:18px;height:18px;flex-basis:18px}}
 @media(prefers-reduced-motion:reduce){.care-shortcuts a,.footer-contact-link .contact-icon{transition:none}.care-shortcuts a:hover,.care-shortcuts a:focus-visible,.footer-contact-link:hover .contact-icon,.footer-contact-link:focus-visible .contact-icon{transform:none}}
+
+/* Patch 3: Arabic reading direction and bilingual controls */
+html[dir="rtl"] body.language-ar{direction:rtl;text-align:right;overflow-x:hidden}
+html[dir="rtl"] body.language-ar .header-inner{direction:rtl}
+html[dir="rtl"] body.language-ar .site-nav{direction:rtl;margin-left:0;margin-right:auto}
+html[dir="rtl"] body.language-ar .site-nav a::after{left:100%;right:0;transition:left .2s ease}
+html[dir="rtl"] body.language-ar .site-nav a:hover::after{left:0;right:0}
+html[dir="rtl"] body.language-ar .language-switch{direction:ltr;unicode-bidi:plaintext}
+html[dir="rtl"] body.language-ar .mobile-nav__panel{direction:rtl;text-align:right}
+html[dir="rtl"] body.language-ar .mobile-nav__panel>a:not(.btn){text-align:right}
+html[dir="rtl"] body.language-ar .mobile-services summary{direction:rtl}
+html[dir="rtl"] body.language-ar .mobile-services__links a{align-items:flex-end!important;text-align:right}
+html[dir="rtl"] body.language-ar .breadcrumb{direction:rtl}
+html[dir="rtl"] body.language-ar .page-hero__aside,
+html[dir="rtl"] body.language-ar .contact-hero__aside,
+html[dir="rtl"] body.language-ar .treatment-hero__aside{padding-left:24px;padding-right:24px;border-left:0;border-right:2px solid var(--teal)}
+html[dir="rtl"] body.language-ar .page-hero__aside{border-right:1px solid var(--line-dark)}
+html[dir="rtl"] body.language-ar .services-start__card{align-items:flex-end;text-align:right}
+html[dir="rtl"] body.language-ar .services-start__arrow{transform:scaleX(-1)}
+html[dir="rtl"] body.language-ar .services-start__heading>p,
+html[dir="rtl"] body.language-ar .services-intro>p{justify-self:start;text-align:right}
+html[dir="rtl"] body.language-ar .service-card__body,
+html[dir="rtl"] body.language-ar .service-card__body p,
+html[dir="rtl"] body.language-ar .service-card__body h2{text-align:right}
+html[dir="rtl"] body.language-ar .service-card__link{align-self:flex-end;text-align:right}
+html[dir="rtl"] body.language-ar .treatment-path,
+html[dir="rtl"] body.language-ar .treatment-option,
+html[dir="rtl"] body.language-ar .treatment-list a,
+html[dir="rtl"] body.language-ar .treatment-list .treatment-row{direction:rtl;text-align:right}
+html[dir="rtl"] body.language-ar .treatment-path b,
+html[dir="rtl"] body.language-ar .treatment-option__arrow{transform:scaleX(-1)}
+html[dir="rtl"] body.language-ar .treatment-path__thumb{order:initial}
+html[dir="rtl"] body.language-ar .treatment-directory__help{direction:rtl;text-align:right}
+html[dir="rtl"] body.language-ar .treatment-directory__help .btn{direction:rtl}
+html[dir="rtl"] body.language-ar .contact-channels{direction:rtl}
+html[dir="rtl"] body.language-ar .contact-channel{border-right:0;border-left:1px solid var(--line);text-align:right}
+html[dir="rtl"] body.language-ar .contact-channel:last-child{border-left:0}
+html[dir="rtl"] body.language-ar .consultation-form,
+html[dir="rtl"] body.language-ar .consultation-form label,
+html[dir="rtl"] body.language-ar .consultation-form input,
+html[dir="rtl"] body.language-ar .consultation-form textarea,
+html[dir="rtl"] body.language-ar .consultation-form select{direction:rtl;text-align:right}
+html[dir="rtl"] body.language-ar .consultation-form input[type="tel"],
+html[dir="rtl"] body.language-ar .consultation-form input[type="email"],
+html[dir="rtl"] body.language-ar .footer-address a[href^="tel:"],
+html[dir="rtl"] body.language-ar .footer-address a[href^="mailto:"],
+html[dir="rtl"] body.language-ar .footer-contact-link{direction:ltr;unicode-bidi:plaintext}
+html[dir="rtl"] body.language-ar .consultation-form input[type="tel"],
+html[dir="rtl"] body.language-ar .consultation-form input[type="email"]{text-align:left}
+html[dir="rtl"] body.language-ar .contact-detail,
+html[dir="rtl"] body.language-ar .profile-facts,
+html[dir="rtl"] body.language-ar .profile-fact,
+html[dir="rtl"] body.language-ar .consultant-actions,
+html[dir="rtl"] body.language-ar .contact-closing__inner{direction:rtl;text-align:right}
+html[dir="rtl"] body.language-ar .profile-fact+.profile-fact{padding-left:20px;padding-right:20px;border-left:0;border-right:1px solid var(--line)}
+html[dir="rtl"] body.language-ar .about-story-timeline{padding-left:0;padding-right:44px}
+html[dir="rtl"] body.language-ar .about-story-timeline__line{left:auto;right:10px}
+html[dir="rtl"] body.language-ar .about-story-timeline__item:before{left:auto;right:-41px}
+html[dir="rtl"] body.language-ar .about-hero__content{text-align:right}
+html[dir="rtl"] body.language-ar .about-gallery figcaption{text-align:right}
+html[dir="rtl"] body.language-ar .mobile-actionbar{direction:rtl}
+html[dir="rtl"] body.language-ar .mobile-actionbar a[href^="tel:"],
+html[dir="rtl"] body.language-ar .mobile-actionbar a[href^="mailto:"]{direction:ltr;unicode-bidi:plaintext}
+
+@media(max-width:720px){
+  html[dir="rtl"] body.language-ar .page-hero__aside,
+  html[dir="rtl"] body.language-ar .contact-hero__aside,
+  html[dir="rtl"] body.language-ar .treatment-hero__aside{padding-left:0;padding-right:18px}
+  html[dir="rtl"] body.language-ar .about-story-timeline{padding-right:38px}
+  html[dir="rtl"] body.language-ar .about-story-timeline__line{right:8px}
+  html[dir="rtl"] body.language-ar .about-story-timeline__item:before{right:-36px}
+  html[dir="rtl"] body.language-ar .contact-channel{border-left:0;border-bottom:1px solid var(--line)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  html[dir="rtl"] body.language-ar .site-nav a::after{transition:none}
+}

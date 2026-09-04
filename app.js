@@ -150,7 +150,11 @@ document.querySelectorAll('[data-consultation-form]').forEach(form => {
     const body = [`Name: ${name}`, `Email: ${email}`, `Phone: ${phone}`, `Treatment: ${treatment || 'Not specified'}`, `Preferred date: ${date || 'Not specified'}`, `Preferred time: ${time || 'Not specified'}`, `Preferred clinic: ${clinic || 'Not specified'}`, '', `Notes: ${message || 'None'}`].join('\\n');
     window.location.href = `mailto:appointment@silwadidentalcenter.ae?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     const status = form.querySelector('[data-consultation-status]');
-    if (status) status.textContent = 'Your email app is opening with the appointment request.';
+    if (status) {
+      const language = window.SilwadiLanguage?.getLanguage?.() || 'en';
+      const message = 'Your email app is opening with the appointment request.';
+      status.textContent = window.SilwadiLanguage?.translate?.(message, language) || message;
+    }
   });
 });
 
@@ -171,12 +175,15 @@ document.querySelectorAll('[data-faq-button]').forEach(button => {
   if (path.endsWith('/contact.html') || path.endsWith('contact.html')) return;
   const nested = /\/(doctors|treatments)\/[^/]+\.html$/.test(path);
   const target = nested ? '../contact.html#consultation-form' : 'contact.html#consultation-form';
+  const languageApi = window.SilwadiLanguage;
+  const activeLanguage = languageApi?.getRequestedLanguage?.() || languageApi?.getLanguage?.() || 'en';
+  const localizedTarget = languageApi?.withLanguageQuery?.(target, activeLanguage) || target;
   document.querySelectorAll('a').forEach(link => {
     const text = (link.textContent || '').trim().toLowerCase();
     const href = link.getAttribute('href') || '';
-    const primaryConsultation = text.includes('book a consultation') || text.includes('book a consultation with');
+    const primaryConsultation = text.includes('book a consultation') || text.includes('book a consultation with') || text.includes('احجز استشارة') || text === 'احجز';
     const consultationMail = href.startsWith('mailto:') && /consultation/i.test(href);
-    if (primaryConsultation || consultationMail) link.setAttribute('href', target);
+    if (primaryConsultation || consultationMail) link.setAttribute('href', localizedTarget);
   });
 })();
 
