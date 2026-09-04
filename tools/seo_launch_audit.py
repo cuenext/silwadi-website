@@ -149,6 +149,26 @@ def audit():
         if og_urls != [url]:
             errors.append(f'{rel}: og:url mismatch {og_urls!r} != {[url]!r}')
 
+        if meta_values(html, 'property', 'og:locale') != ['en_AE']:
+            errors.append(f'{rel}: expected one en_AE og:locale')
+        if meta_values(html, 'property', 'og:locale:alternate') != ['ar_AE']:
+            errors.append(f'{rel}: expected one ar_AE og:locale:alternate')
+        if meta_values(html, 'name', 'content-language') != ['en']:
+            errors.append(f'{rel}: expected one en content-language meta')
+        alternates = {
+            item.get('hreflang', '').lower(): item.get('href', '')
+            for item in link_values(html, 'alternate')
+            if item.get('hreflang')
+        }
+        expected_alternates = {
+            'en-ae': url,
+            'ar-ae': f'{url}?lang=ar',
+            'x-default': url,
+        }
+        for hreflang, expected in expected_alternates.items():
+            if alternates.get(hreflang) != expected:
+                errors.append(f'{rel}: {hreflang} alternate mismatch {alternates.get(hreflang)!r} != {expected!r}')
+
         if meta_values(html, 'property', 'og:site_name') != [SITE_NAME]:
             errors.append(f'{rel}: missing or duplicate og:site_name')
 
