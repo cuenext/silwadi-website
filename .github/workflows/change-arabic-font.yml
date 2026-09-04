@@ -14,92 +14,61 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Update Arabic font styling
+        shell: bash
         run: |
-          python <<'PY'
+          python3 - <<'PY'
           from pathlib import Path
           import re
 
           p = Path('styles.css')
           s = p.read_text(encoding='utf-8')
 
-          tajawal_import = "@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap');\n\n"
+          new_import = "@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800;900&display=swap');"
+          lines = s.splitlines()
+          if lines and lines[0].startswith('@import url('):
+              lines[0] = new_import
+              s = '\n'.join(lines) + '\n'
+          elif "family=Tajawal" not in s[:500]:
+              s = new_import + '\n\n' + s
 
-          # Replace the old Arabic font import with Tajawal.
-          s = re.sub(
-              r"@import url\('https://fonts\.googleapis\.com/css2\?[^']*(?:IBM\+Plex\+Sans\+Arabic|Noto\+Kufi\+Arabic)[^']*display=swap'\);\n\n?",
-              tajawal_import,
-              s,
-              count=1,
-          )
-          if "family=Tajawal" not in s.split(':root', 1)[0]:
-              s = tajawal_import + s
+          marker_start = '/* Arabic font refresh: Tajawal */'
+          marker_end = '/* End Arabic font refresh */'
+          s = re.sub(r'\n/\* Arabic font refresh: Tajawal \*/[\s\S]*?/\* End Arabic font refresh \*/\n?', '\n', s)
 
-          override = '''
-/* Arabic font refresh: Tajawal */
-body.language-ar,
-html[lang="ar"] body,
-html[dir="rtl"] body{
-  font-family:"Tajawal",Tahoma,Arial,sans-serif!important;
-  letter-spacing:0!important;
-}
-body.language-ar h1,
-body.language-ar h2,
-body.language-ar h3,
-body.language-ar h4,
-body.language-ar h5,
-body.language-ar h6,
-body.language-ar .btn,
-body.language-ar .site-nav,
-body.language-ar .mobile-nav,
-body.language-ar .eyebrow,
-body.language-ar .language-switch,
-html[lang="ar"] h1,
-html[lang="ar"] h2,
-html[lang="ar"] h3,
-html[lang="ar"] h4,
-html[lang="ar"] h5,
-html[lang="ar"] h6,
-html[dir="rtl"] h1,
-html[dir="rtl"] h2,
-html[dir="rtl"] h3,
-html[dir="rtl"] h4,
-html[dir="rtl"] h5,
-html[dir="rtl"] h6{
-  font-family:"Tajawal",Tahoma,Arial,sans-serif!important;
-  letter-spacing:0!important;
-}
-body.language-ar h1,
-html[lang="ar"] h1,
-html[dir="rtl"] h1{
-  font-weight:800!important;
-  line-height:1.08;
-}
-body.language-ar h2,
-html[lang="ar"] h2,
-html[dir="rtl"] h2{
-  font-weight:800!important;
-  line-height:1.16;
-}
-body.language-ar p,
-body.language-ar a,
-body.language-ar span,
-body.language-ar strong,
-body.language-ar small,
-html[lang="ar"] p,
-html[lang="ar"] a,
-html[lang="ar"] span,
-html[lang="ar"] strong,
-html[lang="ar"] small{
-  font-family:"Tajawal",Tahoma,Arial,sans-serif;
-}
-/* End Arabic font refresh */
-'''
-
-          s = re.sub(r"\n/\* Arabic font refresh: Tajawal \*/[\s\S]*?/\* End Arabic font refresh \*/\n?", "\n", s)
-          s = s.rstrip() + "\n\n" + override + "\n"
+          override_lines = [
+              marker_start,
+              'body.language-ar,',
+              'html[lang="ar"] body,',
+              'html[dir="rtl"] body{',
+              '  font-family:"Tajawal",Tahoma,Arial,sans-serif!important;',
+              '  letter-spacing:0!important;',
+              '}',
+              'body.language-ar h1, body.language-ar h2, body.language-ar h3, body.language-ar h4, body.language-ar h5, body.language-ar h6,',
+              'body.language-ar .btn, body.language-ar .site-nav, body.language-ar .mobile-nav, body.language-ar .eyebrow, body.language-ar .language-switch,',
+              'html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3, html[lang="ar"] h4, html[lang="ar"] h5, html[lang="ar"] h6,',
+              'html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3, html[dir="rtl"] h4, html[dir="rtl"] h5, html[dir="rtl"] h6{',
+              '  font-family:"Tajawal",Tahoma,Arial,sans-serif!important;',
+              '  letter-spacing:0!important;',
+              '}',
+              'body.language-ar h1, html[lang="ar"] h1, html[dir="rtl"] h1{',
+              '  font-weight:800!important;',
+              '  line-height:1.08;',
+              '}',
+              'body.language-ar h2, html[lang="ar"] h2, html[dir="rtl"] h2{',
+              '  font-weight:800!important;',
+              '  line-height:1.16;',
+              '}',
+              'body.language-ar p, body.language-ar a, body.language-ar span, body.language-ar strong, body.language-ar small,',
+              'html[lang="ar"] p, html[lang="ar"] a, html[lang="ar"] span, html[lang="ar"] strong, html[lang="ar"] small{',
+              '  font-family:"Tajawal",Tahoma,Arial,sans-serif;',
+              '}',
+              marker_end,
+          ]
+          s = s.rstrip() + '\n\n' + '\n'.join(override_lines) + '\n'
           p.write_text(s, encoding='utf-8')
           PY
       - name: Commit Arabic font update
+        shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
