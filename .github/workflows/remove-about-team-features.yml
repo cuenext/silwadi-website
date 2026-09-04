@@ -1,0 +1,38 @@
+name: Remove about team feature sections
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/remove-about-team-features.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  remove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove About team and feature sections
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('about.html')
+          text = path.read_text()
+          start_marker = '\n    <section class="institutional-section institutional-section--quiet about-team-section">'
+          end_marker = '\n    <section class="institutional-section institutional-section--quiet">\n      <div class="container"><header class="section-intro"><div><p class="eyebrow">Where to find us</p>'
+          if start_marker not in text:
+              raise SystemExit('About team section already removed or marker not found')
+          start = text.index(start_marker)
+          end = text.index(end_marker, start)
+          text = text[:start] + text[end:]
+          path.write_text(text)
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add about.html
+          git commit -m "Remove remaining About page content sections" || echo "No changes to commit"
+          git push
