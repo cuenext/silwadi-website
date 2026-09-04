@@ -1,0 +1,87 @@
+name: Build Arabic site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-arabic-site.yml'
+      - 'tools/build-arabic-site.mjs'
+      - 'data/arabic-seo.json'
+      - 'data/arabic-quality-overrides.json'
+      - 'language.js'
+      - 'arabic-quality.css'
+      - 'arabic-static.js'
+      - 'bilingual-routing.js'
+      - '*.html'
+      - 'doctors/*.html'
+      - 'treatments/*.html'
+      - 'home-reviews.css'
+      - 'app.js'
+      - 'sitemap.xml'
+      - 'tests/test_arabic_quality_seo_rebuild.py'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip arabic build]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install HTML build dependency
+        run: npm install --no-save --no-package-lock jsdom@24.1.3
+
+      - name: Build static Arabic pages
+        run: node tools/build-arabic-site.mjs
+
+      - name: Validate generated diff
+        run: git diff --check
+
+      - name: Run Arabic quality and SEO contracts
+        run: python -m unittest tests.test_arabic_quality_seo_rebuild -v
+
+      - name: Run existing Arabic regression contracts
+        run: |
+          python -m unittest tests.test_patch26_arabic_completion -v
+          python -m unittest tests.test_patch3_bilingual_experience -v
+
+      - name: Show audit summary on failure
+        if: failure()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('data/arabic-audit.json')
+          if p.exists():
+              rows = json.loads(p.read_text(encoding='utf-8'))
+              same = [r for r in rows if r.get('source') == r.get('arabic')]
+              print(f'Audited strings: {len(rows)}')
+              print(f'Unchanged strings: {len(same)}')
+              for row in same[:80]:
+                  print('-', row['source'])
+          PY
+
+      - name: Commit generated bilingual site
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add ar/ data/arabic-audit.json app.js home-reviews.css sitemap.xml \
+            index.html about.html contact.html doctors.html locations.html services.html treatments.html \
+            doctors/*.html treatments/*.html
+          if git diff --cached --quiet; then
+            echo 'Arabic build is already current.'
+            exit 0
+          fi
+          git commit -m 'build: publish reviewed Arabic site [skip arabic build]'
+          git push
