@@ -7,7 +7,11 @@ const require = createRequire(import.meta.url);
 const language = require('../language.js');
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const seo = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/arabic-seo.json'), 'utf8'));
-const overrides = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/arabic-quality-overrides.json'), 'utf8'));
+const overrides = Object.assign(
+  {},
+  JSON.parse(fs.readFileSync(path.join(ROOT, 'data/arabic-quality-overrides.json'), 'utf8')),
+  JSON.parse(fs.readFileSync(path.join(ROOT, 'data/arabic-quality-overrides-extra.json'), 'utf8'))
+);
 const routes = Object.keys(seo);
 const routeSet = new Set(routes.map(route => route === 'index.html' ? '/' : `/${route}`));
 const audit = new Map();
