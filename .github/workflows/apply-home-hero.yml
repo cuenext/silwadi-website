@@ -16,66 +16,109 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Patch homepage hero mobile layout
+      - name: Add homepage hero Arabic translations
         run: |
           python3 <<'PY'
           from pathlib import Path
+          import json
           import re
 
-          p = Path('index.html')
-          html = p.read_text(encoding='utf-8')
+          version = '20260905-hero-arabic-1'
 
-          version = '20260905-hero-mobile-1'
+          translations = {
+              'Dr. Munir Silwadi Dental Centre': 'مركز د. منير سلوادي لطب الأسنان',
+              'How can we': 'كيف يمكننا',
+              'help you?': 'مساعدتك؟',
+              'How can we help you?': 'كيف يمكننا مساعدتك؟',
+              'From routine check-ups to specialist dental care, our Abu Dhabi team is here to help you find the right treatment with clarity and confidence.': 'من الفحوصات الدورية إلى رعاية الأسنان التخصصية، يساعدك فريقنا في أبوظبي على اختيار العلاج المناسب بوضوح وثقة.',
+              'Book an Appointment': 'احجز موعداً',
+              'Book an Appointment →': 'احجز موعداً ←',
+              'Explore Services': 'استكشف الخدمات',
+              'Explore Services →': 'استكشف الخدمات ←',
+              'Clinic highlights': 'مميزات المركز',
+              'Serving patients': 'نخدم المرضى',
+              'since 1980': 'منذ عام 1980',
+              'Serving patients since 1980': 'نخدم المرضى منذ عام 1980',
+              'Bani Yas Tower': 'برج بني ياس',
+              '& Al Raha Mall': 'والراحة مول',
+              'Bani Yas Tower & Al Raha Mall': 'برج بني ياس والراحة مول',
+              'Reception-led': 'الحجز عبر الاستقبال',
+              'booking': 'الحجز',
+              'Reception-led booking': 'الحجز عبر الاستقبال',
+          }
 
-          style = f'''<style id="premium-home-hero-styles">
-          @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
-          .premium-home-hero{{position:relative;isolation:isolate;min-height:calc(100vh - 88px);overflow:hidden;background:#f6fbfc;color:#fff;display:flex;align-items:center;margin-bottom:-1px}}
-          .premium-home-hero__media{{position:absolute;inset:0;z-index:-4}}
-          .premium-home-hero__media img{{width:100%;height:100%;object-fit:cover;object-position:center center;display:block;filter:saturate(.92) contrast(1.04) brightness(.84)}}
-          .premium-home-hero__shade{{position:absolute;inset:0;z-index:-3;background:linear-gradient(90deg,rgba(2,14,25,.985) 0%,rgba(4,23,40,.94) 30%,rgba(7,36,60,.72) 52%,rgba(8,49,76,.32) 70%,rgba(8,49,76,.06) 100%)}}
-          .premium-home-hero::before{{content:"";position:absolute;left:0;right:0;bottom:-1px;height:9rem;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(246,251,252,0) 0%,rgba(246,251,252,0) 68%,rgba(246,251,252,.22) 84%,#f6fbfc 100%)}}
-          .premium-home-hero__inner{{position:relative;z-index:2;width:100%;padding:6.25rem clamp(1.5rem,4vw,4rem) 6.7rem}}
-          .premium-home-hero__copy{{max-width:41.5rem;margin-left:clamp(2rem,6.4vw,7.8rem)}}
-          .premium-home-hero__eyebrow{{margin:0 0 1rem;font-family:"Manrope",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:clamp(.82rem,1vw,.96rem);font-weight:760;letter-spacing:.115em;color:#e5fbfd;text-transform:none}}
-          .premium-home-hero__accent{{display:block;width:3.35rem;height:.2rem;border-radius:999px;background:linear-gradient(90deg,#11a7bc,#71dce4);margin:0 0 1.45rem}}
-          .premium-home-hero h1{{margin:0;font-family:"Manrope",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:clamp(3.05rem,5.28vw,5.7rem);font-weight:800;line-height:.96;letter-spacing:-.07em;color:#f9fdff;text-shadow:0 18px 42px rgba(0,0,0,.34);max-width:12.2ch}}
-          .premium-home-hero h1 span{{display:block;color:#8be9ee;text-shadow:0 10px 28px rgba(10,160,185,.18)}}
-          .premium-home-hero__lead{{max-width:39rem;margin:1.35rem 0 0;color:rgba(238,249,251,.92);font-family:"Manrope",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:clamp(1rem,1.28vw,1.13rem);font-weight:430;line-height:1.66}}
-          .premium-home-hero__actions{{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.9rem}}
-          .premium-home-hero__actions .btn{{min-height:3.6rem;padding-inline:1.55rem;font-family:"Manrope",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:.98rem;font-weight:760;border-radius:.82rem}}
-          .premium-home-hero__actions .btn--primary{{background:linear-gradient(135deg,#0fc0c3,#0a7fa3);box-shadow:0 20px 42px rgba(5,139,170,.22)}}
-          .premium-home-hero__actions .btn--secondary{{background:rgba(255,255,255,.065);border:1px solid rgba(220,246,250,.52);color:#f2fdff;backdrop-filter:blur(10px)}}
-          .premium-home-hero__trust{{display:flex;align-items:center;gap:1.05rem;flex-wrap:wrap;margin:2rem 0 0;padding:0;list-style:none;color:#fff;font-family:"Manrope",Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}}
-          .premium-home-hero__trust li{{display:flex;align-items:center;gap:.68rem;min-width:10.25rem}}
-          .premium-home-hero__icon{{display:grid;place-items:center;flex:0 0 2.75rem;width:2.75rem;height:2.75rem;border-radius:999px;background:rgba(255,255,255,.105);border:1px solid rgba(221,248,252,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.13);font-size:1.02rem;color:#ecfdff}}
-          .premium-home-hero__trust strong{{display:block;color:#effcff;font-size:.9rem;line-height:1.28;font-weight:700}}
-          .premium-home-hero__tagline,.premium-home-hero__down{{display:none!important}}
-          .home-hero{{display:none!important}}
-          @media(max-width:1100px){{.premium-home-hero__copy{{margin-left:clamp(1rem,4vw,3rem)}}.premium-home-hero__shade{{background:linear-gradient(90deg,rgba(2,14,25,.985) 0%,rgba(4,23,40,.92) 42%,rgba(9,39,64,.58) 100%)}}}}
-          @media(max-width:760px){{.premium-home-hero{{min-height:calc(100svh - 74px);align-items:flex-end;background:#f6fbfc}}.premium-home-hero__media img{{object-position:72% top;filter:saturate(.92) contrast(1.04) brightness(.82)}}.premium-home-hero__shade{{background:linear-gradient(180deg,rgba(2,14,25,.05) 0%,rgba(2,14,25,.18) 24%,rgba(2,14,25,.62) 53%,rgba(2,14,25,.95) 100%),linear-gradient(90deg,rgba(2,14,25,.74) 0%,rgba(2,14,25,.28) 44%,rgba(2,14,25,0) 100%)}}.premium-home-hero::before{{height:5.4rem;background:linear-gradient(180deg,rgba(246,251,252,0) 0%,rgba(246,251,252,0) 74%,rgba(246,251,252,.22) 88%,#f6fbfc 100%)}}.premium-home-hero__inner{{width:100%;padding:clamp(15rem,45svh,22rem) 1.12rem 3.85rem}}.premium-home-hero__copy{{max-width:100%;margin-left:0}}.premium-home-hero__eyebrow{{margin-bottom:.72rem;font-size:.73rem;line-height:1.35;letter-spacing:.085em;color:rgba(232,251,253,.92)}}.premium-home-hero__accent{{width:2.7rem;height:.18rem;margin-bottom:.95rem}}.premium-home-hero h1{{font-size:clamp(2.28rem,11.4vw,3.25rem);line-height:1;letter-spacing:-.055em;max-width:9.8ch;text-wrap:balance}}.premium-home-hero h1 span{{color:#a8f0f3}}.premium-home-hero__lead{{max-width:29rem;margin-top:1rem;font-size:.94rem;line-height:1.56;color:rgba(238,249,251,.88)}}.premium-home-hero__actions{{flex-direction:column;gap:.72rem;margin-top:1.35rem}}.premium-home-hero__actions .btn{{width:100%;min-height:3.18rem;justify-content:center;border-radius:.72rem;font-size:.93rem;padding-inline:1rem}}.premium-home-hero__trust{{display:grid;grid-template-columns:1fr;gap:.62rem;margin-top:1.25rem}}.premium-home-hero__trust li{{min-width:0;padding:.62rem .72rem;border-radius:1rem;background:rgba(255,255,255,.075);border:1px solid rgba(221,248,252,.13);backdrop-filter:blur(8px)}}.premium-home-hero__icon{{flex-basis:2.32rem;width:2.32rem;height:2.32rem;font-size:.9rem}}.premium-home-hero__trust strong{{font-size:.84rem;line-height:1.22}}}}
-          @media(max-width:430px){{.premium-home-hero__media img{{object-position:70% top}}.premium-home-hero__inner{{padding-top:clamp(14.2rem,43svh,19rem);padding-bottom:3.45rem}}.premium-home-hero h1{{font-size:clamp(2.18rem,11.6vw,3rem);max-width:9.4ch}}.premium-home-hero__lead{{font-size:.91rem}}}}
-          @media(max-width:760px) and (orientation:landscape){{.premium-home-hero{{min-height:auto}}.premium-home-hero__inner{{padding:4rem 1.25rem 3.5rem}}.premium-home-hero__trust{{grid-template-columns:repeat(3,minmax(0,1fr))}}.premium-home-hero__trust li{{padding:.55rem}}}}
+          language_path = Path('language.js')
+          js = language_path.read_text(encoding='utf-8')
+          marker_start = '    // Premium homepage hero translations\n'
+          marker_end = '    // End premium homepage hero translations\n'
+
+          if marker_start in js:
+              start = js.index(marker_start)
+              end = js.index(marker_end, start) + len(marker_end)
+              js = js[:start] + js[end:]
+
+          block = marker_start
+          for key, value in translations.items():
+              block += f'    {json.dumps(key, ensure_ascii=False)}: {json.dumps(value, ensure_ascii=False)},\n'
+          block += marker_end
+
+          match = re.search(r'  const arabic = \{([\s\S]*?)\n  \};', js)
+          if not match:
+              raise SystemExit('Arabic translation object not found in language.js')
+          js = js[:match.end(1)] + '\n' + block + js[match.end(1):]
+          language_path.write_text(js, encoding='utf-8')
+
+          index_path = Path('index.html')
+          html = index_path.read_text(encoding='utf-8')
+
+          rtl_css = '''<style id="premium-home-hero-arabic-styles">
+          html[dir="rtl"] .premium-home-hero__copy{text-align:right}
+          html[dir="rtl"] .premium-home-hero__accent{margin-right:0;margin-left:auto}
+          html[dir="rtl"] .premium-home-hero__actions,
+          html[dir="rtl"] .premium-home-hero__trust{justify-content:flex-start}
+          html[dir="rtl"] .premium-home-hero__trust li{direction:rtl;text-align:right}
+          html[dir="rtl"] .premium-home-hero h1{letter-spacing:-.04em;max-width:13ch}
+          @media(max-width:760px){
+            html[dir="rtl"] .premium-home-hero__copy{text-align:right}
+            html[dir="rtl"] .premium-home-hero__actions .btn{direction:rtl}
+            html[dir="rtl"] .premium-home-hero h1{max-width:12ch}
+          }
           </style>'''
+          html = re.sub(r'<style id="premium-home-hero-arabic-styles">.*?</style>', '', html, flags=re.S)
+          html = html.replace('</head>', rtl_css + '</head>', 1)
 
-          hero = f'''<section class="premium-home-hero" id="home" aria-labelledby="premiumHomeHeroTitle"><picture class="premium-home-hero__media"><img src="assets/munir-home-hero?v={version}" alt="Dr. Munir Silwadi at Dr. Munir Silwadi Dental Centre" width="1815" height="867" decoding="async" fetchpriority="high"></picture><div class="premium-home-hero__shade" aria-hidden="true"></div><div class="container premium-home-hero__inner"><div class="premium-home-hero__copy reveal visible"><p class="premium-home-hero__eyebrow">Dr. Munir Silwadi Dental Centre</p><span class="premium-home-hero__accent" aria-hidden="true"></span><h1 id="premiumHomeHeroTitle">How can we <span>help you?</span></h1><p class="premium-home-hero__lead">From routine check-ups to specialist dental care, our Abu Dhabi team is here to help you find the right treatment with clarity and confidence.</p><div class="premium-home-hero__actions"><a class="btn btn--primary" href="contact.html#consultation-form">Book an Appointment <span aria-hidden="true">→</span></a><a class="btn btn--secondary" href="services.html">Explore Services <span aria-hidden="true">→</span></a></div><ul class="premium-home-hero__trust" aria-label="Clinic highlights"><li><span class="premium-home-hero__icon" aria-hidden="true">✓</span><strong>Serving patients<br>since 1980</strong></li><li><span class="premium-home-hero__icon" aria-hidden="true">⌖</span><strong>Bani Yas Tower<br>&amp; Al Raha Mall</strong></li><li><span class="premium-home-hero__icon" aria-hidden="true">☎</span><strong>Reception-led<br>booking</strong></li></ul></div></div></section>'''
-
-          html = re.sub(r'<style id="premium-home-hero-styles">.*?</style>', '', html, flags=re.S)
-          html = html.replace('</head>', style + '</head>', 1)
-          html = re.sub(r'<meta property="og:image" content="[^"]+">', '<meta property="og:image" content="https://silwadi.ae/assets/munir-home-hero">', html, count=1)
-
-          if '<section class="premium-home-hero"' in html:
-              html = re.sub(r'<section class="premium-home-hero"[\s\S]*?</section>(?=<section class="team-proof|<nav class="care-shortcuts|<section class="section")', hero, html, count=1)
-          else:
-              html = re.sub(r'<section class="home-hero" id="home">[\s\S]*?</section>(?=<section class="team-proof)', hero, html, count=1)
-              if '<section class="premium-home-hero"' not in html:
-                  html = html.replace('<main id="main">', '<main id="main">' + hero, 1)
-
+          html = re.sub(r'src="language\.js(\?v=[^"]+)?"', f'src="language.js?v={version}"', html)
           html = re.sub(r'src="app\.js(\?v=[^"]+)?"', f'src="app.js?v={version}"', html)
-          p.write_text(html, encoding='utf-8')
+
+          language_tag = f'<script src="language.js?v={version}"></script>'
+          existing_language_tag = re.search(r'<script src="language\.js[^"<>]*"></script>', html)
+          if existing_language_tag:
+              html = html[:existing_language_tag.start()] + html[existing_language_tag.end():]
+
+          if 'src="app.js' in html:
+              html = re.sub(r'(<script src="app\.js)', language_tag + r'\1', html, count=1)
+          elif '</body>' in html:
+              html = html.replace('</body>', language_tag + '</body>', 1)
+          else:
+              html += language_tag
+
+          index_path.write_text(html, encoding='utf-8')
+
+          refreshed_js = language_path.read_text(encoding='utf-8')
+          for key, value in translations.items():
+              if key not in refreshed_js or value not in refreshed_js:
+                  raise SystemExit(f'Missing translation pair: {key}')
+
+          refreshed_html = index_path.read_text(encoding='utf-8')
+          if f'language.js?v={version}' not in refreshed_html:
+              raise SystemExit('language.js was not loaded/cache-busted in index.html')
+          if refreshed_html.find('language.js') > refreshed_html.find('app.js'):
+              raise SystemExit('language.js must load before app.js')
           PY
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git commit -m "Refine homepage hero mobile layout" || exit 0
+          git add language.js index.html
+          git diff --cached --check
+          git commit -m "Add Arabic homepage hero translations" || exit 0
           git push
