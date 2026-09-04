@@ -1,0 +1,65 @@
+/* Site-wide bilingual quality layer. Loaded last so it can correct legacy RTL rules safely. */
+.google-reviews-track{animation-direction:normal!important}
+.language-ar .google-reviews-track,.static-arabic .google-reviews-track{animation-direction:normal!important}
+
+html[dir="rtl"] body,.static-arabic{font-family:"Tajawal","IBM Plex Sans Arabic",Arial,sans-serif;text-align:right}
+html[dir="rtl"] .btn,html[dir="rtl"] button,html[dir="rtl"] input,html[dir="rtl"] select,html[dir="rtl"] textarea{font-family:"Tajawal","IBM Plex Sans Arabic",Arial,sans-serif}
+html[dir="rtl"] [href^="tel:"],html[dir="rtl"] [href^="mailto:"],html[dir="rtl"] [dir="ltr"],.static-arabic [href^="tel:"],.static-arabic [href^="mailto:"]{direction:ltr;unicode-bidi:isolate;text-align:left}
+html[dir="rtl"] .language-switch,.static-arabic .language-switch{direction:ltr;unicode-bidi:isolate}
+html[dir="rtl"] .btn,.static-arabic .btn{line-height:1.25;text-align:center}
+html[dir="rtl"] .btn [aria-hidden="true"],.static-arabic .btn [aria-hidden="true"]{display:none}
+
+/* Keep concise Arabic labels concise instead of manufacturing unnecessary two-line CTAs. */
+html[dir="rtl"] .premium-home-hero__trust strong,.static-arabic .premium-home-hero__trust strong,
+html[dir="rtl"] .quick-contact-bar a,.static-arabic .quick-contact-bar a,
+html[dir="rtl"] .mobile-action-bar a,.static-arabic .mobile-action-bar a{white-space:nowrap}
+
+/* Reviews keep their physical marquee position while only card content changes direction. */
+html[dir="rtl"] .google-review-card,.static-arabic .google-review-card{direction:rtl;text-align:right}
+html[dir="rtl"] .google-review-card__top,.static-arabic .google-review-card__top{direction:rtl}
+html[dir="rtl"] .google-review-card__top strong,.static-arabic .google-review-card__top strong{unicode-bidi:plaintext}
+html[dir="rtl"] .google-rating-card,.static-arabic .google-rating-card{direction:rtl;text-align:right}
+
+/* Natural RTL ordering for repeated site components. */
+html[dir="rtl"] .header-inner,html[dir="rtl"] .header-actions,html[dir="rtl"] .site-nav,
+.static-arabic .header-inner,.static-arabic .header-actions,.static-arabic .site-nav{direction:rtl}
+html[dir="rtl"] .doctor-card,html[dir="rtl"] .doctor-directory-card,html[dir="rtl"] .service-card,
+html[dir="rtl"] .treatment-card,html[dir="rtl"] .location-card,html[dir="rtl"] .contact-card,
+.static-arabic .doctor-card,.static-arabic .doctor-directory-card,.static-arabic .service-card,
+.static-arabic .treatment-card,.static-arabic .location-card,.static-arabic .contact-card{direction:rtl;text-align:right}
+html[dir="rtl"] input,html[dir="rtl"] textarea,html[dir="rtl"] select,.static-arabic input,.static-arabic textarea,.static-arabic select{text-align:right}
+
+/* The approved mobile hero treatment: image first, copy in its own panel so text never sits on Dr. Munir's face. */
+@media(max-width:760px){
+  .premium-home-hero{display:grid!important;grid-template-rows:minmax(330px,48svh) auto!important;min-height:0!important;align-items:stretch!important;background:#061f2c!important;overflow:hidden}
+  .premium-home-hero__media{position:relative!important;inset:auto!important;z-index:0!important;grid-row:1;min-height:330px;background:#dfe9ec}
+  .premium-home-hero__media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:68% 16%!important;filter:saturate(.94) contrast(1.02) brightness(.98)!important}
+  .premium-home-hero__shade,.premium-home-hero::before{display:none!important}
+  .premium-home-hero__inner{position:relative!important;z-index:1!important;grid-row:2;width:100%!important;padding:28px 20px 34px!important;background:linear-gradient(180deg,#0a2b39 0%,#061f2c 100%)!important}
+  .premium-home-hero__copy{max-width:none!important;margin:0!important}
+  .premium-home-hero__eyebrow{margin-bottom:10px!important}
+  .premium-home-hero__accent{margin-bottom:15px!important}
+  .premium-home-hero h1{max-width:none!important;font-size:clamp(2.15rem,10vw,3rem)!important;line-height:1.04!important;text-wrap:balance}
+  .premium-home-hero__lead{max-width:34rem!important;margin-top:14px!important;font-size:.96rem!important;line-height:1.62!important}
+  .premium-home-hero__actions{margin-top:20px!important;gap:10px!important}
+  .premium-home-hero__actions .btn{width:100%!important;min-height:52px!important;white-space:nowrap}
+  .premium-home-hero__trust{margin-top:18px!important;gap:9px!important}
+  .premium-home-hero__trust li{width:100%;min-width:0!important;padding:12px 14px!important}
+  .premium-home-hero__trust strong{font-size:.9rem!important;line-height:1.35!important;white-space:nowrap}
+  html[dir="rtl"] .premium-home-hero__copy,.static-arabic .premium-home-hero__copy{text-align:right!important;direction:rtl}
+  html[dir="rtl"] .premium-home-hero__accent,.static-arabic .premium-home-hero__accent{margin-right:0!important;margin-left:auto!important}
+  html[dir="rtl"] .premium-home-hero__actions,.static-arabic .premium-home-hero__actions,
+  html[dir="rtl"] .premium-home-hero__trust,.static-arabic .premium-home-hero__trust{direction:rtl!important}
+}
+
+@media(max-width:430px){
+  .premium-home-hero{grid-template-rows:minmax(310px,45svh) auto!important}
+  .premium-home-hero__media{min-height:310px}
+  .premium-home-hero__media img{object-position:70% 14%!important}
+  .premium-home-hero__inner{padding:25px 17px 30px!important}
+  html[dir="rtl"] .premium-home-hero__trust strong,.static-arabic .premium-home-hero__trust strong{font-size:.86rem!important}
+}
+
+@media(max-width:360px){
+  html[dir="rtl"] .premium-home-hero__trust strong,.static-arabic .premium-home-hero__trust strong{white-space:normal}
+}
