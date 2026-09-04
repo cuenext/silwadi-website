@@ -70,6 +70,9 @@
   flex-direction:column;
   justify-content:space-between;
 }
+.contact-channel:nth-child(3){order:1}
+.contact-channel:nth-child(2){order:2}
+.contact-channel:nth-child(1){order:3}
 .contact-channel__index{
   display:inline-flex;
   width:max-content;
@@ -83,6 +86,12 @@
   letter-spacing:.04em;
   text-transform:uppercase;
 }
+.contact-channel:nth-child(3) .contact-channel__index,
+.contact-channel:nth-child(2) .contact-channel__index,
+.contact-channel:nth-child(1) .contact-channel__index{font-size:0}
+.contact-channel:nth-child(3) .contact-channel__index::after{content:"01 · ONLINE FORM";font-size:10px}
+.contact-channel:nth-child(2) .contact-channel__index::after{content:"02 · WHATSAPP";font-size:10px}
+.contact-channel:nth-child(1) .contact-channel__index::after{content:"03 · CALL";font-size:10px}
 .contact-channel h3{
   margin:0 0 9px;
   color:#073847;
@@ -198,7 +207,7 @@
   .consultation-intro,.contact-info-grid{grid-template-columns:1fr;display:block}
   .consultation-intro p{margin-top:14px}
   .contact-channels{grid-template-columns:1fr 1fr}
-  .contact-channel:last-child{grid-column:1/-1}
+  .contact-channel:nth-child(1){grid-column:1/-1}
   .contact-closing__inner{grid-template-columns:1fr}
   .contact-closing__actions{justify-content:flex-start}
 }
@@ -210,6 +219,7 @@
   .consultation-intro h2{font-size:28px}
   .contact-channels{grid-template-columns:1fr;gap:12px}
   .contact-channel{padding:20px;border-radius:14px}
+  .contact-channel:nth-child(1){grid-column:auto}
   .contact-channel__index{margin-bottom:18px}
   .consultation-form-section,.contact-info-section{padding:50px 0}
   .form-grid{grid-template-columns:1fr}
