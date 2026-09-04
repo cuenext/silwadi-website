@@ -13,6 +13,8 @@
     description: null,
     ogTitle: null,
     ogDescription: null,
+    ogLocale: null,
+    ogLocaleAlternate: null,
   };
 
   const arabic = {
@@ -435,7 +437,8 @@
     const locationObject = typeof window !== 'undefined' ? window.location : null;
     const pathname = String(locationObject?.pathname || '').replace(/\/+/g, '/');
     const cleanPath = pathname.replace(/\/$/, '');
-    return cleanPath ? cleanPath.split('/').pop() : 'index.html';
+    const lastSegment = cleanPath ? cleanPath.split('/').pop() : '';
+    return /\.html?$/i.test(lastSegment) ? lastSegment : 'index.html';
   }
 
   function locationHref() {
@@ -527,12 +530,28 @@
     element.setAttribute?.('content', value);
   }
 
+  function setMetaProperty(property, value) {
+    if (typeof document === 'undefined' || value == null) return;
+    const selector = `meta[property="${property}"]`;
+    let element = document.querySelector?.(selector);
+    if (!element && document.createElement && document.head?.appendChild) {
+      element = document.createElement('meta');
+      element.setAttribute('property', property);
+      document.head.appendChild(element);
+    }
+    if (!element) return;
+    if ('content' in element) element.content = value;
+    element.setAttribute?.('content', value);
+  }
+
   function captureSeoOriginals() {
     if (typeof document === 'undefined') return;
     if (seoOriginals.title === null) seoOriginals.title = document.title || '';
     if (seoOriginals.description === null) seoOriginals.description = metaContent('meta[name="description"]') || '';
     if (seoOriginals.ogTitle === null) seoOriginals.ogTitle = metaContent('meta[property="og:title"]') || '';
     if (seoOriginals.ogDescription === null) seoOriginals.ogDescription = metaContent('meta[property="og:description"]') || '';
+    if (seoOriginals.ogLocale === null) seoOriginals.ogLocale = metaContent('meta[property="og:locale"]') || 'en_AE';
+    if (seoOriginals.ogLocaleAlternate === null) seoOriginals.ogLocaleAlternate = metaContent('meta[property="og:locale:alternate"]') || 'ar_AE';
   }
 
   function canonicalUrl() {
@@ -571,12 +590,16 @@
       setMetaContent('meta[property="og:title"]', title || seoOriginals.ogTitle);
       setMetaContent('meta[property="og:description"]', description || seoOriginals.ogDescription);
       setMetaContent('meta[name="content-language"]', 'ar', 'content-language');
+      setMetaProperty('og:locale', 'ar_AE');
+      setMetaProperty('og:locale:alternate', 'en_AE');
     } else {
       document.title = seoOriginals.title || document.title;
       setMetaContent('meta[name="description"]', seoOriginals.description);
       setMetaContent('meta[property="og:title"]', seoOriginals.ogTitle);
       setMetaContent('meta[property="og:description"]', seoOriginals.ogDescription);
       setMetaContent('meta[name="content-language"]', 'en', 'content-language');
+      setMetaProperty('og:locale', seoOriginals.ogLocale || 'en_AE');
+      setMetaProperty('og:locale:alternate', seoOriginals.ogLocaleAlternate || 'ar_AE');
     }
     if (cleanCanonical) {
       upsertAlternate('en', cleanCanonical);
@@ -833,6 +856,35 @@
     "Periodontal care": "رعاية اللثة",
     "Preventive dental care": "رعاية الأسنان الوقائية",
     "Prosthodontics and implantology": "تركيبات وزراعة الأسنان",
+  });
+
+  Object.assign(arabic, {
+    "Since 1980, our dentists and specialists have cared for Abu Dhabi families with clear advice and a warm welcome.": "منذ عام 1980، يعتني أطباؤنا واختصاصيونا بعائلات أبوظبي من خلال نصائح واضحة وترحيب دافئ.",
+    "Silwadi Dental Centre began serving patients in Abu Dhabi in 1980. Today, a multi-specialty, multidisciplinary team of general dentists and specialists works together across prosthodontics, implantology, orthodontics, endodontics and everyday dental care.": "بدأ مركز السلوادي لطب الأسنان خدمة المرضى في أبوظبي عام 1980. ويعمل اليوم فريق متعدد التخصصات من أطباء الأسنان العامين والاختصاصيين معاً في التركيبات والزراعة والتقويم وعلاج الجذور والرعاية اليومية.",
+    "There is time for questions at every visit. We explain treatment in plain language, keep your comfort in mind and help you find the right next step.": "نخصص وقتاً لأسئلتك في كل زيارة. نشرح العلاج بلغة واضحة، ونضع راحتك في الاعتبار، ونساعدك في اختيار الخطوة التالية المناسبة.",
+    "The people and place behind your care.": "الأشخاص والمكان وراء رعايتك.",
+    "From the reception team to the clinical staff, our centre is built around clear conversations and a comfortable visit.": "من فريق الاستقبال إلى الطاقم السريري، صُمم مركزنا ليقدم حواراً واضحاً وزيارة مريحة.",
+    "The Silwadi Dental Centre team in Abu Dhabi": "فريق مركز السلوادي لطب الأسنان في أبوظبي",
+    "Silwadi Dental Centre clinical team in Abu Dhabi": "الفريق السريري في مركز السلوادي لطب الأسنان بأبوظبي",
+    "Silwadi Dental Centre team meeting": "اجتماع فريق مركز السلوادي لطب الأسنان",
+    "Silwadi Dental Centre clinicians at the Bani Yas clinic": "أطباء مركز السلوادي لطب الأسنان في عيادة بني ياس",
+    "One team, working together.": "فريق واحد يعمل معاً.",
+    "Care planned together.": "رعاية نخطط لها معاً.",
+    "A familiar clinical team.": "فريق سريري مألوف.",
+    "Start with the right conversation.": "ابدأ بالحوار المناسب.",
+    "You do not need to know the treatment name before you call. Our directory can help you explore the team, and reception can guide your enquiry.": "لا تحتاج إلى معرفة اسم العلاج قبل الاتصال. يساعدك دليل الأطباء في استكشاف الفريق، ويمكن للاستقبال توجيه استفسارك.",
+    "View profile": "عرض الملف",
+    "A centre for real life.": "مركز يناسب حياتك اليومية.",
+    "Thoughtful spaces, practical support and modern clinical tools help make each visit easier to understand.": "تساعد المساحات المدروسة والدعم العملي والتقنيات السريرية الحديثة على جعل كل زيارة أوضح.",
+    "Support for every patient": "دعم لكل مريض",
+    "Dedicated rooms and an accessible layout support People of Determination with dignity and comfort.": "تدعم الغرف المخصصة والتصميم الميسّر أصحاب الهمم بما يحفظ كرامتهم وراحتهم.",
+    "Modern clinical tools": "تقنيات سريرية حديثة",
+    "Digital X-rays, CAD/CAM, 3D printing, laser dentistry and intraoral imaging support careful treatment planning.": "تدعم الأشعة الرقمية وتقنيات CAD/CAM والطباعة ثلاثية الأبعاد وطب الأسنان بالليزر والتصوير داخل الفم تخطيط العلاج بعناية.",
+    "Ready to meet the team?": "هل أنت مستعد للتعرف إلى الفريق؟",
+    "Explore our dentists and specialists, or contact reception to talk through your next step.": "تعرّف إلى أطبائنا واختصاصيينا، أو تواصل مع الاستقبال لمناقشة خطوتك التالية.",
+    "Talk to reception": "تحدث مع الاستقبال",
+    "Your email app will open with the details you enter. We use them only to respond to this appointment enquiry. Please do not include sensitive medical information in the form.": "سيفتح تطبيق البريد الإلكتروني مع التفاصيل التي تدخلها. نستخدمها فقط للرد على استفسار الموعد. يرجى عدم إدخال معلومات طبية حساسة في النموذج.",
+    "I agree that Silwadi may use these details to reply to my appointment enquiry.": "أوافق على استخدام سلوادي لهذه البيانات للرد على استفسار الموعد.",
   });
 
   return { init, applyLanguage, getLanguage, getRequestedLanguage, translate, withLanguageQuery };

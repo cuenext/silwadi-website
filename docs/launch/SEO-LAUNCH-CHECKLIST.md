@@ -13,9 +13,9 @@ This checklist is intentionally operational. Do not add search-engine markup or 
 - Do not use 302 redirects, JavaScript redirects, or meta refresh for the domain migration.
 - Preserve query handling for the old `?lang=en` and `?lang=ar` home URLs; avoid redirect loops or multi-hop chains.
 - Confirm unknown/deleted URLs return a genuine HTTP 404 (or 410 when intentionally removed), not a 200 soft-404 page.
-- Confirm all 24 canonical URLs return HTTP 200 and no canonical URL redirects internally.
+- Confirm all 27 canonical URLs return HTTP 200 and no canonical URL redirects internally.
 - Confirm `https://silwadi.ae/robots.txt` returns 200 and allows crawling.
-- Confirm `https://silwadi.ae/sitemap.xml` returns 200 and contains only the 24 canonical `silwadi.ae` URLs.
+- Confirm `https://silwadi.ae/sitemap.xml` returns 200 and contains only the 27 canonical `silwadi.ae` URLs.
 - Run `python tools/seo_launch_audit.py` and require `0 errors`.
 - Run the full regression suite: `python -m unittest discover -s tests -p '*.py' -v`.
 - Run JavaScript syntax validation: `node --check app.js`.
@@ -26,6 +26,13 @@ This checklist is intentionally operational. Do not add search-engine markup or 
 - Confirm JSON-LD matches visible page content and contains no self-authored review or aggregate-rating markup.
 - Confirm the home-page favicon is crawlable and remains at the stable `/favicon.svg` URL.
 - Confirm canonical, `og:url`, and sitemap URLs all use `https://silwadi.ae` exactly.
+
+## Healthcare advertising and privacy handoff
+
+- Before publishing paid or promotional healthcare material, the clinic owner must route it through the Department of Health Abu Dhabi Health Media & Advertising System process and retain any approval records.
+- Confirm the licensed facility has completed the required DoH health-media training and nominated its authorised representatives before submitting advertising material.
+- Keep the appointment form's plain-language consent note. It explains that the visitor's email app opens with the enquiry details and asks visitors not to include sensitive medical information.
+- Have the clinic's privacy/compliance lead confirm email handling, retention, access, and any patient-data processing under UAE PDPL and Abu Dhabi AAMEN requirements. This checklist is operational guidance, not a legal opinion.
 
 ## Immediately after launch
 
@@ -55,4 +62,4 @@ This checklist is intentionally operational. Do not add search-engine markup or 
 
 ## Launch acceptance gate
 
-Launch is accepted only when the static audit and regression suite are green, the 24 canonical URLs are reachable, `robots.txt` and `sitemap.xml` return 200, representative legacy URLs perform one-hop 301 redirects, structured data validates without critical errors, and Search Console/Bing submission steps are completed by the account owner after public deployment.
+Launch is accepted only when the static audit and regression suite are green, the 27 canonical URLs are reachable, `robots.txt` and `sitemap.xml` return 200, representative legacy URLs perform one-hop 301 redirects, structured data validates without critical errors, and Search Console/Bing submission steps are completed by the account owner after public deployment.
