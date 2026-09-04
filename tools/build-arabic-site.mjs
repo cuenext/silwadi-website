@@ -13,7 +13,6 @@ const overrides = Object.assign(
   JSON.parse(fs.readFileSync(path.join(ROOT, 'data/arabic-quality-overrides-extra.json'), 'utf8'))
 );
 const routes = Object.keys(seo);
-const routeSet = new Set(routes.map(route => route === 'index.html' ? '/' : `/${route}`));
 const audit = new Map();
 
 const normalize = value => String(value ?? '').replace(/\s+/g, ' ').trim();
@@ -220,4 +219,6 @@ updateSitemap();
 
 const auditRows = [...audit.values()].sort((a, b) => a.source.localeCompare(b.source));
 fs.writeFileSync(path.join(ROOT, 'data/arabic-audit.json'), JSON.stringify(auditRows, null, 2) + '\n');
+const compactAudit = ['SOURCE\tARABIC\tOVERRIDE', ...auditRows.map(row => `${row.source.replace(/\t/g, ' ')}\t${row.arabic.replace(/\t/g, ' ')}\t${row.override ? 'yes' : 'no'}`)].join('\n') + '\n';
+fs.writeFileSync(path.join(ROOT, 'data/arabic-audit-compact.tsv'), compactAudit);
 console.log(`Generated ${routes.length} Arabic pages and audited ${auditRows.length} distinct patient-facing strings.`);
