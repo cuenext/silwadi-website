@@ -1,0 +1,112 @@
+name: Finalize location photo swaps
+
+on:
+  push:
+    branches:
+      - fix/locations-two-branch-experience
+    paths:
+      - 'assets/locations/_swap_upload/READY'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize-location-photo-swaps:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/locations-two-branch-experience
+
+      - name: Rebuild and validate replacement photos
+        shell: bash
+        run: |
+          set -euo pipefail
+          staging='assets/locations/_swap_upload'
+
+          cat "$staging"/bani.part-* | tr -d '\r\n' | base64 --decode > /tmp/bani-yas-treatment-room.webp
+          cat "$staging"/kids.part-* | tr -d '\r\n' | base64 --decode > /tmp/al-raha-children-room.webp
+
+          python - <<'PY'
+          from pathlib import Path
+          from hashlib import sha1
+          from PIL import Image
+
+          expected = {
+              Path('/tmp/bani-yas-treatment-room.webp'): ((1000, 557), 44494, 'dab53d2f0618098b52c64ce19d2be6f830167fb3'),
+              Path('/tmp/al-raha-children-room.webp'): ((700, 453), 44484, '183d89f321afb5d7d46c1aea86980ffdabed5377'),
+          }
+
+          for path, (dimensions, size, digest) in expected.items():
+              data = path.read_bytes()
+              assert len(data) == size, (path.name, len(data), size)
+              assert data[:4] == b'RIFF', path.name
+              assert data[8:12] == b'WEBP', path.name
+              assert sha1(data).hexdigest() == digest, path.name
+              with Image.open(path) as image:
+                  assert image.size == dimensions, (path.name, image.size, dimensions)
+                  image.verify()
+              print(f'validated {path.name}: {dimensions[0]}x{dimensions[1]}, {size} bytes')
+          PY
+
+      - name: Apply photo swaps and update image metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          mv /tmp/bani-yas-treatment-room.webp assets/locations/bani-yas-treatment-room.webp
+          mv /tmp/al-raha-children-room.webp assets/locations/al-raha-children-room.webp
+
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          html_path = Path('locations.html')
+          html = html_path.read_text(encoding='utf-8')
+          html = html.replace('?v=20260904-3', '?v=20260904-4')
+
+          html, bani_count = re.subn(
+              r'(src="assets/locations/bani-yas-treatment-room\.webp\?v=20260904-4"[^>]*?)width="\d+" height="\d+"',
+              r'\1width="1000" height="557"',
+              html,
+              count=1,
+          )
+          html, kids_count = re.subn(
+              r'(src="assets/locations/al-raha-children-room\.webp\?v=20260904-4"[^>]*?)width="\d+" height="\d+"',
+              r'\1width="700" height="453"',
+              html,
+              count=1,
+          )
+          assert bani_count == 1, bani_count
+          assert kids_count == 1, kids_count
+          html_path.write_text(html, encoding='utf-8')
+
+          test_path = Path('tests/test_locations_page.py')
+          tests = test_path.read_text(encoding='utf-8')
+          old_bani = "self.assertIn('width=\"900\" height=\"555\"', bani_yas)"
+          new_bani = "self.assertIn('width=\"1000\" height=\"557\"', bani_yas)"
+          old_kids = "'al-raha-children-room.webp': 'width=\"520\" height=\"377\"',"
+          new_kids = "'al-raha-children-room.webp': 'width=\"700\" height=\"453\"',"
+          assert old_bani in tests
+          assert old_kids in tests
+          tests = tests.replace(old_bani, new_bani, 1)
+          tests = tests.replace(old_kids, new_kids, 1)
+          test_path.write_text(tests, encoding='utf-8')
+          PY
+
+      - name: Run Locations regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest tests.test_locations_page -v
+
+      - name: Commit replacements and clean temporary staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf assets/locations/_swap_upload
+          rm -f .github/workflows/finalize-location-photo-swaps.yml
+          git config user.name 'ADVA'
+          git config user.email 'abdullahavadoglu@gmail.com'
+          git add -A assets/locations locations.html tests/test_locations_page.py .github/workflows/finalize-location-photo-swaps.yml
+          git commit -m 'Replace Corniche and children clinic photos'
+          git push origin HEAD:fix/locations-two-branch-experience
