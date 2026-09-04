@@ -77,9 +77,12 @@ class PatchSevenLocalSEOContract(unittest.TestCase):
 
     def test_al_raha_is_operational(self):
         html = read('locations.html').lower()
-        self.assertIn('now open', html)
+        self.assertIn('id="al-raha"', html)
         self.assertIn('+971 2 666 2408', html)
+        self.assertIn('contact.html#consultation', html)
         self.assertNotIn('coming soon', html)
+        self.assertNotIn('not yet open', html)
+        self.assertNotIn('class="location-state"', html)
 
     def test_unverified_corniche_branch_name_is_not_used_as_nap(self):
         for rel in ROOT_PAGES + NESTED_PAGES:
