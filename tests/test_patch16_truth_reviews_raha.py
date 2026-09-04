@@ -47,14 +47,16 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
             text = page.read_text(encoding="utf-8")
             self.assertNotRegex(text, r'<a[^>]+href=["\'](?:\.\./)?digital-dentistry\.html["\']')
 
-    def test_al_raha_is_open_everywhere_and_uses_verified_branch_phone(self):
+    def test_al_raha_is_operational_everywhere_and_uses_verified_branch_phone(self):
         combined = "\n".join((self.home, self.locations, self.contact)).lower()
         self.assertNotIn("coming soon", combined)
         self.assertNotIn("not yet open", combined)
         self.assertIn("al raha mall", combined)
         self.assertIn("+971 2 666 2408", combined)
         self.assertIn("+97126662408", combined.replace(" ", ""))
-        self.assertRegex(self.locations, r'Al Raha Mall[\s\S]{0,1200}(Open|Current location|Now open)')
+        self.assertIn('id="al-raha"', self.locations)
+        self.assertRegex(self.locations, r'id="al-raha"[\s\S]{0,4000}\+971 2 666 2408')
+        self.assertNotIn('class="location-state"', self.locations)
 
     def test_google_reviews_section_uses_real_listing_summary_and_maps_link(self):
         self.assertIn('class="home-google-reviews', self.home)
