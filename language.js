@@ -318,6 +318,28 @@
     'Three dedicated rooms and an accessible layout support People of Determination with dignity and comfort.': 'تدعم ثلاث غرف مخصصة وتصميم ميسّر أصحاب الهمم بما يحفظ كرامتهم وراحتهم.',
     'Digital dentistry': 'طب الأسنان الرقمي',
     'Digital X-rays, CAD/CAM, 3D printing, laser dentistry and intraoral imaging support careful treatment planning.': 'تدعم الأشعة الرقمية وتقنيات CAD/CAM والطباعة ثلاثية الأبعاد وطب الأسنان بالليزر والتصوير داخل الفم تخطيط العلاج بدقة.',
+    // Premium homepage hero translations
+    "Dr. Munir Silwadi Dental Centre": "مركز د. منير سلوادي لطب الأسنان",
+    "How can we": "كيف يمكننا",
+    "help you?": "مساعدتك؟",
+    "How can we help you?": "كيف يمكننا مساعدتك؟",
+    "From routine check-ups to specialist dental care, our Abu Dhabi team is here to help you find the right treatment with clarity and confidence.": "من الفحوصات الدورية إلى رعاية الأسنان التخصصية، يساعدك فريقنا في أبوظبي على اختيار العلاج المناسب بوضوح وثقة.",
+    "Book an Appointment": "احجز موعداً",
+    "Book an Appointment →": "احجز موعداً ←",
+    "Explore Services": "استكشف الخدمات",
+    "Explore Services →": "استكشف الخدمات ←",
+    "Clinic highlights": "مميزات المركز",
+    "Serving patients": "نخدم المرضى",
+    "since 1980": "منذ عام 1980",
+    "Serving patients since 1980": "نخدم المرضى منذ عام 1980",
+    "Bani Yas Tower": "برج بني ياس",
+    "& Al Raha Mall": "والراحة مول",
+    "Bani Yas Tower & Al Raha Mall": "برج بني ياس والراحة مول",
+    "Reception-led": "الحجز عبر الاستقبال",
+    "booking": "الحجز",
+    "Reception-led booking": "الحجز عبر الاستقبال",
+    // End premium homepage hero translations
+
   };
 
   const normalize = value => String(value ?? '').replace(/\s+/g, ' ').trim();
