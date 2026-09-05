@@ -35,6 +35,9 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
             self.assertIn(f'hreflang="en-AE" href="{english_url(route)}"', source, route)
             self.assertIn(f'hreflang="x-default" href="{english_url(route)}"', source, route)
             self.assertNotIn("?lang=ar", source, route)
+            self.assertIn('data-arabic-page-schema', source, route)
+            self.assertIn('"inLanguage":"ar-AE"', source, route)
+            self.assertIn('/arabic-static.js', source, route)
 
     def test_english_pages_point_to_static_arabic_counterparts(self):
         for route in SEO:
@@ -45,26 +48,60 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
             self.assertIn('/bilingual-routing.js', source, route)
             self.assertIn('/arabic-quality.css', source, route)
 
-    def test_google_reviews_never_reverse_when_arabic_is_selected(self):
+    def test_google_reviews_never_reverse_or_reload_when_arabic_is_selected(self):
         css = (ROOT / "home-reviews.css").read_text(encoding="utf-8")
         reverse_rule = re.compile(r"\.language-ar\s+\.google-reviews-track\s*\{[^}]*animation-direction\s*:\s*reverse", re.S)
         self.assertIsNone(reverse_rule.search(css))
         quality = (ROOT / "arabic-quality.css").read_text(encoding="utf-8")
         self.assertIn(".google-reviews-track{animation-direction:normal!important}", quality)
 
-    def test_homepage_arabic_trust_copy_is_condensed(self):
+        routing = (ROOT / "bilingual-routing.js").read_text(encoding="utf-8")
+        self.assertIn("api.applyLanguage(next)", routing)
+        self.assertIn("window.history.replaceState", routing)
+        self.assertIn("preserves the Google Reviews track", routing)
+        self.assertNotIn("window.location.assign(`${target}", routing)
+
+    def test_homepage_arabic_hero_and_trust_copy_are_clean_and_not_repeated(self):
         source = (ROOT / "ar" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('id="premiumHomeHeroTitle">كيف يمكننا مساعدتك؟</h1>', source)
+        self.assertNotIn('كيف يمكننا <span>مساعدتك؟</span>', source)
+        self.assertNotIn('الحجز عبر الاستقبال الحجز', source)
+        self.assertIn('<strong>نخدم مرضانا منذ عام 1980</strong>', source)
+        self.assertIn('<strong>برج بني ياس والراحة مول</strong>', source)
+        self.assertIn('<strong>الحجز عبر الاستقبال</strong>', source)
+
         trust = re.search(r'<ul[^>]*class="[^"]*premium-home-hero__trust[^"]*"[^>]*>(.*?)</ul>', source, re.S)
         self.assertIsNotNone(trust)
-        block = trust.group(1)
-        self.assertNotIn("<br", block.lower())
-        self.assertNotRegex(block, r">\s*الحجز\s*<")
+        self.assertNotIn("<br", trust.group(1).lower())
 
     def test_mobile_hero_uses_separate_image_and_copy_panel(self):
         css = (ROOT / "arabic-quality.css").read_text(encoding="utf-8")
         self.assertIn("grid-template-rows:minmax(330px,48svh) auto!important", css)
         self.assertIn(".premium-home-hero__media{position:relative!important", css)
         self.assertIn(".premium-home-hero__shade,.premium-home-hero::before{display:none!important}", css)
+
+    def test_about_and_services_fragmented_headings_are_rewritten_as_complete_arabic(self):
+        about = (ROOT / "ar" / "about.html").read_text(encoding="utf-8")
+        self.assertIn('اسم راسخ في طب الأسنان بأبوظبي.', about)
+        self.assertIn('افتُتح مركز سلوادي لطب الأسنان في أبوظبي.', about)
+        self.assertIn('يقدم أطباؤنا العامون والاختصاصيون الرعاية للعائلات في فرعين.', about)
+
+        services = (ROOT / "ar" / "services.html").read_text(encoding="utf-8")
+        self.assertIn('خدمات طب الأسنان لكل ابتسامة في أبوظبي.', services)
+
+    def test_no_generated_arabic_page_uses_inconsistent_brand_spelling(self):
+        for route in SEO:
+            source = (ROOT / "ar" / route).read_text(encoding="utf-8")
+            self.assertNotIn('السلوادي', source, route)
+
+    def test_generated_arabic_ctas_do_not_embed_directional_arrow_text(self):
+        for route in SEO:
+            source = (ROOT / "ar" / route).read_text(encoding="utf-8")
+            # Decorative CSS/icons may exist, but Arabic visible text should not carry
+            # left/right arrow glyphs that fight RTL bidi ordering.
+            body = source.split('<body', 1)[-1]
+            visible_without_scripts = re.sub(r'<script[\s\S]*?</script>', '', body, flags=re.I)
+            self.assertNotRegex(visible_without_scripts, r'[\u0600-\u06ff][^<]{0,80}[←→]', route)
 
     def test_homepage_index_redirect_does_not_capture_arabic_index(self):
         app = (ROOT / "app.js").read_text(encoding="utf-8")
@@ -77,16 +114,24 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
             self.assertIn(f"<loc>{arabic_url(route)}</loc>", sitemap, route)
 
     def test_core_arabic_ui_phrases_are_professional_and_compact(self):
-        overrides = json.loads((ROOT / "data" / "arabic-quality-overrides.json").read_text(encoding="utf-8"))
+        layers = {}
+        for filename in (
+            "arabic-quality-overrides.json",
+            "arabic-quality-overrides-extra.json",
+            "arabic-quality-overrides-critical.json",
+        ):
+            layers.update(json.loads((ROOT / "data" / filename).read_text(encoding="utf-8")))
         expected = {
             "Book an Appointment": "احجز موعداً",
             "Explore Services": "استكشف الخدمات",
             "Appointments via reception": "الحجز عبر الاستقبال",
             "Get Directions": "الاتجاهات",
             "Not sure which dentist to choose?": "لست متأكداً من الطبيب المناسب؟",
+            "Clinical base": "الفرع",
+            "Can adults have orthodontic treatment?": "هل يمكن للبالغين الخضوع لتقويم الأسنان؟",
         }
         for english, arabic in expected.items():
-            self.assertEqual(overrides.get(english), arabic)
+            self.assertEqual(layers.get(english), arabic)
 
     def test_audit_file_contains_no_untranslated_core_ui_copy(self):
         audit_path = ROOT / "data" / "arabic-audit.json"
@@ -95,6 +140,11 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
         core_terms = re.compile(r"\b(book|appointment|doctor|service|treatment|contact|location|call|whatsapp|directions|team|care|clinic|centre|center|about|home)\b", re.I)
         offenders = [row["source"] for row in rows if row["source"] == row["arabic"] and core_terms.search(row["source"])]
         self.assertEqual(offenders, [], f"Untranslated core UI copy: {offenders[:20]}")
+
+    def test_audit_has_no_repeated_booking_phrase_or_brand_variant(self):
+        audit = (ROOT / "data" / "arabic-audit-compact.tsv").read_text(encoding="utf-8")
+        self.assertNotIn('الحجز عبر الاستقبال الحجز', audit)
+        self.assertNotIn('السلوادي', audit)
 
 
 if __name__ == "__main__":
