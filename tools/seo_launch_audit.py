@@ -13,6 +13,8 @@ SITE_NAME = 'Silwadi Dental Center'
 ROBOTS_POLICY = 'index,follow,max-image-preview:large'
 SITEMAP_NS = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
 ATTR_RE = re.compile(r'([:\w-]+)\s*=\s*["\']([^"\']*)["\']', re.I)
+SEO = json.loads((ROOT / 'data' / 'arabic-seo.json').read_text(encoding='utf-8'))
+ROUTES = list(SEO)
 
 
 def read(rel):
@@ -75,9 +77,43 @@ def contains_key(value, target):
     return False
 
 
-def file_for_url(url):
+def english_url(route):
+    return f'{ORIGIN}/' if route == 'index.html' else f'{ORIGIN}/{route}'
+
+
+def arabic_url(route):
+    return f'{ORIGIN}/ar/' if route == 'index.html' else f'{ORIGIN}/ar/{route}'
+
+
+def expected_urls():
+    return [english_url(route) for route in ROUTES] + [arabic_url(route) for route in ROUTES]
+
+
+def url_context(url):
     path = urlparse(url).path
-    return 'index.html' if path == '/' else path.lstrip('/')
+    is_arabic = path == '/ar/' or path.startswith('/ar/')
+    if path in ('/', '/index.html'):
+        route = 'index.html'
+    elif path in ('/ar/', '/ar/index.html'):
+        route = 'index.html'
+    elif is_arabic:
+        route = path[len('/ar/'):]
+    else:
+        route = path.lstrip('/')
+    return route, is_arabic
+
+
+def file_for_url(url):
+    route, is_arabic = url_context(url)
+    if route == 'index.html':
+        return 'ar/index.html' if is_arabic else 'index.html'
+    return f'ar/{route}' if is_arabic else route
+
+
+def resolve_local_asset(page_rel, href):
+    if href.startswith('/'):
+        return ROOT / href.lstrip('/')
+    return (ROOT / page_rel).parent / href
 
 
 def audit():
@@ -93,36 +129,45 @@ def audit():
 
     url_nodes = sitemap_root.findall('sm:url', SITEMAP_NS)
     locs = []
-    lastmods = []
     for node in url_nodes:
         loc = node.find('sm:loc', SITEMAP_NS)
         lastmod = node.find('sm:lastmod', SITEMAP_NS)
         if loc is None or not loc.text:
             errors.append('sitemap.xml: URL entry missing loc')
             continue
-        locs.append(loc.text.strip())
+        current = loc.text.strip()
+        locs.append(current)
         if lastmod is None or not lastmod.text:
-            errors.append(f'sitemap.xml: {loc.text.strip()} missing lastmod')
-        else:
-            value = lastmod.text.strip()
-            lastmods.append(value)
-            if not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
-                errors.append(f'sitemap.xml: invalid lastmod {value} for {loc.text.strip()}')
+            errors.append(f'sitemap.xml: {current} missing lastmod')
+        elif not re.fullmatch(r'\d{4}-\d{2}-\d{2}', lastmod.text.strip()):
+            errors.append(f'sitemap.xml: invalid lastmod {lastmod.text.strip()} for {current}')
 
-    if len(locs) != 27:
-        errors.append(f'sitemap.xml: expected 27 canonical URLs, found {len(locs)}')
+    expected = expected_urls()
+    if len(locs) != len(expected):
+        errors.append(f'sitemap.xml: expected {len(expected)} bilingual URLs, found {len(locs)}')
     if len(locs) != len(set(locs)):
         errors.append('sitemap.xml: duplicate canonical URLs found')
+    missing = sorted(set(expected) - set(locs))
+    extra = sorted(set(locs) - set(expected))
+    for url in missing:
+        errors.append(f'sitemap.xml: missing expected URL {url}')
+    for url in extra:
+        errors.append(f'sitemap.xml: unexpected URL {url}')
     if any(not url.startswith(f'{ORIGIN}/') for url in locs):
         errors.append('sitemap.xml: every URL must use https://silwadi.ae/')
 
-    titles = []
-    descriptions = []
-    canonical_set = set(locs)
+    titles = {'en': [], 'ar': []}
+    descriptions = {'en': [], 'ar': []}
+    english_canonicals = {english_url(route) for route in ROUTES}
 
     for url in locs:
+        route, is_arabic = url_context(url)
         rel = file_for_url(url)
         path = ROOT / rel
+        language = 'ar' if is_arabic else 'en'
+        if route not in SEO:
+            errors.append(f'{rel}: route is not in the bilingual route manifest')
+            continue
         if not path.is_file():
             errors.append(f'{rel}: sitemap target file missing')
             continue
@@ -132,13 +177,13 @@ def audit():
         if len(title_matches) != 1:
             errors.append(f'{rel}: expected exactly one title, found {len(title_matches)}')
         else:
-            titles.append(re.sub(r'\s+', ' ', title_matches[0]).strip())
+            titles[language].append(re.sub(r'\s+', ' ', title_matches[0]).strip())
 
         descs = meta_values(html, 'name', 'description')
         if len(descs) != 1 or not descs[0].strip():
             errors.append(f'{rel}: expected exactly one non-empty meta description')
         else:
-            descriptions.append(descs[0].strip())
+            descriptions[language].append(descs[0].strip())
 
         canonicals = link_values(html, 'canonical')
         canonical_hrefs = [item.get('href', '') for item in canonicals]
@@ -149,25 +194,36 @@ def audit():
         if og_urls != [url]:
             errors.append(f'{rel}: og:url mismatch {og_urls!r} != {[url]!r}')
 
-        if meta_values(html, 'property', 'og:locale') != ['en_AE']:
-            errors.append(f'{rel}: expected one en_AE og:locale')
-        if meta_values(html, 'property', 'og:locale:alternate') != ['ar_AE']:
-            errors.append(f'{rel}: expected one ar_AE og:locale:alternate')
-        if meta_values(html, 'name', 'content-language') != ['en']:
-            errors.append(f'{rel}: expected one en content-language meta')
+        expected_locale = 'ar_AE' if is_arabic else 'en_AE'
+        expected_alt_locale = 'en_AE' if is_arabic else 'ar_AE'
+        expected_content_language = 'ar' if is_arabic else 'en'
+        if meta_values(html, 'property', 'og:locale') != [expected_locale]:
+            errors.append(f'{rel}: expected one {expected_locale} og:locale')
+        if meta_values(html, 'property', 'og:locale:alternate') != [expected_alt_locale]:
+            errors.append(f'{rel}: expected one {expected_alt_locale} og:locale:alternate')
+        if meta_values(html, 'name', 'content-language') != [expected_content_language]:
+            errors.append(f'{rel}: expected one {expected_content_language} content-language meta')
+
+        html_tag = re.search(r'<html\b[^>]*>', html, re.I)
+        html_attrs = attrs(html_tag.group(0)) if html_tag else {}
+        if html_attrs.get('lang') != expected_content_language:
+            errors.append(f'{rel}: html lang must be {expected_content_language}')
+        if is_arabic and html_attrs.get('dir') != 'rtl':
+            errors.append(f'{rel}: Arabic page must use dir="rtl"')
+
         alternates = {
             item.get('hreflang', '').lower(): item.get('href', '')
             for item in link_values(html, 'alternate')
             if item.get('hreflang')
         }
         expected_alternates = {
-            'en-ae': url,
-            'ar-ae': f'{url}?lang=ar',
-            'x-default': url,
+            'en-ae': english_url(route),
+            'ar-ae': arabic_url(route),
+            'x-default': english_url(route),
         }
-        for hreflang, expected in expected_alternates.items():
-            if alternates.get(hreflang) != expected:
-                errors.append(f'{rel}: {hreflang} alternate mismatch {alternates.get(hreflang)!r} != {expected!r}')
+        for hreflang, expected_href in expected_alternates.items():
+            if alternates.get(hreflang) != expected_href:
+                errors.append(f'{rel}: {hreflang} alternate mismatch {alternates.get(hreflang)!r} != {expected_href!r}')
 
         if meta_values(html, 'property', 'og:site_name') != [SITE_NAME]:
             errors.append(f'{rel}: missing or duplicate og:site_name')
@@ -176,17 +232,15 @@ def audit():
         if robots != [ROBOTS_POLICY]:
             errors.append(f'{rel}: robots policy must be {ROBOTS_POLICY}')
         if any('noindex' in value.lower() for value in robots):
-            errors.append(f'{rel}: noindex is not allowed on canonical launch pages')
+            errors.append(f'{rel}: noindex is not allowed on canonical pages')
 
-        icons = link_values(html, 'icon')
-        expected_icon = '../favicon.svg' if '/' in rel else 'favicon.svg'
-        matching_icons = [item for item in icons if item.get('href') == expected_icon and item.get('type') == 'image/svg+xml']
-        if len(matching_icons) != 1:
-            errors.append(f'{rel}: expected one favicon link to {expected_icon}')
+        icons = [item for item in link_values(html, 'icon') if item.get('type') == 'image/svg+xml']
+        if len(icons) != 1:
+            errors.append(f'{rel}: expected one SVG favicon link')
         else:
-            resolved = (path.parent / expected_icon).resolve()
-            if not resolved.is_file():
-                errors.append(f'{rel}: favicon target does not resolve')
+            href = icons[0].get('href', '')
+            if not href or not resolve_local_asset(rel, href).resolve().is_file():
+                errors.append(f'{rel}: favicon target does not resolve: {href!r}')
 
         if 'https://silwadidentalcentres.ae' in html:
             errors.append(f'{rel}: legacy website origin is still linked as an absolute HTTP URL')
@@ -195,10 +249,15 @@ def audit():
             if contains_key(node, 'aggregateRating') or contains_key(node, 'review'):
                 errors.append(f'{rel}: self-authored review/rating schema is not permitted')
 
-    if len(titles) != len(set(titles)):
-        errors.append('metadata: duplicate page titles found')
-    if len(descriptions) != len(set(descriptions)):
-        errors.append('metadata: duplicate meta descriptions found')
+        if is_arabic:
+            if 'data-arabic-page-schema' not in html or '"inLanguage":"ar-AE"' not in html:
+                errors.append(f'{rel}: Arabic WebPage schema with inLanguage ar-AE is missing')
+
+    for language in ('en', 'ar'):
+        if len(titles[language]) != len(set(titles[language])):
+            errors.append(f'metadata: duplicate {language} page titles found')
+        if len(descriptions[language]) != len(set(descriptions[language])):
+            errors.append(f'metadata: duplicate {language} meta descriptions found')
 
     robots_path = ROOT / 'robots.txt'
     if not robots_path.is_file():
@@ -218,8 +277,21 @@ def audit():
             icon_root = ET.fromstring(favicon.read_text(encoding='utf-8'))
             if not icon_root.tag.endswith('svg'):
                 errors.append('favicon.svg: root element is not svg')
-            if icon_root.attrib.get('viewBox') != '0 0 64 64':
-                errors.append('favicon.svg: expected square 0 0 64 64 viewBox')
+            viewbox = icon_root.attrib.get('viewBox', '').split()
+            if len(viewbox) != 4:
+                errors.append('favicon.svg: valid four-number viewBox is required')
+            else:
+                try:
+                    width = float(viewbox[2])
+                    height = float(viewbox[3])
+                    if width <= 0 or height <= 0 or abs(width - height) > 1e-9:
+                        errors.append('favicon.svg: viewBox must be square')
+                except ValueError:
+                    errors.append('favicon.svg: viewBox must contain numeric dimensions')
+            width_attr = icon_root.attrib.get('width')
+            height_attr = icon_root.attrib.get('height')
+            if width_attr and height_attr and width_attr != height_attr:
+                errors.append('favicon.svg: rendered width and height must match')
         except ET.ParseError as exc:
             errors.append(f'favicon.svg: invalid XML: {exc}')
 
@@ -239,8 +311,8 @@ def audit():
                 errors.append(f'legacy redirect map: invalid source {source!r}')
             if status != '301':
                 errors.append(f'legacy redirect map: {source} must use 301')
-            if target not in canonical_set:
-                errors.append(f'legacy redirect map: target is not canonical: {target!r}')
+            if target not in english_canonicals:
+                errors.append(f'legacy redirect map: target is not an English canonical: {target!r}')
 
     checklist = ROOT / 'docs/launch/SEO-LAUNCH-CHECKLIST.md'
     if not checklist.is_file():
