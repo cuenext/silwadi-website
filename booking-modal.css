@@ -1,0 +1,53 @@
+body.booking-modal-open{overflow:hidden}
+.booking-modal{width:min(760px,calc(100% - 28px));max-width:760px;max-height:min(88dvh,820px);padding:0;border:0;border-radius:22px;background:transparent;color:#173943;box-shadow:none;overflow:visible}
+.booking-modal::backdrop{background:rgba(4,29,37,.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.booking-modal__surface{position:relative;max-height:min(88dvh,820px);overflow-y:auto;overscroll-behavior:contain;padding:32px;border:1px solid rgba(210,224,227,.95);border-radius:22px;background:linear-gradient(145deg,#fff 0%,#fbfdfd 100%);box-shadow:0 34px 100px rgba(4,35,45,.28);-webkit-overflow-scrolling:touch}
+.booking-modal__close{position:absolute;top:16px;right:16px;z-index:2;width:40px;height:40px;border:1px solid #d7e3e5;border-radius:50%;background:#fff;color:#31545e;font-size:25px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:transform .18s ease,background .18s ease,border-color .18s ease}
+.booking-modal__close:hover,.booking-modal__close:focus-visible{background:#f1f7f8;border-color:#bcd4d9;transform:scale(1.04)}
+.booking-modal__head{padding:2px 54px 0 0;margin-bottom:22px}
+.booking-modal__eyebrow{margin:0 0 8px;color:#0d7c90;font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+.booking-modal__head h2{margin:0;color:#062f3b;font-size:clamp(30px,4vw,42px);line-height:1.08;letter-spacing:-.04em;font-weight:700}
+.booking-modal__head>p:last-child{max-width:610px;margin:12px 0 0;color:#637a83;font-size:13px;line-height:1.7}
+.booking-modal__form{display:block}
+.booking-modal__privacy{margin:0 0 20px;padding:12px 14px;border-radius:11px;background:#f4f8f8;color:#667c84;font-size:10px;line-height:1.65}
+.booking-modal__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 18px}
+.booking-modal__form label{display:grid;gap:7px;color:#073847;font-size:11px;font-weight:700}
+.booking-modal__form label>span b{color:#c85c4d;font-size:10px}
+.booking-modal__form input,.booking-modal__form select,.booking-modal__form textarea{width:100%;min-height:44px;border:1px solid rgba(8,56,71,.15);border-radius:10px;padding:11px 12px;background:#fff;color:#073847;font:inherit;font-weight:400;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.booking-modal__form textarea{min-height:102px;resize:vertical}
+.booking-modal__form input:focus,.booking-modal__form select:focus,.booking-modal__form textarea:focus{outline:2px solid rgba(13,124,144,.23);outline-offset:1px;border-color:#79b8c2}
+.booking-modal__notes{margin-top:16px}
+.booking-modal__consent{display:flex!important;align-items:flex-start;gap:10px;margin-top:18px;color:#687d84!important;font-size:10px!important;font-weight:500!important;line-height:1.55}
+.booking-modal__consent input{flex:0 0 auto;width:18px;height:18px;min-height:18px;margin:1px 0 0;accent-color:#0d7c90}
+.booking-modal__consent span{max-width:650px}
+.booking-modal__submit{width:100%;min-height:50px;margin-top:20px;border-radius:11px}
+.booking-modal__status{min-height:1.4em;margin:10px 0 0;color:#657b83;font-size:10px;text-align:center}
+html[dir="rtl"] .booking-modal__surface,.booking-modal__surface[dir="rtl"]{font-family:"Tajawal",Tahoma,Arial,sans-serif;text-align:right}
+.booking-modal__surface[dir="rtl"] .booking-modal__close{right:auto;left:16px}
+.booking-modal__surface[dir="rtl"] .booking-modal__head{padding-right:0;padding-left:54px}
+.booking-modal__surface[dir="rtl"] .booking-modal__eyebrow{letter-spacing:0;text-transform:none}
+.booking-modal__surface[dir="rtl"] .booking-modal__head h2{letter-spacing:0;line-height:1.18}
+.booking-modal__surface[dir="rtl"] .booking-modal__form label,.booking-modal__surface[dir="rtl"] .booking-modal__form input,.booking-modal__surface[dir="rtl"] .booking-modal__form select,.booking-modal__surface[dir="rtl"] .booking-modal__form textarea{text-align:right;direction:rtl;font-family:"Tajawal",Tahoma,Arial,sans-serif}
+.booking-modal__surface[dir="rtl"] input[type="tel"],.booking-modal__surface[dir="rtl"] input[type="email"]{direction:ltr;text-align:left}
+.appointment-disclaimer{display:none!important}
+@media(max-width:720px){
+  .booking-modal{width:calc(100% - 18px);max-height:92dvh;border-radius:18px}
+  .booking-modal__surface{max-height:92dvh;padding:24px 18px 22px;border-radius:18px}
+  .booking-modal__close{top:12px;right:12px;width:38px;height:38px}
+  .booking-modal__surface[dir="rtl"] .booking-modal__close{right:auto;left:12px}
+  .booking-modal__head{padding-right:48px;margin-bottom:18px}
+  .booking-modal__surface[dir="rtl"] .booking-modal__head{padding-right:0;padding-left:48px}
+  .booking-modal__head h2{font-size:30px;line-height:1.12}
+  .booking-modal__surface[dir="rtl"] .booking-modal__head h2{line-height:1.22}
+  .booking-modal__head>p:last-child{font-size:12px;line-height:1.62}
+  .booking-modal__privacy{font-size:9px;margin-bottom:16px}
+  .booking-modal__grid{grid-template-columns:1fr;gap:14px}
+  .booking-modal__notes{margin-top:14px}
+  .booking-modal__submit{min-height:52px}
+}
+@media(max-width:430px){
+  .booking-modal{width:calc(100% - 10px);max-height:94dvh}
+  .booking-modal__surface{max-height:94dvh;padding:21px 15px 20px}
+  .booking-modal__head h2{font-size:28px}
+}
+@media(prefers-reduced-motion:reduce){.booking-modal__close{transition:none}.booking-modal__close:hover,.booking-modal__close:focus-visible{transform:none}}
