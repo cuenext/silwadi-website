@@ -9,6 +9,7 @@ on:
       - 'data/arabic-seo.json'
       - 'data/arabic-quality-overrides.json'
       - 'data/arabic-quality-overrides-extra.json'
+      - 'data/arabic-quality-overrides-critical.json'
       - 'language.js'
       - 'arabic-quality.css'
       - 'arabic-static.js'
@@ -57,8 +58,7 @@ jobs:
           python -m unittest tests.test_patch26_arabic_completion -v
           python -m unittest tests.test_patch3_bilingual_experience -v
 
-      - name: Run full regression suite for review
-        continue-on-error: true
+      - name: Run full regression suite
         run: python -m unittest discover -s tests -v
 
       - name: Show audit summary on failure
