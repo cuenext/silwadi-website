@@ -326,3 +326,8 @@ html[lang="ar"] p, html[lang="ar"] a, html[lang="ar"] span, html[lang="ar"] stro
   font-family:"Tajawal",Tahoma,Arial,sans-serif;
 }
 /* End Arabic font refresh */
+
+/* Location card photography — Bani Yas refresh 2026-09-06 */
+.location-card__photo{display:block;width:calc(100% + 60px);height:180px;margin:-30px -30px 24px;object-fit:cover;object-position:center;border-bottom:1px solid var(--line);background:#dfe9e9}
+.location-card:first-child .location-card__photo{object-position:center 48%}
+@media(max-width:620px){.location-card__photo{height:168px}}
