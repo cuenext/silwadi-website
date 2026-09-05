@@ -250,7 +250,9 @@ function updateSitemap() {
   const sitemapPath = path.join(ROOT, 'sitemap.xml');
   let sitemap = fs.readFileSync(sitemapPath, 'utf8');
   sitemap = sitemap.replace(/\s*<url>\s*<loc>https:\/\/silwadi\.ae\/ar\/[^<]*<\/loc>[\s\S]*?<\/url>/g, '');
-  const arabicEntries = routes.map(route => `  <url><loc>${arabicUrl(route)}</loc></url>`).join('\n');
+  const lastmod = sitemap.match(/<lastmod>(\d{4}-\d{2}-\d{2})<\/lastmod>/)?.[1];
+  if (!lastmod) throw new Error('Sitemap must contain an English lastmod before Arabic entries are generated.');
+  const arabicEntries = routes.map(route => `  <url>\n    <loc>${arabicUrl(route)}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`).join('\n');
   sitemap = sitemap.replace('</urlset>', `${arabicEntries}\n</urlset>`);
   fs.writeFileSync(sitemapPath, sitemap);
 }
