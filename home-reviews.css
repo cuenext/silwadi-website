@@ -73,8 +73,19 @@
 
 /* Arabic review layout: preserve readable RTL flow while keeping names and Google branding clear. */
 .language-ar .home-google-reviews{direction:rtl}
-
+.language-ar .google-reviews-viewport,.static-arabic .google-reviews-viewport{direction:ltr}
+.language-ar .google-reviews-track,.static-arabic .google-reviews-track{direction:ltr}
 .language-ar .google-review-card__top{direction:rtl}
 .language-ar .google-review-card__top div,.language-ar .google-rating-card{text-align:right}
 .language-ar .review-dialog__close{right:auto;left:16px}
 .language-ar .review-dialog__top{direction:rtl;padding-right:0;padding-left:46px}
+
+/* Mobile reviews are deliberately swipeable instead of animated. This avoids RTL transform conflicts and keeps the first review visible immediately. */
+@media(max-width:760px){
+  .google-reviews-viewport{overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:18px;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;padding:4px 18px 12px;scrollbar-width:none}
+  .google-reviews-viewport::-webkit-scrollbar{display:none}
+  .google-reviews-track{animation:none!important;transform:none!important;direction:ltr;will-change:auto;display:flex;width:max-content}
+  .google-reviews-group{display:flex;gap:14px;padding-right:14px}
+  .google-review-card{scroll-snap-align:start;scroll-snap-stop:always;flex:0 0 min(82vw,300px);width:min(82vw,300px);min-height:202px;padding:20px}
+  .language-ar .google-review-card,.static-arabic .google-review-card{direction:rtl;text-align:right}
+}
