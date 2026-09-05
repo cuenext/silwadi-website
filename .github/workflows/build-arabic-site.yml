@@ -22,6 +22,7 @@ on:
       - 'app.js'
       - 'sitemap.xml'
       - 'tests/test_arabic_quality_seo_rebuild.py'
+      - 'tests/test_arabic_structured_data.py'
       - 'tests/test_locations_page.py'
       - 'tests/test_patch14_official_content_alignment.py'
       - 'tests/test_patch16_truth_reviews_raha.py'
@@ -62,7 +63,9 @@ jobs:
         run: git diff --check
 
       - name: Run Arabic quality and SEO contracts
-        run: python -m unittest tests.test_arabic_quality_seo_rebuild -v
+        run: |
+          python -m unittest tests.test_arabic_quality_seo_rebuild -v
+          python -m unittest tests.test_arabic_structured_data -v
 
       - name: Run current site regression contracts
         run: |
