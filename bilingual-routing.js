@@ -1,4 +1,23 @@
 (function silwadiBilingualRouting() {
+  const loadBookingModalAssets = () => {
+    if (!document.querySelector('link[data-booking-modal-styles]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '/booking-modal.css?v=20260905-1';
+      link.setAttribute('data-booking-modal-styles', '');
+      document.head.appendChild(link);
+    }
+    if (!document.querySelector('script[data-booking-modal-script]')) {
+      const script = document.createElement('script');
+      script.src = '/booking-modal.js?v=20260905-1';
+      script.async = false;
+      script.setAttribute('data-booking-modal-script', '');
+      document.head.appendChild(script);
+    }
+  };
+
+  loadBookingModalAssets();
+
   const normalizeEnglishPath = pathname => {
     let path = pathname || '/';
     if (path.startsWith('/ar/')) path = path.slice(3) || '/';
