@@ -103,6 +103,35 @@ function routeFromPathname(pathname) {
   return routes.includes(route) ? route : null;
 }
 
+function localizeStructuredDataUrl(value) {
+  if (typeof value !== 'string' || !/^https:\/\/(?:www\.)?silwadi\.ae\//i.test(value)) return value;
+  let url;
+  try { url = new URL(value); } catch (_) { return value; }
+  const paired = routeFromPathname(url.pathname);
+  if (!paired || paired === 'index.html') return value;
+  url.pathname = `/ar/${paired}`;
+  return url.toString();
+}
+
+function localizeStructuredDataValue(value) {
+  if (Array.isArray(value)) return value.map(localizeStructuredDataValue);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, localizeStructuredDataValue(child)]));
+  }
+  return localizeStructuredDataUrl(value);
+}
+
+function localizeExistingStructuredData(document) {
+  document.querySelectorAll('script[type="application/ld+json"][data-seo-schema]').forEach(script => {
+    try {
+      const parsed = JSON.parse(script.textContent || '{}');
+      script.textContent = JSON.stringify(localizeStructuredDataValue(parsed));
+    } catch (_) {
+      // Existing launch audit owns invalid JSON-LD reporting; leave malformed blocks untouched.
+    }
+  });
+}
+
 function rewriteUrl(value, route, attribute = 'href') {
   if (!value || /^(mailto:|tel:|sms:|javascript:|data:)/i.test(value)) return value;
   if (value.startsWith('#')) return value;
@@ -205,6 +234,7 @@ function makeArabicPage(source, route) {
   canonical.rel = 'canonical';
   canonical.href = arabicUrl(route);
   setAlternates(document, route);
+  localizeExistingStructuredData(document);
   addArabicPageSchema(document, route);
 
   document.querySelectorAll('link[href]').forEach(element => {
