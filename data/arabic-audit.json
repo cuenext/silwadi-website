@@ -5034,15 +5034,6 @@
     "override": true
   },
   {
-    "source": "NK",
-    "arabic": "NK",
-    "routes": [
-      "doctors.html",
-      "doctors/dr-nasr-keshkiea.html"
-    ],
-    "override": false
-  },
-  {
     "source": "No doctors match your current search. Try a different name or specialty.",
     "arabic": "لا توجد نتائج مطابقة. جرّب اسماً أو تخصصاً آخر.",
     "routes": [
