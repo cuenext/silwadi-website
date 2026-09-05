@@ -4217,14 +4217,6 @@
     "override": false
   },
   {
-    "source": "i",
-    "arabic": "i",
-    "routes": [
-      "contact.html"
-    ],
-    "override": false
-  },
-  {
     "source": "I agree that Silwadi may use these details to reply to my appointment enquiry.",
     "arabic": "أوافق على أن يستخدم مركز سلوادي هذه البيانات للرد على استفساري عن الموعد.",
     "routes": [
@@ -4353,14 +4345,6 @@
     "arabic": "زراعة وتيجان وجسور وأطقم تُخطط بما يناسب إطباقك.",
     "routes": [
       "services.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Important notice",
-    "arabic": "تنبيه مهم",
-    "routes": [
-      "contact.html"
     ],
     "override": false
   },
@@ -7661,14 +7645,6 @@
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
       "treatments/orthodontics.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "To our valued patients, please beware of false online offers promising free treatments at Silwadi Dental Centre.",
-    "arabic": "مرضانا الكرام، يرجى الحذر من العروض الإلكترونية المضللة التي تعد بعلاجات مجانية في مركز سلوادي لطب الأسنان.",
-    "routes": [
-      "contact.html"
     ],
     "override": false
   },

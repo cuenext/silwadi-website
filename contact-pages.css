@@ -144,22 +144,6 @@
 .consultation-form input:focus,.consultation-form textarea:focus,.consultation-form select:focus{outline:2px solid color-mix(in srgb,var(--teal) 32%,transparent);outline-offset:1px;border-color:var(--teal)}
 .consultation-form .btn{margin-top:20px}
 .form-note{min-height:1.4em;margin:12px 0 0;color:#687d84;font-size:11px}
-
-.appointment-disclaimer{
-  display:flex;
-  gap:12px;
-  align-items:flex-start;
-  max-width:820px;
-  margin:0 0 24px;
-  padding:16px 18px;
-  border:1px solid rgba(8,56,71,.10);
-  border-radius:14px;
-  background:#fff;
-  color:#073847;
-}
-.appointment-disclaimer__icon{display:grid;place-items:center;flex:0 0 26px;width:26px;height:26px;border-radius:50%;background:#edf7f7;color:#087f8e;font-weight:800;font-size:15px}
-.appointment-disclaimer strong{display:block;color:#073847;letter-spacing:.06em;text-transform:uppercase;font-size:.72rem;margin-bottom:4px}
-.appointment-disclaimer p{margin:0;line-height:1.55;color:#687d84;font-size:11px}
 .appointment-form-heading{margin:0;color:#062f3b;font-size:clamp(28px,3vw,36px);line-height:1.12;letter-spacing:-.035em;font-weight:660}
 .appointment-form-lead{margin:10px 0 0;color:#687d84;font-size:12px;line-height:1.7}
 .consultation-form label b{color:#c85c4d;font-size:10px}
@@ -225,7 +209,6 @@
   .form-grid{grid-template-columns:1fr}
   .consultation-form{padding:20px;border-radius:15px}
   .appointment-form-heading{font-size:28px}
-  .appointment-disclaimer{padding:15px;border-radius:14px}
   .contact-panel{padding:22px;border-radius:15px}
   .contact-detail{grid-template-columns:1fr;gap:5px}
   .contact-closing{padding:48px 0}
