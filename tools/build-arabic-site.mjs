@@ -149,7 +149,7 @@ function translateDocument(document, route, window) {
 }
 
 function removeDecorativeArrows(document) {
-  document.querySelectorAll('[aria-hidden="true"]').forEach(element => {
+  document.querySelectorAll('span,em,i,b,strong,[aria-hidden="true"]').forEach(element => {
     const text = normalize(element.textContent);
     if (/^[←→]$/.test(text)) element.remove();
   });
