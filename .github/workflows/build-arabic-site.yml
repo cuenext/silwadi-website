@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/build-arabic-site.yml'
       - 'tools/build-arabic-site.mjs'
+      - 'tools/seo_launch_audit.py'
       - 'data/arabic-seo.json'
       - 'data/arabic-quality-overrides.json'
       - 'data/arabic-quality-overrides-extra.json'
@@ -15,12 +16,22 @@ on:
       - 'arabic-static.js'
       - 'bilingual-routing.js'
       - '*.html'
+      - '*.css'
       - 'doctors/*.html'
       - 'treatments/*.html'
-      - 'home-reviews.css'
       - 'app.js'
       - 'sitemap.xml'
       - 'tests/test_arabic_quality_seo_rebuild.py'
+      - 'tests/test_locations_page.py'
+      - 'tests/test_patch14_official_content_alignment.py'
+      - 'tests/test_patch16_truth_reviews_raha.py'
+      - 'tests/test_patch21_reviews_footer_socials.py'
+      - 'tests/test_patch23_mobile_ux.py'
+      - 'tests/test_patch24_services_overhaul.py'
+      - 'tests/test_patch26_arabic_completion.py'
+      - 'tests/test_patch3_bilingual_experience.py'
+      - 'tests/test_patch6_contract.py'
+      - 'tests/test_patch7_local_seo.py'
   workflow_dispatch:
 
 permissions:
@@ -53,13 +64,21 @@ jobs:
       - name: Run Arabic quality and SEO contracts
         run: python -m unittest tests.test_arabic_quality_seo_rebuild -v
 
-      - name: Run existing Arabic regression contracts
+      - name: Run current site regression contracts
         run: |
+          python -m unittest tests.test_locations_page -v
+          python -m unittest tests.test_patch14_official_content_alignment -v
+          python -m unittest tests.test_patch16_truth_reviews_raha -v
+          python -m unittest tests.test_patch21_reviews_footer_socials -v
+          python -m unittest tests.test_patch23_mobile_ux -v
+          python -m unittest tests.test_patch24_services_overhaul -v
           python -m unittest tests.test_patch26_arabic_completion -v
           python -m unittest tests.test_patch3_bilingual_experience -v
+          python -m unittest tests.test_patch6_contract -v
+          python -m unittest tests.test_patch7_local_seo -v
 
-      - name: Run full regression suite
-        run: python -m unittest discover -s tests -v
+      - name: Run bilingual SEO launch audit
+        run: python tools/seo_launch_audit.py
 
       - name: Show audit summary on failure
         if: failure()
