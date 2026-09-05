@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - '.github/workflows/diagnose-bani-yas-images.yml'
+      - 'assets/locations/bani-yas-*.webp'
   workflow_dispatch:
 
 permissions:
