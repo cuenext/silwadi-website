@@ -103,6 +103,7 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
             body = source.split('<body', 1)[-1]
             visible_without_scripts = re.sub(r'<script[\s\S]*?</script>', '', body, flags=re.I)
             self.assertNotRegex(visible_without_scripts, r'[\u0600-\u06ff][^<]{0,80}[←→]', route)
+            self.assertNotRegex(visible_without_scripts, r'>\s*[←→]\s*<', route)
 
     def test_homepage_index_redirect_does_not_capture_arabic_index(self):
         app = (ROOT / "app.js").read_text(encoding="utf-8")
