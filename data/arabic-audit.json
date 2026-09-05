@@ -43,7 +43,7 @@
   },
   {
     "source": "© 2026 Dr. Munir Silwadi Dental Centre",
-    "arabic": "© 2026 مركز الدكتور منير السلوادي لطب الأسنان",
+    "arabic": "© 2026 مركز الدكتور منير سلوادي لطب الأسنان",
     "routes": [
       "index.html",
       "about.html",
@@ -259,11 +259,11 @@
   },
   {
     "source": "A familiar name in",
-    "arabic": "اسم مألوف في",
+    "arabic": "اسم راسخ في",
     "routes": [
       "about.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "A minimally invasive approach aimed at preserving natural tooth structure where clinically possible.",
@@ -430,11 +430,11 @@
   },
   {
     "source": "Age-appropriate preventive guidance and planning.",
-    "arabic": "إرشادات وتخطيط وقائيان يناسبان العمر.",
+    "arabic": "إرشادات وقائية وخطة رعاية تناسب العمر.",
     "routes": [
       "doctors/dr-kashmira-pawar-jayprakash.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "AH",
@@ -509,11 +509,11 @@
   },
   {
     "source": "Align and protect",
-    "arabic": "صحّح واحمِ",
+    "arabic": "التقويم والحماية",
     "routes": [
       "treatments.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Aligners",
@@ -616,12 +616,12 @@
   },
   {
     "source": "Assess",
-    "arabic": "قيّم",
+    "arabic": "التقييم",
     "routes": [
       "treatments/cosmetic-dentistry.html",
       "treatments/dental-implants.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Assessment",
@@ -729,12 +729,12 @@
   },
   {
     "source": "Bani Yas Tower + Al Raha Mall",
-    "arabic": "برج بني ياس + الراحة مول",
+    "arabic": "برج بني ياس والراحة مول",
     "routes": [
       "index.html",
       "about.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Bani Yas Tower and Al Raha Mall, Abu Dhabi, UAE",
@@ -1142,19 +1142,19 @@
   },
   {
     "source": "Call +971 2 626 2042 →",
-    "arabic": "اتصل على ‎+971 2 626 2042 ←",
+    "arabic": "اتصل على ‎+971 2 626 2042",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Call +971 2 666 2408 →",
-    "arabic": "اتصل على ‎+971 2 666 2408 ←",
+    "arabic": "اتصل على ‎+971 2 666 2408",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Call Al Raha",
@@ -1174,11 +1174,11 @@
   },
   {
     "source": "Call or view urgent care →",
-    "arabic": "اتصل بنا أو اطّلع على الرعاية العاجلة ←",
+    "arabic": "اتصل بنا أو اطّلع على الرعاية العاجلة",
     "routes": [
       "index.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Call reception or book a consultation online for help choosing the appropriate appointment.",
@@ -1277,11 +1277,11 @@
   },
   {
     "source": "Can adults have orthodontic treatment?",
-    "arabic": "هل يستطيع الكبار الخضوع لتقويم الأسنان؟",
+    "arabic": "هل يمكن للبالغين الخضوع لتقويم الأسنان؟",
     "routes": [
       "treatments/orthodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Can I see the proposed changes before treatment?",
@@ -1667,7 +1667,7 @@
   },
   {
     "source": "Clinical base",
-    "arabic": "الموقع السريري",
+    "arabic": "الفرع",
     "routes": [
       "doctors/dr-afnan-mashal.html",
       "doctors/dr-ahmed-el-shehri.html",
@@ -1685,7 +1685,7 @@
       "doctors/dr-nasr-keshkiea.html",
       "doctors/dr-sara-ismail.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Clinical examination and diagnostic records where indicated.",
@@ -1737,11 +1737,11 @@
   },
   {
     "source": "Complete the form →",
-    "arabic": "أكمل النموذج ←",
+    "arabic": "أرسل النموذج",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Complete the form and your request will be prepared for the appointments team.",
@@ -2381,11 +2381,11 @@
   },
   {
     "source": "Dental services for every smile in",
-    "arabic": "خدمات أسنان لكل ابتسامة في",
+    "arabic": "خدمات طب الأسنان لكل ابتسامة في",
     "routes": [
       "services.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Dental Surgery degree, Saint Joseph University, Beirut, 1985",
@@ -2425,7 +2425,7 @@
     "routes": [
       "about.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Depending on clinical findings, care may include examinations, fillings, treatment of damaged teeth, preventive advice and hygiene support. More complex problems can be referred to the relevant specialist within the team.",
@@ -2606,11 +2606,11 @@
   },
   {
     "source": "Discuss",
-    "arabic": "ناقش",
+    "arabic": "المناقشة",
     "routes": [
       "treatments/cosmetic-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Discuss findings and the treatment options that apply.",
@@ -2808,7 +2808,7 @@
   },
   {
     "source": "Dr. Dana Awad is a dedicated General Dentist at Dr. Munir Silwadi Dental Centre, providing comprehensive dental care with a strong focus on preventive, restorative, and esthetic dentistry. She is committed to delivering evidence-based, patient-centered treatment while creating a comfortable and reassuring experience for every patient.",
-    "arabic": "الدكتورة دانا عوض طبيبة أسنان عامة في مركز الدكتور منير السلوادي لطب الأسنان، وتقدم رعاية شاملة مع تركيز على طب الأسنان الوقائي والترميمي والتجميلي. وهي حريصة على تقديم علاج يستند إلى الدليل ويتمحور حول المريض، مع توفير تجربة مريحة ومطمئنة لكل مريض.",
+    "arabic": "الدكتورة دانا عوض طبيبة أسنان عامة في مركز الدكتور منير سلوادي لطب الأسنان، وتقدم رعاية شاملة مع تركيز على طب الأسنان الوقائي والترميمي والتجميلي. وهي حريصة على تقديم علاج يستند إلى الدليل ويتمحور حول المريض، مع توفير تجربة مريحة ومطمئنة لكل مريض.",
     "routes": [
       "doctors/dr-dana-awad.html"
     ],
@@ -2850,11 +2850,11 @@
   },
   {
     "source": "Dr. Ehab Hassouneh Bassam A is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "يُدرج الدكتور إيهاب حسونة بسام أ كطبيب أسنان عام في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في الراحة مول.",
+    "arabic": "الدكتور إيهاب حسونة بسام طبيب أسنان عام في مركز د. منير سلوادي لطب الأسنان، ويعمل في فرع الراحة مول.",
     "routes": [
       "doctors/dr-ehab-hassouneh.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Dr. Fahed Abi Khalil",
@@ -2938,11 +2938,11 @@
   },
   {
     "source": "Dr. Kashmira Pawar Jayprakash is listed as a Pediatric Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "تُدرج الدكتورة كاشميرا باوار جايبراكاش كاختصاصية في طب أسنان الأطفال في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
+    "arabic": "الدكتورة كاشميرا باوار جايبراكاش اختصاصية طب أسنان الأطفال في مركز د. منير سلوادي لطب الأسنان، وتعمل في فرع الراحة مول.",
     "routes": [
       "doctors/dr-kashmira-pawar-jayprakash.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Dr. Krishnamurthy Balajee",
@@ -2989,11 +2989,11 @@
   },
   {
     "source": "Dr. Lana Masoud is listed as a Endodontist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "تُدرج الدكتورة لانا مسعود كاختصاصية في علاج الجذور في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
+    "arabic": "الدكتورة لانا مسعود اختصاصية علاج جذور الأسنان في مركز د. منير سلوادي لطب الأسنان، وتعمل في فرع الراحة مول.",
     "routes": [
       "doctors/dr-lana-masoud.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Dr. Moammar Mohamed Rifai",
@@ -3146,11 +3146,11 @@
   },
   {
     "source": "Dr. Nachiket Shah is listed as a Periodontist & Implantologist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "يُدرج الدكتور ناشيكيت شاه كاختصاصي في أمراض اللثة وزراعة الأسنان في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في الراحة مول.",
+    "arabic": "الدكتور ناشيكيت شاه اختصاصي أمراض اللثة وزراعة الأسنان في مركز د. منير سلوادي لطب الأسنان، ويعمل في فرع الراحة مول.",
     "routes": [
       "doctors/dr-nachiket-shah.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Dr. Nasr Keshkiea",
@@ -3172,11 +3172,11 @@
   },
   {
     "source": "Dr. Nasr Keshkiea is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Bani Yas Tower.",
-    "arabic": "يُدرج الدكتور نصر كشكية كطبيب أسنان عام في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في برج بني ياس.",
+    "arabic": "الدكتور نصر كشكية طبيب أسنان عام في مركز د. منير سلوادي لطب الأسنان، ويعمل في فرع برج بني ياس.",
     "routes": [
       "doctors/dr-nasr-keshkiea.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Dr. Sara Ismail",
@@ -3198,11 +3198,11 @@
   },
   {
     "source": "Dr. Sara Ismail is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "تُدرج الدكتورة سارة إسماعيل كطبيبة أسنان عامة في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
+    "arabic": "الدكتورة سارة إسماعيل طبيبة أسنان عامة في مركز د. منير سلوادي لطب الأسنان، وتعمل في فرع الراحة مول.",
     "routes": [
       "doctors/dr-sara-ismail.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Dr. Silwadi's published centre profile highlights immediate implants, All-on-4 / All-on-6 concepts, computer-guided implant treatment, full-mouth rehabilitation, CAD/CAM veneers and crowns, and digital smile design. Suitability for any treatment is determined after clinical assessment.",
@@ -3267,11 +3267,11 @@
   },
   {
     "source": "Emergency dental care →",
-    "arabic": "رعاية أسنان عاجلة ←",
+    "arabic": "رعاية الأسنان العاجلة",
     "routes": [
       "treatments.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Emergency Dentist",
@@ -3676,7 +3676,7 @@
   },
   {
     "source": "Follow Silwadi Dental Center on Instagram",
-    "arabic": "تابع مركز سلوادي لطب الأسنان على Instagram",
+    "arabic": "تابع مركز سلوادي لطب الأسنان على إنستغرام",
     "routes": [
       "index.html",
       "about.html",
@@ -3706,31 +3706,31 @@
       "treatments/general-dentistry.html",
       "treatments/orthodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "For growing smiles",
-    "arabic": "لابتسامات صغيرة تكبر بصحة",
+    "arabic": "للأطفال واليافعين",
     "routes": [
       "services.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.",
-    "arabic": "على مدى أكثر من أربعة عقود، ركّز مركز سلوادي لطب الأسنان على رعاية تتمحور حول المريض، وعلاج مخصص، وراحة المراجع، والتوعية الصحية، والتواصل الواضح.",
+    "arabic": "على مدى أكثر من أربعة عقود، ركّز مركز سلوادي لطب الأسنان على رعاية تضع احتياجات المريض أولاً، مع علاج مخصص واهتمام بالراحة والتوعية والتواصل الواضح.",
     "routes": [
       "index.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "For routine dental concerns, check-ups or a problem you are not sure how to classify, a general dentist is usually the best place to start.",
-    "arabic": "عند وجود مشكلة أسنان يومية أو رغبة في الفحص أو شك في نوع الحالة، يكون طبيب الأسنان العام غالباً أفضل نقطة للبدء.",
+    "arabic": "للفحوصات الدورية أو مشكلات الأسنان الشائعة أو عندما لا تعرف التخصص المناسب، يكون طبيب الأسنان العام أفضل نقطة للبدء.",
     "routes": [
       "treatments/general-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Frequently asked questions",
@@ -3950,11 +3950,11 @@
   },
   {
     "source": "General dentists and specialists care for families across two locations.",
-    "arabic": "أطباء عامون واختصاصيون يعتنون بالعائلات في موقعين.",
+    "arabic": "يقدم أطباؤنا العامون والاختصاصيون الرعاية للعائلات في فرعين.",
     "routes": [
       "about.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Gentle visits, prevention and restorative care for children.",
@@ -4226,19 +4226,19 @@
   },
   {
     "source": "I agree that Silwadi may use these details to reply to my appointment enquiry.",
-    "arabic": "أوافق على استخدام سلوادي لهذه البيانات للرد على استفسار الموعد.",
+    "arabic": "أوافق على أن يستخدم مركز سلوادي هذه البيانات للرد على استفساري عن الموعد.",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "If you already know the doctor or treatment you are enquiring about, include that when you contact us. If you are unsure, tell reception what you need help with and they can guide your enquiry to the appropriate clinician.",
-    "arabic": "إذا كنت تعرف الطبيب أو العلاج الذي تستفسر عنه، اذكره عند التواصل معنا. وإذا لم تكن متأكداً، أخبر الاستقبال بما تحتاج إليه ليقود استفسارك إلى الطبيب المناسب.",
+    "arabic": "إذا كنت تعرف الطبيب أو العلاج المطلوب، اذكره عند التواصل معنا. وإذا لم تكن متأكداً، أخبر الاستقبال بما تحتاج إليه وسيوجهك الفريق إلى الطبيب المناسب.",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Immediate implant and computer-guided implant workflows in selected cases.",
@@ -4250,11 +4250,11 @@
   },
   {
     "source": "Implant assessment and treatment planning for suitable patients.",
-    "arabic": "تقييم الزراعة وتخطيط العلاج للمرضى المناسبين.",
+    "arabic": "تقييم زراعة الأسنان وتخطيط العلاج للحالات المناسبة.",
     "routes": [
       "doctors/dr-nachiket-shah.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Implant care can involve restorative and periodontal input depending on the case. These public clinician profiles list implant dentistry among their clinical interests.",
@@ -4266,11 +4266,11 @@
   },
   {
     "source": "Implant care, planned around the restoration.",
-    "arabic": "رعاية زراعة تُخطط بما يناسب التركيبة.",
+    "arabic": "رعاية زراعة الأسنان بخطة تراعي التركيبة النهائية.",
     "routes": [
       "treatments/dental-implants.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Implant dentistry",
@@ -4300,11 +4300,11 @@
   },
   {
     "source": "Implant planning and replacement teeth for suitable patients.",
-    "arabic": "تخطيط للزراعة وأسنان تعويضية للمرضى المناسبين.",
+    "arabic": "تخطيط زراعة الأسنان وتعويض الأسنان للحالات المناسبة.",
     "routes": [
       "treatments.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Implant position, restoration and treatment sequence are reviewed.",
@@ -4577,11 +4577,11 @@
   },
   {
     "source": "Learn about Dr. Munir Silwadi",
-    "arabic": "تعرّف إلى الدكتور منير السلوادي",
+    "arabic": "تعرّف إلى د. منير سلوادي",
     "routes": [
       "about.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Learn more about Cosmetics",
@@ -4859,7 +4859,7 @@
   },
   {
     "source": "Map showing Dr. Munir Silwadi Dental Centre at Al Raha Mall, Abu Dhabi",
-    "arabic": "خريطة توضح موقع مركز الدكتور منير السلوادي لطب الأسنان في الراحة مول بأبوظبي",
+    "arabic": "خريطة توضح موقع مركز الدكتور منير سلوادي لطب الأسنان في الراحة مول بأبوظبي",
     "routes": [
       "locations.html"
     ],
@@ -4867,7 +4867,7 @@
   },
   {
     "source": "Map showing Dr. Munir Silwadi Dental Centre at Bani Yas Tower, Abu Dhabi",
-    "arabic": "خريطة توضح موقع مركز الدكتور منير السلوادي لطب الأسنان في برج بني ياس بأبوظبي",
+    "arabic": "خريطة توضح موقع مركز الدكتور منير سلوادي لطب الأسنان في برج بني ياس بأبوظبي",
     "routes": [
       "locations.html",
       "contact.html"
@@ -5116,11 +5116,11 @@
   },
   {
     "source": "Not sure which dentist you need?",
-    "arabic": "لست متأكداً أي طبيب تحتاج؟",
+    "arabic": "لست متأكداً من الطبيب المناسب؟",
     "routes": [
       "index.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Not sure which service fits? Begin with the reason you are visiting and follow the link that feels closest. Your dentist will confirm the right next step.",
@@ -5148,11 +5148,11 @@
   },
   {
     "source": "Not sure who to book?",
-    "arabic": "لست متأكداً أي طبيب تحجز معه؟",
+    "arabic": "لا تعرف مع أي طبيب تحجز؟",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Notes / other queries",
@@ -5229,11 +5229,11 @@
   },
   {
     "source": "Open in Google Maps →",
-    "arabic": "افتح في خرائط Google ←",
+    "arabic": "فتح الموقع في خرائط Google",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Open navigation",
@@ -5279,11 +5279,11 @@
   },
   {
     "source": "Open WhatsApp →",
-    "arabic": "فتح واتساب ←",
+    "arabic": "افتح واتساب",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Opening hours",
@@ -5741,13 +5741,13 @@
   },
   {
     "source": "Plan",
-    "arabic": "خطط",
+    "arabic": "التخطيط",
     "routes": [
       "treatments/cosmetic-dentistry.html",
       "treatments/dental-implants.html",
       "treatments/orthodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Planning your treatment",
@@ -5759,11 +5759,11 @@
   },
   {
     "source": "Plans for missing, damaged or heavily worn teeth.",
-    "arabic": "خطط للأسنان المفقودة أو المتضررة أو شديدة التآكل.",
+    "arabic": "خطط علاج للأسنان المفقودة أو المتضررة أو شديدة التآكل.",
     "routes": [
       "treatments.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Please choose",
@@ -6017,11 +6017,11 @@
   },
   {
     "source": "Professional whitening options for suitable patients, planned after an examination to assess the teeth, existing restorations and the cause of discoloration.",
-    "arabic": "خيارات تبييض احترافية للمرضى المناسبين، تُخطط بعد فحص الأسنان والتركيبات الموجودة وسبب تغير اللون.",
+    "arabic": "خيارات تبييض احترافية للحالات المناسبة، تُحدد بعد فحص الأسنان والتركيبات الموجودة وسبب تغير اللون.",
     "routes": [
       "services.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Profile highlights",
@@ -6143,11 +6143,11 @@
   },
   {
     "source": "Provide general care or involve a specialist when needed.",
-    "arabic": "قدّم الرعاية العامة أو أشرك اختصاصياً عند الحاجة.",
+    "arabic": "تقديم الرعاية العامة وإشراك اختصاصي عند الحاجة.",
     "routes": [
       "treatments/general-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Qualifications & professional credentials",
@@ -6193,19 +6193,19 @@
   },
   {
     "source": "Read all reviews →",
-    "arabic": "اقرأ جميع التقييمات ←",
+    "arabic": "اقرأ جميع التقييمات",
     "routes": [
       "index.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Read reviews on Google Maps →",
-    "arabic": "اقرأ التقييمات على خرائط Google ←",
+    "arabic": "اقرأ التقييمات على خرائط Google",
     "routes": [
       "index.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Read Silwadi reviews on Google Maps",
@@ -6233,11 +6233,11 @@
   },
   {
     "source": "Rebuild a comfortable bite.",
-    "arabic": "استعد إطباقاً مريحاً.",
+    "arabic": "استعادة إطباق مريح.",
     "routes": [
       "treatments.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Recent public review highlights for the Bani Yas Tower location. Read the full reviews on Google Maps.",
@@ -6379,11 +6379,11 @@
   },
   {
     "source": "Restore",
-    "arabic": "عوّض",
+    "arabic": "الترميم",
     "routes": [
       "treatments/dental-implants.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Restore & replace teeth",
@@ -6429,11 +6429,11 @@
   },
   {
     "source": "Restore confidence",
-    "arabic": "استعد راحتك",
+    "arabic": "استعد ابتسامتك",
     "routes": [
       "services.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Retention is commonly part of orthodontic care. Your orthodontist will explain the retention plan that applies to your case.",
@@ -6445,11 +6445,11 @@
   },
   {
     "source": "Review",
-    "arabic": "راجع",
+    "arabic": "المراجعة",
     "routes": [
       "treatments/orthodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Review alignment, bite and records needed for diagnosis.",
@@ -6684,11 +6684,11 @@
   },
   {
     "source": "Send appointment request",
-    "arabic": "إرسال طلب موعد",
+    "arabic": "أرسل طلب الموعد",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Send your preferred date, contact number and a short note about what you need help with.",
@@ -6782,11 +6782,11 @@
   },
   {
     "source": "Share a few details and our appointments team will confirm availability with you.",
-    "arabic": "أدخل بعض التفاصيل وسيتواصل معك فريق المواعيد لتأكيد التوفر.",
+    "arabic": "أدخل بعض التفاصيل وسيتواصل معك فريق المواعيد لتأكيد الموعد المناسب.",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Shared a positive experience with professional cleaning and Dr. Lujain, noting the clinic was clean and the visit well organized.",
@@ -6915,7 +6915,7 @@
   },
   {
     "source": "Silwadi Dental Centre began serving patients in Abu Dhabi in 1980. Today, a multi-specialty, multidisciplinary team of general dentists and specialists works together across prosthodontics, implantology, orthodontics, endodontics and everyday dental care.",
-    "arabic": "بدأ مركز السلوادي لطب الأسنان خدمة المرضى في أبوظبي عام 1980. ويعمل اليوم فريق متعدد التخصصات من أطباء الأسنان العامين والاختصاصيين معاً في التركيبات والزراعة والتقويم وعلاج الجذور والرعاية اليومية.",
+    "arabic": "بدأ مركز سلوادي لطب الأسنان خدمة المرضى في أبوظبي عام 1980. ويعمل اليوم فريق متعدد التخصصات من أطباء الأسنان العامين والاختصاصيين معاً في التركيبات والزراعة والتقويم وعلاج الجذور والرعاية اليومية.",
     "routes": [
       "about.html"
     ],
@@ -6931,11 +6931,11 @@
   },
   {
     "source": "Silwadi Dental Centre opens in Abu Dhabi.",
-    "arabic": "افتتاح مركز السلوادي لطب الأسنان في أبوظبي.",
+    "arabic": "افتُتح مركز سلوادي لطب الأسنان في أبوظبي.",
     "routes": [
       "about.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Silwadi history",
@@ -7158,11 +7158,11 @@
   },
   {
     "source": "Specialist expertise. Personal care.",
-    "arabic": "خبرة تخصصية ورعاية شخصية.",
+    "arabic": "خبرة تخصصية. رعاية باهتمام.",
     "routes": [
       "index.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Specialist gum care for periodontal disease and the supporting tissues around the teeth, including non-surgical and surgical treatment when indicated.",
@@ -7295,11 +7295,11 @@
   },
   {
     "source": "Start with the concern that brought you here. Each option opens a focused guide or takes you to the related service on our main services page.",
-    "arabic": "ابدأ من السبب الذي دفعك إلى زيارة الموقع. يفتح كل خيار دليلاً مختصراً أو ينقلك إلى الخدمة ذات الصلة.",
+    "arabic": "ابدأ بالمشكلة التي دفعتك إلى طلب الرعاية. يوضح كل خيار الخطوة التالية أو ينقلك إلى الخدمة ذات الصلة.",
     "routes": [
       "treatments.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Start with the health of the teeth",
@@ -7396,11 +7396,11 @@
   },
   {
     "source": "Support every stage of a smile.",
-    "arabic": "دعم كل مرحلة من مراحل الابتسامة.",
+    "arabic": "رعاية تناسب كل مرحلة عمرية.",
     "routes": [
       "treatments.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Swelling or dental trauma",
@@ -7571,11 +7571,11 @@
   },
   {
     "source": "The right appliance depends on the bite, tooth position, age and treatment goals. Options may include fixed braces, clear aligners such as Invisalign in selected cases, and retainers after active treatment. Not every option is suitable for every patient.",
-    "arabic": "يعتمد الجهاز المناسب على الإطباق وموضع الأسنان والعمر وأهداف العلاج. وقد تشمل الخيارات التقويم الثابت أو الصفافات الشفافة مثل Invisalign في حالات مختارة والمثبتات بعد العلاج الفعال. ولا يناسب كل خيار جميع المرضى.",
+    "arabic": "يعتمد الجهاز المناسب على الإطباق وموضع الأسنان والعمر وأهداف العلاج. وقد تشمل الخيارات التقويم الثابت أو الصفافات الشفافة مثل Invisalign في حالات مختارة، إضافة إلى المثبتات بعد مرحلة العلاج النشط. ولا يناسب كل خيار جميع الحالات.",
     "routes": [
       "treatments/orthodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "The right interval depends on your oral health and risk factors. Your dentist can recommend a review schedule after examining you.",
@@ -7666,7 +7666,7 @@
   },
   {
     "source": "To our valued patients, please beware of false online offers promising free treatments at Silwadi Dental Centre.",
-    "arabic": "مرضانا الكرام، يرجى الحذر من العروض الإلكترونية المضللة التي تعد بعلاجات مجانية في مركز السلوادي لطب الأسنان.",
+    "arabic": "مرضانا الكرام، يرجى الحذر من العروض الإلكترونية المضللة التي تعد بعلاجات مجانية في مركز سلوادي لطب الأسنان.",
     "routes": [
       "contact.html"
     ],
@@ -7690,11 +7690,11 @@
   },
   {
     "source": "Treat or refer",
-    "arabic": "عالج أو أحِل",
+    "arabic": "العلاج أو الإحالة",
     "routes": [
       "treatments/general-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Treatment",
@@ -7929,11 +7929,11 @@
   },
   {
     "source": "View Dr. Munir’s profile →",
-    "arabic": "عرض ملف د. منير ←",
+    "arabic": "عرض ملف د. منير",
     "routes": [
       "treatments/dental-implants.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "View medical team",
@@ -7954,11 +7954,11 @@
   },
   {
     "source": "View the full dental team →",
-    "arabic": "عرض الفريق الطبي كاملاً ←",
+    "arabic": "عرض الفريق الطبي كاملاً",
     "routes": [
       "treatments/orthodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "View treatments",
