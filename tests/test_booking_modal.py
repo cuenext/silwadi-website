@@ -6,15 +6,18 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class BookingModalContract(unittest.TestCase):
     def test_booking_ctas_open_modal_without_losing_contact_fallback(self):
-        app = (ROOT / "app.js").read_text(encoding="utf-8")
-        self.assertIn('data-booking-modal', app)
-        self.assertIn('data-booking-modal-close', app)
-        self.assertIn('bookingDialog.showModal()', app)
-        self.assertIn('event.preventDefault()', app)
-        self.assertIn('contact.html#consultation-form', app)
+        modal = (ROOT / "booking-modal.js").read_text(encoding="utf-8")
+        routing = (ROOT / "bilingual-routing.js").read_text(encoding="utf-8")
+        self.assertIn('data-booking-modal', modal)
+        self.assertIn('data-booking-modal-close', modal)
+        self.assertIn('bookingDialog.showModal()', modal)
+        self.assertIn('event.preventDefault()', modal)
+        self.assertIn('contact.html#consultation-form', modal)
+        self.assertIn('booking-modal.js', routing)
+        self.assertIn('booking-modal.css', routing)
 
     def test_booking_modal_is_bilingual_and_contains_the_appointment_fields(self):
-        app = (ROOT / "app.js").read_text(encoding="utf-8")
+        modal = (ROOT / "booking-modal.js").read_text(encoding="utf-8")
         for token in [
             'Book your appointment',
             'احجز موعدك',
@@ -26,10 +29,10 @@ class BookingModalContract(unittest.TestCase):
             'أرسل طلب الموعد',
             'data-consultation-form',
         ]:
-            self.assertIn(token, app)
+            self.assertIn(token, modal)
 
     def test_modal_has_global_mobile_accessible_styling(self):
-        css = (ROOT / "styles.css").read_text(encoding="utf-8")
+        css = (ROOT / "booking-modal.css").read_text(encoding="utf-8")
         self.assertIn('.booking-modal{', css)
         self.assertIn('.booking-modal::backdrop', css)
         self.assertIn('.booking-modal__close', css)
