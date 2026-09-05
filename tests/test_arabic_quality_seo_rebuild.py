@@ -1,6 +1,8 @@
 from pathlib import Path
 import json
 import re
+import subprocess
+import sys
 import unittest
 import xml.etree.ElementTree as ET
 
@@ -128,6 +130,16 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
             self.assertRegex(lastmod.text or "", r"^\d{4}-\d{2}-\d{2}$")
             actual.add(loc.text)
         self.assertEqual(actual, expected)
+
+    def test_launch_audit_understands_current_bilingual_architecture(self):
+        result = subprocess.run(
+            [sys.executable, str(ROOT / "tools" / "seo_launch_audit.py")],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("SEO launch audit: 54 pages, 0 errors", result.stdout)
 
     def test_core_arabic_ui_phrases_are_professional_and_compact(self):
         layers = {}
