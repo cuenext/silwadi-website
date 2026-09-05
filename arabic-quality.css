@@ -63,3 +63,12 @@ html[dir="rtl"] input,html[dir="rtl"] textarea,html[dir="rtl"] select,.static-ar
 @media(max-width:360px){
   html[dir="rtl"] .premium-home-hero__trust strong,.static-arabic .premium-home-hero__trust strong{white-space:normal}
 }
+
+/* Mobile Arabic readability: prevent cramped headings and narrow two-column fact rows. */
+@media(max-width:760px){
+  html[dir="rtl"] h1,.static-arabic h1{line-height:1.16!important}
+  html[dir="rtl"] h2,.static-arabic h2{line-height:1.22!important}
+  html[dir="rtl"] .legacy-facts>div,.static-arabic .legacy-facts>div{grid-template-columns:1fr!important;gap:7px!important;align-items:start!important;padding-block:20px!important}
+  html[dir="rtl"] .legacy-facts strong,.static-arabic .legacy-facts strong{white-space:normal;line-height:1.35!important}
+  html[dir="rtl"] .legacy-facts span,.static-arabic .legacy-facts span{line-height:1.55!important}
+}
