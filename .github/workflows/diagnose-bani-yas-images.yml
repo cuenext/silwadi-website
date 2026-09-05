@@ -1,0 +1,49 @@
+name: Diagnose Bani Yas images
+
+on:
+  push:
+    paths:
+      - '.github/workflows/diagnose-bani-yas-images.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install WebP tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y webp
+      - name: Inspect and decode Bani Yas WebP files
+        shell: bash
+        run: |
+          set -uo pipefail
+          failed=0
+          mkdir -p /tmp/bani-decode
+          for f in assets/locations/bani-yas-*.webp; do
+            echo "===== $f ====="
+            file "$f"
+            stat -c 'size=%s bytes' "$f"
+            xxd -l 24 "$f"
+            if webpinfo "$f" >/tmp/webpinfo.txt 2>&1; then
+              cat /tmp/webpinfo.txt | head -40
+            else
+              echo 'webpinfo FAILED:'
+              cat /tmp/webpinfo.txt
+              failed=1
+            fi
+            out="/tmp/bani-decode/$(basename "${f%.webp}").png"
+            if dwebp "$f" -o "$out" >/tmp/dwebp.txt 2>&1; then
+              echo "dwebp OK -> $(file -b "$out")"
+            else
+              echo 'dwebp FAILED:'
+              cat /tmp/dwebp.txt
+              failed=1
+            fi
+          done
+          exit "$failed"
