@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/build-arabic-site.yml'
       - 'tools/build-arabic-site.mjs'
+      - 'tools/remove-appointment-notice.mjs'
       - 'tools/seo_launch_audit.py'
       - 'data/arabic-seo.json'
       - 'data/arabic-quality-overrides.json'
@@ -15,6 +16,8 @@ on:
       - 'arabic-quality.css'
       - 'arabic-static.js'
       - 'bilingual-routing.js'
+      - 'booking-modal.js'
+      - 'booking-modal.css'
       - '*.html'
       - '*.css'
       - 'doctors/*.html'
@@ -57,6 +60,9 @@ jobs:
 
       - name: Install HTML build dependency
         run: npm install --no-save --no-package-lock jsdom@24.1.3
+
+      - name: Remove obsolete appointment notice
+        run: node tools/remove-appointment-notice.mjs
 
       - name: Build static Arabic pages
         run: node tools/build-arabic-site.mjs
@@ -107,7 +113,8 @@ jobs:
         run: |
           git config user.name 'ADVA Site Automation'
           git config user.email 'actions@users.noreply.github.com'
-          git add ar/ data/arabic-audit.json data/arabic-audit-compact.tsv app.js home-reviews.css sitemap.xml \
+          git add ar/ data/arabic-audit.json data/arabic-audit-compact.tsv \
+            app.js bilingual-routing.js booking-modal.js booking-modal.css contact-pages.css home-reviews.css sitemap.xml \
             index.html about.html contact.html doctors.html locations.html services.html treatments.html \
             doctors/*.html treatments/*.html
           if git diff --cached --quiet; then
