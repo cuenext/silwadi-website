@@ -58,7 +58,7 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
         routing = (ROOT / "bilingual-routing.js").read_text(encoding="utf-8")
         self.assertIn("api.applyLanguage(next)", routing)
         self.assertIn("window.history.replaceState", routing)
-        self.assertIn("preserves the Google Reviews track", routing)
+        self.assertIn("Google Reviews track element and its current animation position", routing)
         self.assertNotIn("window.location.assign(`${target}", routing)
 
     def test_homepage_arabic_hero_and_trust_copy_are_clean_and_not_repeated(self):
@@ -97,8 +97,6 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
     def test_generated_arabic_ctas_do_not_embed_directional_arrow_text(self):
         for route in SEO:
             source = (ROOT / "ar" / route).read_text(encoding="utf-8")
-            # Decorative CSS/icons may exist, but Arabic visible text should not carry
-            # left/right arrow glyphs that fight RTL bidi ordering.
             body = source.split('<body', 1)[-1]
             visible_without_scripts = re.sub(r'<script[\s\S]*?</script>', '', body, flags=re.I)
             self.assertNotRegex(visible_without_scripts, r'[\u0600-\u06ff][^<]{0,80}[←→]', route)
