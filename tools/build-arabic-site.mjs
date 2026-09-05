@@ -10,7 +10,8 @@ const seo = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/arabic-seo.json'), 
 const overrides = Object.assign(
   {},
   JSON.parse(fs.readFileSync(path.join(ROOT, 'data/arabic-quality-overrides.json'), 'utf8')),
-  JSON.parse(fs.readFileSync(path.join(ROOT, 'data/arabic-quality-overrides-extra.json'), 'utf8'))
+  JSON.parse(fs.readFileSync(path.join(ROOT, 'data/arabic-quality-overrides-extra.json'), 'utf8')),
+  JSON.parse(fs.readFileSync(path.join(ROOT, 'data/arabic-quality-overrides-critical.json'), 'utf8'))
 );
 const routes = Object.keys(seo);
 const audit = new Map();
@@ -19,10 +20,19 @@ const normalize = value => String(value ?? '').replace(/\s+/g, ' ').trim();
 const englishUrl = route => route === 'index.html' ? 'https://silwadi.ae/' : `https://silwadi.ae/${route}`;
 const arabicUrl = route => route === 'index.html' ? 'https://silwadi.ae/ar/' : `https://silwadi.ae/ar/${route}`;
 
+function polishArabic(value) {
+  return String(value ?? '')
+    .replace(/السلوادي/g, 'سلوادي')
+    .replace(/\s*[←→]\s*$/u, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
 function translate(source, route) {
   const clean = normalize(source);
   if (!clean) return clean;
-  const translated = overrides[clean] || language.translate(clean, 'ar');
+  const raw = overrides[clean] || language.translate(clean, 'ar');
+  const translated = polishArabic(raw);
   const key = `${clean}\u0000${translated}`;
   if (!audit.has(key)) audit.set(key, { source: clean, arabic: translated, routes: [], override: Boolean(overrides[clean]) });
   const entry = audit.get(key);
@@ -67,6 +77,24 @@ function setAlternates(document, route) {
     link.href = href;
     document.head.appendChild(link);
   });
+}
+
+function addArabicPageSchema(document, route) {
+  document.querySelectorAll('script[data-arabic-page-schema]').forEach(node => node.remove());
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.setAttribute('data-arabic-page-schema', '');
+  script.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    '@id': `${arabicUrl(route)}#webpage`,
+    url: arabicUrl(route),
+    name: seo[route].title,
+    description: seo[route].description,
+    inLanguage: 'ar-AE',
+    isPartOf: { '@id': 'https://silwadi.ae/#website' }
+  });
+  document.head.appendChild(script);
 }
 
 function routeFromPathname(pathname) {
@@ -120,19 +148,43 @@ function translateDocument(document, route, window) {
   });
 }
 
-function condenseArabicHomepage(document) {
-  document.querySelectorAll('.premium-home-hero__trust li').forEach(item => {
-    item.querySelectorAll('br').forEach(br => br.replaceWith(' '));
-    const strong = item.querySelector('strong');
-    if (!strong) return;
-    const secondary = [...item.querySelectorAll('small,p,span')].filter(element => {
-      if (element.classList.contains('premium-home-hero__icon')) return false;
-      if (strong.contains(element)) return false;
-      const text = normalize(element.textContent);
-      return ['الحجز', 'الموقع', 'منذ عام 1980', 'Booking', 'Location', 'Since 1980'].includes(text);
-    });
-    secondary.forEach(element => element.remove());
+function removeDecorativeArrows(document) {
+  document.querySelectorAll('[aria-hidden="true"]').forEach(element => {
+    const text = normalize(element.textContent);
+    if (/^[←→]$/.test(text)) element.remove();
   });
+}
+
+function polishArabicStructure(document, route) {
+  removeDecorativeArrows(document);
+
+  if (route === 'index.html') {
+    const heroTitle = document.querySelector('#premiumHomeHeroTitle');
+    if (heroTitle) heroTitle.textContent = 'كيف يمكننا مساعدتك؟';
+
+    const trust = [...document.querySelectorAll('.premium-home-hero__trust strong')];
+    const trustCopy = [
+      'نخدم مرضانا منذ عام 1980',
+      'برج بني ياس والراحة مول',
+      'الحجز عبر الاستقبال'
+    ];
+    trust.forEach((element, index) => {
+      if (trustCopy[index]) element.textContent = trustCopy[index];
+    });
+  }
+
+  if (route === 'about.html') {
+    const storyHeading = document.querySelector('.about-story-copy h2');
+    if (storyHeading) storyHeading.textContent = 'اسم راسخ في طب الأسنان بأبوظبي.';
+    const timeline = [...document.querySelectorAll('.about-story-timeline__item span')];
+    if (timeline[0]) timeline[0].textContent = 'افتُتح مركز سلوادي لطب الأسنان في أبوظبي.';
+    if (timeline[1]) timeline[1].textContent = 'يقدم أطباؤنا العامون والاختصاصيون الرعاية للعائلات في فرعين.';
+  }
+
+  if (route === 'services.html') {
+    const servicesHeading = document.querySelector('.services-hero h1');
+    if (servicesHeading) servicesHeading.textContent = 'خدمات طب الأسنان لكل ابتسامة في أبوظبي.';
+  }
 }
 
 function makeArabicPage(source, route) {
@@ -153,6 +205,7 @@ function makeArabicPage(source, route) {
   canonical.rel = 'canonical';
   canonical.href = arabicUrl(route);
   setAlternates(document, route);
+  addArabicPageSchema(document, route);
 
   document.querySelectorAll('link[href]').forEach(element => {
     if (element.rel === 'alternate' || element.rel === 'canonical') return;
@@ -169,7 +222,7 @@ function makeArabicPage(source, route) {
   document.querySelectorAll('form[action]').forEach(element => element.setAttribute('action', rewriteUrl(element.getAttribute('action'), route, 'href')));
 
   translateDocument(document, route, dom.window);
-  if (route === 'index.html') condenseArabicHomepage(document);
+  polishArabicStructure(document, route);
 
   if (!document.querySelector('link[href="/arabic-quality.css"]')) {
     const link = document.createElement('link');
