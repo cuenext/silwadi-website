@@ -1,0 +1,127 @@
+name: Install Dr Nasr portrait
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/install-nasr-portrait.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Confirm regression test is red before implementation
+        id: red
+        continue-on-error: true
+        run: python -m unittest tests.test_nasr_portrait -v
+
+      - name: Require expected red state
+        run: |
+          if [ "${{ steps.red.outcome }}" != "failure" ]; then
+            echo "Expected the Nasr portrait contract to fail before installation."
+            exit 1
+          fi
+
+      - name: Reconstruct exact uploaded portrait
+        run: |
+          mkdir -p assets/doctors/optimized
+          cat data/nasr-portrait.part01 data/nasr-portrait.part02 data/nasr-portrait.part03 data/nasr-portrait.part04 data/nasr-portrait.part05 data/nasr-portrait.part06 data/nasr-portrait.part07 data/nasr-portrait.part08 data/nasr-portrait.part09 | base64 --decode > assets/doctors/optimized/dr-nasr-keshkiea.webp
+          echo "d6d8c3a04b08a01b022bcb42144c53cca2e83b38ead112a5f400815c27357c17  assets/doctors/optimized/dr-nasr-keshkiea.webp" | sha256sum -c -
+
+      - name: Replace Nasr placeholders and image metadata
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          image = 'dr-nasr-keshkiea.webp'
+          public = f'https://silwadi.ae/assets/doctors/optimized/{image}'
+
+          directory_path = Path('doctors.html')
+          directory = directory_path.read_text(encoding='utf-8')
+          card_match = re.search(r'(<article class="doctor-directory-card reveal"[^>]*data-name="Dr\. Nasr Keshkiea"[\s\S]*?</article>)', directory)
+          if not card_match:
+              raise SystemExit('Could not find Dr. Nasr card in doctors.html')
+          card = card_match.group(1)
+          replacement = (
+              '<div class="doctor-directory-card__photo">'
+              '<img src="assets/doctors/optimized/dr-nasr-keshkiea.webp?v=20260905-nasr" '
+              'alt="Dr. Nasr Keshkiea" width="600" height="600" loading="lazy" decoding="async">'
+              '</div>'
+          )
+          updated_card, count = re.subn(
+              r'<div class="doctor-directory-card__photo doctor-directory-card__photo--placeholder"[^>]*>[\s\S]*?</div>',
+              replacement,
+              card,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit(f'Expected one Nasr directory placeholder, replaced {count}')
+          directory = directory[:card_match.start()] + updated_card + directory[card_match.end():]
+          directory_path.write_text(directory, encoding='utf-8')
+
+          profile_path = Path('doctors/dr-nasr-keshkiea.html')
+          profile = profile_path.read_text(encoding='utf-8')
+          old_portrait = '<div class="consultant-portrait__frame doctor-profile-placeholder" role="img" aria-label="Dr. Nasr Keshkiea"><span aria-hidden="true">NK</span></div>'
+          new_portrait = (
+              '<div class="consultant-portrait__frame">'
+              '<img src="../assets/doctors/optimized/dr-nasr-keshkiea.webp?v=20260905-nasr" '
+              'alt="Dr. Nasr Keshkiea" width="720" height="720" decoding="async" fetchpriority="high">'
+              '</div>'
+          )
+          if old_portrait not in profile:
+              raise SystemExit('Could not find Dr. Nasr profile placeholder')
+          profile = profile.replace(old_portrait, new_portrait, 1)
+
+          old_og = '<meta property="og:image" content="https://silwadi.ae/assets/doctors/dr-moheb-silwadi.png">'
+          new_og = f'<meta property="og:image" content="{public}">'
+          if old_og not in profile:
+              raise SystemExit('Could not find Dr. Nasr old og:image')
+          profile = profile.replace(old_og, new_og, 1)
+
+          person_anchor = '"name":"Dr. Nasr Keshkiea","jobTitle":"General Dentist"'
+          person_with_image = f'"name":"Dr. Nasr Keshkiea","image":"{public}","jobTitle":"General Dentist"'
+          if person_anchor not in profile:
+              raise SystemExit('Could not find Dr. Nasr Person schema')
+          profile = profile.replace(person_anchor, person_with_image, 1)
+          profile_path.write_text(profile, encoding='utf-8')
+          PY
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Build Arabic pages
+        run: |
+          npm install --no-save --no-package-lock jsdom@24.1.3
+          node tools/build-arabic-site.mjs
+
+      - name: Verify portrait and bilingual site contracts
+        run: |
+          git diff --check
+          python -m unittest tests.test_nasr_portrait -v
+          python -m unittest tests.test_arabic_quality_seo_rebuild -v
+          python -m unittest tests.test_arabic_structured_data -v
+
+      - name: Remove temporary staging files and installer
+        run: |
+          rm -f data/nasr-portrait.part01 data/nasr-portrait.part02 data/nasr-portrait.part03 data/nasr-portrait.part04 data/nasr-portrait.part05 data/nasr-portrait.part06 data/nasr-portrait.part07 data/nasr-portrait.part08 data/nasr-portrait.part09
+          rm -f .github/workflows/install-nasr-portrait.yml
+
+      - name: Publish Dr Nasr portrait
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          git commit -m 'feat: add Dr Nasr portrait [skip arabic build]'
+          git push
