@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import re
 import unittest
+import xml.etree.ElementTree as ET
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -110,6 +111,23 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
         sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
         for route in SEO:
             self.assertIn(f"<loc>{arabic_url(route)}</loc>", sitemap, route)
+
+    def test_sitemap_has_complete_bilingual_pairs_and_lastmod(self):
+        root = ET.fromstring((ROOT / "sitemap.xml").read_text(encoding="utf-8"))
+        ns = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+        nodes = root.findall("sm:url", ns)
+        self.assertEqual(len(nodes), len(SEO) * 2)
+
+        expected = {english_url(route) for route in SEO} | {arabic_url(route) for route in SEO}
+        actual = set()
+        for node in nodes:
+            loc = node.find("sm:loc", ns)
+            lastmod = node.find("sm:lastmod", ns)
+            self.assertIsNotNone(loc)
+            self.assertIsNotNone(lastmod, loc.text if loc is not None else "missing URL")
+            self.assertRegex(lastmod.text or "", r"^\d{4}-\d{2}-\d{2}$")
+            actual.add(loc.text)
+        self.assertEqual(actual, expected)
 
     def test_core_arabic_ui_phrases_are_professional_and_compact(self):
         layers = {}
