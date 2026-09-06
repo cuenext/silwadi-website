@@ -1,0 +1,35 @@
+name: Homepage hero TDD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/home-hero-tdd.yml'
+
+jobs:
+  verify-red:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require new responsive Dr Munir hero
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          checks = {
+              'index.html': [
+                  'assets/munir-home-hero-20260906.webp',
+                  'assets/munir-home-hero-mobile-20260906.webp',
+                  'https://silwadi.ae/assets/munir-home-hero-20260906.webp',
+              ],
+              'ar/index.html': [
+                  '/assets/munir-home-hero-20260906.webp',
+                  '/assets/munir-home-hero-mobile-20260906.webp',
+                  'https://silwadi.ae/assets/munir-home-hero-20260906.webp',
+              ],
+          }
+          for filename, needles in checks.items():
+              text = Path(filename).read_text(encoding='utf-8')
+              for needle in needles:
+                  assert needle in text, f'{filename} missing {needle}'
+          PY
