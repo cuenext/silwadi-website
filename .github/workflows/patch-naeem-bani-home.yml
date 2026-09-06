@@ -1,0 +1,59 @@
+name: Patch Mr Naeem Bani Yas homepage image
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-naeem-bani-home.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Replace homepage location image in English and Arabic
+        shell: python
+        run: |
+          from pathlib import Path
+
+          replacements = {
+              Path('index.html'): (
+                  '<img class="location-card__photo" src="assets/locations/bani-yas-reception.webp" alt="Reception at Silwadi Dental Centre, Bani Yas Tower" width="800" height="533" loading="lazy" decoding="async">',
+                  '<img class="location-card__photo" src="assets/locations/bani-yas-naeem-featured.webp?v=20260906-naeem-1" alt="Treatment room at Silwadi Dental Centre, Bani Yas Tower with Abu Dhabi Corniche view" width="800" height="498" loading="lazy" decoding="async">'
+              ),
+              Path('ar/index.html'): (
+                  '<img class="location-card__photo" src="/assets/locations/bani-yas-reception.webp" alt="منطقة الاستقبال في مركز سلوادي لطب الأسنان، برج بني ياس" width="800" height="533" loading="lazy" decoding="async">',
+                  '<img class="location-card__photo" src="/assets/locations/bani-yas-naeem-featured.webp?v=20260906-naeem-1" alt="غرفة علاج في مركز سلوادي لطب الأسنان، برج بني ياس، بإطلالة على كورنيش أبوظبي" width="800" height="498" loading="lazy" decoding="async">'
+              ),
+          }
+
+          for path, (old, new) in replacements.items():
+              text = path.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected exactly 1 target, found {count}')
+              path.write_text(text.replace(old, new), encoding='utf-8')
+              print(f'Updated {path}')
+      - name: Verify scoped change
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'bani-yas-naeem-featured.webp?v=20260906-naeem-1' index.html
+          grep -q 'bani-yas-naeem-featured.webp?v=20260906-naeem-1' ar/index.html
+          grep -q 'bani-yas-reception.webp' locations.html
+          test -f assets/locations/bani-yas-naeem-featured.webp
+      - name: Commit patch and remove temporary workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'ADVA'
+          git config user.email 'abdullahavadoglu@gmail.com'
+          git rm .github/workflows/patch-naeem-bani-home.yml
+          git add index.html ar/index.html
+          git commit -m "fix: use Mr Naeem preferred Bani Yas homepage image [skip arabic build]"
+          git push
