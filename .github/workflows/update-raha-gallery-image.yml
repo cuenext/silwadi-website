@@ -1,0 +1,64 @@
+name: Update Al Raha gallery image
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-raha-gallery-image.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Replace requested Al Raha gallery photo
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          changes = {
+              'locations.html': (
+                  '<img src="assets/locations/al-raha-reception.webp?v=20260904-4" alt="Reception desk at Silwadi Dental Centre Al Raha Mall branch in Abu Dhabi" width="520" height="377" loading="lazy" decoding="async">',
+                  '<img src="assets/locations/al-raha-accessible-treatment-room.webp?v=20260906-raha-accessible-1" alt="Accessible dental treatment room at Silwadi Dental Centre Al Raha Mall branch in Abu Dhabi" width="800" height="600" loading="lazy" decoding="async">'
+              ),
+              'ar/locations.html': (
+                  '<img src="/assets/locations/al-raha-reception.webp?v=20260904-4" alt="منطقة الاستقبال في فرع مركز سلوادي بالراحة مول في أبوظبي" width="520" height="377" loading="lazy" decoding="async">',
+                  '<img src="/assets/locations/al-raha-accessible-treatment-room.webp?v=20260906-raha-accessible-1" alt="غرفة علاج أسنان مهيأة لسهولة الوصول في فرع مركز سلوادي بالراحة مول في أبوظبي" width="800" height="600" loading="lazy" decoding="async">'
+              ),
+          }
+
+          for filename, (old, new) in changes.items():
+              path = Path(filename)
+              text = path.read_text(encoding='utf-8')
+              assert old in text, f'Expected old Al Raha image markup not found in {filename}'
+              text = text.replace(old, new, 1)
+              path.write_text(text, encoding='utf-8')
+
+          for filename in changes:
+              text = Path(filename).read_text(encoding='utf-8')
+              assert 'al-raha-accessible-treatment-room.webp?v=20260906-raha-accessible-1' in text
+              assert 'al-raha-reception.webp?v=20260904-4' not in text
+          PY
+
+      - name: Validate location page regression tests
+        run: python -m unittest tests.test_locations_page -v
+
+      - name: Validate diff
+        run: git diff --check
+
+      - name: Commit requested image replacement
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add locations.html ar/locations.html
+          git diff --cached --stat
+          git commit -m 'fix: replace Al Raha reception gallery photo [skip arabic build]'
+          git push
