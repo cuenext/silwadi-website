@@ -1,0 +1,54 @@
+name: Repair Al Raha accessible room image
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/repair-raha-image-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild uploaded Al Raha image
+        run: |
+          cat .tmp/raha-upload/small-part1.txt .tmp/raha-upload/small-part2.txt .tmp/raha-upload/small-part3.txt > /tmp/raha.b64
+          base64 -d /tmp/raha.b64 > assets/locations/al-raha-accessible-treatment-room-v2.webp
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('assets/locations/al-raha-accessible-treatment-room-v2.webp')
+          data = p.read_bytes()
+          assert data[:4] == b'RIFF', data[:12]
+          assert data[8:12] == b'WEBP', data[:12]
+          declared = int.from_bytes(data[4:8], 'little') + 8
+          assert declared == len(data), (declared, len(data))
+          assert len(data) > 10000, len(data)
+          print('valid webp bytes:', len(data))
+          for page in ('locations.html', 'ar/locations.html'):
+              path = Path(page)
+              text = path.read_text(encoding='utf-8')
+              old = 'al-raha-accessible-treatment-room.webp?v=20260906-raha-accessible-1'
+              new = 'al-raha-accessible-treatment-room-v2.webp?v=20260906-raha-accessible-2'
+              assert old in text, f'{old} missing from {page}'
+              path.write_text(text.replace(old, new), encoding='utf-8')
+          PY
+          file assets/locations/al-raha-accessible-treatment-room-v2.webp
+          git diff --check
+
+      - name: Commit repaired image and references
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add assets/locations/al-raha-accessible-treatment-room-v2.webp locations.html ar/locations.html
+          git diff --cached --stat
+          git commit -m 'fix: repair Al Raha accessible room image [skip arabic build]'
+          git push
