@@ -102,6 +102,15 @@ const preferredDoctorOrder = [
   'Dr. Hani Hasbini',
   'Dr. Dana Awad',
   'Dr. Afnan Mashal',
+  'Dr. Lana Masoud',
+  'Dr. Fahed Abi Khalil',
+  'Dr. Kashmira Pawar Jayprakash',
+  'Dr. Krishnamurthy Balajee',
+  'Dr. Ehab Hassouneh Bassam A',
+  'Dr. Sara Ismail',
+  'Dr. Nachiket Shah',
+  'Dr. Nasr Keshkiea',
+  'Dr. Moammar Mohamed Rifai',
 ];
 const doctorGrid = document.querySelector('.doctor-directory-grid');
 if (doctorGrid && doctorCards.length) {
