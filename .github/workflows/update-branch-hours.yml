@@ -1,0 +1,110 @@
+name: Update branch opening hours
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-branch-hours.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify current site before change
+        shell: bash
+        run: |
+          test -f locations.html
+          test -f ar/locations.html
+          grep -q 'footer-opening-hours' index.html
+          grep -q 'id="al-raha"' locations.html
+          grep -q 'id="al-raha"' ar/locations.html
+
+      - name: Apply branch-specific opening hours
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          html_files = list(root.rglob('*.html'))
+
+          footer_en = '''<div class="footer-opening-hours"><h3>Opening hours</h3><span>Bani Yas Tower (Corniche)</span><strong>Sun–Wed: 09:00 AM to 09:00 PM</strong><strong>Thu &amp; Sat: 09:00 AM to 06:00 PM</strong><span class="footer-opening-hours__closed">Friday: Closed</span><span>Al Raha Mall</span><strong>Sat–Thu: 10:00 AM to 07:00 PM</strong><span class="footer-opening-hours__closed">Friday: Closed</span></div>'''
+          footer_ar = '''<div class="footer-opening-hours"><h3>ساعات العمل</h3><span>برج بني ياس (الكورنيش)</span><strong>الأحد–الأربعاء: 09:00 ص إلى 09:00 م</strong><strong>الخميس والسبت: 09:00 ص إلى 06:00 م</strong><span class="footer-opening-hours__closed">الجمعة: مغلق</span><span>الراحة مول</span><strong>السبت–الخميس: 10:00 ص إلى 07:00 م</strong><span class="footer-opening-hours__closed">الجمعة: مغلق</span></div>'''
+
+          footer_count = 0
+          for p in html_files:
+              text = p.read_text(encoding='utf-8')
+              if 'footer-opening-hours' not in text:
+                  continue
+              is_ar = p.parts and p.parts[0] == 'ar'
+              replacement = footer_ar if is_ar else footer_en
+              new, n = re.subn(r'<div class="footer-opening-hours">.*?</div>', replacement, text, count=1, flags=re.S)
+              if n:
+                  p.write_text(new, encoding='utf-8')
+                  footer_count += 1
+
+          def add_raha_hours(path, arabic=False):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              if arabic:
+                  hours_html = '<div><dt>ساعات العمل</dt><dd>السبت–الخميس 10:00 ص–07:00 م · الجمعة مغلق</dd></div>'
+              else:
+                  hours_html = '<div><dt>Opening hours</dt><dd>Saturday–Thursday 10:00 AM–7:00 PM · Friday closed</dd></div>'
+
+              pattern = r'(<section class="location-branch location-branch--raha" id="al-raha">.*?<dl class="location-facts">)(.*?)(</dl>)'
+              m = re.search(pattern, text, flags=re.S)
+              if not m:
+                  raise SystemExit(f'Could not locate Al Raha facts in {path}')
+              body = m.group(2)
+              if ('Saturday–Thursday 10:00 AM' not in body and 'السبت–الخميس 10:00' not in body):
+                  body += hours_html
+                  text = text[:m.start()] + m.group(1) + body + m.group(3) + text[m.end():]
+
+              # Add machine-readable Al Raha hours to structured data.
+              if '"@id":"https://silwadi.ae/#dentist-al-raha"' in text and '"opens":"10:00"' not in text[text.find('"@id":"https://silwadi.ae/#dentist-al-raha"'):]:
+                  schema_pattern = r'("@id":"https://silwadi\.ae/#dentist-al-raha".*?"areaServed":\{"@type":"City","name":"Abu Dhabi"\})(\})'
+                  spec = ',"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["https://schema.org/Saturday","https://schema.org/Sunday","https://schema.org/Monday","https://schema.org/Tuesday","https://schema.org/Wednesday","https://schema.org/Thursday"],"opens":"10:00","closes":"19:00"}]'
+                  text, n = re.subn(schema_pattern, lambda mm: mm.group(1) + spec + mm.group(2), text, count=1, flags=re.S)
+                  if n != 1:
+                      raise SystemExit(f'Could not update Al Raha schema in {path}')
+
+              p.write_text(text, encoding='utf-8')
+
+          add_raha_hours('locations.html', arabic=False)
+          add_raha_hours('ar/locations.html', arabic=True)
+
+          if footer_count < 2:
+              raise SystemExit(f'Expected multiple footers; updated only {footer_count}')
+          print(f'Updated {footer_count} site footers and both location pages.')
+          PY
+
+      - name: Verify requested hours everywhere
+        shell: bash
+        run: |
+          grep -q 'Bani Yas Tower (Corniche)' index.html
+          grep -q 'Sat–Thu: 10:00 AM to 07:00 PM' index.html
+          grep -q 'Saturday–Thursday 10:00 AM–7:00 PM · Friday closed' locations.html
+          grep -q 'السبت–الخميس 10:00 ص–07:00 م · الجمعة مغلق' ar/locations.html
+          grep -q '"opens":"10:00","closes":"19:00"' locations.html
+          grep -q '"opens":"10:00","closes":"19:00"' ar/locations.html
+          if grep -R --include='*.html' -n '<h3>Opening hours</h3><span>Sunday - Wednesday</span>' .; then
+            echo 'Old unlabeled footer hours still remain.' >&2
+            exit 1
+          fi
+
+      - name: Commit changes and remove temporary workflow
+        shell: bash
+        run: |
+          git config user.name 'ADVA'
+          git config user.email 'abdullahavadoglu@gmail.com'
+          git rm .github/workflows/update-branch-hours.yml
+          git add '*.html' 'ar/*.html' 'doctors/*.html' 'ar/doctors/*.html' 'treatments/*.html' 'ar/treatments/*.html' 2>/dev/null || true
+          git add -u
+          git commit -m 'fix: clarify branch opening hours [skip arabic build]'
+          git push
