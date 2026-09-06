@@ -1,0 +1,54 @@
+name: Arabic homepage quality regression
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Arabic homepage copy and dynamic translations
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          ar = Path('ar/index.html').read_text(encoding='utf-8')
+          lang = Path('language.js').read_text(encoding='utf-8')
+
+          # Homepage shortcut copy should read naturally in Arabic.
+          assert '<strong>استكشف الخدمات</strong><em>استعرض خدماتنا العلاجية</em>' in ar
+          assert '<strong>التأمين</strong><em>استفسر عن التغطية التأمينية</em>' in ar
+          assert '<strong>الفروع</strong><em>اعثر على أقرب فرع</em>' in ar
+
+          # Story copy should be natural Arabic, not a literal translation.
+          assert 'نخدم <span class="nowrap-place">مرضى أبوظبي</span> منذ عام 1980' in ar
+          assert 'منذ أكثر من أربعة عقود، يحرص مركز سلوادي لطب الأسنان على تقديم رعاية تضع المريض واحتياجاته في المقام الأول، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.' in ar
+
+          # Dynamic language switching must translate the newer homepage service copy too.
+          expected = {
+            "'Find the right care': 'استعرض خدماتنا العلاجية'",
+            "'Insurance accepted': 'استفسر عن التغطية التأمينية'",
+            "'Visit the centre': 'اعثر على أقرب فرع'",
+            "'Serving Abu Dhabi since 1980.': 'نخدم مرضى أبوظبي منذ عام 1980.'",
+            "'For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.': 'منذ أكثر من أربعة عقود، يحرص مركز سلوادي لطب الأسنان على تقديم رعاية تضع المريض واحتياجاته في المقام الأول، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.'",
+            "'Cosmetic Dentistry & Teeth Whitening': 'تجميل الأسنان وتبييض الأسنان'",
+            "'Specialist restorative care for repairing or replacing teeth with crowns, bridges, veneers, dentures and other prosthetic solutions.': 'رعاية تخصصية لترميم الأسنان أو تعويضها بالتيجان والجسور والقشور والأطقم وغيرها من الحلول التعويضية.'",
+            "'Dental implants replace missing tooth roots and can support crowns, bridges or dentures after clinical assessment and treatment planning.': 'تعوّض زراعة الأسنان جذور الأسنان المفقودة ويمكن أن تدعم التيجان أو الجسور أو الأطقم بعد التقييم والتخطيط العلاجي.'",
+            "'Aesthetic dental care including Hollywood Smile planning, veneers, smile design and professional teeth whitening after assessment.': 'رعاية تجميلية تشمل هوليوود سمايل والقشور وتصميم الابتسامة وتبييض الأسنان الاحترافي بعد التقييم.'",
+          }
+          missing = [x for x in expected if x not in lang]
+          assert not missing, 'Missing/incorrect Arabic mappings:\n' + '\n'.join(missing)
+
+          # Static Arabic treatment cards must not leak these English strings.
+          leaked = [
+            'Specialist restorative care for repairing or replacing teeth',
+            'Dental implants replace missing tooth roots',
+            'Specialist care for braces, aligners, tooth alignment and bite correction.',
+            'Aesthetic dental care including Hollywood Smile planning',
+            'Routine examinations, preventive planning and care that supports ongoing oral health.',
+            'Specialist care for the gums and supporting tissues around the teeth.',
+            '<h3>Cosmetic Dentistry &amp; Teeth Whitening</h3>',
+          ]
+          offenders = [x for x in leaked if x in ar]
+          assert not offenders, 'English treatment copy leaked into Arabic homepage:\n' + '\n'.join(offenders)
+          PY
