@@ -1,0 +1,40 @@
+name: Bust Bani Yas image cache
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/bust-naeem-cache.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Add cache version to featured image
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          old = 'assets/locations/bani-yas-naeem-featured.webp'
+          new = 'assets/locations/bani-yas-naeem-featured.webp?v=20260906-2'
+          for name in ('index.html', 'ar/index.html'):
+              p = Path(name)
+              text = p.read_text()
+              if old not in text:
+                  raise SystemExit(f'{old} not found in {name}')
+              p.write_text(text.replace(old, new))
+          PY
+      - name: Commit and clean workflow
+        run: |
+          rm -f .github/workflows/bust-naeem-cache.yml
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add index.html ar/index.html
+          git add -u -- .github/workflows/bust-naeem-cache.yml
+          git commit -m "fix: bust cache for Bani Yas homepage image"
+          git push
