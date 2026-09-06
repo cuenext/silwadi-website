@@ -67,3 +67,5 @@ jobs:
           git diff --cached --stat
           git commit -m 'fix: replace Al Raha reception gallery photo [skip arabic build]'
           git push
+
+# rerun after replacing the uploaded image asset with a valid WebP
