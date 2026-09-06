@@ -1,0 +1,68 @@
+name: Apply literal doctor swaps
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-literal-doctor-swaps.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Swap the exact requested doctor card slots
+        run: |
+          python3 <<'PY'
+          import re
+          from pathlib import Path
+
+          expected = [
+              'Dr. Munir Silwadi',
+              'Dr. Moheb Silwadi',
+              'Dr. Ahmed El Shehri',
+              'Dr. Hani Hasbini',
+              'Dr. Dana Awad',
+              'Dr. Afnan Mashal',
+              'Dr. Lana Masoud',
+              'Dr. Fahed Abi Khalil',
+              'Dr. Kashmira Pawar Jayprakash',
+              'Dr. Krishnamurthy Balajee',
+              'Dr. Ehab Hassouneh Bassam A',
+              'Dr. Sara Ismail',
+              'Dr. Nachiket Shah',
+              'Dr. Nasr Keshkiea',
+              'Dr. Moammar Mohamed Rifai',
+          ]
+
+          def reorder_page(path, script_prefix):
+              p = Path(path)
+              html = p.read_text(encoding='utf-8')
+              m = re.search(r'(<div class="doctor-directory-grid">)(.*?)(</div><p class="directory-empty")', html, re.S)
+              assert m, f'doctor grid not found in {path}'
+              cards = re.findall(r'(<article class="doctor-directory-card reveal".*?</article>)', m.group(2), re.S)
+              assert len(cards) == 15, f'expected 15 cards in {path}, found {len(cards)}'
+              by_name = {}
+              for card in cards:
+                  nm = re.search(r'data-name="([^"]+)"', card)
+                  assert nm, f'card without data-name in {path}'
+                  by_name[nm.group(1)] = card
+              assert set(by_name) == set(expected), f'doctor set mismatch in {path}'
+              ordered = ''.join(by_name[name] for name in expected)
+              html = html[:m.start(2)] + ordered + html[m.end(2):]
+              html = html.replace(f'<script src="{script_prefix}app.js"></script>', f'<script src="{script_prefix}app.js?v=20260906-doctor-slots-1"></script>')
+              html = re.sub(rf'<script src="{re.escape(script_prefix)}app\.js\?v=[^"]+"></script>', f'<script src="{script_prefix}app.js?v=20260906-doctor-slots-1"></script>', html)
+              p.write_text(html, encoding='utf-8')
+
+          reorder_page('doctors.html', '')
+          reorder_page('ar/doctors.html', '/')
+          PY
+
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add doctors.html ar/doctors.html
+          git commit -m "fix: swap Lana with Ehab and Sara with Moammar [skip arabic build]"
+          git push
