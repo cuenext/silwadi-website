@@ -9,6 +9,7 @@ on:
       - 'ar/doctors.html'
       - '.github/workflows/doctor-order-regression.yml'
 
+# Locks the client-requested rendered order used by both English and Arabic directories.
 jobs:
   verify-doctor-order:
     runs-on: ubuntu-latest
