@@ -26,7 +26,7 @@ ar = replace_idempotent(
 )
 ar = replace_idempotent(
     ar,
-    '<strong>الفروع</strong><em>زر المركز</em>',
+    '<strong>الفروع</strong><em>زيارة المركز</em>',
     '<strong>الفروع</strong><em>ابحث عن أقرب فرع</em>',
     "locations shortcut",
 )
