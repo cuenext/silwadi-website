@@ -1,0 +1,51 @@
+name: Final Al Raha image fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/raha-image-final-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Switch Al Raha image reference to clean asset
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          refs = [
+              ('locations.html', 'al-raha-accessible-treatment-room.webp?v=20260906-raha-accessible-1', 'al-raha-accessible-treatment-room-final.webp?v=20260906-raha-final-1'),
+              ('ar/locations.html', 'al-raha-accessible-treatment-room.webp?v=20260906-raha-accessible-1', 'al-raha-accessible-treatment-room-final.webp?v=20260906-raha-final-1'),
+          ]
+          for fn, old, new in refs:
+              p = Path(fn)
+              s = p.read_text(encoding='utf-8')
+              assert old in s, f'{old} not found in {fn}'
+              p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Verify clean WebP decodes fully
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y webp >/dev/null
+          dwebp assets/locations/al-raha-accessible-treatment-room-final.webp -o /tmp/raha-final.png
+          test -s /tmp/raha-final.png
+          file assets/locations/al-raha-accessible-treatment-room-final.webp
+          git diff --check
+
+      - name: Commit fix and remove one-time workflow
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add locations.html ar/locations.html assets/locations/al-raha-accessible-treatment-room-final.webp
+          git rm .github/workflows/raha-image-final-fix.yml
+          git commit -m 'fix: replace corrupted Al Raha room image with verified asset [skip arabic build]'
+          git push
