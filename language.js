@@ -145,7 +145,7 @@
     'Now open': 'مفتوح الآن',
     'Get Directions': 'عرض الاتجاهات',
     'Ask for directions': 'اطلب الاتجاهات',
-    'Visit the centre': 'زر المركز',
+    'Visit the centre': 'ابحث عن أقرب فرع',
     'Advanced dentistry.': 'طب أسنان متقدم.',
     'Established trust.': 'ثقة راسخة.',
     'Dental care in Abu Dhabi since 1980, with general dentists and specialists working together in one established centre.': 'رعاية أسنان في أبوظبي منذ عام 1980، يقدمها أطباء عامون واختصاصيون يعملون معاً ضمن مركز عريق.',
@@ -159,14 +159,14 @@
     '15 dentists & specialists': '15 طبيباً واختصاصياً',
     '15 dentists & specialists across two Abu Dhabi locations.': '15 طبيباً واختصاصياً في فرعين بأبوظبي.',
     'Explore Services': 'استكشف الخدمات',
-    'Find the right care': 'اعثر على الرعاية المناسبة',
+    'Find the right care': 'استعرض خدماتنا العلاجية',
     'Insurance': 'التأمين',
-    'Insurance accepted': 'نقبل التأمين',
+    'Insurance accepted': 'استفسر عن التغطية التأمينية',
     'Dental services at Silwadi.': 'خدمات طب الأسنان في سلوادي.',
     'Choose a treatment area, or contact us if you are not sure where to start.': 'اختر مجال العلاج، أو تواصل معنا إذا لم تكن متأكداً من أين تبدأ.',
     'Our story': 'قصتنا',
-    'Serving Abu Dhabi since 1980.': 'نخدم أبوظبي منذ عام 1980.',
-    'For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.': 'على مدى أكثر من أربعة عقود، ركّز مركز سلوادي لطب الأسنان على رعاية تتمحور حول المريض، وعلاج مخصص، وراحة المراجع، والتوعية الصحية، والتواصل الواضح.',
+    'Serving Abu Dhabi since 1980.': 'نخدم مرضى أبوظبي منذ عام 1980.',
+    'For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.': 'منذ أكثر من أربعة عقود، يحرص مركز سلوادي لطب الأسنان على تقديم رعاية تضع المريض واحتياجاته في المقام الأول، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.',
     'Learn more about the centre': 'اعرف المزيد عن المركز',
     'Specialist expertise. Personal care.': 'خبرة تخصصية ورعاية شخصية.',
     'Meet some of our dentists and specialists, or browse the full team by specialty.': 'تعرّف إلى عدد من أطبائنا واختصاصيينا، أو تصفّح الفريق كاملاً حسب التخصص.',
@@ -959,6 +959,13 @@
     "Care that feels considered.": "رعاية تُقدّم باهتمام.",
     "A familiar name in Abu Dhabi dentistry.": "اسم يعرفه أهل أبوظبي في طب الأسنان.",
     "People of Determination": "أصحاب الهمم"
+  });
+
+  Object.assign(arabic, {
+    'Cosmetic Dentistry & Teeth Whitening': 'تجميل الأسنان وتبييض الأسنان',
+    'Specialist restorative care for repairing or replacing teeth with crowns, bridges, veneers, dentures and other prosthetic solutions.': 'رعاية تخصصية لترميم الأسنان أو تعويضها بالتيجان والجسور والقشور والأطقم وغيرها من الحلول التعويضية.',
+    'Dental implants replace missing tooth roots and can support crowns, bridges or dentures after clinical assessment and treatment planning.': 'تعوّض زراعة الأسنان جذور الأسنان المفقودة ويمكن أن تدعم التيجان أو الجسور أو الأطقم بعد التقييم والتخطيط العلاجي.',
+    'Aesthetic dental care including Hollywood Smile planning, veneers, smile design and professional teeth whitening after assessment.': 'رعاية تجميلية تشمل هوليوود سمايل والقشور وتصميم الابتسامة وتبييض الأسنان الاحترافي بعد التقييم.'
   });
 
   Object.assign(arabic, {
