@@ -1,0 +1,156 @@
+name: Update specialist doctor titles
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-specialist-titles.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify current titles need updating
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          checks = {
+              'index.html': [
+                  '<h3>Dr. Fahed Abi Khalil</h3><p>Periodontist &amp; Implantologist</p>',
+                  '<h3>Dr. Ahmed El Shehri</h3><p>Endodontist</p>',
+              ],
+              'doctors.html': [
+                  '<p class="doctor-directory-card__specialty">Endodontist</p>',
+                  '<p class="doctor-directory-card__specialty">Periodontist &amp; Implantologist</p>',
+                  '<p class="doctor-directory-card__specialty">Orthodontist</p>',
+                  '<p class="doctor-directory-card__specialty">Pediatric Dentist</p>',
+              ],
+          }
+          for path, needles in checks.items():
+              text = Path(path).read_text(encoding='utf-8')
+              for needle in needles:
+                  if needle not in text:
+                      raise SystemExit(f'Expected pre-update title not found in {path}: {needle}')
+          print('Pre-update checks passed: requested specialist prefixes are not yet applied everywhere.')
+          PY
+
+      - name: Apply specialist titles
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          def write(path, text):
+              Path(path).write_text(text, encoding='utf-8')
+
+          # Homepage featured doctors.
+          p = Path('index.html')
+          text = p.read_text(encoding='utf-8')
+          text = text.replace(
+              '<h3>Dr. Fahed Abi Khalil</h3><p>Periodontist &amp; Implantologist</p>',
+              '<h3>Dr. Fahed Abi Khalil</h3><p>Specialist Periodontist &amp; Implantologist</p>'
+          )
+          text = text.replace(
+              '<h3>Dr. Ahmed El Shehri</h3><p>Endodontist</p>',
+              '<h3>Dr. Ahmed El Shehri</h3><p>Specialist Endodontist</p>'
+          )
+          write(p, text)
+
+          # Main doctor directory cards.
+          p = Path('doctors.html')
+          text = p.read_text(encoding='utf-8')
+          pairs = [
+              ('<p class="doctor-directory-card__specialty">Endodontist</p>', '<p class="doctor-directory-card__specialty">Specialist Endodontist</p>'),
+              ('<p class="doctor-directory-card__specialty">Periodontist &amp; Implantologist</p>', '<p class="doctor-directory-card__specialty">Specialist Periodontist &amp; Implantologist</p>'),
+              ('<p class="doctor-directory-card__specialty">Orthodontist</p>', '<p class="doctor-directory-card__specialty">Specialist Orthodontist</p>'),
+              ('<p class="doctor-directory-card__specialty">Pediatric Dentist</p>', '<p class="doctor-directory-card__specialty">Specialist Pediatric Dentist</p>'),
+          ]
+          for old, new in pairs:
+              text = text.replace(old, new)
+          write(p, text)
+
+          # Individual English doctor profiles: visible title, SEO metadata and schema jobTitle.
+          profiles = {
+              'doctors/dr-ahmed-el-shehri.html': ('Endodontist', 'Specialist Endodontist'),
+              'doctors/dr-lana-masoud.html': ('Endodontist', 'Specialist Endodontist'),
+              'doctors/dr-fahed-khalil.html': ('Periodontist & Implantologist', 'Specialist Periodontist & Implantologist'),
+              'doctors/dr-nachiket-shah.html': ('Periodontist & Implantologist', 'Specialist Periodontist & Implantologist'),
+              'doctors/dr-kashmira-pawar-jayprakash.html': ('Pediatric Dentist', 'Specialist Pediatric Dentist'),
+              'doctors/dr-krishnamurthy-katta-balajee.html': ('Orthodontist', 'Specialist Orthodontist'),
+              'doctors/dr-moammar-rifai.html': ('Orthodontist', 'Specialist Orthodontist'),
+          }
+
+          for path, (old, new) in profiles.items():
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              # Handle both literal ampersands and HTML entities, and avoid double-prefixing.
+              if '&' in old:
+                  old_entity = old.replace('&', '&amp;')
+                  new_entity = new.replace('&', '&amp;')
+                  text = re.sub(r'(?<!Specialist )' + re.escape(old_entity), new_entity, text)
+              text = re.sub(r'(?<!Specialist )' + re.escape(old), new, text)
+              write(p, text)
+          PY
+
+      - name: Verify requested titles everywhere
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          expected = {
+              'doctors/dr-ahmed-el-shehri.html': 'Specialist Endodontist',
+              'doctors/dr-lana-masoud.html': 'Specialist Endodontist',
+              'doctors/dr-fahed-khalil.html': 'Specialist Periodontist',
+              'doctors/dr-nachiket-shah.html': 'Specialist Periodontist',
+              'doctors/dr-kashmira-pawar-jayprakash.html': 'Specialist Pediatric Dentist',
+              'doctors/dr-krishnamurthy-katta-balajee.html': 'Specialist Orthodontist',
+              'doctors/dr-moammar-rifai.html': 'Specialist Orthodontist',
+          }
+          for path, title in expected.items():
+              text = Path(path).read_text(encoding='utf-8')
+              if title not in text:
+                  raise SystemExit(f'Missing {title} in {path}')
+
+          directory = Path('doctors.html').read_text(encoding='utf-8')
+          checks = {
+              'Specialist Endodontist': 2,
+              'Specialist Periodontist &amp; Implantologist': 2,
+              'Specialist Orthodontist': 2,
+              'Specialist Pediatric Dentist': 1,
+          }
+          for title, minimum in checks.items():
+              count = directory.count(title)
+              if count < minimum:
+                  raise SystemExit(f'{title}: expected at least {minimum}, got {count}')
+
+          home = Path('index.html').read_text(encoding='utf-8')
+          for title in ('Specialist Endodontist', 'Specialist Periodontist &amp; Implantologist'):
+              if title not in home:
+                  raise SystemExit(f'Homepage missing {title}')
+
+          # Arabic already carries the correct specialist-level wording; confirm it remains intact.
+          ar = Path('ar/doctors.html').read_text(encoding='utf-8')
+          for title in ('اختصاصي علاج جذور الأسنان', 'اختصاصي أمراض اللثة وزراعة الأسنان', 'اختصاصي تقويم أسنان', 'اختصاصي طب أسنان الأطفال'):
+              if title not in ar:
+                  raise SystemExit(f'Arabic specialist wording missing: {title}')
+
+          print('All requested specialist titles verified.')
+          PY
+
+      - name: Commit changes and remove temporary workflow
+        run: |
+          rm -f .github/workflows/update-specialist-titles.yml
+          git config user.name 'ADVA'
+          git config user.email 'abdullahavadoglu@gmail.com'
+          git add index.html doctors.html doctors/*.html
+          git add -u -- .github/workflows/update-specialist-titles.yml
+          git diff --check
+          git commit -m 'fix: update specialist doctor titles [skip arabic build]'
+          git push
