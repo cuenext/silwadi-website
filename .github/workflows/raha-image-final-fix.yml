@@ -35,7 +35,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          old = 'al-raha-accessible-treatment-room.webp?v=20260906-raha-accessible-1'
+          old = 'al-raha-accessible-treatment-room-v2.webp?v=20260906-raha-accessible-2'
           new = 'al-raha-accessible-treatment-room-final.webp?v=20260906-raha-final-1'
           for fn in ('locations.html', 'ar/locations.html'):
               p = Path(fn)
