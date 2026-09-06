@@ -1,0 +1,48 @@
+name: Doctor order TDD
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/doctor-order-tdd.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  verify-red:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assert requested doctor order (expected to fail before implementation)
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          expected_en = [
+              'Dr. Afnan Mashal',
+              'Dr. Moheb Silwadi',
+              'Dr. Lana Masoud',
+              'Dr. Moammar Mohamed Rifai',
+              'Dr. Nasr Keshkiea',
+              'Dr. Dana Awad',
+              'Dr. Munir Silwadi',
+              'Dr. Ahmed El Shehri',
+              'Dr. Fahed Abi Khalil',
+              'Dr. Sara Ismail',
+              'Dr. Hani Hasbini',
+              'Dr. Krishnamurthy Balajee',
+              'Dr. Kashmira Pawar Jayprakash',
+              'Dr. Nachiket Shah',
+              'Dr. Ehab Hassouneh Bassam A',
+          ]
+
+          for filename in ('doctors.html', 'ar/doctors.html'):
+              text = Path(filename).read_text(encoding='utf-8')
+              names = re.findall(r'<article class="doctor-directory-card reveal"[^>]*data-name="([^"]+)"', text)
+              if filename.startswith('ar/'):
+                  # Arabic page keeps English data-name values for search/card identity.
+                  pass
+              assert names == expected_en, f'{filename} order mismatch:\n{names}'
+          PY
