@@ -1,0 +1,52 @@
+name: Homepage Arabic and trust links regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'ar/**.html'
+      - 'language.js'
+      - '.github/workflows/homepage-arabic-links-regression.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Arabic wording and homepage trust links
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          language = Path('language.js').read_text(encoding='utf-8')
+          en = Path('index.html').read_text(encoding='utf-8')
+          ar = Path('ar/index.html').read_text(encoding='utf-8')
+
+          # Never describe a dental team/staff/location with the awkward literal "سريري" wording.
+          banned = ['فريق سريري', 'الفريق السريري', 'الطاقم السريري', 'الموقع السريري']
+          offenders = []
+          for path in [Path('language.js'), *Path('ar').rglob('*.html')]:
+              text = path.read_text(encoding='utf-8')
+              for phrase in banned:
+                  if phrase in text:
+                      offenders.append(f'{path}: {phrase}')
+          assert not offenders, 'Awkward Arabic clinical-team wording remains:\n' + '\n'.join(offenders)
+
+          assert "'One established clinical team.': 'فريق طبي متكامل بخبرة راسخة.'" in language
+          assert 'فريق طبي متكامل بخبرة راسخة.' in ar
+
+          # First trust item links to About; second links to Locations; reception-led booking is gone.
+          assert re.search(r'<li>\s*<a[^>]+href="about\.html"[^>]*>.*?Serving patients.*?since 1980.*?</a>\s*</li>', en, re.S)
+          assert re.search(r'<li>\s*<a[^>]+href="locations\.html"[^>]*>.*?Bani Yas Tower.*?Al Raha Mall.*?</a>\s*</li>', en, re.S)
+          assert 'Reception-led' not in en and '>booking<' not in en
+
+          assert re.search(r'<li>\s*<a[^>]+href="/ar/about\.html"[^>]*>.*?نخدم مرضانا منذ عام 1980.*?</a>\s*</li>', ar, re.S)
+          assert re.search(r'<li>\s*<a[^>]+href="/ar/locations\.html"[^>]*>.*?برج بني ياس والراحة مول.*?</a>\s*</li>', ar, re.S)
+          assert 'الحجز عبر الاستقبال' not in ar
+
+          # Links should preserve the visual layout and have an obvious hover/focus affordance.
+          for page, text in [('index.html', en), ('ar/index.html', ar)]:
+              assert '.premium-home-hero__trust-link{' in text, f'missing trust-link styling in {page}'
+          PY
