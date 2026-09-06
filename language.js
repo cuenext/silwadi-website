@@ -112,10 +112,10 @@
     'Professional whitening': 'تبييض احترافي',
     'Laser-assisted procedures': 'إجراءات علاجية بمساعدة الليزر',
     'Routine & preventive care': 'رعاية دورية ووقائية',
-    'Specialist care for braces, aligners, tooth alignment and bite correction.': 'رعاية تخصصية للتقويم والصفافات وتصحيح اصطفاف الأسنان والإطباق.',
+    'Specialist care for braces, aligners, tooth alignment and bite correction.': 'رعاية تخصصية لتقويم الأسنان باستخدام التقويم والصفافات الشفافة وتصحيح اصطفاف الأسنان والإطباق.',
     'Aesthetic dental care including whitening, veneers and restorative smile planning after assessment.': 'رعاية تجميلية تشمل التبييض والقشور والتخطيط الترميمي للابتسامة بعد التقييم.',
-    'Routine examinations, preventive planning and care that supports ongoing oral health.': 'فحوصات دورية وتخطيط وقائي ورعاية تدعم صحة الفم المستمرة.',
-    'Specialist care for the gums and supporting tissues around the teeth.': 'رعاية تخصصية للثة والأنسجة الداعمة المحيطة بالأسنان.',
+    'Routine examinations, preventive planning and care that supports ongoing oral health.': 'فحوصات دورية وخطط وقائية تساعد على الحفاظ على صحة الفم والأسنان.',
+    'Specialist care for the gums and supporting tissues around the teeth.': 'رعاية تخصصية للثة والأنسجة الداعمة للأسنان.',
     'Implants replace missing tooth roots; prosthodontic restorations rebuild the visible teeth and bite with crowns, bridges, dentures and implant-supported solutions.': 'تعوّض زراعة الأسنان جذور الأسنان المفقودة، بينما تعيد التركيبات بناء الأسنان الظاهرة والإطباق باستخدام التيجان والجسور والأطقم والحلول المدعومة بالزراعة.',
     'Root canal & pulp care': 'علاج الجذور ولب الأسنان',
     'Alignment & bite correction': 'تصحيح اصطفاف الأسنان والإطباق',
@@ -145,7 +145,7 @@
     'Now open': 'مفتوح الآن',
     'Get Directions': 'عرض الاتجاهات',
     'Ask for directions': 'اطلب الاتجاهات',
-    'Visit the centre': 'ابحث عن أقرب فرع',
+    'Visit the centre': 'ابحث عن أقرب فرع إليك',
     'Advanced dentistry.': 'طب أسنان متقدم.',
     'Established trust.': 'ثقة راسخة.',
     'Dental care in Abu Dhabi since 1980, with general dentists and specialists working together in one established centre.': 'رعاية أسنان في أبوظبي منذ عام 1980، يقدمها أطباء عامون واختصاصيون يعملون معاً ضمن مركز عريق.',
@@ -155,18 +155,18 @@
     'since 1980.': 'منذ عام 1980.',
     'Dental care in': 'رعاية أسنان في',
     'Abu Dhabi': 'أبوظبي',
-    'One established clinical team.': 'فريق طبي متكامل بخبرة راسخة.',
+    'One established clinical team.': 'خبرات متكاملة في مختلف تخصصات طب الأسنان.',
     '15 dentists & specialists': '15 طبيباً واختصاصياً',
     '15 dentists & specialists across two Abu Dhabi locations.': '15 طبيباً واختصاصياً في فرعين بأبوظبي.',
     'Explore Services': 'استكشف الخدمات',
-    'Find the right care': 'استعرض خدماتنا العلاجية',
+    'Find the right care': 'اختر الخدمة المناسبة لك',
     'Insurance': 'التأمين',
-    'Insurance accepted': 'استفسر عن التغطية التأمينية',
+    'Insurance accepted': 'تحقّق من التغطية التأمينية',
     'Dental services at Silwadi.': 'خدمات طب الأسنان في سلوادي.',
     'Choose a treatment area, or contact us if you are not sure where to start.': 'اختر مجال العلاج، أو تواصل معنا إذا لم تكن متأكداً من أين تبدأ.',
     'Our story': 'قصتنا',
-    'Serving Abu Dhabi since 1980.': 'نخدم مرضى أبوظبي منذ عام 1980.',
-    'For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.': 'منذ أكثر من أربعة عقود، يحرص مركز سلوادي لطب الأسنان على تقديم رعاية تضع المريض واحتياجاته في المقام الأول، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.',
+    'Serving Abu Dhabi since 1980.': 'في خدمة مجتمع أبوظبي منذ عام 1980.',
+    'For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.': 'لأكثر من أربعة عقود، يقدّم مركز سلوادي لطب الأسنان رعاية تتمحور حول المريض، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.',
     'Learn more about the centre': 'اعرف المزيد عن المركز',
     'Specialist expertise. Personal care.': 'خبرة تخصصية ورعاية شخصية.',
     'Meet some of our dentists and specialists, or browse the full team by specialty.': 'تعرّف إلى عدد من أطبائنا واختصاصيينا، أو تصفّح الفريق كاملاً حسب التخصص.',
@@ -962,10 +962,10 @@
   });
 
   Object.assign(arabic, {
-    'Cosmetic Dentistry & Teeth Whitening': 'تجميل الأسنان وتبييض الأسنان',
-    'Specialist restorative care for repairing or replacing teeth with crowns, bridges, veneers, dentures and other prosthetic solutions.': 'رعاية تخصصية لترميم الأسنان أو تعويضها بالتيجان والجسور والقشور والأطقم وغيرها من الحلول التعويضية.',
-    'Dental implants replace missing tooth roots and can support crowns, bridges or dentures after clinical assessment and treatment planning.': 'تعوّض زراعة الأسنان جذور الأسنان المفقودة ويمكن أن تدعم التيجان أو الجسور أو الأطقم بعد التقييم والتخطيط العلاجي.',
-    'Aesthetic dental care including Hollywood Smile planning, veneers, smile design and professional teeth whitening after assessment.': 'رعاية تجميلية تشمل هوليوود سمايل والقشور وتصميم الابتسامة وتبييض الأسنان الاحترافي بعد التقييم.'
+    'Cosmetic Dentistry & Teeth Whitening': 'تجميل الأسنان وتبييضها',
+    'Specialist restorative care for repairing or replacing teeth with crowns, bridges, veneers, dentures and other prosthetic solutions.': 'رعاية تخصصية لترميم الأسنان أو تعويض المفقود منها باستخدام التيجان والجسور والقشور والأطقم وغيرها من الحلول.',
+    'Dental implants replace missing tooth roots and can support crowns, bridges or dentures after clinical assessment and treatment planning.': 'تعوّض زراعة الأسنان جذور الأسنان المفقودة، ويمكنها دعم التيجان والجسور أو أطقم الأسنان بعد التقييم ووضع خطة العلاج المناسبة.',
+    'Aesthetic dental care including Hollywood Smile planning, veneers, smile design and professional teeth whitening after assessment.': 'خدمات تجميلية تشمل هوليوود سمايل، والقشور، وتصميم الابتسامة، وتبييض الأسنان الاحترافي بعد التقييم.'
   });
 
   Object.assign(arabic, {
