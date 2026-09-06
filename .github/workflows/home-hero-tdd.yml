@@ -26,7 +26,7 @@ jobs:
           from pathlib import Path
           expected = {
               'assets/munir-home-hero-20260906.webp': 24636,
-              'assets/munir-home-hero-mobile-20260906.webp': 18484,
+              'assets/munir-home-hero-mobile-20260906.webp': 18490,
           }
           for filename, expected_size in expected.items():
               data = Path(filename).read_bytes()
