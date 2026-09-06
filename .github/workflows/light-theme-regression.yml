@@ -1,0 +1,25 @@
+name: Light theme regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'styles.css'
+      - '.github/workflows/light-theme-regression.yml'
+
+jobs:
+  verify-light-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify browsers cannot auto-darken the site
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          css = Path('styles.css').read_text(encoding='utf-8')
+          compact = ''.join(css.split())
+
+          assert 'color-scheme:onlylight' in compact, 'styles.css must declare color-scheme: only light'
+          assert 'html{' in compact and 'background:#fff' in compact, 'html must have an explicit white canvas'
+          PY
