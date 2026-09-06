@@ -18,7 +18,7 @@ jobs:
           # Homepage shortcut copy should read naturally in Arabic.
           assert '<strong>استكشف الخدمات</strong><em>استعرض خدماتنا العلاجية</em>' in ar
           assert '<strong>التأمين</strong><em>استفسر عن التغطية التأمينية</em>' in ar
-          assert '<strong>الفروع</strong><em>اعثر على أقرب فرع</em>' in ar
+          assert '<strong>الفروع</strong><em>ابحث عن أقرب فرع</em>' in ar
 
           # Story copy should be natural Arabic, not a literal translation.
           assert 'نخدم <span class="nowrap-place">مرضى أبوظبي</span> منذ عام 1980' in ar
@@ -28,7 +28,7 @@ jobs:
           expected = {
             "'Find the right care': 'استعرض خدماتنا العلاجية'",
             "'Insurance accepted': 'استفسر عن التغطية التأمينية'",
-            "'Visit the centre': 'اعثر على أقرب فرع'",
+            "'Visit the centre': 'ابحث عن أقرب فرع'",
             "'Serving Abu Dhabi since 1980.': 'نخدم مرضى أبوظبي منذ عام 1980.'",
             "'For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.': 'منذ أكثر من أربعة عقود، يحرص مركز سلوادي لطب الأسنان على تقديم رعاية تضع المريض واحتياجاته في المقام الأول، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.'",
             "'Cosmetic Dentistry & Teeth Whitening': 'تجميل الأسنان وتبييض الأسنان'",
