@@ -10,17 +10,20 @@ permissions:
   contents: write
 
 jobs:
-  verify-red:
+  implement-and-verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Assert requested doctor order (expected to fail before implementation)
+        with:
+          fetch-depth: 0
+
+      - name: Reorder doctor cards only
         run: |
           python - <<'PY'
           import re
           from pathlib import Path
 
-          expected_en = [
+          expected = [
               'Dr. Afnan Mashal',
               'Dr. Moheb Silwadi',
               'Dr. Lana Masoud',
@@ -38,11 +41,70 @@ jobs:
               'Dr. Ehab Hassouneh Bassam A',
           ]
 
+          grid_open = '<div class="doctor-directory-grid">'
+          grid_close = '</div><p class="directory-empty"'
+          article_pattern = re.compile(r'<article class="doctor-directory-card reveal"[^>]*data-name="([^"]+)".*?</article>', re.S)
+
           for filename in ('doctors.html', 'ar/doctors.html'):
-              text = Path(filename).read_text(encoding='utf-8')
-              names = re.findall(r'<article class="doctor-directory-card reveal"[^>]*data-name="([^"]+)"', text)
-              if filename.startswith('ar/'):
-                  # Arabic page keeps English data-name values for search/card identity.
-                  pass
-              assert names == expected_en, f'{filename} order mismatch:\n{names}'
+              path = Path(filename)
+              text = path.read_text(encoding='utf-8')
+              start = text.index(grid_open) + len(grid_open)
+              end = text.index(grid_close, start)
+              grid = text[start:end]
+              matches = list(article_pattern.finditer(grid))
+              assert len(matches) == 15, f'{filename}: expected 15 cards, found {len(matches)}'
+
+              cards = {m.group(1): m.group(0) for m in matches}
+              assert set(cards) == set(expected), f'{filename}: doctor set mismatch: {set(cards) ^ set(expected)}'
+
+              original_cards = sorted(cards.values())
+              reordered = ''.join(cards[name] for name in expected)
+              text = text[:start] + reordered + text[end:]
+              path.write_text(text, encoding='utf-8')
+
+              # Prove this was an order-only change: every complete card is byte-for-byte unchanged.
+              verify_grid = text[start:start + len(reordered)]
+              verify_matches = list(article_pattern.finditer(verify_grid))
+              verify_cards = [m.group(0) for m in verify_matches]
+              assert sorted(verify_cards) == original_cards, f'{filename}: card content changed unexpectedly'
           PY
+          git diff --check
+
+      - name: Verify requested final order
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          expected = [
+              'Dr. Afnan Mashal',
+              'Dr. Moheb Silwadi',
+              'Dr. Lana Masoud',
+              'Dr. Moammar Mohamed Rifai',
+              'Dr. Nasr Keshkiea',
+              'Dr. Dana Awad',
+              'Dr. Munir Silwadi',
+              'Dr. Ahmed El Shehri',
+              'Dr. Fahed Abi Khalil',
+              'Dr. Sara Ismail',
+              'Dr. Hani Hasbini',
+              'Dr. Krishnamurthy Balajee',
+              'Dr. Kashmira Pawar Jayprakash',
+              'Dr. Nachiket Shah',
+              'Dr. Ehab Hassouneh Bassam A',
+          ]
+          pattern = re.compile(r'<article class="doctor-directory-card reveal"[^>]*data-name="([^"]+)"')
+          for filename in ('doctors.html', 'ar/doctors.html'):
+              names = pattern.findall(Path(filename).read_text(encoding='utf-8'))
+              assert names == expected, f'{filename} order mismatch: {names}'
+          PY
+
+      - name: Commit verified order and remove one-time workflow
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add doctors.html ar/doctors.html
+          git rm .github/workflows/doctor-order-tdd.yml
+          git diff --cached --check
+          git commit -m 'content: reorder doctor directory cards [skip arabic build]'
+          git push
