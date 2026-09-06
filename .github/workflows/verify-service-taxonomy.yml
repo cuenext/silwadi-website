@@ -1,4 +1,4 @@
-name: Verify service taxonomy
+name: Apply and verify service taxonomy
 
 on:
   push:
@@ -6,52 +6,244 @@ on:
     paths:
       - '.github/workflows/verify-service-taxonomy.yml'
 
+permissions:
+  contents: write
+
 jobs:
-  verify:
+  apply:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify requested taxonomy and motto
+        with:
+          fetch-depth: 0
+
+      - name: Apply approved taxonomy and motto
         run: |
           python - <<'PY'
           from pathlib import Path
+          import copy
+          import json
+          import re
 
           EN_MOTTO = 'Excellence for Every Ability, A Smile for Every Soul.'
           AR_MOTTO = 'التميّز لكل قدرة، وابتسامة لكل روح.'
 
+          def replace_anchor(text, pattern, replacement_fn):
+              return re.sub(pattern, replacement_fn, text)
+
+          def update_nav(text, is_ar):
+              if is_ar:
+                  # Desktop: split Prosthodontics and Implantology.
+                  p = re.compile(r'<a href="(?P<base>[^"]*services\.html)#prosthodontics-implantology"><strong>تركيبات وزراعة الأسنان</strong><small>ترميم الأسنان وتعويض المفقود</small></a>')
+                  text = p.sub(lambda m:
+                      f'<a href="{m.group("base")}#prosthodontics"><strong>تركيبات الأسنان</strong><small>ترميم الأسنان وتعويض المفقود</small></a>'
+                      f'<a href="{m.group("base")}#implantology"><strong>زراعة الأسنان</strong><small>زراعة وتعويض الأسنان المفقودة</small></a>', text)
+                  # Mobile split.
+                  p = re.compile(r'<a href="(?P<base>[^"]*services\.html)#prosthodontics-implantology"><strong>تركيبات وزراعة الأسنان</strong><span>ترميم الأسنان وتعويض المفقود</span></a>')
+                  text = p.sub(lambda m:
+                      f'<a href="{m.group("base")}#prosthodontics"><strong>تركيبات الأسنان</strong><span>ترميم الأسنان وتعويض المفقود</span></a>'
+                      f'<a href="{m.group("base")}#implantology"><strong>زراعة الأسنان</strong><span>زراعة وتعويض الأسنان المفقودة</span></a>', text)
+                  # Merge cosmetic dentistry and whitening in desktop/mobile menus.
+                  p = re.compile(r'<a href="(?P<base>[^"]*services\.html)#cosmetics"><strong>تجميل الأسنان</strong><small>تجميل الابتسامة</small></a>')
+                  text = p.sub(lambda m: f'<a href="{m.group("base")}#cosmetic-dentistry"><strong>تجميل الأسنان وتبييض الأسنان</strong><small>هوليوود سمايل وتبييض احترافي</small></a>', text)
+                  p = re.compile(r'<a href="(?P<base>[^"]*services\.html)#cosmetics"><strong>تجميل الأسنان</strong><span>تجميل الابتسامة</span></a>')
+                  text = p.sub(lambda m: f'<a href="{m.group("base")}#cosmetic-dentistry"><strong>تجميل الأسنان وتبييض الأسنان</strong><span>هوليوود سمايل وتبييض احترافي</span></a>', text)
+                  text = re.sub(r'<a href="[^"]*services\.html#teeth-whitening"><strong>تبييض الأسنان</strong><small>تبييض احترافي</small></a>', '', text)
+                  text = re.sub(r'<a href="[^"]*services\.html#teeth-whitening"><strong>تبييض الأسنان</strong><span>تبييض احترافي</span></a>', '', text)
+              else:
+                  p = re.compile(r'<a href="(?P<base>[^"]*services\.html)#prosthodontics-implantology"><strong>Prosthodontics &amp; Implantology</strong><small>Restore &amp; replace teeth</small></a>')
+                  text = p.sub(lambda m:
+                      f'<a href="{m.group("base")}#prosthodontics"><strong>Prosthodontics</strong><small>Restore &amp; replace teeth</small></a>'
+                      f'<a href="{m.group("base")}#implantology"><strong>Implantology</strong><small>Dental implant care</small></a>', text)
+                  p = re.compile(r'<a href="(?P<base>[^"]*services\.html)#prosthodontics-implantology"><strong>Prosthodontics &amp; Implantology</strong><span>Restore &amp; replace teeth</span></a>')
+                  text = p.sub(lambda m:
+                      f'<a href="{m.group("base")}#prosthodontics"><strong>Prosthodontics</strong><span>Restore &amp; replace teeth</span></a>'
+                      f'<a href="{m.group("base")}#implantology"><strong>Implantology</strong><span>Dental implant care</span></a>', text)
+                  p = re.compile(r'<a href="(?P<base>[^"]*services\.html)#cosmetics"><strong>Cosmetics</strong><small>Smile aesthetics</small></a>')
+                  text = p.sub(lambda m: f'<a href="{m.group("base")}#cosmetic-dentistry"><strong>Cosmetic Dentistry &amp; Teeth Whitening</strong><small>Hollywood Smile &amp; professional whitening</small></a>', text)
+                  p = re.compile(r'<a href="(?P<base>[^"]*services\.html)#cosmetics"><strong>Cosmetics</strong><span>Smile aesthetics</span></a>')
+                  text = p.sub(lambda m: f'<a href="{m.group("base")}#cosmetic-dentistry"><strong>Cosmetic Dentistry &amp; Teeth Whitening</strong><span>Hollywood Smile &amp; professional whitening</span></a>', text)
+                  text = re.sub(r'<a href="[^"]*services\.html#teeth-whitening"><strong>Teeth Whitening</strong><small>Professional whitening</small></a>', '', text)
+                  text = re.sub(r'<a href="[^"]*services\.html#teeth-whitening"><strong>Teeth Whitening</strong><span>Professional whitening</span></a>', '', text)
+              return text
+
+          def update_service_schema(text):
+              pattern = re.compile(r'(<script type="application/ld\+json" data-seo-schema(?:="")?>)(.*?)(</script>)', re.S)
+              match = pattern.search(text)
+              if not match:
+                  raise RuntimeError('services page missing data-seo-schema JSON-LD')
+              data = json.loads(match.group(2))
+              graph = data.get('@graph', [])
+              out = []
+              cosmetic_added = False
+              for obj in graph:
+                  if obj.get('@type') != 'Service':
+                      out.append(obj)
+                      continue
+                  name = obj.get('name')
+                  base = obj.get('url', '').split('#')[0]
+                  if name == 'Prosthodontics & Implantology':
+                      prosth = copy.deepcopy(obj)
+                      prosth['name'] = 'Prosthodontics'
+                      prosth['url'] = base + '#prosthodontics'
+                      implant = copy.deepcopy(obj)
+                      implant['name'] = 'Implantology'
+                      implant['url'] = base + '#implantology'
+                      out.extend([prosth, implant])
+                  elif name == 'Cosmetics':
+                      merged = copy.deepcopy(obj)
+                      merged['name'] = 'Cosmetic Dentistry & Teeth Whitening'
+                      merged['url'] = base + '#cosmetic-dentistry'
+                      out.append(merged)
+                      cosmetic_added = True
+                  elif name == 'Teeth Whitening':
+                      if not cosmetic_added:
+                          merged = copy.deepcopy(obj)
+                          merged['name'] = 'Cosmetic Dentistry & Teeth Whitening'
+                          merged['url'] = base + '#cosmetic-dentistry'
+                          out.append(merged)
+                          cosmetic_added = True
+                  else:
+                      out.append(obj)
+              data['@graph'] = out
+              encoded = json.dumps(data, ensure_ascii=False, separators=(',', ':'))
+              return text[:match.start()] + match.group(1) + encoded + match.group(3) + text[match.end():]
+
+          def update_services_page(text, is_ar):
+              # Point generic old links to the newly separate prosthodontics section.
+              text = text.replace('#prosthodontics-implantology', '#prosthodontics')
+
+              combined = re.compile(r'<article class="service-card reveal" id="prosthodontics">.*?</article>', re.S)
+              if is_ar:
+                  replacement = (
+                      '<article class="service-card reveal" id="prosthodontics"><div class="service-card__image"><img src="/assets/services/prosthodontics.webp" alt="رعاية تركيبات الأسنان في مركز سلوادي بأبوظبي" width="1200" height="900" loading="lazy" decoding="async"></div><div class="service-card__body"><h2>تركيبات الأسنان</h2><p>رعاية تخصصية لترميم الأسنان أو تعويضها بالتيجان والجسور والقشور والأطقم والتركيبات المدعومة بالزراعة، بما في ذلك إعادة تأهيل الفم بالكامل عند الحاجة.</p><a class="btn btn--secondary service-card__link" href="/ar/treatments.html#prosthodontics" aria-label="تعرّف إلى تركيبات الأسنان">تعرّف إلى تركيبات الأسنان</a></div></article>'
+                      '<article class="service-card reveal" id="implantology"><div class="service-card__image"><img src="/assets/services/prosthodontics.webp" alt="رعاية زراعة الأسنان في مركز سلوادي بأبوظبي" width="1200" height="900" loading="lazy" decoding="async"></div><div class="service-card__body"><h2>زراعة الأسنان</h2><p>تخطيط ووضع زراعة الأسنان لتعويض الأسنان المفقودة ودعم التيجان أو الجسور أو الأطقم، وفق تقييم صحة الفم واحتياجات التعويض.</p><a class="btn btn--secondary service-card__link" href="/ar/treatments/dental-implants.html" aria-label="تعرّف إلى زراعة الأسنان">تعرّف إلى زراعة الأسنان</a></div></article>'
+                  )
+              else:
+                  replacement = (
+                      '<article class="service-card reveal" id="prosthodontics"><div class="service-card__image"><img src="assets/services/prosthodontics.webp" alt="Prosthodontics care at Silwadi Dental Center Abu Dhabi" width="1200" height="900" loading="lazy" decoding="async"></div><div class="service-card__body"><h2>Prosthodontics</h2><p>Specialist restorative care focused on repairing or replacing teeth with crowns, bridges, veneers, dentures and implant-supported restorations, including full-mouth rehabilitation when indicated.</p><a class="btn btn--secondary service-card__link" href="treatments.html#prosthodontics" aria-label="Learn more about Prosthodontics">Learn More about Prosthodontics</a></div></article>'
+                      '<article class="service-card reveal" id="implantology"><div class="service-card__image"><img src="assets/services/prosthodontics.webp" alt="Dental implant care at Silwadi Dental Center Abu Dhabi" width="1200" height="900" loading="lazy" decoding="async"></div><div class="service-card__body"><h2>Implantology</h2><p>Planning and placement of dental implants to replace missing teeth and support crowns, bridges or dentures, with treatment tailored to oral health and restorative needs.</p><a class="btn btn--secondary service-card__link" href="treatments/dental-implants.html" aria-label="Learn more about Implantology">Learn More about Implantology</a></div></article>'
+                  )
+              text, n = combined.subn(replacement, text, count=1)
+              if n != 1:
+                  raise RuntimeError(f'Expected one prosthodontics card after anchor migration, found {n}')
+
+              cosmetics = re.compile(r'<article class="service-card reveal" id="cosmetics">.*?</article>', re.S)
+              whitening = re.compile(r'<article class="service-card reveal" id="teeth-whitening">.*?</article>', re.S)
+              if is_ar:
+                  cosmetic_replacement = '<article class="service-card reveal" id="cosmetic-dentistry"><div class="service-card__image"><img src="/assets/services/cosmetics.webp" alt="تجميل الأسنان وهوليوود سمايل وتبييض الأسنان في مركز سلوادي بأبوظبي" width="1200" height="900" loading="lazy" decoding="async"></div><div class="service-card__body"><h2>تجميل الأسنان وتبييض الأسنان</h2><p>رعاية تجميلية تشمل هوليوود سمايل والقشور وتصميم الابتسامة وخيارات تبييض الأسنان الاحترافية، وتُختار بعد تقييم الأسنان واللثة والإطباق.</p><a class="btn btn--secondary service-card__link" href="/ar/treatments/cosmetic-dentistry.html" aria-label="تعرّف إلى تجميل الأسنان وتبييض الأسنان">تعرّف إلى تجميل الأسنان وتبييض الأسنان</a></div></article>'
+              else:
+                  cosmetic_replacement = '<article class="service-card reveal" id="cosmetic-dentistry"><div class="service-card__image"><img src="assets/services/cosmetics.webp" alt="Cosmetic dentistry, Hollywood Smile and teeth whitening at Silwadi Dental Center Abu Dhabi" width="1200" height="900" loading="lazy" decoding="async"></div><div class="service-card__body"><h2>Cosmetic Dentistry &amp; Teeth Whitening</h2><p>Cosmetic dental care including Hollywood Smile planning, veneers, smile design and professional teeth whitening, selected after a clinical assessment of the teeth, gums and bite.</p><a class="btn btn--secondary service-card__link" href="treatments/cosmetic-dentistry.html" aria-label="Learn more about Cosmetic Dentistry and Teeth Whitening">Learn More about Cosmetic Dentistry &amp; Teeth Whitening</a></div></article>'
+              text, n1 = cosmetics.subn(cosmetic_replacement, text, count=1)
+              text, n2 = whitening.subn('', text, count=1)
+              if n1 != 1 or n2 != 1:
+                  raise RuntimeError(f'Expected cosmetics+whitening cards once, got {n1}/{n2}')
+
+              # Refine the starting-point card now that the service is split.
+              if is_ar:
+                  text = text.replace('href="#prosthodontics"><span class="services-start__kicker">استعد ابتسامتك</span><strong>تعويض الأسنان أو ترميمها</strong><small>زراعة وتيجان وجسور وأطقم تُخطط بما يناسب إطباقك.</small>', 'href="#prosthodontics"><span class="services-start__kicker">استعد ابتسامتك</span><strong>تعويض الأسنان أو ترميمها</strong><small>تيجان وجسور وأطقم وخيارات ترميمية تُخطط بما يناسب إطباقك.</small>')
+              else:
+                  text = text.replace('href="#prosthodontics"><span class="services-start__kicker">Restore confidence</span><strong>Replace or repair teeth</strong><small>Implants, crowns, bridges and dentures planned around your bite.</small>', 'href="#prosthodontics"><span class="services-start__kicker">Restore confidence</span><strong>Replace or repair teeth</strong><small>Crowns, bridges, dentures and restorative planning around your bite.</small>')
+
+              return update_service_schema(text)
+
+          changed = []
+          for path in Path('.').rglob('*.html'):
+              text = path.read_text(encoding='utf-8')
+              original = text
+              is_ar = 'ar' in path.parts
+              text = update_nav(text, is_ar)
+
+              # Any remaining generic link to the old combined service now points to Prosthodontics.
+              text = text.replace('services.html#prosthodontics-implantology', 'services.html#prosthodontics')
+
+              if is_ar:
+                  text = text.replace('رعاية متخصصة وابتسامات تدوم.', AR_MOTTO)
+              else:
+                  text = text.replace('Expert care. Lasting smiles.', EN_MOTTO)
+
+              if path.as_posix() == 'services.html':
+                  text = update_services_page(text, False)
+              elif path.as_posix() == 'ar/services.html':
+                  text = update_services_page(text, True)
+
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  changed.append(str(path))
+
+          if not changed:
+              raise SystemExit('No HTML files changed; refusing empty implementation')
+          print(f'Updated {len(changed)} HTML files')
+          for p in changed:
+              print(p)
+          PY
+
+      - name: Verify requested taxonomy and motto
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import re
+
+          EN_MOTTO = 'Excellence for Every Ability, A Smile for Every Soul.'
+          AR_MOTTO = 'التميّز لكل قدرة، وابتسامة لكل روح.'
           failures = []
           html_files = list(Path('.').rglob('*.html'))
+
           for path in html_files:
               text = path.read_text(encoding='utf-8')
               is_ar = 'ar' in path.parts
               if 'services-mega__grid' in text:
-                  if '#prosthodontics-implantology' in text:
-                      failures.append(f'{path}: old combined prosthodontics/implantology nav link remains')
-                  if '#teeth-whitening' in text and 'treatment-option' not in text:
-                      failures.append(f'{path}: separate teeth-whitening service nav link remains')
+                  if 'services.html#prosthodontics-implantology' in text:
+                      failures.append(f'{path}: old combined service nav/link remains')
                   for anchor in ('#prosthodontics', '#implantology', '#cosmetic-dentistry'):
-                      if anchor not in text:
-                          failures.append(f'{path}: missing {anchor} service nav link')
+                      if f'services.html{anchor}' not in text:
+                          failures.append(f'{path}: missing {anchor} service navigation')
+                  # The menu itself should no longer carry a separate whitening link.
+                  menu = text.split('services-mega__grid', 1)[1].split('</div></div></div>', 1)[0]
+                  if 'services.html#teeth-whitening' in menu:
+                      failures.append(f'{path}: separate whitening menu item remains')
               if 'footer-bottom' in text:
                   expected = AR_MOTTO if is_ar else EN_MOTTO
                   if expected not in text:
-                      failures.append(f'{path}: footer motto not updated')
+                      failures.append(f'{path}: official motto missing from footer')
 
-          services = Path('services.html').read_text(encoding='utf-8')
-          for required in ('id="prosthodontics"', 'id="implantology"', 'id="cosmetic-dentistry"'):
-              if required not in services:
-                  failures.append(f'services.html: missing {required}')
-          for forbidden in ('id="prosthodontics-implantology"', 'id="teeth-whitening"'):
-              if forbidden in services:
-                  failures.append(f'services.html: obsolete {forbidden} remains')
+          for page in ('services.html', 'ar/services.html'):
+              text = Path(page).read_text(encoding='utf-8')
+              for required in ('id="prosthodontics"', 'id="implantology"', 'id="cosmetic-dentistry"'):
+                  if required not in text:
+                      failures.append(f'{page}: missing {required}')
+              for forbidden in ('id="prosthodontics-implantology"', 'id="cosmetics"', 'id="teeth-whitening"'):
+                  if forbidden in text:
+                      failures.append(f'{page}: obsolete service card {forbidden} remains')
 
-          ar_services = Path('ar/services.html').read_text(encoding='utf-8')
-          for required in ('id="prosthodontics"', 'id="implantology"', 'id="cosmetic-dentistry"'):
-              if required not in ar_services:
-                  failures.append(f'ar/services.html: missing {required}')
+              m = re.search(r'<script type="application/ld\+json" data-seo-schema(?:="")?>(.*?)</script>', text, re.S)
+              if not m:
+                  failures.append(f'{page}: service schema missing')
+              else:
+                  data = json.loads(m.group(1))
+                  names = [o.get('name') for o in data.get('@graph', []) if o.get('@type') == 'Service']
+                  for name in ('Prosthodontics', 'Implantology', 'Cosmetic Dentistry & Teeth Whitening'):
+                      if name not in names:
+                          failures.append(f'{page}: schema missing {name}')
+                  for old in ('Prosthodontics & Implantology', 'Cosmetics', 'Teeth Whitening'):
+                      if old in names:
+                          failures.append(f'{page}: obsolete schema service {old} remains')
 
           if failures:
-              print('\n'.join(failures[:80]))
+              print('\n'.join(failures[:120]))
               raise SystemExit(1)
-          print(f'Verified {len(html_files)} HTML files')
+          print(f'Verified taxonomy and motto across {len(html_files)} HTML files')
           PY
+
+      - name: Show diff
+        run: git diff --stat && git diff --check
+
+      - name: Commit approved update and remove temporary workflow
+        run: |
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git rm .github/workflows/verify-service-taxonomy.yml
+          git add -A
+          git commit -m "fix: separate service categories and add official motto [skip arabic build]"
+          git push
