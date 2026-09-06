@@ -9,22 +9,17 @@ on:
       - 'ar/doctors.html'
       - '.github/workflows/doctor-order-regression.yml'
 
-# Locks the client-requested rendered order used by both English and Arabic directories.
 jobs:
   verify-doctor-order:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify requested doctor grid order
+      - name: Verify literal requested card swaps
         run: |
           python3 <<'PY'
           import re
           from pathlib import Path
 
-          js = Path('app.js').read_text(encoding='utf-8')
-          match = re.search(r"const preferredDoctorOrder = \[(.*?)\];", js, re.S)
-          assert match, 'preferredDoctorOrder not found'
-          actual = re.findall(r"'([^']+)'", match.group(1))
           expected = [
               'Dr. Munir Silwadi',
               'Dr. Moheb Silwadi',
@@ -42,10 +37,16 @@ jobs:
               'Dr. Nasr Keshkiea',
               'Dr. Moammar Mohamed Rifai',
           ]
-          assert actual == expected, f'Wrong rendered order:\nactual={actual}\nexpected={expected}'
+
+          js = Path('app.js').read_text(encoding='utf-8')
+          match = re.search(r"const preferredDoctorOrder = \[(.*?)\];", js, re.S)
+          assert match, 'preferredDoctorOrder not found'
+          js_order = re.findall(r"'([^']+)'", match.group(1))
+          assert js_order == expected, f'Wrong JS order:\n{js_order}'
 
           for page in ['doctors.html', 'ar/doctors.html']:
               html = Path(page).read_text(encoding='utf-8')
-              for doctor in expected:
-                  assert f'data-name="{doctor}"' in html, f'{doctor} missing from {page}'
+              html_order = re.findall(r'data-name="([^"]+)"', html)
+              assert html_order == expected, f'Wrong static card order in {page}:\n{html_order}'
+              assert 'app.js?v=20260906-doctor-slots-1' in html, f'Fresh app.js cache key missing in {page}'
           PY
