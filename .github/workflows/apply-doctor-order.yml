@@ -1,0 +1,67 @@
+name: Apply requested doctor order
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-doctor-order.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace doctor directory rendered order
+        run: |
+          python3 <<'PY'
+          import re
+          from pathlib import Path
+
+          path = Path('app.js')
+          js = path.read_text(encoding='utf-8')
+          desired = """const preferredDoctorOrder = [
+            'Dr. Munir Silwadi',
+            'Dr. Moheb Silwadi',
+            'Dr. Ahmed El Shehri',
+            'Dr. Hani Hasbini',
+            'Dr. Dana Awad',
+            'Dr. Afnan Mashal',
+            'Dr. Lana Masoud',
+            'Dr. Fahed Abi Khalil',
+            'Dr. Kashmira Pawar Jayprakash',
+            'Dr. Krishnamurthy Balajee',
+            'Dr. Ehab Hassouneh Bassam A',
+            'Dr. Sara Ismail',
+            'Dr. Nachiket Shah',
+            'Dr. Nasr Keshkiea',
+            'Dr. Moammar Mohamed Rifai',
+          ];"""
+          updated, count = re.subn(r"const preferredDoctorOrder = \[.*?\];", desired, js, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit(f'Expected one preferredDoctorOrder block, found {count}')
+          path.write_text(updated, encoding='utf-8')
+          PY
+
+          python3 <<'PY'
+          import re
+          from pathlib import Path
+          js = Path('app.js').read_text(encoding='utf-8')
+          m = re.search(r"const preferredDoctorOrder = \[(.*?)\];", js, re.S)
+          actual = re.findall(r"'([^']+)'", m.group(1))
+          expected = [
+              'Dr. Munir Silwadi','Dr. Moheb Silwadi','Dr. Ahmed El Shehri','Dr. Hani Hasbini','Dr. Dana Awad','Dr. Afnan Mashal',
+              'Dr. Lana Masoud','Dr. Fahed Abi Khalil','Dr. Kashmira Pawar Jayprakash','Dr. Krishnamurthy Balajee',
+              'Dr. Ehab Hassouneh Bassam A','Dr. Sara Ismail','Dr. Nachiket Shah','Dr. Nasr Keshkiea','Dr. Moammar Mohamed Rifai'
+          ]
+          assert actual == expected, (actual, expected)
+          PY
+
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add app.js
+          git commit -m "fix: apply requested doctor directory positions [skip arabic build]"
+          git push
