@@ -9,6 +9,7 @@ on:
       - 'ar/doctors.html'
       - '.github/workflows/doctor-order-regression.yml'
 
+# Post-fix verification: these are literal card-slot swaps, not a loose preferred order.
 jobs:
   verify-doctor-order:
     runs-on: ubuntu-latest
