@@ -1,0 +1,57 @@
+name: Verify service taxonomy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-service-taxonomy.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify requested taxonomy and motto
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          EN_MOTTO = 'Excellence for Every Ability, A Smile for Every Soul.'
+          AR_MOTTO = 'التميّز لكل قدرة، وابتسامة لكل روح.'
+
+          failures = []
+          html_files = list(Path('.').rglob('*.html'))
+          for path in html_files:
+              text = path.read_text(encoding='utf-8')
+              is_ar = 'ar' in path.parts
+              if 'services-mega__grid' in text:
+                  if '#prosthodontics-implantology' in text:
+                      failures.append(f'{path}: old combined prosthodontics/implantology nav link remains')
+                  if '#teeth-whitening' in text and 'treatment-option' not in text:
+                      failures.append(f'{path}: separate teeth-whitening service nav link remains')
+                  for anchor in ('#prosthodontics', '#implantology', '#cosmetic-dentistry'):
+                      if anchor not in text:
+                          failures.append(f'{path}: missing {anchor} service nav link')
+              if 'footer-bottom' in text:
+                  expected = AR_MOTTO if is_ar else EN_MOTTO
+                  if expected not in text:
+                      failures.append(f'{path}: footer motto not updated')
+
+          services = Path('services.html').read_text(encoding='utf-8')
+          for required in ('id="prosthodontics"', 'id="implantology"', 'id="cosmetic-dentistry"'):
+              if required not in services:
+                  failures.append(f'services.html: missing {required}')
+          for forbidden in ('id="prosthodontics-implantology"', 'id="teeth-whitening"'):
+              if forbidden in services:
+                  failures.append(f'services.html: obsolete {forbidden} remains')
+
+          ar_services = Path('ar/services.html').read_text(encoding='utf-8')
+          for required in ('id="prosthodontics"', 'id="implantology"', 'id="cosmetic-dentistry"'):
+              if required not in ar_services:
+                  failures.append(f'ar/services.html: missing {required}')
+
+          if failures:
+              print('\n'.join(failures[:80]))
+              raise SystemExit(1)
+          print(f'Verified {len(html_files)} HTML files')
+          PY
