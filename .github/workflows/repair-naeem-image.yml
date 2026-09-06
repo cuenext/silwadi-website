@@ -1,0 +1,33 @@
+name: Repair Bani Yas featured image
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/repair-naeem-image.yml'
+      - '.tmp/naeem/**'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Decode and verify image
+        run: |
+          base64 -d .tmp/naeem/image.b64 > assets/locations/bani-yas-naeem-featured.webp
+          test -s assets/locations/bani-yas-naeem-featured.webp
+          file assets/locations/bani-yas-naeem-featured.webp | grep -qi 'webp\|web/p'
+      - name: Commit repaired asset and clean temporary files
+        run: |
+          rm -rf .tmp/naeem
+          rm -f .github/workflows/repair-naeem-image.yml
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add assets/locations/bani-yas-naeem-featured.webp .tmp/naeem .github/workflows/repair-naeem-image.yml
+          git commit -m "fix: restore Mr Naeem Bani Yas homepage image" || exit 0
+          git push
