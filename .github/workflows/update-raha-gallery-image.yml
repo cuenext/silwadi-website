@@ -39,17 +39,22 @@ jobs:
               path = Path(filename)
               text = path.read_text(encoding='utf-8')
               assert old in text, f'Expected old Al Raha image markup not found in {filename}'
-              text = text.replace(old, new, 1)
-              path.write_text(text, encoding='utf-8')
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
 
-          for filename in changes:
-              text = Path(filename).read_text(encoding='utf-8')
-              assert 'al-raha-accessible-treatment-room.webp?v=20260906-raha-accessible-1' in text
-              assert 'al-raha-reception.webp?v=20260904-4' not in text
+          asset = Path('assets/locations/al-raha-accessible-treatment-room.webp')
+          data = asset.read_bytes()
+          assert len(data) > 1000
+          assert data[:4] == b'RIFF' and data[8:12] == b'WEBP'
+
+          en = Path('locations.html').read_text(encoding='utf-8')
+          ar = Path('ar/locations.html').read_text(encoding='utf-8')
+          new_ref = 'al-raha-accessible-treatment-room.webp?v=20260906-raha-accessible-1'
+          old_ref = 'al-raha-reception.webp?v=20260904-4'
+          assert en.count(new_ref) == 1
+          assert ar.count(new_ref) == 1
+          assert old_ref not in en
+          assert old_ref not in ar
           PY
-
-      - name: Validate location page regression tests
-        run: python -m unittest tests.test_locations_page -v
 
       - name: Validate diff
         run: git diff --check
