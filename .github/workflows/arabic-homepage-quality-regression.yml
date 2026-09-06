@@ -8,46 +8,56 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify Arabic homepage copy and dynamic translations
+      - name: Verify natural Arabic homepage copy and dynamic translations
         run: |
           python3 <<'PY'
           from pathlib import Path
           ar = Path('ar/index.html').read_text(encoding='utf-8')
           lang = Path('language.js').read_text(encoding='utf-8')
 
-          # Homepage shortcut copy should read naturally in Arabic.
-          assert '<strong>استكشف الخدمات</strong><em>استعرض خدماتنا العلاجية</em>' in ar
-          assert '<strong>التأمين</strong><em>استفسر عن التغطية التأمينية</em>' in ar
-          assert '<strong>الفروع</strong><em>ابحث عن أقرب فرع</em>' in ar
+          static_expected = [
+            'خبرات متكاملة في مختلف تخصصات طب الأسنان.',
+            '<strong>استكشف الخدمات</strong><em>اختر الخدمة المناسبة لك</em>',
+            '<strong>التأمين</strong><em>تحقّق من التغطية التأمينية</em>',
+            '<strong>الفروع</strong><em>ابحث عن أقرب فرع إليك</em>',
+            '<h2>في خدمة مجتمع <span class="nowrap-place">أبوظبي</span> منذ عام 1980</h2>',
+            'لأكثر من أربعة عقود، يقدّم مركز سلوادي لطب الأسنان رعاية تتمحور حول المريض، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.',
+            '<h3>تركيبات الأسنان</h3><p>رعاية تخصصية لترميم الأسنان أو تعويض المفقود منها باستخدام التيجان والجسور والقشور والأطقم وغيرها من الحلول.</p>',
+            '<h3>زراعة الأسنان</h3><p>تعوّض زراعة الأسنان جذور الأسنان المفقودة، ويمكنها دعم التيجان والجسور أو أطقم الأسنان بعد التقييم ووضع خطة العلاج المناسبة.</p>',
+            '<h3>تقويم الأسنان</h3><p>رعاية تخصصية لتقويم الأسنان باستخدام التقويم والصفافات الشفافة وتصحيح اصطفاف الأسنان والإطباق.</p>',
+            '<h3>تجميل الأسنان وتبييضها</h3><p>خدمات تجميلية تشمل هوليوود سمايل، والقشور، وتصميم الابتسامة، وتبييض الأسنان الاحترافي بعد التقييم.</p>',
+            '<h3>الرعاية الوقائية</h3><p>فحوصات دورية وخطط وقائية تساعد على الحفاظ على صحة الفم والأسنان.</p>',
+            '<h3>علاج اللثة</h3><p>رعاية تخصصية للثة والأنسجة الداعمة للأسنان.</p>',
+          ]
+          missing_static = [x for x in static_expected if x not in ar]
+          assert not missing_static, 'Missing/incorrect static Arabic homepage copy:\n' + '\n'.join(missing_static)
 
-          # Story copy should be natural Arabic, not a literal translation.
-          assert 'نخدم <span class="nowrap-place">مرضى أبوظبي</span> منذ عام 1980' in ar
-          assert 'منذ أكثر من أربعة عقود، يحرص مركز سلوادي لطب الأسنان على تقديم رعاية تضع المريض واحتياجاته في المقام الأول، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.' in ar
+          dynamic_expected = [
+            "'One established clinical team.': 'خبرات متكاملة في مختلف تخصصات طب الأسنان.'",
+            "'Find the right care': 'اختر الخدمة المناسبة لك'",
+            "'Insurance accepted': 'تحقّق من التغطية التأمينية'",
+            "'Visit the centre': 'ابحث عن أقرب فرع إليك'",
+            "'Serving Abu Dhabi since 1980.': 'في خدمة مجتمع أبوظبي منذ عام 1980.'",
+            "'For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.': 'لأكثر من أربعة عقود، يقدّم مركز سلوادي لطب الأسنان رعاية تتمحور حول المريض، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.'",
+            "'Cosmetic Dentistry & Teeth Whitening': 'تجميل الأسنان وتبييضها'",
+            "'Specialist restorative care for repairing or replacing teeth with crowns, bridges, veneers, dentures and other prosthetic solutions.': 'رعاية تخصصية لترميم الأسنان أو تعويض المفقود منها باستخدام التيجان والجسور والقشور والأطقم وغيرها من الحلول.'",
+            "'Dental implants replace missing tooth roots and can support crowns, bridges or dentures after clinical assessment and treatment planning.': 'تعوّض زراعة الأسنان جذور الأسنان المفقودة، ويمكنها دعم التيجان والجسور أو أطقم الأسنان بعد التقييم ووضع خطة العلاج المناسبة.'",
+            "'Specialist care for braces, aligners, tooth alignment and bite correction.': 'رعاية تخصصية لتقويم الأسنان باستخدام التقويم والصفافات الشفافة وتصحيح اصطفاف الأسنان والإطباق.'",
+            "'Aesthetic dental care including Hollywood Smile planning, veneers, smile design and professional teeth whitening after assessment.': 'خدمات تجميلية تشمل هوليوود سمايل، والقشور، وتصميم الابتسامة، وتبييض الأسنان الاحترافي بعد التقييم.'",
+            "'Routine examinations, preventive planning and care that supports ongoing oral health.': 'فحوصات دورية وخطط وقائية تساعد على الحفاظ على صحة الفم والأسنان.'",
+            "'Specialist care for the gums and supporting tissues around the teeth.': 'رعاية تخصصية للثة والأنسجة الداعمة للأسنان.'",
+          ]
+          missing_dynamic = [x for x in dynamic_expected if x not in lang]
+          assert not missing_dynamic, 'Missing/incorrect dynamic Arabic mappings:\n' + '\n'.join(missing_dynamic)
 
-          # Dynamic language switching must translate the newer homepage service copy too.
-          expected = {
-            "'Find the right care': 'استعرض خدماتنا العلاجية'",
-            "'Insurance accepted': 'استفسر عن التغطية التأمينية'",
-            "'Visit the centre': 'ابحث عن أقرب فرع'",
-            "'Serving Abu Dhabi since 1980.': 'نخدم مرضى أبوظبي منذ عام 1980.'",
-            "'For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.': 'منذ أكثر من أربعة عقود، يحرص مركز سلوادي لطب الأسنان على تقديم رعاية تضع المريض واحتياجاته في المقام الأول، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.'",
-            "'Cosmetic Dentistry & Teeth Whitening': 'تجميل الأسنان وتبييض الأسنان'",
-            "'Specialist restorative care for repairing or replacing teeth with crowns, bridges, veneers, dentures and other prosthetic solutions.': 'رعاية تخصصية لترميم الأسنان أو تعويضها بالتيجان والجسور والقشور والأطقم وغيرها من الحلول التعويضية.'",
-            "'Dental implants replace missing tooth roots and can support crowns, bridges or dentures after clinical assessment and treatment planning.': 'تعوّض زراعة الأسنان جذور الأسنان المفقودة ويمكن أن تدعم التيجان أو الجسور أو الأطقم بعد التقييم والتخطيط العلاجي.'",
-            "'Aesthetic dental care including Hollywood Smile planning, veneers, smile design and professional teeth whitening after assessment.': 'رعاية تجميلية تشمل هوليوود سمايل والقشور وتصميم الابتسامة وتبييض الأسنان الاحترافي بعد التقييم.'",
-          }
-          missing = [x for x in expected if x not in lang]
-          assert not missing, 'Missing/incorrect Arabic mappings:\n' + '\n'.join(missing)
-
-          # Static Arabic treatment cards must not leak these English strings.
           leaked = [
+            '<h3>Cosmetic Dentistry &amp; Teeth Whitening</h3>',
             'Specialist restorative care for repairing or replacing teeth',
             'Dental implants replace missing tooth roots',
             'Specialist care for braces, aligners, tooth alignment and bite correction.',
             'Aesthetic dental care including Hollywood Smile planning',
             'Routine examinations, preventive planning and care that supports ongoing oral health.',
             'Specialist care for the gums and supporting tissues around the teeth.',
-            '<h3>Cosmetic Dentistry &amp; Teeth Whitening</h3>',
           ]
           offenders = [x for x in leaked if x in ar]
           assert not offenders, 'English treatment copy leaked into Arabic homepage:\n' + '\n'.join(offenders)
