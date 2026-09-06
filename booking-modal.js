@@ -19,6 +19,7 @@
     treatments: [
       ['General Dentistry', 'General Dentistry'],
       ['Preventive Dentistry', 'Preventive Dentistry'],
+      ['Prosthodontics', 'Prosthodontics'],
       ['Cosmetic Dentistry', 'Cosmetic Dentistry'],
       ['Dental Implants', 'Dental Implants'],
       ['Orthodontics', 'Orthodontics'],
@@ -28,7 +29,7 @@
       ['Other / Not sure', 'Other / Not sure'],
     ],
     clinics: [
-      ['Bani Yas Tower', 'Bani Yas Tower'],
+      ['Bani Yas Tower - Corniche Street', 'Bani Yas Tower - Corniche Street'],
       ['Al Raha Mall', 'Al Raha Mall'],
     ],
   };
@@ -53,6 +54,7 @@
     treatments: [
       ['General Dentistry', 'طب الأسنان العام'],
       ['Preventive Dentistry', 'طب الأسنان الوقائي'],
+      ['Prosthodontics', 'تركيبات الأسنان'],
       ['Cosmetic Dentistry', 'طب الأسنان التجميلي'],
       ['Dental Implants', 'زراعة الأسنان'],
       ['Orthodontics', 'تقويم الأسنان'],
@@ -62,7 +64,7 @@
       ['Other / Not sure', 'أخرى / لست متأكداً'],
     ],
     clinics: [
-      ['Bani Yas Tower', 'برج بني ياس'],
+      ['Bani Yas Tower - Corniche Street', 'برج بني ياس - شارع الكورنيش'],
       ['Al Raha Mall', 'الراحة مول'],
     ],
   };
