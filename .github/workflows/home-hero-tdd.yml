@@ -6,30 +6,138 @@ on:
     paths:
       - '.github/workflows/home-hero-tdd.yml'
 
+permissions:
+  contents: write
+
 jobs:
-  verify-red:
+  implement-and-verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Require new responsive Dr Munir hero
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild and verify responsive hero assets
+        run: |
+          set -euo pipefail
+          cat .hero-upload/desktop-*.b64 | tr -d '\n\r ' | base64 -d > assets/munir-home-hero-20260906.webp
+          cat .hero-upload/mobile-*.b64 | tr -d '\n\r ' | base64 -d > assets/munir-home-hero-mobile-20260906.webp
+          python - <<'PY'
+          from pathlib import Path
+          expected = {
+              'assets/munir-home-hero-20260906.webp': 24636,
+              'assets/munir-home-hero-mobile-20260906.webp': 18484,
+          }
+          for filename, expected_size in expected.items():
+              data = Path(filename).read_bytes()
+              assert len(data) == expected_size, f'{filename}: expected {expected_size} bytes, got {len(data)}'
+              assert data[:4] == b'RIFF', f'{filename}: missing RIFF header'
+              assert data[8:12] == b'WEBP', f'{filename}: missing WEBP signature'
+          PY
+          file assets/munir-home-hero-20260906.webp assets/munir-home-hero-mobile-20260906.webp | tee /tmp/hero-file-types.txt
+          grep -q 'Web/P image' /tmp/hero-file-types.txt
+
+      - name: Update English and Arabic homepage hero
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+
+          pages = {
+              'index.html': {
+                  'desktop': 'assets/munir-home-hero-20260906.webp?v=20260906-hero-2',
+                  'mobile': 'assets/munir-home-hero-mobile-20260906.webp?v=20260906-hero-2',
+                  'alt': 'Dr. Munir Silwadi at Dr. Munir Silwadi Dental Centre',
+              },
+              'ar/index.html': {
+                  'desktop': '/assets/munir-home-hero-20260906.webp?v=20260906-hero-2',
+                  'mobile': '/assets/munir-home-hero-mobile-20260906.webp?v=20260906-hero-2',
+                  'alt': 'الدكتور منير سلوادي في مركز الدكتور منير سلوادي لطب الأسنان',
+              },
+          }
+
+          for filename, cfg in pages.items():
+              path = Path(filename)
+              text = path.read_text(encoding='utf-8')
+
+              text, og_count = re.subn(
+                  r'<meta property="og:image" content="https://silwadi\.ae/assets/munir-home-hero(?:[^\"]*)">',
+                  '<meta property="og:image" content="https://silwadi.ae/assets/munir-home-hero-20260906.webp">',
+                  text,
+                  count=1,
+              )
+              assert og_count == 1, f'{filename}: expected one homepage OG image to replace, got {og_count}'
+
+              picture = (
+                  '<picture class="premium-home-hero__media">'
+                  f'<source media="(max-width:760px)" srcset="{cfg["mobile"]}">'
+                  f'<img src="{cfg["desktop"]}" alt="{cfg["alt"]}" width="1400" height="788" decoding="async" fetchpriority="high">'
+                  '</picture>'
+              )
+              text, picture_count = re.subn(
+                  r'<picture class="premium-home-hero__media">.*?</picture>',
+                  lambda _m: picture,
+                  text,
+                  count=1,
+                  flags=re.S,
+              )
+              assert picture_count == 1, f'{filename}: expected one hero picture to replace, got {picture_count}'
+
+              old_desktop = '.premium-home-hero__media img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block;filter:saturate(.92) contrast(1.04) brightness(.84)}'
+              new_desktop = '.premium-home-hero__media img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block;filter:saturate(.96) contrast(1.02) brightness(.94)}'
+              assert old_desktop in text, f'{filename}: desktop hero CSS signature not found'
+              text = text.replace(old_desktop, new_desktop, 1)
+
+              old_mobile = '.premium-home-hero__media img{object-position:72% top;filter:saturate(.92) contrast(1.04) brightness(.82)}'
+              new_mobile = '.premium-home-hero__media img{object-position:center top;filter:saturate(.96) contrast(1.02) brightness(.92)}'
+              assert old_mobile in text, f'{filename}: mobile hero CSS signature not found'
+              text = text.replace(old_mobile, new_mobile, 1)
+
+              old_small = '@media(max-width:430px){.premium-home-hero__media img{object-position:70% top}'
+              new_small = '@media(max-width:430px){.premium-home-hero__media img{object-position:center top}'
+              assert old_small in text, f'{filename}: small-phone hero CSS signature not found'
+              text = text.replace(old_small, new_small, 1)
+
+              path.write_text(text, encoding='utf-8')
+          PY
+          git diff --check
+
+      - name: Verify requested responsive hero state
         run: |
           python - <<'PY'
           from pathlib import Path
 
           checks = {
               'index.html': [
-                  'assets/munir-home-hero-20260906.webp',
-                  'assets/munir-home-hero-mobile-20260906.webp',
+                  'assets/munir-home-hero-20260906.webp?v=20260906-hero-2',
+                  'assets/munir-home-hero-mobile-20260906.webp?v=20260906-hero-2',
                   'https://silwadi.ae/assets/munir-home-hero-20260906.webp',
+                  '<source media="(max-width:760px)"',
+                  'object-position:center top',
               ],
               'ar/index.html': [
-                  '/assets/munir-home-hero-20260906.webp',
-                  '/assets/munir-home-hero-mobile-20260906.webp',
+                  '/assets/munir-home-hero-20260906.webp?v=20260906-hero-2',
+                  '/assets/munir-home-hero-mobile-20260906.webp?v=20260906-hero-2',
                   'https://silwadi.ae/assets/munir-home-hero-20260906.webp',
+                  '<source media="(max-width:760px)"',
+                  'object-position:center top',
               ],
           }
           for filename, needles in checks.items():
               text = Path(filename).read_text(encoding='utf-8')
               for needle in needles:
                   assert needle in text, f'{filename} missing {needle}'
+              assert text.count('premium-home-hero__media"><source') == 1, f'{filename}: unexpected hero picture count'
           PY
+
+      - name: Commit verified hero and clean staging files
+        run: |
+          set -euo pipefail
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add index.html ar/index.html assets/munir-home-hero-20260906.webp assets/munir-home-hero-mobile-20260906.webp
+          git rm -r .hero-upload
+          git rm .github/workflows/home-hero-tdd.yml
+          git diff --cached --check
+          git commit -m 'content: update responsive Dr Munir homepage hero [skip arabic build]'
+          git push
