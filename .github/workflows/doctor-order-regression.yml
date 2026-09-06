@@ -1,0 +1,50 @@
+name: Doctor order regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app.js'
+      - 'doctors.html'
+      - 'ar/doctors.html'
+      - '.github/workflows/doctor-order-regression.yml'
+
+jobs:
+  verify-doctor-order:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify requested doctor grid order
+        run: |
+          python3 <<'PY'
+          import re
+          from pathlib import Path
+
+          js = Path('app.js').read_text(encoding='utf-8')
+          match = re.search(r"const preferredDoctorOrder = \[(.*?)\];", js, re.S)
+          assert match, 'preferredDoctorOrder not found'
+          actual = re.findall(r"'([^']+)'", match.group(1))
+          expected = [
+              'Dr. Munir Silwadi',
+              'Dr. Moheb Silwadi',
+              'Dr. Ahmed El Shehri',
+              'Dr. Hani Hasbini',
+              'Dr. Dana Awad',
+              'Dr. Afnan Mashal',
+              'Dr. Lana Masoud',
+              'Dr. Fahed Abi Khalil',
+              'Dr. Kashmira Pawar Jayprakash',
+              'Dr. Krishnamurthy Balajee',
+              'Dr. Ehab Hassouneh Bassam A',
+              'Dr. Sara Ismail',
+              'Dr. Nachiket Shah',
+              'Dr. Nasr Keshkiea',
+              'Dr. Moammar Mohamed Rifai',
+          ]
+          assert actual == expected, f'Wrong rendered order:\nactual={actual}\nexpected={expected}'
+
+          for page in ['doctors.html', 'ar/doctors.html']:
+              html = Path(page).read_text(encoding='utf-8')
+              for doctor in expected:
+                  assert f'data-name="{doctor}"' in html, f'{doctor} missing from {page}'
+          PY
