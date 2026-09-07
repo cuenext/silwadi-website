@@ -8,6 +8,7 @@ on:
       - 'styles.css'
       - '.github/workflows/footer-branch-contact-regression.yml'
 
+# Verification refresh after applying the shared footer update.
 jobs:
   verify-footer-branch-contacts:
     runs-on: ubuntu-latest
