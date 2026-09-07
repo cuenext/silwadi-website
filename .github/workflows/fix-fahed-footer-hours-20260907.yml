@@ -24,7 +24,7 @@ jobs:
           from pathlib import Path
           import re
 
-          VERSION = '20260907-fahed-png-footer-hours'
+          VERSION = '20260907-fahed-png-footer-hours2'
           SRC = Path('CA01DF50-0B4F-4C3B-91B7-B13D4417FFC4.png')
           OUT = Path('assets/dr-fahed-new.png')
           if not SRC.exists():
@@ -40,14 +40,32 @@ jobs:
           if old_webp.exists():
               old_webp.unlink()
 
-          changed = set([OUT.as_posix()])
-          if old_webp.exists():
-              changed.add(old_webp.as_posix())
+          changed = {OUT.as_posix()}
 
           def save(path: Path, before: str, after: str):
               if after != before:
                   path.write_text(after, encoding='utf-8')
                   changed.add(path.as_posix())
+
+          def update_fahed_directory_card(rel: str, src: str, alt: str):
+              p = Path(rel)
+              before = p.read_text(encoding='utf-8')
+              after = before
+              card_re = re.compile(r'<article class="doctor-directory-card reveal"(?:(?!</article>).)*?dr-fahed-khalil\.html(?:(?!</article>).)*?</article>', re.S)
+              def repl(match):
+                  card = match.group(0)
+                  new_photo = f'<div class="doctor-directory-card__photo"><img src="{src}" alt="{alt}" width="600" height="600" loading="lazy" decoding="async"></div>'
+                  updated, count = re.subn(r'<div class="doctor-directory-card__photo">.*?</div>', new_photo, card, count=1, flags=re.S)
+                  if count != 1:
+                      raise SystemExit('Could not replace Fahed directory photo in ' + rel)
+                  return updated
+              after, count = card_re.subn(repl, after, count=1)
+              if count != 1:
+                  raise SystemExit('Could not find Fahed directory card in ' + rel)
+              save(p, before, after)
+
+          update_fahed_directory_card('doctors.html', 'assets/dr-fahed-new.png?v=' + VERSION, 'Dr. Fahed Abi Khalil')
+          update_fahed_directory_card('ar/doctors.html', '/assets/dr-fahed-new.png?v=' + VERSION, 'د. فهد أبي خليل')
 
           fahed_patterns = [
               re.compile(r'(?P<prefix>(?:https://silwadi\.ae/|/|\.\./)?assets/)dr-fahed-new\.(?:webp|jpg|png)(?:\?v=[^\"\'\s<]*)?'),
@@ -80,7 +98,6 @@ jobs:
               )
               save(p, before, after)
 
-          # Force exact relative paths on Fahed profile pages.
           for rel, src in {
               'doctors/dr-fahed-khalil.html': '../assets/dr-fahed-new.png?v=' + VERSION,
               'ar/doctors/dr-fahed-khalil.html': '/assets/dr-fahed-new.png?v=' + VERSION,
@@ -88,28 +105,13 @@ jobs:
               p = Path(rel)
               before = p.read_text(encoding='utf-8')
               after = before
-              after, portrait_count = re.subn(
-                  r'(<div class="consultant-portrait__frame"><img src=")[^"]+(")',
-                  r'\1' + src + r'\2',
-                  after,
-                  count=1,
-              )
+              after, portrait_count = re.subn(r'(<div class="consultant-portrait__frame"><img src=")[^"]+(")', r'\1' + src + r'\2', after, count=1)
               if portrait_count != 1:
                   raise SystemExit('Could not update Fahed profile portrait in ' + rel)
-              after, og_count = re.subn(
-                  r'(<meta property="og:image" content=")[^"]+(")',
-                  r'\1https://silwadi.ae/assets/dr-fahed-new.png\2',
-                  after,
-                  count=1,
-              )
+              after, og_count = re.subn(r'(<meta property="og:image" content=")[^"]+(")', r'\1https://silwadi.ae/assets/dr-fahed-new.png\2', after, count=1)
               if og_count != 1:
                   raise SystemExit('Could not update Fahed og:image in ' + rel)
-              after, schema_count = re.subn(
-                  r'("image":")[^"]+(")',
-                  r'\1https://silwadi.ae/assets/dr-fahed-new.png\2',
-                  after,
-                  count=1,
-              )
+              after, schema_count = re.subn(r'("image":")[^"]+(")', r'\1https://silwadi.ae/assets/dr-fahed-new.png\2', after, count=1)
               if schema_count != 1:
                   raise SystemExit('Could not update Fahed schema image in ' + rel)
               save(p, before, after)
