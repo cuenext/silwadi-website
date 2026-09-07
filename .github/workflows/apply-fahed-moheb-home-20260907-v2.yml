@@ -1,0 +1,298 @@
+name: Apply Fahed portrait and Moheb homepage v2
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Patch site
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import base64
+          import os
+          import re
+
+          VERSION = "20260907-fahed-moheb"
+          WEBP_B64 = """
+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
+cglcbvtp2X/YcWvlYMNFEWub
+          """.strip().replace("\n", "")
+
+          asset = Path("assets/dr-fahed-new.webp")
+          asset.write_bytes(base64.b64decode(WEBP_B64))
+          data = asset.read_bytes()
+          if not (data.startswith(b"RIFF") and data[8:12] == b"WEBP"):
+              raise SystemExit("Generated Dr Fahed asset is not a valid WebP")
+          if len(data) < 8000:
+              raise SystemExit(f"Generated Dr Fahed asset is suspiciously small: {len(data)} bytes")
+          print(f"Wrote {asset} ({len(data)} bytes)")
+
+          changed = set()
+
+          def write_if_changed(path: Path, text: str, new: str):
+              if new != text:
+                  path.write_text(new, encoding="utf-8")
+                  changed.add(path.as_posix())
+
+          old_fahed_patterns = [
+              re.compile(r"(?P<prefix>(?:https://silwadi\.ae/|/|\.\./)?assets/)doctors/optimized/dr-fahed-khalil\.webp(?:\?v=[^\"'\s<]*)?"),
+              re.compile(r"(?P<prefix>(?:https://silwadi\.ae/|/|\.\./)?assets/)doctors/dr-fahed-khalil\.png(?:\?v=[^\"'\s<]*)?"),
+          ]
+
+          def fahed_repl(match):
+              return match.group("prefix") + "dr-fahed-new.webp?v=" + VERSION
+
+          for path in Path(".").rglob("*"):
+              if path.is_dir() or ".git" in path.parts:
+                  continue
+              if path.suffix.lower() not in {".html", ".js", ".json", ".xml", ".css"}:
+                  continue
+              text = path.read_text(encoding="utf-8", errors="ignore")
+              new = text
+              for pattern in old_fahed_patterns:
+                  new = pattern.sub(fahed_repl, new)
+              new = new.replace("dr-fahed-new.webp.webp", "dr-fahed-new.webp")
+              write_if_changed(path, text, new)
+
+          fahed_profiles = {
+              "doctors/dr-fahed-khalil.html": "../assets/dr-fahed-new.webp?v=" + VERSION,
+              "ar/doctors/dr-fahed-khalil.html": "/assets/dr-fahed-new.webp?v=" + VERSION,
+          }
+          portrait_re = re.compile(r'(<div class="consultant-portrait__frame"><img src=")[^"]+(")')
+          og_re = re.compile(r'(<meta property="og:image" content=")[^"]+(")')
+          schema_image_re = re.compile(r'("image":")[^"]+(")')
+
+          for rel, src in fahed_profiles.items():
+              path = Path(rel)
+              if not path.exists():
+                  raise SystemExit(f"Missing expected Dr Fahed profile page: {rel}")
+              text = path.read_text(encoding="utf-8")
+              new, n = portrait_re.subn(r"\1" + src + r"\2", text, count=1)
+              if n != 1:
+                  raise SystemExit(f"Could not update profile portrait in {rel}")
+              absolute = "https://silwadi.ae/assets/dr-fahed-new.webp"
+              new, n = og_re.subn(r"\1" + absolute + r"\2", new, count=1)
+              if n != 1:
+                  raise SystemExit(f"Could not update og:image in {rel}")
+              new, n = schema_image_re.subn(r"\1" + absolute + r"\2", new, count=1)
+              if n != 1:
+                  raise SystemExit(f"Could not update schema image in {rel}")
+              write_if_changed(path, text, new)
+
+          def extract_doctors_section(text: str):
+              start = text.find('<section class="section" id="doctors">')
+              if start < 0:
+                  raise SystemExit("Homepage doctors section not found")
+              end = text.find("</section>", start)
+              if end < 0:
+                  raise SystemExit("Homepage doctors section end not found")
+              end += len("</section>")
+              return start, end, text[start:end]
+
+          def add_moheb_home_card(path_str: str, arabic: bool):
+              path = Path(path_str)
+              text = path.read_text(encoding="utf-8")
+              start, end, section = extract_doctors_section(text)
+
+              if "dr-moheb-silwadi.html" in section:
+                  print(f"Moheb already present in homepage doctors section: {path_str}")
+                  return
+
+              if arabic:
+                  moheb_card = (
+                      '<article class="doctor-card reveal"><div class="doctor-card__photo">'
+                      '<img src="/assets/dr-moheb-new.webp?v=' + VERSION + '" alt="د. مهيب سلوادي" width="600" height="600" loading="lazy" decoding="async">'
+                      '</div><div class="doctor-card__body"><h3>د. مهيب سلوادي</h3><p>طبيب أسنان عام</p>'
+                      '<a href="/ar/doctors/dr-moheb-silwadi.html">عرض الملف <span>→</span></a></div></article>'
+                  )
+                  munir_name = "د. منير سلوادي"
+              else:
+                  moheb_card = (
+                      '<article class="doctor-card reveal"><div class="doctor-card__photo">'
+                      '<img src="assets/dr-moheb-new.webp?v=' + VERSION + '" alt="Dr. Moheb Silwadi" width="600" height="600" loading="lazy" decoding="async">'
+                      '</div><div class="doctor-card__body"><h3>Dr. Moheb Silwadi</h3><p>General Dentist</p>'
+                      '<a href="doctors/dr-moheb-silwadi.html">View profile <span>→</span></a></div></article>'
+                  )
+                  munir_name = "Dr. Munir Silwadi"
+
+              card_re = re.compile(r'<article class="doctor-card reveal">(?:(?!</article>).)*?<h3>' + re.escape(munir_name) + r'</h3>.*?</article>', re.S)
+              m = card_re.search(section)
+              if not m:
+                  raise SystemExit(f"Could not find Munir card in {path_str}")
+              new_section = section[:m.end()] + moheb_card + section[m.end():]
+              new = text[:start] + new_section + text[end:]
+              write_if_changed(path, text, new)
+              print(f"Inserted Moheb homepage doctor card after Munir in {path_str}")
+
+          add_moheb_home_card("index.html", arabic=False)
+          add_moheb_home_card("ar/index.html", arabic=True)
+
+          css_path = Path("styles.css")
+          css = css_path.read_text(encoding="utf-8")
+          css_new = css.replace(
+              ".featured-doctors{display:grid;grid-template-columns:repeat(5,1fr);gap:18px}",
+              ".featured-doctors{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:18px}"
+          )
+          if css_new == css and "grid-template-columns:repeat(auto-fit,minmax(170px,1fr))" not in css:
+              css_new = css + "\n\n/* Homepage doctor cards support six featured profiles. */\n.featured-doctors{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}\n"
+          write_if_changed(css_path, css, css_new)
+
+          if '<meta name="google-site-verification" content="D04F_KM2zspLqt5BKQidBerlHgPB9dc_ngJSAbPDEuE" />' not in Path("index.html").read_text(encoding="utf-8"):
+              raise SystemExit("Homepage Google verification tag changed or missing")
+
+          for rel, src in fahed_profiles.items():
+              text = Path(rel).read_text(encoding="utf-8")
+              if src not in text:
+                  raise SystemExit(f"Expected Dr Fahed portrait src missing in {rel}")
+              clean = src.split("?", 1)[0]
+              resolved = Path(clean.lstrip("/")) if clean.startswith("/") else Path(os.path.normpath((Path(rel).parent / clean).as_posix()))
+              if not resolved.exists():
+                  raise SystemExit(f"Dr Fahed profile path does not resolve: {rel} -> {src} -> {resolved}")
+              data = resolved.read_bytes()
+              if not (data.startswith(b"RIFF") and data[8:12] == b"WEBP"):
+                  raise SystemExit(f"Dr Fahed profile image is not valid WebP: {resolved}")
+
+          for rel in ["doctors.html", "ar/doctors.html", "doctors/dr-fahed-khalil.html", "ar/doctors/dr-fahed-khalil.html"]:
+              text = Path(rel).read_text(encoding="utf-8")
+              if "dr-fahed-new.webp" not in text:
+                  raise SystemExit(f"New Dr Fahed image not referenced in {rel}")
+
+          def verify_home_order(path_str, names):
+              text = Path(path_str).read_text(encoding="utf-8")
+              _, _, section = extract_doctors_section(text)
+              found = re.findall(r'<h3>(.*?)</h3>', section)
+              if found[:len(names)] != names:
+                  raise SystemExit(f"Unexpected homepage doctor order in {path_str}: {found[:len(names)]}")
+              if section.count("dr-moheb-silwadi.html") != 1:
+                  raise SystemExit(f"Moheb homepage card missing or duplicated in {path_str}")
+              print(f"Homepage order OK in {path_str}: {found[:len(names)]}")
+
+          verify_home_order("index.html", ["Dr. Munir Silwadi", "Dr. Moheb Silwadi"])
+          verify_home_order("ar/index.html", ["د. منير سلوادي", "د. مهيب سلوادي"])
+
+          bad = []
+          for path in Path(".").rglob("*"):
+              if path.is_dir() or ".git" in path.parts:
+                  continue
+              if path.suffix.lower() not in {".html", ".js", ".json", ".xml", ".css"}:
+                  continue
+              if ".webp.webp" in path.read_text(encoding="utf-8", errors="ignore"):
+                  bad.append(path.as_posix())
+          if bad:
+              raise SystemExit("Malformed .webp.webp remains in: " + ", ".join(bad))
+
+          print("Changed files:", sorted(changed))
+          print("Verification passed")
+          PY
+
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm --ignore-unmatch ".github/workflows/apply-fahed-moheb-home-20260907.yml" ".github/workflows/apply-fahed-moheb-home-20260907-v2.yml"
+          git add -A
+          git status --short
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update Dr Fahed portrait and add Moheb to homepage [skip arabic build]"
+            git push
+          fi
