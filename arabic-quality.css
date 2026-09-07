@@ -72,3 +72,6 @@ html[dir="rtl"] input,html[dir="rtl"] textarea,html[dir="rtl"] select,.static-ar
   html[dir="rtl"] .legacy-facts strong,.static-arabic .legacy-facts strong{white-space:normal;line-height:1.35!important}
   html[dir="rtl"] .legacy-facts span,.static-arabic .legacy-facts span{line-height:1.55!important}
 }
+
+/* Footer logo: visually remove the white image background on the light footer without changing the logo asset. */
+.site-footer-logo{background:transparent!important;mix-blend-mode:multiply}
