@@ -1,0 +1,74 @@
+name: Apply doctor photo and homepage refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-doctor-photo-home-refresh.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update homepage featured doctors and cache-bust portraits
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          version = '20260907-doctorphotos-1'
+
+          en_cards = '''<div class="featured-doctors"><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-munir-silwadi.webp" alt="Dr. Munir Silwadi" width="720" height="720" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Munir Silwadi</h3><p>Specialist Prosthodontist & Implantologist</p><a href="doctors/dr-munir-silwadi.html">View profile <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-hani-hasbini.webp" alt="Dr. Hani Hasbini" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Hani Hasbini</h3><p>Consultant Orthodontist</p><a href="doctors.html">View medical team <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-kashmira-pawar-jayprakash.webp" alt="Dr. Kashmira Pawar Jayprakash" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Kashmira Pawar Jayprakash</h3><p>Specialist Pediatric Dentist</p><a href="doctors.html">View medical team <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-dana-awad.webp" alt="Dr. Dana Awad" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Dana Awad</h3><p>General Dentist</p><a href="doctors.html">View medical team <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-ahmed-el-shehri.webp?v=20260907-doctorphotos-1" alt="Dr. Ahmed El Shehri" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Ahmed El Shehri</h3><p>Specialist Endodontist</p><a href="doctors.html">View medical team <span>→</span></a></div></article></div>'''
+
+          ar_cards = '''<div class="featured-doctors"><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-munir-silwadi.webp" alt="د. منير سلوادي" width="720" height="720" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. منير سلوادي</h3><p>اختصاصي تركيبات وزراعة الأسنان</p><a href="/ar/doctors/dr-munir-silwadi.html">عرض الملف <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-hani-hasbini.webp" alt="د. هاني حسبيني" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. هاني حسبيني</h3><p>استشاري تقويم أسنان</p><a href="/ar/doctors.html">عرض الفريق الطبي <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-kashmira-pawar-jayprakash.webp" alt="د. كاشميرا باوار جايبراكاش" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. كاشميرا باوار جايبراكاش</h3><p>اختصاصي طب أسنان الأطفال</p><a href="/ar/doctors.html">عرض الفريق الطبي <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-dana-awad.webp" alt="د. دانا عوض" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. دانا عوض</h3><p>طبيب أسنان عام</p><a href="/ar/doctors.html">عرض الفريق الطبي <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-ahmed-el-shehri.webp?v=20260907-doctorphotos-1" alt="د. أحمد الشهري" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. أحمد الشهري</h3><p>اختصاصي علاج جذور الأسنان</p><a href="/ar/doctors.html">عرض الفريق الطبي <span>→</span></a></div></article></div>'''
+
+          def replace_featured(path, replacement):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              pattern = r'<div class="featured-doctors">.*?</div><div class="section-link reveal">'
+              new_text, n = re.subn(pattern, replacement + '<div class="section-link reveal">', text, count=1, flags=re.S)
+              assert n == 1, f'Expected one featured-doctors section in {path}, got {n}'
+              p.write_text(new_text, encoding='utf-8')
+
+          replace_featured('index.html', en_cards)
+          replace_featured('ar/index.html', ar_cards)
+
+          css_path = Path('styles.css')
+          css = css_path.read_text(encoding='utf-8')
+          css, n = re.subn(r'(\.featured-doctors\{display:grid;grid-template-columns:)repeat\(4,1fr\)', r'\1repeat(5,1fr)', css, count=1)
+          assert n == 1, f'Expected one desktop 4-column featured grid, got {n}'
+          css_path.write_text(css, encoding='utf-8')
+
+          photo_files = [
+              'dr-moammer-rifai.webp',
+              'dr-ahmed-el-shehri.webp',
+              'dr-fahed-khalil.webp',
+              'dr-nasr-keshkiea.webp',
+          ]
+          for html in Path('.').rglob('*.html'):
+              text = html.read_text(encoding='utf-8')
+              original = text
+              for filename in photo_files:
+                  text = re.sub(rf'{re.escape(filename)}(?:\?[^\"\']*)?', f'{filename}?v={version}', text)
+              if text != original:
+                  html.write_text(text, encoding='utf-8')
+
+          print('Applied doctor portrait cache busting and five-doctor homepage lineup')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add index.html ar/index.html styles.css '*.html' ar doctors treatments || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "feat: update doctor portraits and homepage lineup [skip arabic build]"
+            git push
+          fi
