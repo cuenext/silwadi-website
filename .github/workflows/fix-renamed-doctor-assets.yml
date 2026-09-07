@@ -1,0 +1,128 @@
+name: Fix renamed doctor assets
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-renamed-doctor-assets.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Copy clean assets, patch references, and verify
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          import subprocess
+
+          repo = Path('.')
+          clean = {
+              'nasr': ('assets/dr-nasr-new', 'assets/dr-nasr-new.png'),
+              'moheb': ('assets/dr-moheb-new', 'assets/dr-moheb-new.png'),
+              'ahmed': ('assets/dr-ahmed-new', 'assets/dr-ahmed-new.png'),
+              'moammar': ('assets/dr-moammer-new', 'assets/dr-moammer-new.png'),
+          }
+          changed = set()
+
+          def is_png(path: Path):
+              return path.read_bytes()[:8] == b'\x89PNG\r\n\x1a\n'
+
+          for key, (src, dst) in clean.items():
+              srcp, dstp = Path(src), Path(dst)
+              assert srcp.exists(), f'Missing renamed upload: {src}'
+              assert srcp.stat().st_size > 1000, f'Upload too small: {src}'
+              assert is_png(srcp), f'Upload is not a valid PNG by signature: {src}'
+              if not dstp.exists() or dstp.read_bytes() != srcp.read_bytes():
+                  dstp.write_bytes(srcp.read_bytes())
+                  changed.add(dst)
+
+          replacements = {
+              'assets/ChatGPT Image Sep 7, 2026, 12_00_09 PM.png': 'assets/dr-nasr-new.png',
+              '/assets/ChatGPT Image Sep 7, 2026, 12_00_09 PM.png': '/assets/dr-nasr-new.png',
+              '../assets/ChatGPT Image Sep 7, 2026, 12_00_09 PM.png': '../assets/dr-nasr-new.png',
+              '../../assets/ChatGPT Image Sep 7, 2026, 12_00_09 PM.png': '../../assets/dr-nasr-new.png',
+              'assets/ChatGPT Image Sep 7, 2026, 12_06_32 PM.png': 'assets/dr-moheb-new.png',
+              '/assets/ChatGPT Image Sep 7, 2026, 12_06_32 PM.png': '/assets/dr-moheb-new.png',
+              '../assets/ChatGPT Image Sep 7, 2026, 12_06_32 PM.png': '../assets/dr-moheb-new.png',
+              '../../assets/ChatGPT Image Sep 7, 2026, 12_06_32 PM.png': '../../assets/dr-moheb-new.png',
+              'assets/ChatGPT Image Sep 7, 2026, 12_28_03 PM.png': 'assets/dr-ahmed-new.png',
+              '/assets/ChatGPT Image Sep 7, 2026, 12_28_03 PM.png': '/assets/dr-ahmed-new.png',
+              '../assets/ChatGPT Image Sep 7, 2026, 12_28_03 PM.png': '../assets/dr-ahmed-new.png',
+              '../../assets/ChatGPT Image Sep 7, 2026, 12_28_03 PM.png': '../../assets/dr-ahmed-new.png',
+              'assets/ChatGPT Image Sep 7, 2026, 12_28_24 PM.png': 'assets/dr-moammer-new.png',
+              '/assets/ChatGPT Image Sep 7, 2026, 12_28_24 PM.png': '/assets/dr-moammer-new.png',
+              '../assets/ChatGPT Image Sep 7, 2026, 12_28_24 PM.png': '../assets/dr-moammer-new.png',
+              '../../assets/ChatGPT Image Sep 7, 2026, 12_28_24 PM.png': '../../assets/dr-moammer-new.png',
+          }
+
+          old_optimized = {
+              'dr-nasr-keshkiea.webp': 'dr-nasr-new.png',
+              'dr-moheb-silwadi.webp': 'dr-moheb-new.png',
+              'dr-ahmed-el-shehri.webp': 'dr-ahmed-new.png',
+              'dr-moammer-rifai.webp': 'dr-moammer-new.png',
+              'dr-moammar-rifai.webp': 'dr-moammer-new.png',
+          }
+
+          def patch_text(path: Path):
+              old = path.read_text(encoding='utf-8')
+              new = old
+              for a, b in replacements.items():
+                  new = new.replace(a, b)
+              for old_name, new_name in old_optimized.items():
+                  pat = re.compile(r'((?:\.\./)*|/)assets/doctors/optimized/' + re.escape(old_name) + r'(?:\?[^"\'\s<>)]*)?')
+                  new = pat.sub(lambda m, n=new_name: f'{m.group(1)}assets/{n}', new)
+              if new != old:
+                  path.write_text(new, encoding='utf-8')
+                  changed.add(path.as_posix())
+
+          for path in repo.rglob('*'):
+              if path.is_dir() or '.git' in path.parts or path.suffix not in {'.html', '.js', '.json', '.css', '.xml'}:
+                  continue
+              patch_text(path)
+
+          # Ensure homepage featured order remains exact after asset swap.
+          def read(p): return Path(p).read_text(encoding='utf-8')
+          for page, names in {
+              'index.html': ['Dr. Munir Silwadi','Dr. Hani Hasbini','Dr. Kashmira Pawar Jayprakash','Dr. Dana Awad','Dr. Ahmed El Shehri'],
+              'ar/index.html': ['د. منير سلوادي','د. هاني حسبيني','د. كاشميرا باوار جايبراكاش','د. دانا عوض','د. أحمد الشهري'],
+          }.items():
+              text = read(page)
+              block = re.search(r'<div class="featured-doctors">(.*?)</div><div class="section-link reveal">', text, flags=re.S)
+              assert block, f'Missing featured block in {page}'
+              actual = re.findall(r'<h3>(.*?)</h3>', block.group(1))
+              assert actual == names, f'Wrong featured order in {page}: {actual}'
+
+          # Verify no corrupted long filenames or old webp refs remain in code.
+          bad_tokens = ['ChatGPT Image Sep 7, 2026', 'dr-nasr-keshkiea.webp', 'dr-moheb-silwadi.webp', 'dr-ahmed-el-shehri.webp', 'dr-moammer-rifai.webp', 'dr-moammar-rifai.webp']
+          for path in repo.rglob('*'):
+              if path.is_dir() or '.git' in path.parts or path.suffix not in {'.html', '.js', '.json', '.css', '.xml'}:
+                  continue
+              txt = path.read_text(encoding='utf-8')
+              for token in bad_tokens:
+                  assert token not in txt, f'Bad token remains in {path}: {token}'
+
+          # Verify all target doctor pages/index pages reference the clean PNGs.
+          expected = ['assets/dr-nasr-new.png', 'assets/dr-moheb-new.png', 'assets/dr-ahmed-new.png', 'assets/dr-moammer-new.png']
+          combined = '\n'.join(p.read_text(encoding='utf-8') for p in repo.rglob('*.html'))
+          for e in expected:
+              assert e in combined or e.replace('assets/', '/assets/') in combined or e.replace('assets/', '../assets/') in combined, f'Missing expected clean asset ref: {e}'
+
+          if changed:
+              subprocess.run(['git','config','user.name','ADVA Site Automation'], check=True)
+              subprocess.run(['git','config','user.email','actions@users.noreply.github.com'], check=True)
+              subprocess.run(['git','add',*sorted(changed)], check=True)
+              subprocess.run(['git','commit','-m','Fix doctor portrait assets and homepage featured doctors [skip arabic build]'], check=True)
+              subprocess.run(['git','push'], check=True)
+              print('Committed fixed assets and refs:')
+              for f in sorted(changed): print('-', f)
+          else:
+              print('No changes needed')
+          PY
