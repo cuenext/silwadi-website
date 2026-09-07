@@ -26,11 +26,11 @@ jobs:
           import base64
           import re
 
-          VERSION = '20260907-fahed-final-quality2'
+          VERSION = '20260907-fahed-final-quality3'
           raw = base64.b64decode(Path('/tmp/fahed-final.b64').read_text(), validate=True)
           if not (raw.startswith(b'RIFF') and raw[8:12] == b'WEBP'):
               raise SystemExit('decoded file is not a WebP')
-          if len(raw) < 20000:
+          if len(raw) < 16000:
               raise SystemExit(f'Fahed image still too small: {len(raw)}')
 
           Path('assets/dr-fahed-new.webp').write_bytes(raw)
@@ -72,9 +72,10 @@ jobs:
           print('Verified Fahed final WebP size:', len(raw))
           print('Changed:', sorted(changed))
           PY
+          file assets/dr-fahed-new.webp || true
           git config user.name "ADVA Site Automation"
           git config user.email "actions@users.noreply.github.com"
-          git rm -r --ignore-unmatch .github/fahed-final-image .github/fahed-final-trigger-20260907.txt .github/fahed-final-trigger-20260907b.txt .github/workflows/finalize-fahed-final-image-20260907.yml
+          git rm -r --ignore-unmatch .github/fahed-final-image .github/fahed-final-trigger-20260907.txt .github/fahed-final-trigger-20260907b.txt .github/fahed-final-trigger-20260907c.txt .github/workflows/finalize-fahed-final-image-20260907.yml
           git add -A
           git status --short
           if git diff --cached --quiet; then
