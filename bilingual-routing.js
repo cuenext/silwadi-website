@@ -71,32 +71,3 @@
     window.history.replaceState({}, '', `${target}${window.location.hash || ''}`);
   }, true);
 })();
-
-// Use the exact uploaded Dr. Fahed portrait that is already proven to load on Pages.
-(function preloadFahedPortrait() {
-  const path = window.location.pathname || '';
-  const isFahedRelevantPage = /(?:^|\/)(?:ar\/)?doctors(?:\.html|\/dr-fahed-khalil\.html)$/.test(path);
-  if (!isFahedRelevantPage) return;
-
-  const fahedSrc = '/assets/CA01DF50-0B4F-4C3B-91B7-B13D4417FFC4.png?v=20260907-fahed-proven1';
-  const preload = document.createElement('link');
-  preload.rel = 'preload';
-  preload.as = 'image';
-  preload.href = fahedSrc;
-  preload.type = 'image/png';
-  document.head.appendChild(preload);
-
-  const applyFahedPortrait = () => {
-    document.querySelectorAll('img[alt="Dr. Fahed Abi Khalil"], img[alt="د. فهد أبي خليل"]').forEach(image => {
-      if (image.getAttribute('src') !== fahedSrc) image.setAttribute('src', fahedSrc);
-      image.decoding = 'async';
-      if (path.includes('dr-fahed-khalil.html')) {
-        image.loading = 'eager';
-        image.fetchPriority = 'high';
-      }
-    });
-  };
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyFahedPortrait, { once: true });
-  else applyFahedPortrait();
-})();
