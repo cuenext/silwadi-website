@@ -1,0 +1,90 @@
+name: Finalize Fahed image quality
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Replace Fahed image with verified asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/fahed-final-image/part-*.b64 | tr -d '\n\r' > /tmp/fahed-final.b64
+          python3 <<'PY'
+          from pathlib import Path
+          import base64
+          import hashlib
+          import re
+
+          VERSION = '20260907-fahed-final-quality'
+          expected = 'a86bcde3d2728294b5e962acdce010416b760d1d4c6015a28dbac2cff8931c80'
+          raw = base64.b64decode(Path('/tmp/fahed-final.b64').read_text())
+          digest = hashlib.sha256(raw).hexdigest()
+          if digest != expected:
+              raise SystemExit(f'bad sha256 {digest}')
+          if not (raw.startswith(b'RIFF') and raw[8:12] == b'WEBP'):
+              raise SystemExit('decoded file is not a WebP')
+          if len(raw) != 22382:
+              raise SystemExit(f'unexpected Fahed image size {len(raw)}')
+
+          Path('assets/dr-fahed-new.webp').write_bytes(raw)
+
+          text_exts = {'.html', '.js', '.json', '.css', '.xml'}
+          changed = {'assets/dr-fahed-new.webp'}
+          for path in Path('.').rglob('*'):
+              if path.is_dir() or '.git' in path.parts or path.suffix.lower() not in text_exts:
+                  continue
+              original = path.read_text(encoding='utf-8', errors='ignore')
+              updated = re.sub(
+                  r'dr-fahed-new\.webp(?:\?v=[^\"\'\s<]*)?',
+                  f'dr-fahed-new.webp?v={VERSION}',
+                  original,
+              )
+              updated = updated.replace('dr-fahed-new.webp.webp', 'dr-fahed-new.webp')
+              if updated != original:
+                  path.write_text(updated, encoding='utf-8')
+                  changed.add(path.as_posix())
+
+          checks = [
+              'doctors.html',
+              'ar/doctors.html',
+              'doctors/dr-fahed-khalil.html',
+              'ar/doctors/dr-fahed-khalil.html',
+          ]
+          for rel in checks:
+              text = Path(rel).read_text(encoding='utf-8')
+              if f'dr-fahed-new.webp?v={VERSION}' not in text:
+                  raise SystemExit(f'Fahed new image version missing in {rel}')
+          home = Path('index.html').read_text(encoding='utf-8')
+          if 'Dr. Munir Silwadi' not in home or 'Dr. Moheb Silwadi' not in home:
+              raise SystemExit('Moheb homepage card missing')
+          if home.find('Dr. Moheb Silwadi') < home.find('Dr. Munir Silwadi'):
+              raise SystemExit('Moheb is not after Munir')
+          if '<meta name="google-site-verification" content="D04F_KM2zspLqt5BKQidBerlHgPB9dc_ngJSAbPDEuE" />' not in home:
+              raise SystemExit('Google verification tag missing')
+
+          print('Verified Fahed final WebP:', len(raw), digest)
+          print('Changed:', sorted(changed))
+          PY
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm -r --ignore-unmatch .github/fahed-final-image .github/fahed-final-trigger-20260907.txt .github/workflows/finalize-fahed-final-image-20260907.yml
+          git add -A
+          git status --short
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Finalize Dr Fahed image quality"
+            git push
+          fi
