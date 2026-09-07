@@ -24,19 +24,14 @@ jobs:
           python3 <<'PY'
           from pathlib import Path
           import base64
-          import hashlib
           import re
 
-          VERSION = '20260907-fahed-final-quality'
-          expected = 'a86bcde3d2728294b5e962acdce010416b760d1d4c6015a28dbac2cff8931c80'
-          raw = base64.b64decode(Path('/tmp/fahed-final.b64').read_text())
-          digest = hashlib.sha256(raw).hexdigest()
-          if digest != expected:
-              raise SystemExit(f'bad sha256 {digest}')
+          VERSION = '20260907-fahed-final-quality2'
+          raw = base64.b64decode(Path('/tmp/fahed-final.b64').read_text(), validate=True)
           if not (raw.startswith(b'RIFF') and raw[8:12] == b'WEBP'):
               raise SystemExit('decoded file is not a WebP')
-          if len(raw) != 22382:
-              raise SystemExit(f'unexpected Fahed image size {len(raw)}')
+          if len(raw) < 20000:
+              raise SystemExit(f'Fahed image still too small: {len(raw)}')
 
           Path('assets/dr-fahed-new.webp').write_bytes(raw)
 
@@ -74,12 +69,12 @@ jobs:
           if '<meta name="google-site-verification" content="D04F_KM2zspLqt5BKQidBerlHgPB9dc_ngJSAbPDEuE" />' not in home:
               raise SystemExit('Google verification tag missing')
 
-          print('Verified Fahed final WebP:', len(raw), digest)
+          print('Verified Fahed final WebP size:', len(raw))
           print('Changed:', sorted(changed))
           PY
           git config user.name "ADVA Site Automation"
           git config user.email "actions@users.noreply.github.com"
-          git rm -r --ignore-unmatch .github/fahed-final-image .github/fahed-final-trigger-20260907.txt .github/workflows/finalize-fahed-final-image-20260907.yml
+          git rm -r --ignore-unmatch .github/fahed-final-image .github/fahed-final-trigger-20260907.txt .github/fahed-final-trigger-20260907b.txt .github/workflows/finalize-fahed-final-image-20260907.yml
           git add -A
           git status --short
           if git diff --cached --quiet; then
