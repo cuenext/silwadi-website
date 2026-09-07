@@ -1,0 +1,95 @@
+name: Apply Dr Afnan portrait references
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-afnan-ref-update-20260907.yml'
+      - 'assets/dr-afnan-new.webp'
+
+permissions:
+  contents: write
+
+jobs:
+  update-afnan-refs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Update Dr Afnan portrait references
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          version = "20260907-afnan"
+          img = Path("assets/dr-afnan-new.webp")
+          if not img.exists():
+              raise SystemExit("assets/dr-afnan-new.webp missing")
+          data = img.read_bytes()
+          if len(data) < 10000:
+              raise SystemExit(f"Afnan image too small: {len(data)} bytes")
+          if not (data.startswith(b"RIFF") and data[8:12] == b"WEBP"):
+              raise SystemExit("Afnan image is not a valid WebP")
+          print(f"Afnan image OK: {len(data)} bytes")
+
+          text_exts = {".html", ".js", ".json", ".xml", ".css"}
+          new_ref = f"assets/dr-afnan-new.webp?v={version}"
+          updated = []
+
+          for path in Path(".").rglob("*"):
+              if path.is_dir() or ".git" in path.parts or path.suffix not in text_exts:
+                  continue
+              try:
+                  text = path.read_text(encoding="utf-8")
+              except UnicodeDecodeError:
+                  continue
+
+              new = text
+              for old in [
+                  "assets/doctors/optimized/dr-afnan-mashal.webp",
+                  "assets/doctors/dr-afnan-mashal.webp",
+                  "assets/dr-afnan-new.webp",
+              ]:
+                  pattern = re.compile(r"((?:\.\./)*|/)?" + re.escape(old) + r"(?:\?[^\"'\s<>)]*)?")
+                  new = pattern.sub(lambda m, new_ref=new_ref: (m.group(1) or "") + new_ref, new)
+
+              if new != text:
+                  path.write_text(new, encoding="utf-8")
+                  updated.append(path.as_posix())
+                  print(f"Updated {path}")
+
+          required = [
+              Path("doctors.html"),
+              Path("ar/doctors.html"),
+              Path("doctors/dr-afnan-mashal.html"),
+              Path("ar/doctors/dr-afnan-mashal.html"),
+          ]
+          for page in required:
+              if not page.exists():
+                  raise SystemExit(f"Missing expected page: {page}")
+              text = page.read_text(encoding="utf-8")
+              if "dr-afnan-new.webp?v=20260907-afnan" not in text:
+                  raise SystemExit(f"New Afnan image reference missing in {page}")
+
+          for path in Path(".").rglob("*"):
+              if path.is_dir() or ".git" in path.parts or path.suffix not in {".html", ".js", ".json"}:
+                  continue
+              text = path.read_text(encoding="utf-8", errors="ignore")
+              if "assets/doctors/optimized/dr-afnan-mashal.webp" in text or "assets/doctors/dr-afnan-mashal.webp" in text:
+                  raise SystemExit(f"Old Afnan image reference still exists in {path}")
+
+          print("Verification passed")
+          PY
+
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm --ignore-unmatch ".github/workflows/apply-afnan-ref-update-20260907.yml"
+          git add -A assets/dr-afnan-new.webp doctors.html ar/doctors.html doctors/dr-afnan-mashal.html ar/doctors/dr-afnan-mashal.html .github/workflows/apply-afnan-ref-update-20260907.yml
+          git status --short
+          git commit -m "Update Dr Afnan portrait references [skip arabic build]"
+          git push
