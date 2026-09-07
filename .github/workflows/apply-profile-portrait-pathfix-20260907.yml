@@ -1,0 +1,147 @@
+name: Fix doctor profile portrait paths
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  fix-profile-portrait-paths:
+    if: github.event.head_commit.message != 'Fix doctor profile portrait image paths [skip arabic build]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch profile portrait paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import os
+          import re
+
+          version = "20260907-profilefix"
+
+          profile_srcs = {
+              "doctors/dr-munir-silwadi.html": "../assets/dr-munir-new.webp?v=" + version,
+              "doctors/dr-moheb-silwadi.html": "../assets/dr-moheb-new.webp?v=" + version,
+              "doctors/dr-ahmed-el-shehri.html": "../assets/dr-ahmed-new.webp?v=" + version,
+              "doctors/dr-afnan-mashal.html": "../assets/dr-afnan-new.webp?v=" + version,
+              "doctors/dr-krishnamurthy-katta-balajee.html": "../assets/dr-krish-new.webp?v=" + version,
+              "doctors/dr-ehab-hassouneh.html": "../assets/dr-ehab-new.webp?v=" + version,
+              "doctors/dr-nasr-keshkiea.html": "../assets/dr-nasr-new.webp?v=" + version,
+              "doctors/dr-moammar-rifai.html": "../assets/dr-moammer-new.webp?v=" + version,
+
+              "ar/doctors/dr-munir-silwadi.html": "/assets/dr-munir-new.webp?v=" + version,
+              "ar/doctors/dr-moheb-silwadi.html": "/assets/dr-moheb-new.webp?v=" + version,
+              "ar/doctors/dr-ahmed-el-shehri.html": "/assets/dr-ahmed-new.webp?v=" + version,
+              "ar/doctors/dr-afnan-mashal.html": "/assets/dr-afnan-new.webp?v=" + version,
+              "ar/doctors/dr-krishnamurthy-katta-balajee.html": "/assets/dr-krish-new.webp?v=" + version,
+              "ar/doctors/dr-ehab-hassouneh.html": "/assets/dr-ehab-new.webp?v=" + version,
+              "ar/doctors/dr-nasr-keshkiea.html": "/assets/dr-nasr-new.webp?v=" + version,
+              "ar/doctors/dr-moammar-rifai.html": "/assets/dr-moammer-new.webp?v=" + version,
+          }
+
+          required_assets = {
+              "assets/dr-munir-new.webp",
+              "assets/dr-moheb-new.webp",
+              "assets/dr-ahmed-new.webp",
+              "assets/dr-afnan-new.webp",
+              "assets/dr-krish-new.webp",
+              "assets/dr-ehab-new.webp",
+              "assets/dr-nasr-new.webp",
+              "assets/dr-moammer-new.webp",
+          }
+
+          for asset in sorted(required_assets):
+              p = Path(asset)
+              if not p.exists():
+                  raise SystemExit(f"Missing expected asset: {asset}")
+              data = p.read_bytes()
+              if not (data.startswith(b"RIFF") and data[8:12] == b"WEBP"):
+                  raise SystemExit(f"Invalid WebP asset: {asset}")
+              if len(data) < 8000:
+                  raise SystemExit(f"Suspiciously small WebP asset: {asset} ({len(data)} bytes)")
+              print(f"Verified {asset}: {len(data)} bytes")
+
+          updated = []
+
+          # Remove accidental double WebP extensions everywhere in text files.
+          for path in Path(".").rglob("*"):
+              if path.is_dir() or ".git" in path.parts or path.suffix.lower() not in {".html", ".js", ".json", ".xml", ".css"}:
+                  continue
+              text = path.read_text(encoding="utf-8", errors="ignore")
+              new = text.replace(".webp.webp", ".webp")
+              if new != text:
+                  path.write_text(new, encoding="utf-8")
+                  updated.append(path.as_posix())
+                  print(f"Removed double .webp from {path}")
+
+          # Force correct portrait image src on the profile pages that use the newer uploaded portraits.
+          portrait_re = re.compile(r'(<div class="consultant-portrait__frame"><img src=")[^"]+(")')
+          for rel, src in profile_srcs.items():
+              path = Path(rel)
+              if not path.exists():
+                  raise SystemExit(f"Missing expected profile page: {rel}")
+              text = path.read_text(encoding="utf-8")
+              new, count = portrait_re.subn(r"\1" + src + r"\2", text, count=1)
+              if count != 1:
+                  raise SystemExit(f"Could not patch consultant portrait on {rel}")
+              if new != text:
+                  path.write_text(new, encoding="utf-8")
+                  updated.append(rel)
+                  print(f"Patched portrait src in {rel} -> {src}")
+
+          # Verify every consultant profile portrait resolves to a real local asset.
+          for folder in [Path("doctors"), Path("ar/doctors")]:
+              for path in sorted(folder.glob("*.html")):
+                  text = path.read_text(encoding="utf-8", errors="ignore")
+                  m = portrait_re.search(text)
+                  if not m:
+                      continue
+                  src = text[m.start(1)+len('<div class="consultant-portrait__frame"><img src="'):m.start(2)]
+                  clean = src.split("?", 1)[0]
+                  if clean.startswith("http"):
+                      continue
+                  if clean.startswith("/"):
+                      resolved = Path(clean.lstrip("/"))
+                  else:
+                      resolved = Path(os.path.normpath((path.parent / clean).as_posix()))
+                  if not resolved.exists():
+                      raise SystemExit(f"Broken profile portrait in {path}: {src} -> {resolved}")
+                  if resolved.suffix.lower() == ".webp":
+                      data = resolved.read_bytes()
+                      if not (data.startswith(b"RIFF") and data[8:12] == b"WEBP"):
+                          raise SystemExit(f"Invalid WebP referenced in {path}: {resolved}")
+                  print(f"Profile portrait OK: {path} -> {resolved}")
+
+          # Verify no accidental malformed paths remain.
+          bad = []
+          for path in Path(".").rglob("*"):
+              if path.is_dir() or ".git" in path.parts or path.suffix.lower() not in {".html", ".js", ".json", ".xml", ".css"}:
+                  continue
+              text = path.read_text(encoding="utf-8", errors="ignore")
+              if ".webp.webp" in text:
+                  bad.append(path.as_posix())
+          if bad:
+              raise SystemExit("Malformed .webp.webp remains in: " + ", ".join(bad))
+
+          print("Updated files:", sorted(set(updated)))
+          print("Verification passed")
+          PY
+
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm --ignore-unmatch ".github/workflows/apply-profile-portrait-pathfix-20260907.yml"
+          git add -A
+          git status --short
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Fix doctor profile portrait image paths [skip arabic build]"
+            git push
+          fi
