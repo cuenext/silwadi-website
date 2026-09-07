@@ -8,6 +8,7 @@ on:
       - 'ar/index.html'
       - '.github/workflows/hero-brightness-regression.yml'
 
+# Verifies the original PNG stays unfiltered and the dark mask clears before Dr. Munir.
 jobs:
   verify-hero-brightness:
     runs-on: ubuntu-latest
