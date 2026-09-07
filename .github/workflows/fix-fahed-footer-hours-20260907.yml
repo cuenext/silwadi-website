@@ -1,0 +1,162 @@
+name: Fix Fahed image and footer details
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Apply fixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          VERSION = '20260907-fahed-png-footer-hours'
+          SRC = Path('CA01DF50-0B4F-4C3B-91B7-B13D4417FFC4.png')
+          OUT = Path('assets/dr-fahed-new.png')
+          if not SRC.exists():
+              raise SystemExit(f'Missing Fahed source image: {SRC}')
+          data = SRC.read_bytes()
+          if not data.startswith(b'\x89PNG\r\n\x1a\n'):
+              raise SystemExit('Fahed source is not a valid PNG')
+          if len(data) < 100000:
+              raise SystemExit(f'Fahed PNG is unexpectedly small: {len(data)}')
+          OUT.parent.mkdir(parents=True, exist_ok=True)
+          OUT.write_bytes(data)
+          old_webp = Path('assets/dr-fahed-new.webp')
+          if old_webp.exists():
+              old_webp.unlink()
+
+          changed = set([OUT.as_posix()])
+          if old_webp.exists():
+              changed.add(old_webp.as_posix())
+
+          def save(path: Path, before: str, after: str):
+              if after != before:
+                  path.write_text(after, encoding='utf-8')
+                  changed.add(path.as_posix())
+
+          fahed_patterns = [
+              re.compile(r'(?P<prefix>(?:https://silwadi\.ae/|/|\.\./)?assets/)dr-fahed-new\.(?:webp|jpg|png)(?:\?v=[^\"\'\s<]*)?'),
+              re.compile(r'(?P<prefix>(?:https://silwadi\.ae/|/|\.\./)?assets/)doctors/optimized/dr-fahed-khalil\.webp(?:\?v=[^\"\'\s<]*)?'),
+              re.compile(r'(?P<prefix>(?:https://silwadi\.ae/|/|\.\./)?assets/)doctors/dr-fahed-khalil\.png(?:\?v=[^\"\'\s<]*)?'),
+          ]
+
+          html_like = {'.html', '.js', '.json', '.xml'}
+          for p in Path('.').rglob('*'):
+              if p.is_dir() or '.git' in p.parts or p.suffix.lower() not in html_like:
+                  continue
+              before = p.read_text(encoding='utf-8', errors='ignore')
+              after = before
+              for pat in fahed_patterns:
+                  after = pat.sub(lambda m: m.group('prefix') + 'dr-fahed-new.png?v=' + VERSION, after)
+              after = after.replace('dr-fahed-new.png.png', 'dr-fahed-new.png')
+              after = after.replace('dr-fahed-new.webp.webp', 'dr-fahed-new.png')
+              after = after.replace('https://silwadi.ae/assets/dr-fahed-new.png?v=' + VERSION, 'https://silwadi.ae/assets/dr-fahed-new.png')
+              after = after.replace('Dr. Munir Silwadi Dental Centre - Al Raha Mall', 'Dr. Mohamed Munir Dental Centre - Al Raha Mall')
+              after = after.replace('Dr. Munir Silwadi Dental Center - Al Raha Mall', 'Dr. Mohamed Munir Dental Centre - Al Raha Mall')
+              after = after.replace('Dr. Mohamed Munir Dental Center - Al Raha Mall', 'Dr. Mohamed Munir Dental Centre - Al Raha Mall')
+              after = after.replace('مركز الدكتور منير سلوادي لطب الأسنان - الراحة مول', 'مركز الدكتور محمد منير لطب الأسنان - الراحة مول')
+              after = after.replace(
+                  '<span class="footer-opening-hours__closed">Friday: Closed</span><span>Al Raha Mall</span>',
+                  '<span class="footer-opening-hours__closed">Friday: Closed</span><span class="footer-opening-hours__separator" aria-hidden="true"></span><span>Al Raha Mall</span>'
+              )
+              after = after.replace(
+                  '<span class="footer-opening-hours__closed">الجمعة: مغلق</span><span>الراحة مول</span>',
+                  '<span class="footer-opening-hours__closed">الجمعة: مغلق</span><span class="footer-opening-hours__separator" aria-hidden="true"></span><span>الراحة مول</span>'
+              )
+              save(p, before, after)
+
+          # Force exact relative paths on Fahed profile pages.
+          for rel, src in {
+              'doctors/dr-fahed-khalil.html': '../assets/dr-fahed-new.png?v=' + VERSION,
+              'ar/doctors/dr-fahed-khalil.html': '/assets/dr-fahed-new.png?v=' + VERSION,
+          }.items():
+              p = Path(rel)
+              before = p.read_text(encoding='utf-8')
+              after = before
+              after, portrait_count = re.subn(
+                  r'(<div class="consultant-portrait__frame"><img src=")[^"]+(")',
+                  r'\1' + src + r'\2',
+                  after,
+                  count=1,
+              )
+              if portrait_count != 1:
+                  raise SystemExit('Could not update Fahed profile portrait in ' + rel)
+              after, og_count = re.subn(
+                  r'(<meta property="og:image" content=")[^"]+(")',
+                  r'\1https://silwadi.ae/assets/dr-fahed-new.png\2',
+                  after,
+                  count=1,
+              )
+              if og_count != 1:
+                  raise SystemExit('Could not update Fahed og:image in ' + rel)
+              after, schema_count = re.subn(
+                  r'("image":")[^"]+(")',
+                  r'\1https://silwadi.ae/assets/dr-fahed-new.png\2',
+                  after,
+                  count=1,
+              )
+              if schema_count != 1:
+                  raise SystemExit('Could not update Fahed schema image in ' + rel)
+              save(p, before, after)
+
+          css = Path('styles.css')
+          before = css.read_text(encoding='utf-8')
+          after = before
+          if '.footer-opening-hours__separator' not in after:
+              after += '\n.footer-opening-hours__separator{display:block;width:100%;height:1px;background:rgba(8,56,71,.14);margin:14px 0 12px}\n'
+          save(css, before, after)
+
+          index_text = Path('index.html').read_text(encoding='utf-8')
+          required_tag = '<meta name="google-site-verification" content="D04F_KM2zspLqt5BKQidBerlHgPB9dc_ngJSAbPDEuE" />'
+          if required_tag not in index_text:
+              raise SystemExit('Google verification tag changed')
+          if 'Dr. Mohamed Munir Dental Centre - Al Raha Mall' not in index_text:
+              raise SystemExit('Footer Al Raha title was not corrected on index.html')
+          if 'footer-opening-hours__separator' not in index_text:
+              raise SystemExit('Opening hours branch separator missing on index.html')
+          for rel in ['doctors.html', 'ar/doctors.html', 'doctors/dr-fahed-khalil.html', 'ar/doctors/dr-fahed-khalil.html']:
+              text = Path(rel).read_text(encoding='utf-8')
+              if 'dr-fahed-new.png' not in text:
+                  raise SystemExit('Fahed PNG missing from ' + rel)
+              if 'dr-fahed-new.webp' in text:
+                  raise SystemExit('Old Fahed WebP still referenced in ' + rel)
+          bad = []
+          for p in Path('.').rglob('*'):
+              if p.is_dir() or '.git' in p.parts or p.suffix.lower() not in html_like:
+                  continue
+              text = p.read_text(encoding='utf-8', errors='ignore')
+              if '.webp.webp' in text or '.png.png' in text:
+                  bad.append(p.as_posix())
+          if bad:
+              raise SystemExit('Broken double-extension image paths: ' + ', '.join(bad))
+
+          print('Changed files:', sorted(changed))
+          print('Verification passed')
+          PY
+
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm --ignore-unmatch .github/workflows/fix-fahed-footer-hours-20260907.yml .github/fahed-footer-hours-trigger-20260907.txt
+          git add -A
+          git status --short
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Fix Fahed image and footer branch details"
+            git push
+          fi
