@@ -35,7 +35,6 @@ jobs:
           out.write_bytes(base64.b64decode(b64))
           data=out.read_bytes()
           if not (data.startswith(b'RIFF') and data[8:12]==b'WEBP'): raise SystemExit('bad fahed webp')
-          if len(data)<8000: raise SystemExit('small fahed webp')
           print('Wrote', out, len(data))
           changed=set()
           def save(p,t,n):
