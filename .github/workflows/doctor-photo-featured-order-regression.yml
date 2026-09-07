@@ -1,0 +1,50 @@
+name: Doctor photo and homepage featured order regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'ar/index.html'
+      - 'styles.css'
+      - 'assets/doctors/optimized/*.webp'
+      - '.github/workflows/doctor-photo-featured-order-regression.yml'
+
+jobs:
+  verify-doctor-photos-and-featured-order:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify updated doctor photos and homepage featured order
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re, subprocess
+
+          old_shas = {
+              'assets/doctors/optimized/dr-moammer-rifai.webp': '0a6f07a47e1f5f79d8c155aecda4492528076582',
+              'assets/doctors/optimized/dr-ahmed-el-shehri.webp': 'fa7dcf820d8157b7ab48efa52015417d2ec38227',
+              'assets/doctors/optimized/dr-fahed-khalil.webp': 'bdc73c77197049e422a1a02f6295a24e608387c5',
+              'assets/doctors/optimized/dr-nasr-keshkiea.webp': '9e4b6875ff602d6a9fe1c554ae402ec88ab6a42f',
+          }
+          for path, old_sha in old_shas.items():
+              assert Path(path).exists(), f'Missing {path}'
+              new_sha = subprocess.check_output(['git','hash-object',path], text=True).strip()
+              assert new_sha != old_sha, f'{path} still has the old photo blob'
+
+          desired_en = ['Dr. Munir Silwadi','Dr. Hani Hasbini','Dr. Kashmira Pawar Jayprakash','Dr. Dana Awad','Dr. Ahmed El Shehri']
+          desired_ar = ['د. منير سلوادي','د. هاني حسبيني','د. كاشميرا باوار جايبراكاش','د. دانا عوض','د. أحمد الشهري']
+
+          def featured_names(path):
+              text = Path(path).read_text(encoding='utf-8')
+              m = re.search(r'<div class="featured-doctors">(.*?)</div><div class="section-link', text, re.S)
+              assert m, f'Featured doctors section not found in {path}'
+              return re.findall(r'<h3>(.*?)</h3>', m.group(1))
+
+          assert featured_names('index.html') == desired_en, featured_names('index.html')
+          assert featured_names('ar/index.html') == desired_ar, featured_names('ar/index.html')
+
+          css = Path('styles.css').read_text(encoding='utf-8')
+          assert '.featured-doctors{display:grid;grid-template-columns:repeat(5,1fr)' in css, 'Desktop featured grid is not 5 columns'
+          print('Doctor photo replacements and homepage featured order verified')
+          PY
