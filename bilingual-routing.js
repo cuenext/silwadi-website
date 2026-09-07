@@ -72,19 +72,18 @@
   }, true);
 })();
 
-// Preload Dr. Fahed Abi Khalil's optimized portrait from the document head and
-// replace any older cached portrait URL on his directory card or profile page.
+// Use the exact uploaded Dr. Fahed portrait that is already proven to load on Pages.
 (function preloadFahedPortrait() {
   const path = window.location.pathname || '';
   const isFahedRelevantPage = /(?:^|\/)(?:ar\/)?doctors(?:\.html|\/dr-fahed-khalil\.html)$/.test(path);
   if (!isFahedRelevantPage) return;
 
-  const fahedSrc = '/assets/dr-fahed-final.webp?v=20260907-fahed-fast3';
+  const fahedSrc = '/assets/CA01DF50-0B4F-4C3B-91B7-B13D4417FFC4.png?v=20260907-fahed-proven1';
   const preload = document.createElement('link');
   preload.rel = 'preload';
   preload.as = 'image';
   preload.href = fahedSrc;
-  preload.type = 'image/webp';
+  preload.type = 'image/png';
   document.head.appendChild(preload);
 
   const applyFahedPortrait = () => {
