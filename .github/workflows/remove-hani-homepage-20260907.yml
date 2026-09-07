@@ -1,0 +1,90 @@
+name: Remove Hani from homepage
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  remove-hani:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch homepages
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          changed = []
+
+          def get_section(text):
+              start = text.find('<section class="section" id="doctors">')
+              if start < 0:
+                  raise SystemExit('home doctors section not found')
+              end = text.find('</section>', start)
+              if end < 0:
+                  raise SystemExit('home doctors section end not found')
+              return start, end + len('</section>'), text[start:end + len('</section>')]
+
+          def remove_card(path, names):
+              p = Path(path)
+              old = p.read_text(encoding='utf-8')
+              start, end, section = get_section(old)
+              new_section = section
+              removed = 0
+              for name in names:
+                  # Home cards are simple <article class="doctor-card reveal">...</article> blocks.
+                  pattern = re.compile(r'<article class="doctor-card reveal">(?:(?!</article>).)*?<h3>\s*' + re.escape(name) + r'\s*</h3>.*?</article>', re.S)
+                  new_section, count = pattern.subn('', new_section)
+                  removed += count
+              if removed == 0:
+                  print(f'No Hani homepage card found in {path}; leaving unchanged')
+                  return
+              for name in names:
+                  if re.search(r'<article class="doctor-card reveal">(?:(?!</article>).)*?<h3>\s*' + re.escape(name) + r'\s*</h3>.*?</article>', new_section, re.S):
+                      raise SystemExit(f'Hani still present in {path}')
+              new = old[:start] + new_section + old[end:]
+              p.write_text(new, encoding='utf-8')
+              changed.append(path)
+
+          remove_card('index.html', ['Dr. Hani Hasbini'])
+          remove_card('ar/index.html', ['د. هاني حسبيني', 'د. هاني حاسبيني', 'Dr. Hani Hasbini'])
+
+          # Verify Doctors pages and profile pages still keep Dr. Hani.
+          for rel in ['doctors.html', 'ar/doctors.html', 'doctors/dr-hani-hasbini.html', 'ar/doctors/dr-hani-hasbini.html']:
+              p = Path(rel)
+              if p.exists():
+                  text = p.read_text(encoding='utf-8', errors='ignore')
+                  if 'Hani' not in text and 'هاني' not in text:
+                      raise SystemExit(f'Hani accidentally missing from {rel}')
+
+          # Verify homepage order starts with Munir then Moheb and no Hani card remains in homepage doctor section.
+          for rel in ['index.html', 'ar/index.html']:
+              _, _, section = get_section(Path(rel).read_text(encoding='utf-8'))
+              if 'Dr. Hani Hasbini' in section or 'د. هاني' in section:
+                  raise SystemExit(f'Hani still in homepage section {rel}')
+          if '<meta name="google-site-verification" content="D04F_KM2zspLqt5BKQidBerlHgPB9dc_ngJSAbPDEuE" />' not in Path('index.html').read_text(encoding='utf-8'):
+              raise SystemExit('Google verification tag changed')
+
+          print('Changed:', changed)
+          PY
+
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm --ignore-unmatch .github/workflows/remove-hani-homepage-20260907.yml .github/remove-hani-trigger-20260907.txt
+          git add -A
+          git status --short
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Remove Dr Hani from homepage [skip arabic build]"
+            git push
+          fi
