@@ -89,7 +89,7 @@ jobs:
           git config user.name "ADVA Site Automation"
           git config user.email "actions@users.noreply.github.com"
           git rm --ignore-unmatch ".github/workflows/apply-afnan-ref-update-20260907.yml"
-          git add -A assets/dr-afnan-new.webp doctors.html ar/doctors.html doctors/dr-afnan-mashal.html ar/doctors/dr-afnan-mashal.html .github/workflows/apply-afnan-ref-update-20260907.yml
+          git add -A
           git status --short
           git commit -m "Update Dr Afnan portrait references [skip arabic build]"
           git push
