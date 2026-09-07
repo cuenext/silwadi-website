@@ -333,3 +333,9 @@ html[lang="ar"] p, html[lang="ar"] a, html[lang="ar"] span, html[lang="ar"] stro
 .location-card__photo{display:block;width:calc(100% + 60px);height:180px;margin:-30px -30px 24px;object-fit:cover;object-position:center;border-bottom:1px solid var(--line);background:#dfe9e9}
 .location-card:first-child .location-card__photo{object-position:center 48%}
 @media(max-width:620px){.location-card__photo{height:168px}}
+
+
+/* Separate Bani Yas and Al Raha contact details in the shared footer. */
+.footer-address__divider{display:block;width:100%;height:0;margin:13px 0 12px;border-top:1px solid var(--line);}
+.footer-address__divider+strong{margin-top:0;}
+@media(max-width:720px){.footer-address__divider{margin:11px 0 10px;}}
