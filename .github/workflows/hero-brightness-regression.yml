@@ -1,0 +1,27 @@
+name: Hero brightness regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'ar/index.html'
+      - '.github/workflows/hero-brightness-regression.yml'
+
+jobs:
+  verify-hero-brightness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify bright Munir hero and top crop
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          for page in ['index.html', 'ar/index.html']:
+              html = Path(page).read_text(encoding='utf-8')
+              assert 'object-position:center top;display:block;filter:none' in html, f'desktop hero is still filtered/cropped in {page}'
+              assert 'rgba(4,23,40,0) 60%' in html, f'desktop shade does not clear before Munir in {page}'
+              assert 'object-position:76% top;filter:none' in html, f'mobile hero is still filtered in {page}'
+              assert 'rgba(2,14,25,0) 55%' in html, f'mobile upper hero is still darkened across Munir in {page}'
+          PY
