@@ -1,0 +1,46 @@
+name: Footer branch contact regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.html'
+      - 'styles.css'
+      - '.github/workflows/footer-branch-contact-regression.yml'
+
+jobs:
+  verify-footer-branch-contacts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify both branch contacts in every site footer
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          footer_pages = []
+          failures = []
+          for path in Path('.').rglob('*.html'):
+              text = path.read_text(encoding='utf-8')
+              if '<footer class="site-footer">' not in text:
+                  continue
+              footer_pages.append(path)
+              footer = text.split('<footer class="site-footer">', 1)[1].split('</footer>', 1)[0]
+              is_ar = '/ar/' in f'/{path.as_posix()}' or 'lang="ar"' in text[:500]
+              required = [
+                  '+971 2 626 2042',
+                  '+971 2 666 2408',
+                  'tel:+97126662408',
+                  'Al Raha Mall' if not is_ar else 'الراحة مول',
+              ]
+              missing = [item for item in required if item not in footer]
+              if missing:
+                  failures.append(f'{path}: missing {missing}')
+
+          assert footer_pages, 'No site footer pages found'
+          assert not failures, '\n'.join(failures)
+
+          css = Path('styles.css').read_text(encoding='utf-8')
+          assert '.footer-address__divider' in css, 'Missing footer branch divider styling'
+          print(f'Validated {len(footer_pages)} footers')
+          PY
