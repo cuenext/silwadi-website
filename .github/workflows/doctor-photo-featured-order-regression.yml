@@ -48,3 +48,5 @@ jobs:
           assert '.featured-doctors{display:grid;grid-template-columns:repeat(5,1fr)' in css, 'Desktop featured grid is not 5 columns'
           print('Doctor photo replacements and homepage featured order verified')
           PY
+
+# verification trigger after implementation
