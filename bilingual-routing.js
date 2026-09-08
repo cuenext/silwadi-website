@@ -16,7 +16,42 @@
     }
   };
 
+  const syncFooterSocials = () => {
+    const instagram = document.querySelector('a.footer-social-link[href*="instagram.com"]');
+    if (!instagram) return;
+
+    instagram.href = 'https://www.instagram.com/silwadi.ae/';
+    instagram.setAttribute('aria-label', 'Follow Silwadi Dental Center on Instagram');
+    instagram.setAttribute('data-social', 'instagram');
+    const instagramLabel = instagram.querySelector('span');
+    if (instagramLabel) instagramLabel.innerHTML = 'Instagram <strong>@silwadi.ae</strong>';
+
+    let tiktok = document.querySelector('a.footer-social-link[data-social="tiktok"]');
+    if (!tiktok) {
+      tiktok = instagram.cloneNode(true);
+      tiktok.setAttribute('data-social', 'tiktok');
+      tiktok.style.marginInlineStart = '8px';
+      instagram.insertAdjacentElement('afterend', tiktok);
+    }
+
+    tiktok.href = 'https://www.tiktok.com/@silwadi.ae';
+    tiktok.setAttribute('aria-label', 'Follow Silwadi Dental Center on TikTok');
+    const tiktokLabel = tiktok.querySelector('span');
+    if (tiktokLabel) tiktokLabel.innerHTML = 'TikTok <strong>@silwadi.ae</strong>';
+    const tiktokIcon = tiktok.querySelector('svg');
+    if (tiktokIcon) {
+      tiktokIcon.setAttribute('viewBox', '0 0 24 24');
+      tiktokIcon.innerHTML = '<path fill="currentColor" d="M14 3v10.8a4.4 4.4 0 1 1-2-3.95V6.2l7-1.55V8l-5 1.1V3Z"/>';
+    }
+  };
+
   loadBookingModalAssets();
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', syncFooterSocials, { once: true });
+  } else {
+    syncFooterSocials();
+  }
 
   const normalizeEnglishPath = pathname => {
     let path = pathname || '/';
@@ -64,6 +99,7 @@
     // Translate the existing DOM in place. This intentionally preserves the
     // Google Reviews track element and its current animation position.
     api.applyLanguage(next);
+    syncFooterSocials();
 
     const target = next === 'ar'
       ? arabicPathFor(window.location.pathname)
