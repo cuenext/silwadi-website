@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Add selective closer crop
+      - name: Apply individual doctor crops
         shell: bash
         run: |
           python - <<'PY'
@@ -25,44 +25,56 @@ jobs:
           import re
 
           ROOT = Path('.')
-          TARGETS = [
-              'dr-lana-new.png',
-              'dr-fahed-new.png',
-              'dr-afnan-new.webp',
-              'dr-krish-new%20(2).png',
-              'dr-ehab-new%20(2).png',
-          ]
+          TARGETS = {
+              'dr-fahed-new.png': 'doctor-crop-fahed',
+              'dr-krish-new%20(2).png': 'doctor-crop-krish',
+              'dr-sara-new.png': 'doctor-crop-sara',
+              'dr-ehab-new%20(2).png': 'doctor-crop-ehab',
+              'dr-afnan-new.webp': 'doctor-crop-afnan',
+          }
 
           changed = []
 
-          def add_zoom_class(tag: str) -> str:
-              if not any(asset in tag for asset in TARGETS):
+          def add_crop_class(tag: str) -> str:
+              matched = next(((asset, crop_class) for asset, crop_class in TARGETS.items() if asset in tag), None)
+              if not matched:
                   return tag
-              if 'doctor-photo-closer' in tag:
+              _, crop_class = matched
+              if crop_class in tag:
                   return tag
               class_match = re.search(r'class=("|\')([^"\']*)(\1)', tag, flags=re.I)
               if class_match:
                   current = class_match.group(2).strip()
-                  replacement = f'class={class_match.group(1)}{current} doctor-photo-closer{class_match.group(1)}'
+                  replacement = f'class={class_match.group(1)}{current} {crop_class}{class_match.group(1)}'
                   return tag[:class_match.start()] + replacement + tag[class_match.end():]
-              return tag.replace('<img', '<img class="doctor-photo-closer"', 1)
+              return tag.replace('<img', f'<img class="{crop_class}"', 1)
 
           for path in ROOT.rglob('*.html'):
               text = path.read_text(encoding='utf-8')
-              updated = re.sub(r'<img\b[^>]*>', lambda m: add_zoom_class(m.group(0)), text, flags=re.I)
+              updated = re.sub(r'<img\b[^>]*>', lambda m: add_crop_class(m.group(0)), text, flags=re.I)
               if updated != text:
                   path.write_text(updated, encoding='utf-8')
                   changed.append(str(path))
 
           css_path = ROOT / 'doctor-pages.css'
           css = css_path.read_text(encoding='utf-8')
-          css_addition = (
-              '\n\n/* Selective closer crop for approved doctor portraits */\n'
-              '.doctor-directory-card__photo img.doctor-photo-closer{transform:scale(1.15)}\n'
-              '.consultant-portrait__frame img.doctor-photo-closer{transform:scale(1.12)}\n'
-          )
-          if '.doctor-directory-card__photo img.doctor-photo-closer' not in css:
-              css_path.write_text(css.rstrip() + css_addition + '\n', encoding='utf-8')
+          marker = '/* Individual doctor portrait framing */'
+          css_block = '''
+
+/* Individual doctor portrait framing */
+.doctor-directory-card__photo img.doctor-crop-fahed{transform:scale(1.22);object-position:50% 8%}
+.consultant-portrait__frame img.doctor-crop-fahed{transform:scale(1.17);object-position:50% 8%}
+.doctor-directory-card__photo img.doctor-crop-krish{transform:scale(1.22);object-position:50% 8%}
+.consultant-portrait__frame img.doctor-crop-krish{transform:scale(1.17);object-position:50% 8%}
+.doctor-directory-card__photo img.doctor-crop-sara{transform:scale(1.18);object-position:50% 10%}
+.consultant-portrait__frame img.doctor-crop-sara{transform:scale(1.14);object-position:50% 10%}
+.doctor-directory-card__photo img.doctor-crop-afnan{transform:scale(1.18);object-position:50% 10%}
+.consultant-portrait__frame img.doctor-crop-afnan{transform:scale(1.14);object-position:50% 10%}
+.doctor-directory-card__photo img.doctor-crop-ehab{transform:scale(1.18);object-position:50% 4%}
+.consultant-portrait__frame img.doctor-crop-ehab{transform:scale(1.14);object-position:50% 4%}
+'''
+          if marker not in css:
+              css_path.write_text(css.rstrip() + css_block + '\n', encoding='utf-8')
               changed.append(str(css_path))
 
           if not changed:
@@ -73,7 +85,7 @@ jobs:
               print(' -', item)
           PY
 
-      - name: Run portrait zoom contract
+      - name: Run portrait crop contract
         run: python -m unittest tests.test_selected_doctor_zoom
 
       - name: Commit changes
@@ -82,5 +94,5 @@ jobs:
           git config user.name "Silwadi Website Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "style: zoom selected doctor portraits slightly closer"
+          git commit -m "style: refine individual doctor portrait framing"
           git push origin HEAD:main
