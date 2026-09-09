@@ -1,0 +1,216 @@
+name: Refresh doctor photos
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/refresh-doctor-photos.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update doctor photo references
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          changed = []
+          total_replacements = 0
+
+          def asset_prefix(path: Path) -> str:
+              rel = path.relative_to(root)
+              depth = len(rel.parent.parts)
+              return '../' * depth + 'assets/'
+
+          def replace_old_photo_refs(text: str):
+              count = 0
+              patterns = [
+                  (r'dr-ehab-new\.webp(?:\?[^\"\'<>\s]*)?', 'dr-ehab-new%20(2).png'),
+                  (r'dr-ehab-new\.png(?:\?[^\"\'<>\s]*)?', 'dr-ehab-new%20(2).png'),
+                  (r'dr-krish-new\.webp(?:\?[^\"\'<>\s]*)?', 'dr-krish-new%20(2).png'),
+                  (r'dr-krish-new\.png(?:\?[^\"\'<>\s]*)?', 'dr-krish-new%20(2).png'),
+              ]
+              for pattern, replacement in patterns:
+                  text, n = re.subn(pattern, replacement, text)
+                  count += n
+              return text, count
+
+          for path in root.rglob('*.html'):
+              text = path.read_text(encoding='utf-8')
+              original = text
+              prefix = asset_prefix(path)
+
+              text, n = replace_old_photo_refs(text)
+              total_replacements += n
+
+              # Replace Dr. Lana directory/profile placeholders with her new portrait.
+              lana_directory = (
+                  f'<div class="doctor-directory-card__photo">'
+                  f'<img src="{prefix}dr-lana-new.png?v=20260909-lana" alt="Dr. Lana Masoud" '
+                  f'width="600" height="600" loading="lazy" decoding="async"></div>'
+              )
+              text, n = re.subn(
+                  r'<div class="doctor-directory-card__photo doctor-directory-card__photo--placeholder"[^>]*>\s*<span[^>]*>LM</span>\s*</div>',
+                  lana_directory,
+                  text,
+              )
+              total_replacements += n
+
+              lana_profile = (
+                  f'<div class="consultant-portrait__frame">'
+                  f'<img src="{prefix}dr-lana-new.png?v=20260909-lana-profile" alt="Dr. Lana Masoud" '
+                  f'width="1200" height="1200" decoding="async" fetchpriority="high"></div>'
+              )
+              text, n = re.subn(
+                  r'<div class="consultant-portrait__frame doctor-profile-placeholder"[^>]*>\s*<span[^>]*>LM</span>\s*</div>',
+                  lana_profile,
+                  text,
+              )
+              total_replacements += n
+
+              # Replace Dr. Sara directory/profile placeholders with her new portrait.
+              sara_directory = (
+                  f'<div class="doctor-directory-card__photo">'
+                  f'<img src="{prefix}dr-sara-new.png?v=20260909-sara" alt="Dr. Sara Ismail" '
+                  f'width="600" height="600" loading="lazy" decoding="async"></div>'
+              )
+              text, n = re.subn(
+                  r'<div class="doctor-directory-card__photo doctor-directory-card__photo--placeholder"[^>]*>\s*<span[^>]*>SI</span>\s*</div>',
+                  sara_directory,
+                  text,
+              )
+              total_replacements += n
+
+              sara_profile = (
+                  f'<div class="consultant-portrait__frame">'
+                  f'<img src="{prefix}dr-sara-new.png?v=20260909-sara-profile" alt="Dr. Sara Ismail" '
+                  f'width="1200" height="1200" decoding="async" fetchpriority="high"></div>'
+              )
+              text, n = re.subn(
+                  r'<div class="consultant-portrait__frame doctor-profile-placeholder"[^>]*>\s*<span[^>]*>SI</span>\s*</div>',
+                  sara_profile,
+                  text,
+              )
+              total_replacements += n
+
+              # Correct profile social/SEO images for Lana and Sara.
+              if path.name == 'dr-lana-masoud.html':
+                  text, n = re.subn(
+                      r'(<meta property="og:image" content=")[^"]*(">)',
+                      r'\1https://silwadi.ae/assets/dr-lana-new.png\2',
+                      text,
+                      count=1,
+                  )
+                  total_replacements += n
+                  # Add/replace Person schema image.
+                  if '"name":"Dr. Lana Masoud"' in text:
+                      if re.search(r'"name":"Dr\. Lana Masoud"[^}]*"image":', text):
+                          text, n = re.subn(
+                              r'("name":"Dr\. Lana Masoud"[^}]*?"image":")[^"]*"',
+                              r'\1https://silwadi.ae/assets/dr-lana-new.png"',
+                              text,
+                              count=1,
+                          )
+                      else:
+                          text, n = re.subn(
+                              r'("name":"Dr\. Lana Masoud"[^}]*?"url":"[^"]+")',
+                              r'\1,"image":"https://silwadi.ae/assets/dr-lana-new.png"',
+                              text,
+                              count=1,
+                          )
+                      total_replacements += n
+
+              if path.name == 'dr-sara-ismail.html':
+                  text, n = re.subn(
+                      r'(<meta property="og:image" content=")[^"]*(">)',
+                      r'\1https://silwadi.ae/assets/dr-sara-new.png\2',
+                      text,
+                      count=1,
+                  )
+                  total_replacements += n
+                  if '"name":"Dr. Sara Ismail"' in text:
+                      if re.search(r'"name":"Dr\. Sara Ismail"[^}]*"image":', text):
+                          text, n = re.subn(
+                              r'("name":"Dr\. Sara Ismail"[^}]*?"image":")[^"]*"',
+                              r'\1https://silwadi.ae/assets/dr-sara-new.png"',
+                              text,
+                              count=1,
+                          )
+                      else:
+                          text, n = re.subn(
+                              r'("name":"Dr\. Sara Ismail"[^}]*?"url":"[^"]+")',
+                              r'\1,"image":"https://silwadi.ae/assets/dr-sara-new.png"',
+                              text,
+                              count=1,
+                          )
+                      total_replacements += n
+
+              if text != original:
+                  path.write_text(text, encoding='utf-8')
+                  changed.append(str(path))
+
+          if not changed:
+              raise SystemExit('No stale doctor-photo references were found; refusing empty update.')
+
+          print(f'Updated {len(changed)} HTML files with {total_replacements} replacements:')
+          for path in changed:
+              print(' -', path)
+
+          # Verification before commit.
+          stale = []
+          for path in root.rglob('*.html'):
+              text = path.read_text(encoding='utf-8')
+              checks = [
+                  'dr-ehab-new.webp',
+                  'dr-krish-new.webp',
+                  'doctor-directory-card__photo--placeholder\" role=\"img\" aria-label=\"Dr. Lana Masoud',
+                  'doctor-directory-card__photo--placeholder\" role=\"img\" aria-label=\"Dr. Sara Ismail',
+                  'doctor-profile-placeholder\" role=\"img\" aria-label=\"Dr. Lana Masoud',
+                  'doctor-profile-placeholder\" role=\"img\" aria-label=\"Dr. Sara Ismail',
+              ]
+              for token in checks:
+                  if token in text:
+                      stale.append((str(path), token))
+
+          if stale:
+              print('Stale references remain:')
+              for item in stale:
+                  print(item)
+              raise SystemExit(1)
+
+          required = {
+              Path('assets/dr-ehab-new (2).png'),
+              Path('assets/dr-krish-new (2).png'),
+              Path('assets/dr-lana-new.png'),
+              Path('assets/dr-sara-new.png'),
+          }
+          missing = [str(p) for p in required if not p.exists()]
+          if missing:
+              raise SystemExit('Missing requested assets: ' + ', '.join(missing))
+
+          print('Verification passed.')
+          PY
+
+      - name: Commit refreshed doctor photos
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "Silwadi Website Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add '*.html' 'ar/**/*.html' 'doctors/**/*.html' 2>/dev/null || git add -A
+          git commit -m "fix: use new doctor photos across website"
+          git push origin HEAD:main
