@@ -1,0 +1,21 @@
+name: Doctor portrait zoom test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/test_selected_doctor_zoom.py'
+      - 'doctor-pages.css'
+      - 'doctors.html'
+      - 'ar/doctors.html'
+      - 'doctors/**.html'
+      - 'ar/doctors/**.html'
+      - '.github/workflows/doctor-portrait-zoom-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run selected doctor zoom contract
+        run: python -m unittest tests.test_selected_doctor_zoom
