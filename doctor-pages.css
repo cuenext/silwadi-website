@@ -50,3 +50,8 @@
   .profile-content{padding:52px 0 76px}.profile-content-grid{gap:38px}.clinical-focus-grid{grid-template-columns:1fr}.profile-sidebar{grid-template-columns:1fr}.related-doctors{grid-template-columns:1fr}
 }
 .profile-treatment-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.profile-treatment-link{display:inline-flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);background:var(--quiet);color:var(--navy);font-size:10px;font-weight:700}.profile-treatment-link:hover{border-color:var(--teal);color:var(--teal);background:#fff}.profile-evidence-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.profile-evidence-strip span{padding:8px 10px;border-left:2px solid var(--teal);background:var(--quiet);color:var(--navy);font-size:9px;font-weight:700}.related-doctor{color:inherit}
+
+/* Selective closer crop for approved doctor portraits */
+.doctor-directory-card__photo img.doctor-photo-closer{transform:scale(1.15)}
+.consultant-portrait__frame img.doctor-photo-closer{transform:scale(1.12)}
+
