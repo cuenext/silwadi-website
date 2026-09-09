@@ -59,20 +59,19 @@ jobs:
           css_path = ROOT / 'doctor-pages.css'
           css = css_path.read_text(encoding='utf-8')
           marker = '/* Individual doctor portrait framing */'
-          css_block = '''
-
-/* Individual doctor portrait framing */
-.doctor-directory-card__photo img.doctor-crop-fahed{transform:scale(1.22);object-position:50% 8%}
-.consultant-portrait__frame img.doctor-crop-fahed{transform:scale(1.17);object-position:50% 8%}
-.doctor-directory-card__photo img.doctor-crop-krish{transform:scale(1.22);object-position:50% 8%}
-.consultant-portrait__frame img.doctor-crop-krish{transform:scale(1.17);object-position:50% 8%}
-.doctor-directory-card__photo img.doctor-crop-sara{transform:scale(1.18);object-position:50% 10%}
-.consultant-portrait__frame img.doctor-crop-sara{transform:scale(1.14);object-position:50% 10%}
-.doctor-directory-card__photo img.doctor-crop-afnan{transform:scale(1.18);object-position:50% 10%}
-.consultant-portrait__frame img.doctor-crop-afnan{transform:scale(1.14);object-position:50% 10%}
-.doctor-directory-card__photo img.doctor-crop-ehab{transform:scale(1.18);object-position:50% 4%}
-.consultant-portrait__frame img.doctor-crop-ehab{transform:scale(1.14);object-position:50% 4%}
-'''
+          css_block = (
+              '\n\n/* Individual doctor portrait framing */\n'
+              '.doctor-directory-card__photo img.doctor-crop-fahed{transform:scale(1.22);object-position:50% 8%}\n'
+              '.consultant-portrait__frame img.doctor-crop-fahed{transform:scale(1.17);object-position:50% 8%}\n'
+              '.doctor-directory-card__photo img.doctor-crop-krish{transform:scale(1.22);object-position:50% 8%}\n'
+              '.consultant-portrait__frame img.doctor-crop-krish{transform:scale(1.17);object-position:50% 8%}\n'
+              '.doctor-directory-card__photo img.doctor-crop-sara{transform:scale(1.18);object-position:50% 10%}\n'
+              '.consultant-portrait__frame img.doctor-crop-sara{transform:scale(1.14);object-position:50% 10%}\n'
+              '.doctor-directory-card__photo img.doctor-crop-afnan{transform:scale(1.18);object-position:50% 10%}\n'
+              '.consultant-portrait__frame img.doctor-crop-afnan{transform:scale(1.14);object-position:50% 10%}\n'
+              '.doctor-directory-card__photo img.doctor-crop-ehab{transform:scale(1.18);object-position:50% 4%}\n'
+              '.consultant-portrait__frame img.doctor-crop-ehab{transform:scale(1.14);object-position:50% 4%}\n'
+          )
           if marker not in css:
               css_path.write_text(css.rstrip() + css_block + '\n', encoding='utf-8')
               changed.append(str(css_path))
