@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 
+# Keeps visible "Abu Dhabi" text together without changing head metadata/schema.
 ROOT = Path(__file__).resolve().parents[1]
 PLAIN = re.compile(r"Abu[ \t\r\n]+Dhabi")
 PROTECTED = re.compile(
