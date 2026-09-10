@@ -24,11 +24,11 @@ jobs:
           old = 'dr-lana-new.png'
           new = 'dr-lana-new-v2.webp'
           changed = []
-          allowed = {'.html', '.css', '.js', '.json', '.xml', '.py', '.md', '.yml', '.yaml'}
+          allowed = {'.html', '.css', '.js', '.json', '.xml', '.py', '.md'}
           for path in Path('.').rglob('*'):
               if not path.is_file() or path.suffix.lower() not in allowed:
                   continue
-              if '.git' in path.parts:
+              if '.git' in path.parts or '.github' in path.parts:
                   continue
               text = path.read_text(encoding='utf-8', errors='ignore')
               if old in text:
@@ -48,13 +48,15 @@ jobs:
           old = 'dr-lana-new.png'
           for path in Path('.').rglob('*'):
               if path.is_file() and path.suffix.lower() in {'.html','.css','.js','.json','.xml','.py','.md'}:
+                  if '.git' in path.parts or '.github' in path.parts:
+                      continue
                   text = path.read_text(encoding='utf-8', errors='ignore')
                   assert old not in text, f'Old Lana image reference remains in {path}'
           PY
 
           git config user.name "Silwadi Website Bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git rm .github/workflows/apply-lana-photo-v2.yml
+          git rm -f .github/workflows/apply-lana-photo-v2.yml
           git add -A
           git commit -m "assets: use updated Dr. Lana portrait [skip arabic build]"
           git push
