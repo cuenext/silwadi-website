@@ -1,0 +1,17 @@
+name: Abu Dhabi non-breaking regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '**/*.html'
+      - 'tests/test_abu_dhabi_nonbreaking.py'
+      - '.github/workflows/abu-dhabi-nonbreaking-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Abu Dhabi stays on one line in visible text
+        run: python -m unittest tests.test_abu_dhabi_nonbreaking
