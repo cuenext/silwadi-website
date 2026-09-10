@@ -1,0 +1,124 @@
+name: Apply uploaded doctor portraits
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-uploaded-doctor-portraits.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Wire uploaded PNG portraits and fix framing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('.')
+          replacements = [
+              (re.compile(r'dr-ehab-new-v2\.webp(?:\?[^"\'<>\s]*)?'), 'dr-ehab-new.png?v=20260910-ehab'),
+              (re.compile(r'dr-ehab-new(?:%20|\s)\(2\)\.png(?:\?[^"\'<>\s]*)?'), 'dr-ehab-new.png?v=20260910-ehab'),
+              (re.compile(r'dr-ehab-new\.png(?:\?[^"\'<>\s]*)?'), 'dr-ehab-new.png?v=20260910-ehab'),
+              (re.compile(r'dr-sara-new\.png(?:\?[^"\'<>\s]*)?'), 'dr-sara-new.png?v=20260910-sara'),
+              (re.compile(r'dr-afnan-new\.webp(?:\?[^"\'<>\s]*)?'), 'dr-afnan-new.png?v=20260910-afnan'),
+              (re.compile(r'dr-afnan-new\.png(?:\?[^"\'<>\s]*)?'), 'dr-afnan-new.png?v=20260910-afnan'),
+              (re.compile(r'dr-krish-new(?:%20|\s)\(2\)\.png(?:\?[^"\'<>\s]*)?'), 'dr-krish-new.png?v=20260910-krish'),
+              (re.compile(r'dr-krish-new\.png(?:\?[^"\'<>\s]*)?'), 'dr-krish-new.png?v=20260910-krish'),
+          ]
+
+          changed = []
+          for path in root.rglob('*.html'):
+              text = path.read_text(encoding='utf-8')
+              new = text
+              for pattern, repl in replacements:
+                  new = pattern.sub(repl, new)
+              new = new.replace('class="doctor-photo-closer doctor-crop-ehab"', 'class="doctor-crop-ehab"')
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+                  changed.append(str(path))
+
+          css_path = root / 'doctor-pages.css'
+          css = css_path.read_text(encoding='utf-8')
+          css = css.replace(
+              '.doctor-directory-card__photo img.doctor-crop-sara{transform:scale(1.18);object-position:50% 10%}',
+              '.doctor-directory-card__photo img.doctor-crop-sara{transform:scale(1);object-position:50% 25%}'
+          ).replace(
+              '.consultant-portrait__frame img.doctor-crop-sara{transform:scale(1.14);object-position:50% 10%}',
+              '.consultant-portrait__frame img.doctor-crop-sara{transform:scale(1);object-position:50% 22%}'
+          ).replace(
+              '.doctor-directory-card__photo img.doctor-crop-ehab{transform:scale(1.18);object-position:50% 4%}',
+              '.doctor-directory-card__photo img.doctor-crop-ehab{transform:scale(1);object-position:50% 30%}'
+          ).replace(
+              '.consultant-portrait__frame img.doctor-crop-ehab{transform:scale(1.14);object-position:50% 4%}',
+              '.consultant-portrait__frame img.doctor-crop-ehab{transform:scale(1);object-position:50% 30%}'
+          )
+          css_path.write_text(css, encoding='utf-8')
+
+          workflow = '''name: Updated doctor portrait regression
+
+          on:
+            push:
+              branches: [main]
+              paths:
+                - 'tests/test_ehab_sara_portraits.py'
+                - 'tests/test_selected_doctor_zoom.py'
+                - 'assets/dr-ehab-new.png'
+                - 'assets/dr-sara-new.png'
+                - 'assets/dr-afnan-new.png'
+                - 'assets/dr-krish-new.png'
+                - 'doctor-pages.css'
+                - 'doctors.html'
+                - 'ar/doctors.html'
+                - 'doctors/dr-ehab-hassouneh.html'
+                - 'ar/doctors/dr-ehab-hassouneh.html'
+                - 'doctors/dr-sara-ismail.html'
+                - 'ar/doctors/dr-sara-ismail.html'
+                - 'doctors/dr-afnan-mashal.html'
+                - 'ar/doctors/dr-afnan-mashal.html'
+                - 'doctors/dr-krishnamurthy-katta-balajee.html'
+                - 'ar/doctors/dr-krishnamurthy-katta-balajee.html'
+                - '.github/workflows/ehab-sara-portrait-test.yml'
+
+          jobs:
+            test:
+              runs-on: ubuntu-latest
+              steps:
+                - uses: actions/checkout@v4
+                - name: Verify uploaded doctor portraits
+                  run: python -m unittest tests.test_ehab_sara_portraits tests.test_selected_doctor_zoom
+          '''
+          # Dedent the embedded workflow.
+          import textwrap
+          (root / '.github/workflows/ehab-sara-portrait-test.yml').write_text(textwrap.dedent(workflow), encoding='utf-8')
+
+          print('Updated HTML files:')
+          for item in changed:
+              print(' -', item)
+          PY
+
+          python -m unittest tests.test_ehab_sara_portraits tests.test_selected_doctor_zoom
+          git diff --check
+
+      - name: Commit portrait wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/workflows/apply-uploaded-doctor-portraits.yml
+          git config user.name 'Silwadi Website Bot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --stat
+          git commit -m 'fix: use uploaded doctor portraits and safe framing [skip arabic build]'
+          git push
