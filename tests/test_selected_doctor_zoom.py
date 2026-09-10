@@ -6,10 +6,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 INDIVIDUAL = {
     "dr-fahed-new.png": "doctor-crop-fahed",
-    "dr-krish-new%20(2).png": "doctor-crop-krish",
+    "dr-krish-new.png": "doctor-crop-krish",
     "dr-sara-new.png": "doctor-crop-sara",
-    "dr-ehab-new%20(2).png": "doctor-crop-ehab",
-    "dr-afnan-new.webp": "doctor-crop-afnan",
+    "dr-ehab-new.png": "doctor-crop-ehab",
+    "dr-afnan-new.png": "doctor-crop-afnan",
 }
 
 
@@ -29,9 +29,9 @@ class SelectedDoctorZoomContract(unittest.TestCase):
         expected = {
             "fahed": ("1.22", "8%", "1.17", "8%"),
             "krish": ("1.22", "8%", "1.17", "8%"),
-            "sara": ("1.18", "10%", "1.14", "10%"),
+            "sara": ("1", "25%", "1", "22%"),
             "afnan": ("1.18", "10%", "1.14", "10%"),
-            "ehab": ("1.18", "4%", "1.14", "4%"),
+            "ehab": ("1", "30%", "1", "30%"),
         }
         for doctor, (dir_scale, dir_pos, profile_scale, profile_pos) in expected.items():
             self.assertRegex(
