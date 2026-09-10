@@ -1,0 +1,17 @@
+name: Private endodontics review test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/test_private_endodontics_review.py'
+      - 'review/endodontics-v4.html'
+      - '.github/workflows/private-endodontics-review-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify private review contract
+        run: python -m unittest tests.test_private_endodontics_review
