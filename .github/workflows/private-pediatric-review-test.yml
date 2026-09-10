@@ -1,0 +1,17 @@
+name: Private pediatric dentistry review test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/test_private_pediatric_review.py'
+      - 'review/pediatric-dentistry-v1.html'
+      - '.github/workflows/private-pediatric-review-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify private pediatric review contract
+        run: python -m unittest tests.test_private_pediatric_review
