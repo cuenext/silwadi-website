@@ -1,3 +1,4 @@
+import re
 import unittest
 from pathlib import Path
 
@@ -38,8 +39,9 @@ class PrivatePodRahaReviewContract(unittest.TestCase):
     def test_visible_abu_dhabi_is_nonbreaking(self):
         text = REVIEW.read_text(encoding="utf-8")
         body = text.split("</head>", 1)[1]
-        self.assertNotIn("Abu Dhabi", body)
-        self.assertIn("Abu&nbsp;Dhabi", body)
+        visible_text = re.sub(r"<[^>]+>", " ", body)
+        self.assertNotIn("Abu Dhabi", visible_text)
+        self.assertIn("Abu&nbsp;Dhabi", visible_text)
 
     def test_private_review_is_not_linked_from_public_pages(self):
         public_pages = ["index.html", "services.html", "treatments.html", "doctors.html", "locations.html"]
