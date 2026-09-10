@@ -1,0 +1,25 @@
+name: Ehab and Sara portrait regression
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/test_ehab_sara_portraits.py'
+      - 'assets/dr-ehab-20260910.png'
+      - 'assets/dr-sara-20260910.png'
+      - 'doctor-pages.css'
+      - 'doctors.html'
+      - 'ar/doctors.html'
+      - 'doctors/dr-ehab-hassouneh.html'
+      - 'ar/doctors/dr-ehab-hassouneh.html'
+      - 'doctors/dr-sara-ismail.html'
+      - 'ar/doctors/dr-sara-ismail.html'
+      - '.github/workflows/ehab-sara-portrait-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Ehab and Sara portraits
+        run: python -m unittest tests.test_ehab_sara_portraits
