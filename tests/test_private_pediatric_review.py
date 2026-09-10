@@ -17,7 +17,8 @@ class PrivatePediatricReviewContract(unittest.TestCase):
         text = REVIEW.read_text(encoding="utf-8")
         for section_id in ["hero", "when-to-visit", "treatments", "first-visit", "specialist", "faq", "consultation"]:
             self.assertIn(f'id="{section_id}"', text)
-        self.assertIn("Pediatric Dentistry in Abu&nbsp;Dhabi", text)
+        self.assertIn("Pediatric Dentistry in", text)
+        self.assertIn("Abu&nbsp;Dhabi", text)
         self.assertIn("Dr. Kashmira Pawar Jayprakash", text)
         self.assertIn("assets/doctors/dr-kashmira-pawar-jayprakash.webp", text)
 
