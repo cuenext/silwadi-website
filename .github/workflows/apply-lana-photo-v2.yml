@@ -1,0 +1,60 @@
+name: Apply updated Dr Lana portrait
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-lana-photo-v2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace Dr Lana portrait references
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+
+          old = 'dr-lana-new.png'
+          new = 'dr-lana-new-v2.webp'
+          changed = []
+          allowed = {'.html', '.css', '.js', '.json', '.xml', '.py', '.md', '.yml', '.yaml'}
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or path.suffix.lower() not in allowed:
+                  continue
+              if '.git' in path.parts:
+                  continue
+              text = path.read_text(encoding='utf-8', errors='ignore')
+              if old in text:
+                  path.write_text(text.replace(old, new), encoding='utf-8')
+                  changed.append(str(path))
+          if not changed:
+              raise SystemExit('No Dr. Lana portrait references were found to replace')
+          print('Updated:', *changed, sep='\n- ')
+          PY
+
+          python3 <<'PY'
+          from pathlib import Path
+          p = Path('assets/dr-lana-new-v2.webp')
+          data = p.read_bytes()
+          assert p.exists() and len(data) > 10000
+          assert data[:4] == b'RIFF' and data[8:12] == b'WEBP', 'Updated Lana asset is not a valid WebP container'
+          old = 'dr-lana-new.png'
+          for path in Path('.').rglob('*'):
+              if path.is_file() and path.suffix.lower() in {'.html','.css','.js','.json','.xml','.py','.md'}:
+                  text = path.read_text(encoding='utf-8', errors='ignore')
+                  assert old not in text, f'Old Lana image reference remains in {path}'
+          PY
+
+          git config user.name "Silwadi Website Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/apply-lana-photo-v2.yml
+          git add -A
+          git commit -m "assets: use updated Dr. Lana portrait [skip arabic build]"
+          git push
