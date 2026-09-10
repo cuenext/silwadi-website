@@ -66,43 +66,6 @@ jobs:
           )
           css_path.write_text(css, encoding='utf-8')
 
-          workflow = '''name: Updated doctor portrait regression
-
-          on:
-            push:
-              branches: [main]
-              paths:
-                - 'tests/test_ehab_sara_portraits.py'
-                - 'tests/test_selected_doctor_zoom.py'
-                - 'assets/dr-ehab-new.png'
-                - 'assets/dr-sara-new.png'
-                - 'assets/dr-afnan-new.png'
-                - 'assets/dr-krish-new.png'
-                - 'doctor-pages.css'
-                - 'doctors.html'
-                - 'ar/doctors.html'
-                - 'doctors/dr-ehab-hassouneh.html'
-                - 'ar/doctors/dr-ehab-hassouneh.html'
-                - 'doctors/dr-sara-ismail.html'
-                - 'ar/doctors/dr-sara-ismail.html'
-                - 'doctors/dr-afnan-mashal.html'
-                - 'ar/doctors/dr-afnan-mashal.html'
-                - 'doctors/dr-krishnamurthy-katta-balajee.html'
-                - 'ar/doctors/dr-krishnamurthy-katta-balajee.html'
-                - '.github/workflows/ehab-sara-portrait-test.yml'
-
-          jobs:
-            test:
-              runs-on: ubuntu-latest
-              steps:
-                - uses: actions/checkout@v4
-                - name: Verify uploaded doctor portraits
-                  run: python -m unittest tests.test_ehab_sara_portraits tests.test_selected_doctor_zoom
-          '''
-          # Dedent the embedded workflow.
-          import textwrap
-          (root / '.github/workflows/ehab-sara-portrait-test.yml').write_text(textwrap.dedent(workflow), encoding='utf-8')
-
           print('Updated HTML files:')
           for item in changed:
               print(' -', item)
@@ -115,10 +78,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -f .github/workflows/apply-uploaded-doctor-portraits.yml
           git config user.name 'Silwadi Website Bot'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
+          git add doctor-pages.css doctors.html ar/doctors.html doctors/dr-ehab-hassouneh.html ar/doctors/dr-ehab-hassouneh.html doctors/dr-sara-ismail.html ar/doctors/dr-sara-ismail.html doctors/dr-afnan-mashal.html ar/doctors/dr-afnan-mashal.html doctors/dr-krishnamurthy-katta-balajee.html ar/doctors/dr-krishnamurthy-katta-balajee.html
           git diff --cached --stat
           git commit -m 'fix: use uploaded doctor portraits and safe framing [skip arabic build]'
           git push
