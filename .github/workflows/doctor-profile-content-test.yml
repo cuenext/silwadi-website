@@ -1,0 +1,21 @@
+name: Doctor profile content test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/test_doctor_profile_refresh.py'
+      - 'doctors.html'
+      - 'ar/doctors.html'
+      - 'doctors/**.html'
+      - 'ar/doctors/**.html'
+      - 'assets/dr-ehab-new-v2.webp'
+      - '.github/workflows/doctor-profile-content-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run doctor profile refresh contract
+        run: python -m unittest tests.test_doctor_profile_refresh
