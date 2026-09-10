@@ -32,7 +32,7 @@ class HomepageFeaturedDoctorsContract(unittest.TestCase):
         text = (ROOT / "index.html").read_text(encoding="utf-8")
         section = re.search(r'<div class="featured-doctors">(.*?)<div class="section-link reveal">', text, re.S).group(1)
         self.assertIn("Dr. Lana Almasoud", section)
-        self.assertIn("assets/dr-lana-new.png", section)
+        self.assertIn("assets/dr-lana-new-v2.webp", section)
 
     def test_arabic_featured_doctors_exact_order(self):
         self.assertEqual(
@@ -48,7 +48,7 @@ class HomepageFeaturedDoctorsContract(unittest.TestCase):
         text = (ROOT / "ar/index.html").read_text(encoding="utf-8")
         section = re.search(r'<div class="featured-doctors">(.*?)<div class="section-link reveal">', text, re.S).group(1)
         self.assertIn("د. لانا المسعود", section)
-        self.assertIn("/assets/dr-lana-new.png", section)
+        self.assertIn("/assets/dr-lana-new-v2.webp", section)
 
 
 if __name__ == "__main__":
