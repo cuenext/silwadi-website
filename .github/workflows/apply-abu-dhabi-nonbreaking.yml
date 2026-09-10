@@ -1,0 +1,35 @@
+name: Apply Abu Dhabi non-breaking formatting
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/enforce_abu_dhabi_nonbreaking.py'
+      - '.github/workflows/apply-abu-dhabi-nonbreaking.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply non-breaking Abu Dhabi formatting
+        run: python scripts/enforce_abu_dhabi_nonbreaking.py
+      - name: Verify formatting contract
+        run: python -m unittest tests.test_abu_dhabi_nonbreaking
+      - name: Commit formatted pages
+        shell: bash
+        run: |
+          git config user.name "Silwadi Website Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          if git diff --cached --quiet; then
+            echo "No formatting changes to commit"
+            exit 0
+          fi
+          git commit -m "style: keep Abu Dhabi on one line"
+          git push origin HEAD:main
