@@ -1,0 +1,20 @@
+name: Private POD Raha review test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'review/people-of-determination-raha-v1.html'
+      - 'tests/test_private_pod_raha_review.py'
+      - '.github/workflows/private-pod-raha-review-test.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest tests/test_private_pod_raha_review.py
