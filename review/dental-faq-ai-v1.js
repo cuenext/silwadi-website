@@ -166,11 +166,34 @@
       || /الأطفال|اطفال|طفل|أسنان الأطفال|اسنان الأطفال/i.test(question);
   }
 
-  function alRahaHoursQuestion(question) {
+  function founderQuestion(question) {
+    return /who.{0,20}(founded|founded the|started|established).{0,30}(silwadi|clinic|centre|center)|who.{0,10}is.{0,10}(the )?founder|founder of/i.test(question)
+      || /من.{0,15}(أسس|اسس|مؤسس).{0,25}(سلوادي|العيادة|المركز)|من هو.{0,15}المؤسس|مين.{0,15}(أسس|اسس|المؤسس)/i.test(question);
+  }
+
+  function establishedQuestion(question) {
+    return /when.{0,20}(silwadi|clinic|centre|center).{0,20}(start|open|founded|established)|when was.{0,20}(silwadi|clinic|centre|center)|since when|what year.{0,20}(silwadi|clinic)/i.test(question)
+      || /متى.{0,20}(تأسس|تاسس|افتتح).{0,20}(سلوادي|المركز|العيادة)|منذ متى|أي سنة.{0,20}(تأسس|تاسس|افتتح)/i.test(question);
+  }
+
+  function locationsQuestion(question) {
+    const asksLocation = /how many.{0,15}(locations|branches)|where are.{0,15}(your )?(locations|branches)|what.{0,10}(locations|branches)|where is silwadi/i.test(question);
+    const asksLocationAr = /كم.{0,15}(فرع|فروع)|وين.{0,15}(الفروع|فروعكم|سلوادي)|أين.{0,15}(الفروع|فروعكم|سلوادي)|ما هي.{0,15}(الفروع|المواقع)/i.test(question);
+    return asksLocation || asksLocationAr;
+  }
+
+  function contactQuestion(question) {
+    return /what(?:'s| is).{0,15}(your )?(email|phone|number)|how (?:can|do) i contact|contact (?:you|silwadi)|email address|phone number/i.test(question)
+      || /كيف.{0,15}(أتواصل|اتواصل)|رقم.{0,15}(الهاتف|التلفون|سلوادي)|إيميل|ايميل|البريد الإلكتروني|البريد الالكتروني/i.test(question);
+  }
+
+  function branchHoursQuestion(question) {
     const asksHours = /hours|opening|open|close|closing/i.test(question)
       || /ساعات|اوقات|أوقات|دوام|يفتح|يغلق|مفتوح/i.test(question);
-    const mentionsRaha = /al\s*raha|raha/i.test(question) || /الراحة|الراحه/i.test(question);
-    return asksHours && mentionsRaha;
+    if (!asksHours) return '';
+    if (/al\s*raha|raha/i.test(question) || /الراحة|الراحه/i.test(question)) return 'al-raha';
+    if (/bani\s*yas|corniche/i.test(question) || /بني ياس|الكورنيش/i.test(question)) return 'bani-yas';
+    return '';
   }
 
   function localizeHours(hours, language) {
@@ -182,8 +205,20 @@
       .replace('Fri closed', 'الجمعة مغلق');
   }
 
-  function rootCanalQuestion(question) {
-    return /root canal|endodont/i.test(question) || /علاج العصب|سحب العصب|عصب الأسنان|اندودونت/i.test(question);
+  function rootCanalTopic(question) {
+    return /root canal|endodont/i.test(question) || /علاج العصب|سحب العصب|عصب الأسنان|عصب الاسنان|اندودونت/i.test(question);
+  }
+
+  function personalRootCanalQuestion(question) {
+    if (!rootCanalTopic(question)) return false;
+    return /do i need|do we need|does my tooth need|should i (?:get|have|do)|need a root canal|is a root canal necessary|would i need/i.test(question)
+      || /هل أحتاج|هل احتاج|هل لازم|هل يجب|بحتاج|محتاج.{0,15}(علاج|سحب).{0,10}العصب|لازم.{0,15}(علاج|سحب).{0,10}العصب/i.test(question);
+  }
+
+  function rootCanalServiceQuestion(question) {
+    if (!rootCanalTopic(question)) return false;
+    return /do you (?:offer|provide|have|do)|does silwadi (?:offer|provide|have|do)|can i (?:get|do|have).{0,20}root canal.{0,20}(at|with|in) silwadi|root canal treatment.{0,15}(available|offered)/i.test(question)
+      || /هل.{0,15}(توفرون|تقدمون|عندكم).{0,20}(علاج|سحب).{0,10}العصب|هل سلوادي.{0,15}(يوفر|يقدم).{0,20}(علاج|سحب).{0,10}العصب/i.test(question);
   }
 
   function bleedingGumsQuestion(question) {
@@ -193,7 +228,7 @@
 
   function topicFromQuestion(question) {
     if (bleedingGumsQuestion(question)) return 'bleeding-gums';
-    if (rootCanalQuestion(question)) return 'root-canal';
+    if (rootCanalTopic(question)) return 'root-canal';
     if (/x-?ray|radiograph/i.test(question) || /أشعة|اشعة/i.test(question)) return 'dental-x-rays';
     if (/first.{0,15}(dental|dentist).{0,15}(visit|child)|first.{0,15}visit.{0,15}child/i.test(question) || /أول.{0,15}زيارة.{0,15}(طفل|للطفل)/i.test(question)) return 'first-child-dental-visit';
     if (/fluoride.{0,20}(child|kid)|toothpaste.{0,20}(child|kid)/i.test(question) || /فلورايد.{0,20}(طفل|الأطفال)|معجون.{0,20}(طفل|الأطفال)/i.test(question)) return 'fluoride-toothpaste-children';
@@ -202,6 +237,16 @@
     if (/implant/i.test(question) || /زراعة|زرعة|زرعه/i.test(question)) return 'dental-implants';
     if (/brush|floss|interdental/i.test(question) || /فرشاة|تفريش|خيط الأسنان|خيط الاسنان/i.test(question)) return 'brushing-and-interdental-cleaning';
     return '';
+  }
+
+  function endodontistQuestion(question) {
+    const asksWho = /who.{0,20}(does|treats|handles|performs)|which.{0,15}(doctor|dentist)|root canal doctor|endodontist/i.test(question)
+      || /مين.{0,20}(يعمل|يعالج|يسوي)|أي.{0,15}(دكتور|طبيب)|طبيب.{0,10}العصب|أخصائي.{0,10}العصب|اخصائي.{0,10}العصب/i.test(question);
+    return asksWho && rootCanalTopic(question);
+  }
+
+  function doctorBranchLabel(branches) {
+    return (branches || []).map((branch) => branch === 'al-raha' ? 'Al Raha Mall' : branch === 'bani-yas' ? 'Bani Yas Tower' : branch).join(' and ');
   }
 
   async function runReviewFallback(question, language) {
@@ -236,6 +281,63 @@
 
     const { clinic, dental } = await loadReviewData();
 
+    if (founderQuestion(question)) {
+      const founder = clinic.history && clinic.history.founder;
+      if (!founder) return { mode: 'fallback', answer: '' };
+      return {
+        mode: 'clinic',
+        answer: language === 'ar'
+          ? `مؤسس مركز سلوادي لطب الأسنان هو د. منير سلوادي. بدأ المركز خدمة المرضى في أبوظبي عام ${clinic.history.established || clinic.established || 1980}.`
+          : `${founder} is the founder of Silwadi Dental Centre. The centre has served Abu Dhabi since ${clinic.history.established || clinic.established || 1980}.`
+      };
+    }
+
+    if (establishedQuestion(question)) {
+      const year = (clinic.history && clinic.history.established) || clinic.established;
+      if (!year) return { mode: 'fallback', answer: '' };
+      return {
+        mode: 'clinic',
+        answer: language === 'ar'
+          ? `تأسس مركز سلوادي لطب الأسنان في أبوظبي عام ${year}.`
+          : `Silwadi Dental Centre was established in Abu Dhabi in ${year}.`
+      };
+    }
+
+    if (locationsQuestion(question)) {
+      const branches = Object.values(clinic.branches || {});
+      if (!branches.length) return { mode: 'fallback', answer: '' };
+      const names = branches.map((branch) => branch.displayName).join(' and ');
+      return {
+        mode: 'clinic',
+        answer: language === 'ar'
+          ? `لدى سلوادي فرعان في أبوظبي: بني ياس تاور والراحة مول.`
+          : `Silwadi has ${branches.length} Abu Dhabi locations: ${names}.`
+      };
+    }
+
+    if (contactQuestion(question)) {
+      const baniYas = clinic.branches && clinic.branches['bani-yas'];
+      const alRaha = clinic.branches && clinic.branches['al-raha'];
+      return {
+        mode: 'clinic',
+        answer: language === 'ar'
+          ? `يمكنك التواصل مع سلوادي على ${clinic.contact.email}. هاتف بني ياس: ${baniYas.phone}، وهاتف الراحة مول: ${alRaha.phone}.`
+          : `You can contact Silwadi at ${clinic.contact.email}. Bani Yas Tower: ${baniYas.phone}. Al Raha Mall: ${alRaha.phone}.`
+      };
+    }
+
+    const branchKey = branchHoursQuestion(question);
+    if (branchKey) {
+      const branch = clinic.branches && clinic.branches[branchKey];
+      if (!branch || !branch.hours) return { mode: 'fallback', answer: '' };
+      return {
+        mode: 'clinic',
+        answer: language === 'ar'
+          ? `ساعات فرع ${branchKey === 'al-raha' ? 'الراحة مول' : 'بني ياس تاور'} المعتمدة حالياً: ${localizeHours(branch.hours, 'ar')}.`
+          : `${branch.displayName} opening hours are ${branch.hours}.`
+      };
+    }
+
     if (childDentistQuestion(question)) {
       const doctor = (clinic.doctors || []).find((item) => item.name === PEDIATRIC_DOCTOR && item.role === PEDIATRIC_ROLE);
       if (!doctor) return { mode: 'fallback', answer: '' };
@@ -247,18 +349,29 @@
       };
     }
 
-    if (alRahaHoursQuestion(question)) {
-      const branch = clinic.branches && clinic.branches['al-raha'];
-      if (!branch || !branch.hours) return { mode: 'fallback', answer: '' };
+    if (personalRootCanalQuestion(question)) {
+      const education = guidanceFor(dental, 'root-canal', language);
       return {
-        mode: 'clinic',
+        mode: 'general',
         answer: language === 'ar'
-          ? `ساعات فرع الراحة مول المعتمدة حالياً: ${localizeHours(branch.hours, 'ar')}.`
-          : `Al Raha Mall opening hours are ${branch.hours}.`
+          ? `لا يمكن تحديد ما إذا كنت تحتاج علاج عصب من خلال الدردشة فقط؛ يحتاج ذلك إلى فحص لدى طبيب الأسنان وقد تحتاج أشعة. ${education}`
+          : `Whether you need a root canal can only be decided after a dental examination and any necessary X-rays. ${education}`
       };
     }
 
-    if (rootCanalQuestion(question)) {
+    if (endodontistQuestion(question)) {
+      const doctors = (clinic.doctors || []).filter((item) => /Endodontist/i.test(item.role || ''));
+      if (!doctors.length) return { mode: 'fallback', answer: '' };
+      const english = doctors.map((doctor) => `${doctor.name} (${doctorBranchLabel(doctor.branches)})`).join('; ');
+      return {
+        mode: 'clinic',
+        answer: language === 'ar'
+          ? 'أخصائيو علاج العصب المدرجون لدى سلوادي هم د. أحمد الشهري في بني ياس تاور ود. لانا مسعود في الراحة مول. المواعيد الحالية يؤكدها فريق الاستقبال.'
+          : `Silwadi's listed Specialist Endodontists are ${english}. Reception can confirm current appointment availability.`
+      };
+    }
+
+    if (rootCanalServiceQuestion(question)) {
       const offered = (clinic.services || []).includes('Endodontics');
       if (!offered) return { mode: 'fallback', answer: '' };
       const education = guidanceFor(dental, 'root-canal', language);
