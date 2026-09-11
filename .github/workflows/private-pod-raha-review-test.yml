@@ -9,6 +9,7 @@ on:
       - '.github/workflows/private-pod-raha-review-test.yml'
   workflow_dispatch:
 
+# Verifies the final Al Raha private-review contract.
 jobs:
   test:
     runs-on: ubuntu-latest
