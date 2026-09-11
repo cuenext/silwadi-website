@@ -36,13 +36,14 @@ class PrivateFaqReviewContract(unittest.TestCase):
         text = REVIEW.read_text(encoding="utf-8")
         title = re.search(r"<title>(.*?)</title>", text, re.S)
         description = re.search(r'<meta name="description" content="([^"]+)">', text)
+        visible_text = re.sub(r"<[^>]+>", "", text)
         self.assertIsNotNone(title)
         self.assertIsNotNone(description)
         self.assertIn("Dental FAQ", title.group(1))
         self.assertIn("Abu Dhabi", title.group(1))
         self.assertIn("dental questions", description.group(1).lower())
         self.assertIn("Abu Dhabi", description.group(1))
-        self.assertIn("Dental Questions, Answered", text)
+        self.assertIn("Dental Questions, Answered.", visible_text)
 
     def test_visible_abu_dhabi_is_nonbreaking(self):
         text = REVIEW.read_text(encoding="utf-8")
