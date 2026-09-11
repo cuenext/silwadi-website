@@ -11,6 +11,7 @@ on:
       - 'ai/clinic-knowledge-v1.json'
       - 'ai/dental-guidance-v1.json'
       - 'worker/silwadi-ai-worker.js'
+      - 'worker/README.md'
       - 'tests/test_private_ai_faq_review.py'
       - 'tests/test_ai_knowledge_v1.py'
       - 'tests/test_ai_worker_contract.py'
