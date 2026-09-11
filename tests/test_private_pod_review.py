@@ -43,7 +43,7 @@ class PrivatePodReviewTests(unittest.TestCase):
         partnership = re.search(r'<section class="pod-partnership" id="partnership">(.*?)</section>', self.html, re.S)
         self.assertIsNotNone(partnership)
         block = partnership.group(1)
-        self.assertIn("../assets/brand/mohammed-munir-pod-logo.jpg", block)
+        self.assertIn("../assets/brand/mohammed-munir-pod-logo.png", block)
         self.assertIn("../assets/brand/zayed-authority-pod-logo.png", block)
 
     def test_partnership_copy_is_professional_and_restrained(self):

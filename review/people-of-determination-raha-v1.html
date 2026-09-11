@@ -36,6 +36,19 @@
     @media(max-width:1200px){.pod-partnership__visual{margin-right:0}.pod-partnership__aside{display:none}}
     @media(max-width:1000px){.pod-hero__grid,.pod-complex__grid,.pod-raha__grid{grid-template-columns:1fr;gap:40px}.pod-hero__visual{height:500px}.pod-care-grid{grid-template-columns:1fr 1fr}.pod-care-item:nth-child(3){border-left:0;border-top:1px solid var(--pod-line)}.pod-care-item:nth-child(4){border-top:1px solid var(--pod-line)}.pod-partnership{padding:64px 0 82px}.pod-partnership__layout{grid-template-columns:1fr;gap:52px}.pod-partnership__content{max-width:760px}.pod-partnership__photo{height:560px}.pod-before__inner{grid-template-columns:1fr;gap:25px}}
     @media(max-width:700px){.pod-private .container span:last-child{display:none}.pod-header__inner{height:68px}.pod-header .pod-btn{min-height:40px;padding:0 13px}.pod-section{padding:66px 0}.pod-hero{padding:36px 0 58px}.pod-hero h1{font-size:43px}.pod-hero__lead{font-size:15px}.pod-hero__visual{height:390px}.pod-partnership{padding:48px 0 70px}.pod-partnership__eyebrow{margin-bottom:25px;font-size:9px;letter-spacing:.17em}.pod-partnership__eyebrow:after{width:42px}.pod-partnership__partners{gap:14px;margin-bottom:28px}.pod-partner--silwadi img{width:52px;height:52px}.pod-partner{font-size:10px}.pod-partner small{font-size:8px}.pod-partnership__divider{height:50px}.pod-zayed-mark{width:43px}.pod-zayed-mark svg{width:43px}.pod-partnership__copy h2{font-size:35px}.pod-partnership__copy>p{font-size:13px}.pod-partnership__link{min-height:48px;padding:0 21px}.pod-partnership__benefits{grid-template-columns:1fr;margin-top:30px;padding-top:10px}.pod-partnership__benefit{padding:14px 0}.pod-partnership__benefit+.pod-partnership__benefit{border-left:0;border-top:1px solid rgba(255,255,255,.14);padding-left:0}.pod-partnership__photo{height:360px;border-radius:18px}.pod-partnership__badge{position:relative;left:auto;bottom:auto;transform:none;width:auto;margin:-21px 18px 0;padding:13px 18px}.pod-partnership__badge strong{font-size:10px}.pod-partnership__badge span{font-size:7.5px}.pod-care-grid{grid-template-columns:1fr}.pod-care-item,.pod-care-item:nth-child(3),.pod-care-item:nth-child(4){border-left:0;border-top:1px solid var(--pod-line);padding:26px 0}.pod-care-item:first-child{border-top:0}.pod-complex__photo,.pod-raha__photo{height:380px}.pod-before{padding:45px 0}.pod-raha__fact{grid-template-columns:1fr;gap:4px}.pod-consultation{padding:18px 0 70px}.pod-consultation__box{display:block;padding:36px 28px}.pod-consultation__box .pod-btn{margin-top:24px}}
+
+    /* Approved POD partnership branding refinement */
+    .pod-partnership__partners{display:flex;align-items:center;gap:18px;margin:0 0 32px;min-height:88px}
+    .pod-partner-logo-wrap{display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid rgba(255,255,255,.38);border-radius:16px;box-shadow:0 10px 28px rgba(0,20,27,.14)}
+    .pod-partner-logo-wrap--munir{width:96px;height:88px;padding:8px}
+    .pod-partner-logo-wrap--zayed{min-width:238px;height:88px;padding:12px 18px}
+    .pod-partner-logo{display:block;object-fit:contain}
+    .pod-partner-logo--munir{width:76px;height:76px}
+    .pod-partner-logo--zayed{width:204px;height:auto}
+    .pod-partnership__divider{display:block;width:1px;height:64px;background:rgba(255,255,255,.24)}
+    .pod-partnership__visual{margin:0;min-width:0}
+    .pod-partnership__copy h2{max-width:760px}
+    @media(max-width:700px){.pod-partnership__partners{gap:10px;flex-wrap:nowrap;margin-bottom:26px}.pod-partner-logo-wrap--munir{width:76px;height:70px}.pod-partner-logo-wrap--zayed{min-width:0;width:190px;height:70px;padding:10px 14px}.pod-partner-logo--munir{width:58px;height:58px}.pod-partner-logo--zayed{width:158px}.pod-partnership__divider{height:48px}}
   </style>
 </head>
 <body class="pod-review">
@@ -65,13 +78,13 @@
       <div class="container pod-partnership__layout">
         <div class="pod-partnership__content">
           <p class="pod-partnership__eyebrow">Official partnership · 10 April 2026</p>
-          <div class="pod-partnership__partners" aria-label="Partnership between Dr. Mohammed Munir Dental Center and Zayed Authority for People of Determination">
-            <div class="pod-partner pod-partner--silwadi"><img src="../assets/silwadi-logo-official.png" alt="" aria-hidden="true"><span>Dr. Mohammed Munir<br>Dental Center<small>Healthy smiles · brighter possibilities</small></span></div>
+          <div class="pod-partnership__partners" aria-label="Official partnership logos">
+            <div class="pod-partner-logo-wrap pod-partner-logo-wrap--munir"><img class="pod-partner-logo pod-partner-logo--munir" src="../assets/brand/mohammed-munir-pod-logo.png" alt="Dr. Mohammed Munir Dental Center People of Determination logo"></div>
             <span class="pod-partnership__divider" aria-hidden="true"></span>
-            <div class="pod-partner pod-partner--zayed"><span class="pod-zayed-mark" aria-hidden="true"><svg viewBox="0 0 60 42"><path d="M4 26C13 12 21 12 30 25S47 38 57 17"/><circle cx="8" cy="12" r="2.5"/><circle cx="17" cy="7" r="2"/><circle cx="27" cy="10" r="2.4"/><circle cx="37" cy="6" r="2"/><circle cx="48" cy="10" r="2.5"/><circle cx="56" cy="5" r="1.8"/></svg></span><span>Zayed Authority<small>for People of Determination</small></span></div>
+            <div class="pod-partner-logo-wrap pod-partner-logo-wrap--zayed"><img class="pod-partner-logo pod-partner-logo--zayed" src="../assets/brand/zayed-authority-pod-logo.png" alt="Zayed Authority for People of Determination logo"></div>
           </div>
           <div class="pod-partnership__copy">
-            <h2>Zayed Authority for People of Determination <span>×</span> Dr. Mohammed Munir Dental Center</h2>
+            <h2>Official Partnership with Zayed Authority for People of Determination</h2>
             <p>The formal MoU establishes an approved referral pathway for specialized dental services and supports more coordinated access to care for People of Determination.</p>
           </div>
           <a class="pod-partnership__link" href="https://www.za.gov.ae/Media-Centre/News/Dental-Center-to-Enhance-Comprehensive-Healthcare" target="_blank" rel="noopener">View official announcement ↗</a>
@@ -83,9 +96,7 @@
         </div>
         <figure class="pod-partnership__visual">
           <div class="pod-partnership__photo"><img src="https://www.za.gov.ae/-/media/Project/ZHO/ZHO/News-Image/008123.JPG" alt="Signing ceremony for the partnership between Zayed Authority for People of Determination and Dr. Mohammed Munir Dental Center" loading="lazy" decoding="async"></div>
-          <figcaption class="pod-partnership__badge"><strong>Stronger together</strong><span>For a more inclusive tomorrow</span></figcaption>
         </figure>
-        <div class="pod-partnership__aside" aria-hidden="true"><span>People</span><span>Inclusion</span><span>Health</span><span>Opportunity</span><span>Brighter</span><span>Tomorrows</span><em>Care<br>Without Limits</em></div>
       </div>
     </section>
 
