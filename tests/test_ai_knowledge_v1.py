@@ -5,6 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CLINIC = ROOT / "ai/clinic-knowledge-v1.json"
 DENTAL = ROOT / "ai/dental-guidance-v1.json"
+DOCTORS_PAGE = ROOT / "doctors.html"
 
 
 class AiKnowledgeV1Contract(unittest.TestCase):
@@ -21,13 +22,21 @@ class AiKnowledgeV1Contract(unittest.TestCase):
 
     def test_current_team_has_fifteen_doctors_and_critical_roles(self):
         data = json.loads(CLINIC.read_text(encoding="utf-8"))
-        self.assertEqual(len(data["doctors"]), 15)
         doctors = {d["name"]: d for d in data["doctors"]}
+        self.assertEqual(len(doctors), 15)
         self.assertEqual(doctors["Dr. Kashmira Pawar Jayprakash"]["role"], "Specialist Pediatric Dentist")
-        self.assertEqual(doctors["Dr. Lana Almasoud"]["role"], "Specialist Endodontist")
+        self.assertEqual(doctors["Dr. Lana Masoud"]["role"], "Specialist Endodontist")
         self.assertEqual(doctors["Dr. Ahmed El Shehri"]["role"], "Specialist Endodontist")
         self.assertEqual(doctors["Dr. Munir Silwadi"]["role"], "Specialist Prosthodontist & Implantologist")
         self.assertEqual(doctors["Dr. Nasr Keshkiea"]["role"], "General Dentist")
+
+    def test_doctor_name_matches_current_public_directory(self):
+        page = DOCTORS_PAGE.read_text(encoding="utf-8")
+        data = json.loads(CLINIC.read_text(encoding="utf-8"))
+        names = {d["name"] for d in data["doctors"]}
+        self.assertIn("Dr. Lana Masoud", page)
+        self.assertIn("Dr. Lana Masoud", names)
+        self.assertNotIn("Dr. Lana Almasoud", names)
 
     def test_services_match_public_service_directory(self):
         data = json.loads(CLINIC.read_text(encoding="utf-8"))
