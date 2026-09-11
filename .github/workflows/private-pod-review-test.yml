@@ -8,6 +8,7 @@ on:
       - 'review/people-of-determination-raha-v1.html'
       - '.github/workflows/private-pod-review-test.yml'
 
+# Verifies the final private POD review contract.
 jobs:
   test:
     runs-on: ubuntu-latest
