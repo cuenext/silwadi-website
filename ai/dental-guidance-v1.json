@@ -1,0 +1,76 @@
+{
+  "version": "2026-09-11",
+  "purpose": "Short, general dental education for the Silwadi AI review assistant. These summaries do not diagnose an individual or replace a dental examination.",
+  "guidance": [
+    {
+      "topic": "bleeding-gums",
+      "approvedSummary": "Bleeding gums can happen when the gums are irritated or inflamed, often around areas where plaque collects. Brushing gently but thoroughly and cleaning between the teeth can help, but persistent or frequent bleeding should be assessed by a dentist because several different causes are possible.",
+      "escalateWhen": "Recommend a dental assessment if bleeding is persistent, frequent, worsening, associated with significant swelling or pain, or if the patient is concerned."
+    },
+    {
+      "topic": "dental-x-rays",
+      "approvedSummary": "Dental X-rays can show areas that are not visible during a clinical examination, including decay between teeth, bone levels, infections and developing teeth. The type and timing of imaging should be based on the patient's clinical need rather than a fixed schedule for everyone.",
+      "escalateWhen": "A dentist should decide whether imaging is needed after considering symptoms, examination findings and dental history."
+    },
+    {
+      "topic": "first-child-dental-visit",
+      "approvedSummary": "A child's first dental visit is generally recommended around the arrival of the first tooth and no later than the first birthday. The visit can include a gentle mouth check, brushing and diet guidance, and time for the parent or caregiver to ask questions.",
+      "escalateWhen": "Arrange an earlier assessment if a child has pain, trauma, swelling, unusual tooth eruption or another dental concern."
+    },
+    {
+      "topic": "fluoride-toothpaste-children",
+      "approvedSummary": "Fluoride toothpaste helps protect tooth enamel from decay. Children should use an age-appropriate amount and have brushing supervised by a parent or caregiver until they can brush effectively on their own.",
+      "escalateWhen": "A pediatric dentist can give individualized advice for children with a higher risk of tooth decay or other specific oral-health needs."
+    },
+    {
+      "topic": "root-canal",
+      "approvedSummary": "Root canal treatment is used to treat the inside of a tooth when the pulp is inflamed, infected or no longer healthy. The affected tissue is removed, the canals are cleaned and sealed, and the tooth may later need a restoration or crown depending on its condition.",
+      "escalateWhen": "Whether a tooth needs root canal treatment can only be decided after a dental examination and any necessary imaging."
+    },
+    {
+      "topic": "crowns",
+      "approvedSummary": "A dental crown covers and protects a tooth that needs more support or restoration than a filling alone can provide. Crowns may be considered after significant tooth damage, large restorations or some root canal treatments, depending on the tooth's condition.",
+      "escalateWhen": "A dentist needs to examine the tooth to determine whether a crown or another restorative option is appropriate."
+    },
+    {
+      "topic": "whitening",
+      "approvedSummary": "Professional teeth whitening aims to lighten natural tooth colour. Results vary, and existing fillings, crowns or veneers do not whiten in the same way as natural enamel, so a dental assessment helps determine whether whitening is suitable.",
+      "escalateWhen": "Patients with tooth pain, untreated decay, significant sensitivity or gum problems should be assessed before whitening."
+    },
+    {
+      "topic": "dental-implants",
+      "approvedSummary": "A dental implant is a replacement tooth root placed in the jawbone to support a crown, bridge or other restoration. Suitability depends on factors such as the mouth, bone, gums, medical history and the treatment area.",
+      "escalateWhen": "Implant suitability requires an in-person assessment and appropriate imaging; the assistant should not promise candidacy or treatment outcome."
+    },
+    {
+      "topic": "brushing-and-interdental-cleaning",
+      "approvedSummary": "For most people, brushing twice a day with fluoride toothpaste is a practical routine. Cleaning between the teeth with floss, interdental brushes or another suitable aid helps remove plaque from areas a toothbrush may not reach.",
+      "escalateWhen": "A dentist or hygienist can recommend a technique and cleaning aid based on gum health, spacing and existing dental work."
+    }
+  ],
+  "urgentRedFlags": [
+    {
+      "signal": "difficulty-breathing-or-swallowing",
+      "guidance": "Difficulty breathing or swallowing with dental or facial symptoms can require urgent medical assessment. Advise the person to seek emergency care promptly rather than relying on an online answer."
+    },
+    {
+      "signal": "uncontrolled-bleeding",
+      "guidance": "Bleeding that is heavy or does not stop with appropriate pressure needs prompt professional assessment; emergency care may be required depending on severity."
+    },
+    {
+      "signal": "severe-facial-swelling",
+      "guidance": "Rapid or severe facial swelling, especially with fever, spreading swelling, difficulty swallowing or breathing, needs urgent professional assessment."
+    },
+    {
+      "signal": "significant-trauma",
+      "guidance": "Serious facial or dental trauma should be assessed promptly. Emergency medical care may be necessary if there is major injury, loss of consciousness, uncontrolled bleeding or other concerning symptoms."
+    }
+  ],
+  "safetyRules": [
+    "Keep information general and educational rather than diagnosing the individual.",
+    "Do not give medication doses or instructions to start, stop or change medicines already directed by a clinician.",
+    "Do not guarantee that a treatment is suitable, successful or painless.",
+    "When symptoms could have several causes, say an examination is needed for a diagnosis.",
+    "Urgent red flags take priority over routine dental guidance."
+  ]
+}

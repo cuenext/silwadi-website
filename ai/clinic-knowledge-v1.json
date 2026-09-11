@@ -1,0 +1,143 @@
+{
+  "version": "2026-09-11",
+  "clinicName": "Silwadi Dental Center",
+  "established": 1980,
+  "contact": {
+    "email": "info@silwadidentalcentres.ae",
+    "whatsapp": "+971506260418",
+    "bookingUrl": "https://silwadi.ae/contact.html#consultation-form",
+    "locationsUrl": "https://silwadi.ae/locations.html",
+    "doctorsUrl": "https://silwadi.ae/doctors.html"
+  },
+  "branches": {
+    "bani-yas": {
+      "displayName": "Bani Yas Tower",
+      "clinicName": "Dr. Munir Silwadi Dental Centre",
+      "location": "Bani Yas Tower, Building 117 C Floor, Sultan Bin Zayed The First St, W Corniche Road, Abu Dhabi, UAE",
+      "phone": "+971 2 626 2042",
+      "hours": "Sun–Wed 09:00–21:00 · Thu & Sat 09:00–18:00 · Fri closed",
+      "aliases": ["Bani Yas", "Corniche", "Bani Yas Tower"]
+    },
+    "al-raha": {
+      "displayName": "Al Raha Mall",
+      "clinicName": "Dr. Mohamed Munir Dental Centre - Al Raha Mall",
+      "location": "F14 & F15, Level 1, Al Raha Mall, Channel St, Al Rahah, Abu Dhabi, UAE",
+      "phone": "+971 2 666 2408",
+      "hours": "Sat–Thu 10:00–19:00 · Fri closed",
+      "aliases": ["Al Raha", "Al Raha Mall", "Raha"]
+    }
+  },
+  "appointmentFacts": {
+    "acceptingNewPatients": true,
+    "bookingGuidance": "Patients can request an appointment through the Silwadi contact page or contact reception. Reception can guide patients to an appropriate dentist or specialist based on the reason for the visit.",
+    "insuranceGuidance": "Insurance acceptance, direct billing and covered dental benefits can vary by provider and plan. Reception must confirm the current process for a patient's specific policy.",
+    "liveAvailability": "Not available to the AI assistant. Reception must confirm current appointment availability.",
+    "pricing": "Not available to the AI assistant unless a future approved live source is connected. Reception must confirm current fees."
+  },
+  "doctors": [
+    {
+      "name": "Dr. Munir Silwadi",
+      "role": "Specialist Prosthodontist & Implantologist",
+      "branches": ["bani-yas", "al-raha"]
+    },
+    {
+      "name": "Dr. Moheb Silwadi",
+      "role": "General Dentist",
+      "branches": ["al-raha"]
+    },
+    {
+      "name": "Dr. Ahmed El Shehri",
+      "role": "Specialist Endodontist",
+      "branches": ["bani-yas"]
+    },
+    {
+      "name": "Dr. Hani Hasbini",
+      "role": "Consultant Orthodontist",
+      "branches": ["bani-yas"]
+    },
+    {
+      "name": "Dr. Dana Awad",
+      "role": "General Dentist",
+      "branches": ["bani-yas"]
+    },
+    {
+      "name": "Dr. Afnan Mashal",
+      "role": "General Dentist",
+      "branches": ["bani-yas"]
+    },
+    {
+      "name": "Dr. Lana Almasoud",
+      "role": "Specialist Endodontist",
+      "branches": ["al-raha"]
+    },
+    {
+      "name": "Dr. Fahed Abi Khalil",
+      "role": "Specialist Periodontist & Implantologist",
+      "branches": ["bani-yas"]
+    },
+    {
+      "name": "Dr. Kashmira Pawar Jayprakash",
+      "role": "Specialist Pediatric Dentist",
+      "branches": ["al-raha"]
+    },
+    {
+      "name": "Dr. Krishnamurthy Balajee",
+      "role": "Specialist Orthodontist",
+      "branches": ["bani-yas", "al-raha"]
+    },
+    {
+      "name": "Dr. Ehab Hassouneh Bassam A",
+      "role": "General Dentist",
+      "branches": ["al-raha"]
+    },
+    {
+      "name": "Dr. Sara Ismail",
+      "role": "General Dentist",
+      "branches": ["al-raha"]
+    },
+    {
+      "name": "Dr. Nachiket Shah",
+      "role": "Specialist Periodontist & Implantologist",
+      "branches": ["al-raha"]
+    },
+    {
+      "name": "Dr. Nasr Keshkiea",
+      "role": "General Dentist",
+      "branches": ["bani-yas"]
+    },
+    {
+      "name": "Dr. Moammar Mohamed Rifai",
+      "role": "Specialist Orthodontist",
+      "branches": ["bani-yas"]
+    }
+  ],
+  "services": [
+    "Prosthodontics",
+    "Implantology",
+    "Periodontics",
+    "Endodontics",
+    "Orthodontics",
+    "Pedodontics",
+    "Cosmetic Dentistry & Teeth Whitening",
+    "Laser Dentistry",
+    "Preventive Dentistry"
+  ],
+  "commonTreatmentTerms": {
+    "root canal": "Endodontics",
+    "children's dentistry": "Pedodontics",
+    "pediatric dentistry": "Pedodontics",
+    "braces": "Orthodontics",
+    "aligners": "Orthodontics",
+    "gum treatment": "Periodontics",
+    "dental implants": "Implantology",
+    "crowns": "Prosthodontics",
+    "whitening": "Cosmetic Dentistry & Teeth Whitening"
+  },
+  "clinicFactRules": [
+    "For clinic-specific facts, use only information present in this file.",
+    "If a clinic-specific fact is absent, say that reception needs to confirm it.",
+    "Never infer live appointments, prices, insurance coverage or doctor schedules.",
+    "Do not rank one Silwadi doctor as better or best compared with another doctor.",
+    "Branch assignment means the doctor is publicly listed at that branch; it does not mean the doctor is available at a particular date or time."
+  ]
+}

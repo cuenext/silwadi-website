@@ -1,0 +1,33 @@
+name: Private AI dental FAQ review test
+
+on:
+  push:
+    branches:
+      - main
+      - feature/silwadi-ai-review-v1
+    paths:
+      - 'review/dental-faq-ai-v1.html'
+      - 'review/dental-faq-ai-v1.js'
+      - 'ai/clinic-knowledge-v1.json'
+      - 'ai/dental-guidance-v1.json'
+      - 'worker/silwadi-ai-worker.js'
+      - 'worker/README.md'
+      - 'tests/test_private_ai_faq_review.py'
+      - 'tests/test_ai_knowledge_v1.py'
+      - 'tests/test_ai_worker_contract.py'
+      - '.github/workflows/private-ai-faq-review-test.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify private AI FAQ review contracts
+        run: |
+          python -m unittest tests.test_private_ai_faq_review -v
+          if [ -f tests/test_ai_knowledge_v1.py ]; then python -m unittest tests.test_ai_knowledge_v1 -v; fi
+          if [ -f tests/test_ai_worker_contract.py ]; then python -m unittest tests.test_ai_worker_contract -v; fi
