@@ -31,3 +31,7 @@ jobs:
           python -m unittest tests.test_private_ai_faq_review -v
           if [ -f tests/test_ai_knowledge_v1.py ]; then python -m unittest tests.test_ai_knowledge_v1 -v; fi
           if [ -f tests/test_ai_worker_contract.py ]; then python -m unittest tests.test_ai_worker_contract -v; fi
+      - name: Syntax-check AI review JavaScript
+        run: |
+          node --check review/dental-faq-ai-v1.js
+          node --check worker/silwadi-ai-worker.js
