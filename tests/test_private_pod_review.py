@@ -32,7 +32,7 @@ class PrivatePodReviewTests(unittest.TestCase):
         block = partnership.group(1)
         self.assertIn('class="pod-partnership__layout"', block)
         self.assertIn('class="pod-partnership__visual"', block)
-        self.assertIn('../assets/partnership-zayed-silwadi-mou.svg', block)
+        self.assertIn('https://www.za.gov.ae/-/media/Project/ZHO/ZHO/News-Image/008123.JPG', block)
         self.assertIn('class="pod-partnership__benefits"', block)
         self.assertIn("Greater Access to Specialized Care", block)
         self.assertIn("A More Inclusive Community", block)
