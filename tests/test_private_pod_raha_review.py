@@ -7,38 +7,35 @@ REVIEW = ROOT / "review/people-of-determination-raha-v1.html"
 
 
 class PrivatePodRahaReviewContract(unittest.TestCase):
+    def setUp(self):
+        self.text = REVIEW.read_text(encoding="utf-8")
+
     def test_private_review_page_exists_and_is_not_indexable(self):
-        self.assertTrue(REVIEW.exists(), "review/people-of-determination-raha-v1.html must exist")
-        text = REVIEW.read_text(encoding="utf-8")
-        self.assertIn('name="robots" content="noindex,nofollow', text)
-        self.assertIn("Private review", text)
-        self.assertIn("Not published", text)
+        self.assertTrue(REVIEW.exists())
+        self.assertIn('name="robots" content="noindex,nofollow', self.text)
+        self.assertIn("Private review", self.text)
+        self.assertIn("Not published", self.text)
 
-    def test_page_has_approved_content_flow(self):
-        text = REVIEW.read_text(encoding="utf-8")
-        for section_id in ["hero", "accessibility", "visit", "care", "raha", "faq", "consultation"]:
-            self.assertIn(f'id="{section_id}"', text)
-        self.assertIn("Dental Care for People of Determination in", text)
-        self.assertIn("Abu&nbsp;Dhabi", text)
-        self.assertIn("Al Raha Mall", text)
+    def test_page_has_approved_reference_based_flow(self):
+        for section_id in ["hero", "partnership", "individual-care", "complex-needs", "before-visit", "raha", "consultation"]:
+            self.assertIn(f'id="{section_id}"', self.text)
+        self.assertIn("Dental Care for People of Determination in", self.text)
+        self.assertIn("Abu&nbsp;Dhabi", self.text)
+        self.assertIn("Al Raha Mall", self.text)
 
-    def test_raha_accessibility_and_contact_are_grounded(self):
-        text = REVIEW.read_text(encoding="utf-8")
-        self.assertIn("assets/locations/al-raha-accessible-treatment-room-final.webp", text)
-        self.assertIn("+971 2 666 2408", text)
-        self.assertIn("F14 &amp; F15, Level 1, Al Raha Mall", text)
-        self.assertNotIn("3 dedicated POD treatment rooms", text)
+    def test_raha_accessibility_content_is_grounded(self):
+        self.assertIn("assets/locations/al-raha-accessible-treatment-room-final.webp", self.text)
+        self.assertIn("F14 &amp; F15, Level 1, Al Raha Mall", self.text)
+        self.assertIn("Accessible dental treatment room", self.text)
+        self.assertNotIn("3 dedicated POD treatment rooms", self.text)
 
-    def test_seo_language_is_present_without_keyword_stuffing(self):
-        text = REVIEW.read_text(encoding="utf-8")
-        self.assertIn("People of Determination dental care", text)
-        self.assertIn("accessible dental care", text)
-        self.assertIn("special needs dentistry", text)
-        self.assertLessEqual(text.lower().count("special needs dentistry"), 2)
+    def test_official_partnership_source_is_present(self):
+        self.assertIn("Zayed Authority for People of Determination", self.text)
+        self.assertIn("10 April 2026", self.text)
+        self.assertIn("Dental-Center-to-Enhance-Comprehensive-Healthcare", self.text)
 
     def test_visible_abu_dhabi_is_nonbreaking(self):
-        text = REVIEW.read_text(encoding="utf-8")
-        body = text.split("</head>", 1)[1]
+        body = self.text.split("</head>", 1)[1]
         visible_text = re.sub(r"<[^>]+>", " ", body)
         self.assertNotIn("Abu Dhabi", visible_text)
         self.assertIn("Abu&nbsp;Dhabi", visible_text)
