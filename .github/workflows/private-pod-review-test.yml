@@ -1,0 +1,17 @@
+name: Private POD review test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/test_private_pod_review.py'
+      - 'review/people-of-determination-raha-v1.html'
+      - '.github/workflows/private-pod-review-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify private POD review contract
+        run: python -m unittest tests.test_private_pod_review
