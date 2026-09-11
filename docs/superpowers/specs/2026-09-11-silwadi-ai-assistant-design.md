@@ -147,11 +147,14 @@ V1 minimizes data retention.
 
 - No Silwadi chat-history database.
 - No patient profile or conversation memory.
-- No deliberate storage of question/answer content in application logs.
+- No deliberate storage of question/answer content in Silwadi application logs.
 - No requirement for name, phone number, Emirates ID, medical record number, insurance number, or other identifiers to use the assistant.
 - Users are warned not to enter personal or sensitive health information.
 - Maximum question length will limit accidental large disclosures and abuse.
 - No image, X-ray, prescription, or document uploads in V1.
+- The serverless platform must be configured so request bodies are not intentionally persisted in normal application logs.
+- The AI provider’s current data-use and retention settings must be reviewed at implementation time and configured to minimize retention where supported; public privacy wording must reflect the actual provider behavior rather than promising “no storage” beyond what can be verified.
+- Only the minimum question/context needed to answer should be transmitted to the AI provider.
 
 The public website privacy wording must be updated before launch to explain that submitted questions are processed by an AI service.
 
@@ -175,6 +178,7 @@ The backend will:
 
 - Keep the API key secret.
 - Validate request size and format.
+- Restrict browser access to approved Silwadi origins for production and explicitly approved review origins during private testing.
 - Apply rate limits and abuse protection.
 - Route clinic-fact vs general-dental vs fallback vs urgent requests.
 - Inject only relevant approved knowledge.
@@ -283,7 +287,7 @@ Automated regression coverage should protect:
 3. Add curated general dental guidance.
 4. Run automated and manual safety tests.
 5. Measure latency and estimated cost per question.
-6. Review privacy/legal wording.
+6. Review provider retention settings and final privacy/legal wording against the actual implementation.
 7. User reviews private version.
 8. Configure production credentials and limits.
 9. Publish only after explicit approval.
@@ -301,7 +305,8 @@ V1 is successful when:
 - Unknown facts fall back to reception instead of being guessed.
 - Urgent questions trigger appropriate urgent-care guidance.
 - No API key is exposed client-side.
-- No chat-history database or patient-profile system exists in V1.
+- No Silwadi chat-history database or patient-profile system exists in V1.
+- Any provider-side processing/retention is accurately reflected in configuration and privacy wording.
 - The feature fails gracefully if the AI service is unavailable.
 - Cost and abuse are bounded by hard limits.
 - Public launch occurs only after private review and explicit approval.
