@@ -26,6 +26,21 @@ class PrivatePodReviewTests(unittest.TestCase):
         self.assertIn("Official partnership", self.html)
         self.assertIn("Dental-Center-to-Enhance-Comprehensive-Healthcare", self.html)
 
+    def test_partnership_uses_approved_visual_hero_layout(self):
+        partnership = re.search(r'<section class="pod-partnership" id="partnership">(.*?)</section>', self.html, re.S)
+        self.assertIsNotNone(partnership)
+        block = partnership.group(1)
+        self.assertIn('class="pod-partnership__layout"', block)
+        self.assertIn('class="pod-partnership__visual"', block)
+        self.assertIn('../assets/partnership-zayed-silwadi-mou.svg', block)
+        self.assertIn('class="pod-partnership__benefits"', block)
+        self.assertIn("Greater Access to Specialized Care", block)
+        self.assertIn("A More Inclusive Community", block)
+        self.assertIn("Healthier Smiles, Brighter Futures", block)
+        self.assertIn("Stronger together", block)
+        self.assertIn("For a more inclusive tomorrow", block)
+        self.assertNotIn('class="pod-partnership__icon"', block)
+
     def test_care_support_is_icon_led_and_compact(self):
         self.assertEqual(self.html.count('class="pod-care-item"'), 4)
         self.assertEqual(self.html.count('class="pod-care-icon"'), 4)
