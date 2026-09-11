@@ -68,7 +68,7 @@
   ],
   "safetyRules": [
     "Keep information general and educational rather than diagnosing the individual.",
-    "Do not give medication doses or instructions to start, stop or change prescribed medicines.",
+    "Do not give medication doses or instructions to start, stop or change medicines already directed by a clinician.",
     "Do not guarantee that a treatment is suitable, successful or painless.",
     "When symptoms could have several causes, say an examination is needed for a diagnosis.",
     "Urgent red flags take priority over routine dental guidance."
