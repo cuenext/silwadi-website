@@ -2,6 +2,11 @@
   "version": "2026-09-11",
   "clinicName": "Silwadi Dental Center",
   "established": 1980,
+  "history": {
+    "founder": "Dr. Munir Silwadi",
+    "established": 1980,
+    "summary": "Silwadi Dental Centre was founded and is led by Dr. Munir Silwadi and has served Abu Dhabi since 1980."
+  },
   "contact": {
     "email": "info@silwadidentalcentres.ae",
     "whatsapp": "+971506260418",
