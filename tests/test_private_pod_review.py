@@ -30,7 +30,7 @@ class PrivatePodReviewTests(unittest.TestCase):
         partnership = re.search(r'<section class="pod-partnership" id="partnership">(.*?)</section>', self.html, re.S)
         self.assertIsNotNone(partnership)
         block = partnership.group(1)
-        self.assertIn('class="pod-partnership__layout"', block)
+        self.assertIn("pod-partnership__layout", block)
         self.assertIn('class="pod-partnership__visual"', block)
         self.assertIn('https://www.za.gov.ae/-/media/Project/ZHO/ZHO/News-Image/008123.JPG', block)
         self.assertIn('class="pod-partnership__benefits"', block)
