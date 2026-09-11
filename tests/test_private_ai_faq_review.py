@@ -62,6 +62,22 @@ class PrivateAiFaqReviewContract(unittest.TestCase):
         self.assertIn("نزيف", text)
         self.assertIn("الأطفال", text)
 
+    def test_common_clinic_fact_questions_are_supported_in_review_mode(self):
+        text = JS.read_text(encoding="utf-8")
+        self.assertIn("founderQuestion", text)
+        self.assertIn("establishedQuestion", text)
+        self.assertIn("locationsQuestion", text)
+        self.assertIn("contactQuestion", text)
+
+    def test_personal_root_canal_question_is_not_treated_as_service_availability(self):
+        text = JS.read_text(encoding="utf-8")
+        personal = "if (personalRootCanalQuestion(question))"
+        service = "if (rootCanalServiceQuestion(question))"
+        self.assertIn(personal, text)
+        self.assertIn(service, text)
+        self.assertLess(text.index(personal), text.index(service))
+        self.assertIn("can only be decided after a dental examination", text)
+
     def test_knowledge_sources_and_worker_exist(self):
         self.assertTrue(CLINIC.exists(), "ai/clinic-knowledge-v1.json must exist")
         self.assertTrue(DENTAL.exists(), "ai/dental-guidance-v1.json must exist")
@@ -70,6 +86,11 @@ class PrivateAiFaqReviewContract(unittest.TestCase):
         self.assertEqual(clinic["contact"]["email"], "info@silwadidentalcentres.ae")
         self.assertIn("bani-yas", clinic["branches"])
         self.assertIn("al-raha", clinic["branches"])
+
+    def test_clinic_knowledge_includes_history_for_common_questions(self):
+        clinic = json.loads(CLINIC.read_text(encoding="utf-8"))
+        self.assertEqual(clinic["history"]["founder"], "Dr. Munir Silwadi")
+        self.assertEqual(clinic["history"]["established"], 1980)
 
     def test_private_ai_page_is_not_linked_publicly(self):
         for rel in ["index.html", "services.html", "treatments.html", "doctors.html", "about.html", "contact.html"]:
