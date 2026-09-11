@@ -37,9 +37,33 @@ class PrivatePodReviewTests(unittest.TestCase):
         self.assertIn("Greater Access to Specialized Care", block)
         self.assertIn("A More Inclusive Community", block)
         self.assertIn("Healthier Smiles, Brighter Futures", block)
-        self.assertIn("Stronger together", block)
-        self.assertIn("For a more inclusive tomorrow", block)
         self.assertNotIn('class="pod-partnership__icon"', block)
+
+    def test_partnership_uses_user_supplied_partner_logos(self):
+        partnership = re.search(r'<section class="pod-partnership" id="partnership">(.*?)</section>', self.html, re.S)
+        self.assertIsNotNone(partnership)
+        block = partnership.group(1)
+        self.assertIn("../assets/brand/mohammed-munir-pod-logo.jpg", block)
+        self.assertIn("../assets/brand/zayed-authority-pod-logo.png", block)
+
+    def test_partnership_copy_is_professional_and_restrained(self):
+        partnership = re.search(r'<section class="pod-partnership" id="partnership">(.*?)</section>', self.html, re.S)
+        self.assertIsNotNone(partnership)
+        block = partnership.group(1)
+        self.assertIn("Official Partnership with Zayed Authority for People of Determination", block)
+        for removed in [
+            "Stronger together",
+            "For a more inclusive tomorrow",
+            "Care Without Limits",
+            ">People<",
+            ">Inclusion<",
+            ">Health<",
+            ">Opportunity<",
+            ">Brighter<",
+            ">Tomorrows<",
+            " × ",
+        ]:
+            self.assertNotIn(removed, block)
 
     def test_care_support_is_icon_led_and_compact(self):
         self.assertEqual(self.html.count('class="pod-care-item"'), 4)
