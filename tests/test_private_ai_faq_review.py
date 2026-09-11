@@ -46,6 +46,22 @@ class PrivateAiFaqReviewContract(unittest.TestCase):
         self.assertIn("textContent", text)
         self.assertIn("dir", lowered)
 
+    def test_review_mode_works_before_secure_endpoint_is_connected(self):
+        text = JS.read_text(encoding="utf-8")
+        self.assertIn("../ai/clinic-knowledge-v1.json", text)
+        self.assertIn("../ai/dental-guidance-v1.json", text)
+        self.assertIn("runReviewFallback", text)
+        self.assertIn("loadReviewData", text)
+        self.assertIn("Dr. Kashmira Pawar Jayprakash", text)
+        self.assertIn("Specialist Pediatric Dentist", text)
+        self.assertIn("review-demo", text)
+        self.assertIn("urgent", text.lower())
+        self.assertIn("medication", text.lower())
+        self.assertIn("insurance", text.lower())
+        self.assertIn("root canal", text.lower())
+        self.assertIn("نزيف", text)
+        self.assertIn("الأطفال", text)
+
     def test_knowledge_sources_and_worker_exist(self):
         self.assertTrue(CLINIC.exists(), "ai/clinic-knowledge-v1.json must exist")
         self.assertTrue(DENTAL.exists(), "ai/dental-guidance-v1.json must exist")
