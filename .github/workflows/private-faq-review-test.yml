@@ -1,0 +1,17 @@
+name: Private dental FAQ review test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/test_private_faq_review.py'
+      - 'review/dental-faq-v1.html'
+      - '.github/workflows/private-faq-review-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify private dental FAQ review contract
+        run: python -m unittest tests.test_private_faq_review
