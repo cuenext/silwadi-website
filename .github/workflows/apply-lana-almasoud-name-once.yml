@@ -1,0 +1,43 @@
+name: Apply Lana Almasoud name once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-lana-almasoud-name-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Correct Lana name on doctors page
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('doctors.html')
+          source = path.read_text(encoding='utf-8')
+          old = 'Dr. Lana Masoud'
+          new = 'Dr. Lana Almasoud'
+          if old not in source:
+              raise SystemExit('Expected old Lana name not found')
+          path.write_text(source.replace(old, new), encoding='utf-8')
+          PY
+      - name: Verify regression
+        run: python -m unittest tests.test_lana_almasoud_name -v
+      - name: Commit fix
+        run: |
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add doctors.html
+          git commit -m "fix: correct Lana Almasoud name"
+          git push origin HEAD:main
