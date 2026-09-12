@@ -1,0 +1,40 @@
+name: Public core SEO test
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'doctors.html'
+      - 'about.html'
+      - 'locations.html'
+      - 'contact.html'
+      - 'treatments.html'
+      - 'treatments/dental-implants.html'
+      - 'treatments/orthodontics.html'
+      - 'treatments/cosmetic-dentistry.html'
+      - 'treatments/general-dentistry.html'
+      - 'treatments/emergency-dentist.html'
+      - 'sitemap.xml'
+      - 'tests/test_public_core_seo.py'
+      - '.github/workflows/public-core-seo-test.yml'
+  pull_request:
+    paths:
+      - 'doctors.html'
+      - 'about.html'
+      - 'locations.html'
+      - 'contact.html'
+      - 'treatments.html'
+      - 'treatments/**.html'
+      - 'sitemap.xml'
+      - 'tests/test_public_core_seo.py'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest tests.test_public_core_seo -v
