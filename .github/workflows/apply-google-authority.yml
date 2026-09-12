@@ -22,7 +22,13 @@ jobs:
         with:
           python-version: '3.12'
       - name: Apply entity graph patch
-        run: python scripts/apply_google_authority.py
+        run: |
+          python scripts/apply_google_authority.py
+          python - <<'PY'
+          from scripts.apply_google_authority import mutate_jsonld_script, patch_core_branches
+          mutate_jsonld_script('ar/locations.html', 'data-seo-schema', lambda data: patch_core_branches(data, 'ar'))
+          mutate_jsonld_script('ar/contact.html', 'data-seo-schema', lambda data: patch_core_branches(data, 'ar'))
+          PY
       - name: Run authority contract before committing generated changes
         run: python -m unittest tests.test_google_authority -v
       - name: Guard against visible or out-of-scope file changes
@@ -30,7 +36,7 @@ jobs:
         run: |
           changed="$(git diff --name-only)"
           echo "$changed"
-          disallowed="$(printf '%s\n' "$changed" | grep -Ev '^(index\.html|about\.html|locations\.html|contact\.html|doctors\.html|services\.html|treatments\.html|treatments/(dental-implants|orthodontics|cosmetic-dentistry|general-dentistry|emergency-dentist)\.html|ar/(index|services|treatments)\.html|ar/treatments/(dental-implants|orthodontics|cosmetic-dentistry|general-dentistry|emergency-dentist)\.html|ar/doctors/(dr-munir-silwadi|dr-moheb-silwadi|dr-hani-hasbini|dr-moammar-rifai|dr-ahmed-el-shehri|dr-fahed-khalil|dr-afnan-mashal|dr-krishnamurthy-katta-balajee|dr-ehab-hassouneh|dr-sara-ismail|dr-nasr-keshkiea|dr-dana-awad|dr-kashmira-pawar-jayprakash|dr-nachiket-shah|dr-lana-masoud)\.html)$' || true)"
+          disallowed="$(printf '%s\n' "$changed" | grep -Ev '^(index\.html|about\.html|locations\.html|contact\.html|doctors\.html|services\.html|treatments\.html|treatments/(dental-implants|orthodontics|cosmetic-dentistry|general-dentistry|emergency-dentist)\.html|ar/(index|services|treatments|locations|contact)\.html|ar/treatments/(dental-implants|orthodontics|cosmetic-dentistry|general-dentistry|emergency-dentist)\.html|ar/doctors/(dr-munir-silwadi|dr-moheb-silwadi|dr-hani-hasbini|dr-moammar-rifai|dr-ahmed-el-shehri|dr-fahed-khalil|dr-afnan-mashal|dr-krishnamurthy-katta-balajee|dr-ehab-hassouneh|dr-sara-ismail|dr-nasr-keshkiea|dr-dana-awad|dr-kashmira-pawar-jayprakash|dr-nachiket-shah|dr-lana-masoud)\.html)$' || true)"
           if [ -n "$disallowed" ]; then
             echo "Unexpected generated files:" >&2
             echo "$disallowed" >&2
@@ -45,6 +51,6 @@ jobs:
           fi
           git config user.name "ADVA"
           git config user.email "abdullahavadoglu@gmail.com"
-          git add index.html about.html locations.html contact.html doctors.html services.html treatments.html treatments/*.html ar/index.html ar/services.html ar/treatments.html ar/treatments/*.html ar/doctors/*.html
-          git commit -m "seo: unify bilingual Silwadi Google entity graph"
+          git add index.html about.html locations.html contact.html doctors.html services.html treatments.html treatments/*.html ar/index.html ar/services.html ar/treatments.html ar/locations.html ar/contact.html ar/treatments/*.html ar/doctors/*.html
+          git commit -m "seo: complete bilingual Silwadi entity graph"
           git push origin HEAD:seo-authority-0913
