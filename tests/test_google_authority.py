@@ -30,13 +30,18 @@ DOCTOR_FILES = [
     "dr-lana-masoud.html",
 ]
 
+TREATMENT_FILES = [
+    "dental-implants.html",
+    "orthodontics.html",
+    "cosmetic-dentistry.html",
+    "general-dentistry.html",
+    "emergency-dentist.html",
+]
+
 PAIR_FILES = [
     "index.html", "about.html", "services.html", "treatments.html",
     "doctors.html", "locations.html", "contact.html",
-    "treatments/dental-implants.html", "treatments/orthodontics.html",
-    "treatments/cosmetic-dentistry.html", "treatments/general-dentistry.html",
-    "treatments/emergency-dentist.html",
-] + [f"doctors/{name}" for name in DOCTOR_FILES]
+] + [f"treatments/{name}" for name in TREATMENT_FILES] + [f"doctors/{name}" for name in DOCTOR_FILES]
 
 PROHIBITED_META = (
     "best dentist", "best dental", "painless", "pain-free", "pain free",
@@ -102,11 +107,16 @@ class GoogleAuthorityContract(unittest.TestCase):
         about = entity_by_id("about.html", f"{BASE}/about.html#about")
         self.assertIsNotNone(about)
         self.assertEqual(about.get("about", {}).get("@id"), ORG_ID)
+        self.assertEqual(about.get("isPartOf", {}).get("@id"), WEBSITE_ID)
 
     def test_locations_and_contact_reference_stable_branch_ids(self):
         for path in ("locations.html", "contact.html"):
-            self.assertIsNotNone(entity_by_id(path, BANI_ID), f"{path} missing Bani Yas entity")
-            self.assertIsNotNone(entity_by_id(path, RAHA_ID), f"{path} missing Al Raha entity")
+            bani = entity_by_id(path, BANI_ID)
+            raha = entity_by_id(path, RAHA_ID)
+            self.assertIsNotNone(bani, f"{path} missing Bani Yas entity")
+            self.assertIsNotNone(raha, f"{path} missing Al Raha entity")
+            self.assertEqual(bani.get("parentOrganization", {}).get("@id"), ORG_ID)
+            self.assertEqual(raha.get("parentOrganization", {}).get("@id"), ORG_ID)
 
     def test_doctor_worksfor_references_only_known_branches(self):
         for filename in DOCTOR_FILES:
@@ -119,14 +129,18 @@ class GoogleAuthorityContract(unittest.TestCase):
             self.assertTrue(ids, f"{path} must identify at least one Silwadi branch")
             self.assertTrue(ids <= ALLOWED_BRANCH_IDS, f"{path} has unknown worksFor IDs: {ids}")
 
+    def test_treatment_service_provider_resolves_to_parent_brand(self):
+        for filename in TREATMENT_FILES:
+            path = f"treatments/{filename}"
+            services = [e for e in jsonld_entities(path) if isinstance(e, dict) and e.get("@type") == "Service"]
+            self.assertEqual(len(services), 1, f"{path} should expose one Service entity")
+            provider = services[0].get("provider", {})
+            self.assertEqual(provider.get("@id"), ORG_ID, f"{path} should connect service authority to the parent Silwadi brand")
+
     def test_public_metadata_avoids_unverifiable_superiority_claims(self):
         paths = ["index.html", "about.html", "locations.html", "contact.html", "doctors.html", "treatments.html"]
         paths += [f"doctors/{name}" for name in DOCTOR_FILES]
-        paths += [
-            "treatments/dental-implants.html", "treatments/orthodontics.html",
-            "treatments/cosmetic-dentistry.html", "treatments/general-dentistry.html",
-            "treatments/emergency-dentist.html",
-        ]
+        paths += [f"treatments/{name}" for name in TREATMENT_FILES]
         for path in paths:
             page_head = head(path)
             for phrase in PROHIBITED_META:
