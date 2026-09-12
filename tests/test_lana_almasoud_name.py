@@ -10,6 +10,11 @@ class LanaAlmasoudNameRegression(unittest.TestCase):
         self.assertIn("Dr. Lana Almasoud", source)
         self.assertNotIn("Dr. Lana Masoud", source)
 
+    def test_individual_profile_uses_correct_name_everywhere(self):
+        source = (ROOT / "doctors" / "dr-lana-masoud.html").read_text(encoding="utf-8")
+        self.assertIn("Dr. Lana Almasoud", source)
+        self.assertNotIn("Dr. Lana Masoud", source)
+
 
 if __name__ == "__main__":
     unittest.main()
