@@ -1,0 +1,20 @@
+name: Doctor profile advertising compliance
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'doctors/**.html'
+      - 'tests/test_doctor_profile_advertising_compliance.py'
+      - '.github/workflows/doctor-profile-advertising-compliance.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest tests.test_doctor_profile_advertising_compliance -v
