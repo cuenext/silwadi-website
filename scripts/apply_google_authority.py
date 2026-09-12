@@ -8,6 +8,7 @@ ORG_ID = f"{BASE}/#organization"
 BANI_ID = f"{BASE}/#dentist"
 RAHA_ID = f"{BASE}/#dentist-al-raha"
 WEBSITE_ID = f"{BASE}/#website"
+
 TREATMENT_FILES = [
     "dental-implants.html",
     "orthodontics.html",
@@ -15,6 +16,24 @@ TREATMENT_FILES = [
     "general-dentistry.html",
     "emergency-dentist.html",
 ]
+
+DOCTOR_BRANCHES = {
+    "dr-munir-silwadi.html": [BANI_ID, RAHA_ID],
+    "dr-moheb-silwadi.html": [RAHA_ID],
+    "dr-hani-hasbini.html": [BANI_ID],
+    "dr-moammar-rifai.html": [BANI_ID],
+    "dr-ahmed-el-shehri.html": [BANI_ID],
+    "dr-fahed-khalil.html": [BANI_ID],
+    "dr-afnan-mashal.html": [BANI_ID],
+    "dr-krishnamurthy-katta-balajee.html": [BANI_ID, RAHA_ID],
+    "dr-ehab-hassouneh.html": [RAHA_ID],
+    "dr-sara-ismail.html": [RAHA_ID],
+    "dr-nasr-keshkiea.html": [BANI_ID],
+    "dr-dana-awad.html": [BANI_ID],
+    "dr-kashmira-pawar-jayprakash.html": [RAHA_ID],
+    "dr-nachiket-shah.html": [RAHA_ID],
+    "dr-lana-masoud.html": [RAHA_ID],
+}
 
 
 def load(path):
@@ -78,15 +97,19 @@ def bani_entity():
             {
                 "@type": "OpeningHoursSpecification",
                 "dayOfWeek": [
-                    "https://schema.org/Sunday", "https://schema.org/Monday",
-                    "https://schema.org/Tuesday", "https://schema.org/Wednesday",
+                    "https://schema.org/Sunday",
+                    "https://schema.org/Monday",
+                    "https://schema.org/Tuesday",
+                    "https://schema.org/Wednesday",
                 ],
-                "opens": "09:00", "closes": "21:00",
+                "opens": "09:00",
+                "closes": "21:00",
             },
             {
                 "@type": "OpeningHoursSpecification",
                 "dayOfWeek": ["https://schema.org/Thursday", "https://schema.org/Saturday"],
-                "opens": "09:00", "closes": "18:00",
+                "opens": "09:00",
+                "closes": "18:00",
             },
         ],
     }
@@ -115,11 +138,15 @@ def raha_entity():
             {
                 "@type": "OpeningHoursSpecification",
                 "dayOfWeek": [
-                    "https://schema.org/Saturday", "https://schema.org/Sunday",
-                    "https://schema.org/Monday", "https://schema.org/Tuesday",
-                    "https://schema.org/Wednesday", "https://schema.org/Thursday",
+                    "https://schema.org/Saturday",
+                    "https://schema.org/Sunday",
+                    "https://schema.org/Monday",
+                    "https://schema.org/Tuesday",
+                    "https://schema.org/Wednesday",
+                    "https://schema.org/Thursday",
                 ],
-                "opens": "10:00", "closes": "19:00",
+                "opens": "10:00",
+                "closes": "19:00",
             }
         ],
     }
@@ -148,7 +175,10 @@ def patch_home(data):
         raise RuntimeError("Homepage WebSite entity missing")
     website["publisher"] = {"@id": ORG_ID}
 
-    items[:] = [item for item in items if not (isinstance(item, dict) and item.get("@id") in {ORG_ID, BANI_ID, RAHA_ID})]
+    items[:] = [
+        item for item in items
+        if not (isinstance(item, dict) and item.get("@id") in {ORG_ID, BANI_ID, RAHA_ID})
+    ]
     website_index = items.index(website)
     items[website_index:website_index] = [organization_entity()]
     items.extend([bani_entity(), raha_entity()])
@@ -173,7 +203,7 @@ def patch_about(data):
     entity["isPartOf"] = {"@id": WEBSITE_ID}
 
 
-def patch_collection(path, page_id):
+def patch_collection(path, marker, page_id):
     def mutate(data):
         items = graph(data)
         entity = by_id(items, page_id)
@@ -181,7 +211,7 @@ def patch_collection(path, page_id):
             raise RuntimeError(f"Collection/page entity missing in {path}")
         entity["isPartOf"] = {"@id": WEBSITE_ID}
         entity["about"] = {"@id": ORG_ID}
-    mutate_jsonld_script(path, "data-public-core-seo-v1", mutate)
+    mutate_jsonld_script(path, marker, mutate)
 
 
 def patch_treatment_service(path):
@@ -195,13 +225,40 @@ def patch_treatment_service(path):
     mutate_jsonld_script(path, "data-seo-schema", mutate)
 
 
+def patch_services_hub(path):
+    def mutate(data):
+        items = graph(data)
+        services = [item for item in items if isinstance(item, dict) and item.get("@type") == "Service"]
+        if len(services) != 9:
+            raise RuntimeError(f"Expected nine Service entities in {path}, found {len(services)}")
+        for service in services:
+            service["provider"] = {"@id": ORG_ID}
+            service["isPartOf"] = {"@id": WEBSITE_ID}
+    mutate_jsonld_script(path, "data-seo-schema", mutate)
+
+
+def patch_doctor_branches(path, branch_ids):
+    def mutate(data):
+        items = graph(data)
+        people = [item for item in items if isinstance(item, dict) and item.get("@type") == "Person"]
+        if len(people) != 1:
+            raise RuntimeError(f"Expected one Person entity in {path}, found {len(people)}")
+        refs = [{"@id": branch_id} for branch_id in branch_ids]
+        people[0]["worksFor"] = refs if len(refs) > 1 else refs[0]
+    mutate_jsonld_script(path, "data-seo-schema", mutate)
+
+
 def main():
     mutate_jsonld_script("index.html", "data-seo-schema", patch_home)
+    mutate_jsonld_script("ar/index.html", "data-seo-schema", patch_home)
+
     mutate_jsonld_script("locations.html", "data-seo-schema", patch_core_branches)
     mutate_jsonld_script("contact.html", "data-seo-schema", patch_core_branches)
     mutate_jsonld_script("about.html", "data-seo-schema", patch_about)
-    patch_collection("doctors.html", f"{BASE}/doctors.html#page")
-    patch_collection("locations.html", f"{BASE}/locations.html#page")
+
+    patch_collection("doctors.html", "data-public-core-seo-v1", f"{BASE}/doctors.html#page")
+    patch_collection("locations.html", "data-public-core-seo-v1", f"{BASE}/locations.html#page")
+    patch_collection("treatments.html", "data-public-core-seo-v1", f"{BASE}/treatments.html#page")
 
     def patch_contact_page(data):
         if not isinstance(data, dict) or data.get("@id") != f"{BASE}/contact.html#page":
@@ -210,10 +267,18 @@ def main():
         data["about"] = {"@id": ORG_ID}
     mutate_jsonld_script("contact.html", "data-public-core-seo-v1", patch_contact_page)
 
+    patch_services_hub("services.html")
+    patch_services_hub("ar/services.html")
+
     for filename in TREATMENT_FILES:
         patch_treatment_service(f"treatments/{filename}")
+        patch_treatment_service(f"ar/treatments/{filename}")
 
-    print("Applied Silwadi Google authority entity-graph patch")
+    for filename, branch_ids in DOCTOR_BRANCHES.items():
+        patch_doctor_branches(f"doctors/{filename}", branch_ids)
+        patch_doctor_branches(f"ar/doctors/{filename}", branch_ids)
+
+    print("Applied bilingual Silwadi Google authority entity-graph patch")
 
 
 if __name__ == "__main__":
