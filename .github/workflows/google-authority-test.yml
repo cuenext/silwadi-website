@@ -6,12 +6,20 @@ on:
       - '**/*.html'
       - 'sitemap.xml'
       - 'tests/test_google_authority.py'
+      - 'tests/test_doctor_profiles_seo.py'
+      - 'tests/test_doctor_profile_advertising_compliance.py'
+      - 'tests/test_arabic_structured_data.py'
+      - 'tests/test_arabic_quality_seo_rebuild.py'
       - '.github/workflows/google-authority-test.yml'
   pull_request:
     paths:
       - '**/*.html'
       - 'sitemap.xml'
       - 'tests/test_google_authority.py'
+      - 'tests/test_doctor_profiles_seo.py'
+      - 'tests/test_doctor_profile_advertising_compliance.py'
+      - 'tests/test_arabic_structured_data.py'
+      - 'tests/test_arabic_quality_seo_rebuild.py'
       - '.github/workflows/google-authority-test.yml'
 
 jobs:
@@ -22,5 +30,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run Google authority regression contract
-        run: python -m unittest tests.test_google_authority -v
+      - name: Run Google authority and existing SEO/compliance regressions
+        run: |
+          python -m unittest \
+            tests.test_google_authority \
+            tests.test_doctor_profiles_seo \
+            tests.test_doctor_profile_advertising_compliance \
+            tests.test_arabic_structured_data \
+            tests.test_arabic_quality_seo_rebuild \
+            -v
