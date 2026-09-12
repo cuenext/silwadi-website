@@ -74,6 +74,14 @@ class DoctorProfileAdvertisingCompliance(unittest.TestCase):
                 "BLS",
                 "Nitrous Oxide Conscious Sedation",
             ),
+            "dr-dana-awad.html": (
+                "Istanbul Medipol University",
+                "University of Sharjah",
+                "Diploma in Esthetic Dentistry",
+                "Mastery Dental Academy",
+                "Preventive & Periodontal Care",
+                "Restorative Dentistry",
+            ),
         }
         failures = []
         for filename, required in expectations.items():
