@@ -30,7 +30,7 @@ jobs:
         run: |
           changed="$(git diff --name-only)"
           echo "$changed"
-          disallowed="$(printf '%s\n' "$changed" | grep -Ev '^(index\.html|about\.html|locations\.html|contact\.html|doctors\.html)$' || true)"
+          disallowed="$(printf '%s\n' "$changed" | grep -Ev '^(index\.html|about\.html|locations\.html|contact\.html|doctors\.html|treatments/(dental-implants|orthodontics|cosmetic-dentistry|general-dentistry|emergency-dentist)\.html)$' || true)"
           if [ -n "$disallowed" ]; then
             echo "Unexpected generated files:" >&2
             echo "$disallowed" >&2
@@ -45,6 +45,6 @@ jobs:
           fi
           git config user.name "ADVA"
           git config user.email "abdullahavadoglu@gmail.com"
-          git add index.html about.html locations.html contact.html doctors.html
+          git add index.html about.html locations.html contact.html doctors.html treatments/dental-implants.html treatments/orthodontics.html treatments/cosmetic-dentistry.html treatments/general-dentistry.html treatments/emergency-dentist.html
           git commit -m "seo: unify Silwadi Google entity graph"
           git push origin HEAD:seo-authority-0913
