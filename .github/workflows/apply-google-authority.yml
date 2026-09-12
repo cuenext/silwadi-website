@@ -1,0 +1,50 @@
+name: Apply Google authority schema patch
+
+on:
+  push:
+    paths:
+      - 'scripts/apply_google_authority.py'
+      - '.github/workflows/apply-google-authority.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/seo-authority-0913'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: seo-authority-0913
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply entity graph patch
+        run: python scripts/apply_google_authority.py
+      - name: Run authority contract before committing generated changes
+        run: python -m unittest tests.test_google_authority -v
+      - name: Guard against visible or out-of-scope file changes
+        shell: bash
+        run: |
+          changed="$(git diff --name-only)"
+          echo "$changed"
+          disallowed="$(printf '%s\n' "$changed" | grep -Ev '^(index\.html|about\.html|locations\.html|contact\.html|doctors\.html)$' || true)"
+          if [ -n "$disallowed" ]; then
+            echo "Unexpected generated files:" >&2
+            echo "$disallowed" >&2
+            exit 1
+          fi
+      - name: Commit generated schema-only HTML changes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add index.html about.html locations.html contact.html doctors.html
+          git commit -m "seo: unify Silwadi Google entity graph"
+          git push origin HEAD:seo-authority-0913
