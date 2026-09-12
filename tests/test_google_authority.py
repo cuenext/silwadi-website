@@ -13,21 +13,12 @@ WEBSITE_ID = f"{BASE}/#website"
 ALLOWED_BRANCH_IDS = {BANI_ID, RAHA_ID}
 
 DOCTOR_FILES = [
-    "dr-munir-silwadi.html",
-    "dr-moheb-silwadi.html",
-    "dr-hani-hasbini.html",
-    "dr-moammar-rifai.html",
-    "dr-ahmed-el-shehri.html",
-    "dr-fahed-khalil.html",
-    "dr-afnan-mashal.html",
-    "dr-krishnamurthy-katta-balajee.html",
-    "dr-ehab-hassouneh.html",
-    "dr-sara-ismail.html",
-    "dr-nasr-keshkiea.html",
-    "dr-dana-awad.html",
-    "dr-kashmira-pawar-jayprakash.html",
-    "dr-nachiket-shah.html",
-    "dr-lana-masoud.html",
+    "dr-munir-silwadi.html", "dr-moheb-silwadi.html", "dr-hani-hasbini.html",
+    "dr-moammar-rifai.html", "dr-ahmed-el-shehri.html", "dr-fahed-khalil.html",
+    "dr-afnan-mashal.html", "dr-krishnamurthy-katta-balajee.html",
+    "dr-ehab-hassouneh.html", "dr-sara-ismail.html", "dr-nasr-keshkiea.html",
+    "dr-dana-awad.html", "dr-kashmira-pawar-jayprakash.html",
+    "dr-nachiket-shah.html", "dr-lana-masoud.html",
 ]
 
 DOCTOR_BRANCHES = {
@@ -49,11 +40,8 @@ DOCTOR_BRANCHES = {
 }
 
 TREATMENT_FILES = [
-    "dental-implants.html",
-    "orthodontics.html",
-    "cosmetic-dentistry.html",
-    "general-dentistry.html",
-    "emergency-dentist.html",
+    "dental-implants.html", "orthodontics.html", "cosmetic-dentistry.html",
+    "general-dentistry.html", "emergency-dentist.html",
 ]
 
 PAIR_FILES = [
@@ -73,16 +61,13 @@ def text(path):
 
 
 def head(path):
-    html = text(path)
-    return html.split("</head>", 1)[0].lower()
+    return text(path).split("</head>", 1)[0].lower()
 
 
 def jsonld_entities(path):
-    html = text(path)
     scripts = re.findall(
         r'<script[^>]+type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
-        html,
-        flags=re.I | re.S,
+        text(path), flags=re.I | re.S,
     )
     entities = []
     for raw in scripts:
@@ -117,7 +102,6 @@ class GoogleAuthorityContract(unittest.TestCase):
             self.assertIsNotNone(organization, f"{path} must define the parent Silwadi organization")
             self.assertEqual(organization.get("name"), "Silwadi Dental Center")
             self.assertEqual(str(organization.get("foundingDate")), "1980")
-
             bani = entity_by_id(path, BANI_ID)
             raha = entity_by_id(path, RAHA_ID)
             self.assertIsNotNone(bani, f"{path} must define Bani Yas branch")
@@ -126,7 +110,6 @@ class GoogleAuthorityContract(unittest.TestCase):
             self.assertEqual(raha.get("telephone"), "+97126662408")
             self.assertEqual(bani.get("parentOrganization", {}).get("@id"), ORG_ID)
             self.assertEqual(raha.get("parentOrganization", {}).get("@id"), ORG_ID)
-
             website = entity_by_id(path, WEBSITE_ID)
             self.assertIsNotNone(website)
             self.assertEqual(website.get("publisher", {}).get("@id"), ORG_ID)
@@ -137,14 +120,21 @@ class GoogleAuthorityContract(unittest.TestCase):
         self.assertEqual(about.get("about", {}).get("@id"), ORG_ID)
         self.assertEqual(about.get("isPartOf", {}).get("@id"), WEBSITE_ID)
 
-    def test_locations_and_contact_reference_stable_branch_ids(self):
-        for path in ("locations.html", "contact.html"):
+    def test_locations_and_contact_have_bilingual_branch_entity_parity(self):
+        for path, locale_prefix in (
+            ("locations.html", ""), ("contact.html", ""),
+            ("ar/locations.html", "/ar"), ("ar/contact.html", "/ar"),
+        ):
             bani = entity_by_id(path, BANI_ID)
             raha = entity_by_id(path, RAHA_ID)
             self.assertIsNotNone(bani, f"{path} missing Bani Yas entity")
             self.assertIsNotNone(raha, f"{path} missing Al Raha entity")
-            self.assertEqual(bani.get("parentOrganization", {}).get("@id"), ORG_ID)
-            self.assertEqual(raha.get("parentOrganization", {}).get("@id"), ORG_ID)
+            for entity in (bani, raha):
+                self.assertEqual(entity.get("parentOrganization", {}).get("@id"), ORG_ID)
+                self.assertEqual(entity.get("email"), "info@silwadidentalcentres.ae")
+                self.assertIsInstance(entity.get("geo"), dict, f"{path} branch entity must include geo")
+            self.assertEqual(bani.get("url"), f"{BASE}{locale_prefix}/locations.html#bani-yas")
+            self.assertEqual(raha.get("url"), f"{BASE}{locale_prefix}/locations.html#al-raha")
 
     def test_doctor_branch_assignments_are_exact_in_both_languages(self):
         for filename, expected in DOCTOR_BRANCHES.items():
@@ -160,8 +150,7 @@ class GoogleAuthorityContract(unittest.TestCase):
                 path = f"{prefix}{filename}"
                 services = [e for e in jsonld_entities(path) if isinstance(e, dict) and e.get("@type") == "Service"]
                 self.assertEqual(len(services), 1, f"{path} should expose one Service entity")
-                provider = services[0].get("provider", {})
-                self.assertEqual(provider.get("@id"), ORG_ID, f"{path} should connect service authority to the parent Silwadi brand")
+                self.assertEqual(services[0].get("provider", {}).get("@id"), ORG_ID)
                 self.assertEqual(services[0].get("isPartOf", {}).get("@id"), WEBSITE_ID)
 
     def test_services_hub_service_entities_reference_parent_brand(self):
@@ -169,7 +158,7 @@ class GoogleAuthorityContract(unittest.TestCase):
             services = [e for e in jsonld_entities(path) if isinstance(e, dict) and e.get("@type") == "Service"]
             self.assertEqual(len(services), 9, f"{path} should expose the nine established service areas")
             for service in services:
-                self.assertEqual(service.get("provider", {}).get("@id"), ORG_ID, f"{path}: {service.get('name')} has a disconnected provider")
+                self.assertEqual(service.get("provider", {}).get("@id"), ORG_ID)
                 self.assertEqual(service.get("isPartOf", {}).get("@id"), WEBSITE_ID)
 
     def test_treatments_collection_is_connected_to_brand_and_website(self):
@@ -196,16 +185,14 @@ class GoogleAuthorityContract(unittest.TestCase):
             arabic_url = f"{BASE}{ar_path}"
             arabic_file = "ar/index.html" if path == "index.html" else f"ar/{path}"
             arabic_html = text(arabic_file)
-
-            self.assertIn(f'rel="canonical" href="{canonical}"', english_html, f"{path} canonical mismatch")
-            self.assertIn(f'hreflang="en-AE" href="{canonical}"', english_html, f"{path} missing en-AE")
-            self.assertIn(f'hreflang="ar-AE" href="{arabic_url}"', english_html, f"{path} missing ar-AE")
-            self.assertIn(f'hreflang="x-default" href="{canonical}"', english_html, f"{path} missing x-default")
-
-            self.assertIn(f'rel="canonical" href="{arabic_url}"', arabic_html, f"{arabic_file} canonical mismatch")
-            self.assertIn(f'hreflang="en-AE" href="{canonical}"', arabic_html, f"{arabic_file} missing en-AE")
-            self.assertIn(f'hreflang="ar-AE" href="{arabic_url}"', arabic_html, f"{arabic_file} missing ar-AE")
-            self.assertIn(f'hreflang="x-default" href="{canonical}"', arabic_html, f"{arabic_file} missing x-default")
+            self.assertIn(f'rel="canonical" href="{canonical}"', english_html)
+            self.assertIn(f'hreflang="en-AE" href="{canonical}"', english_html)
+            self.assertIn(f'hreflang="ar-AE" href="{arabic_url}"', english_html)
+            self.assertIn(f'hreflang="x-default" href="{canonical}"', english_html)
+            self.assertIn(f'rel="canonical" href="{arabic_url}"', arabic_html)
+            self.assertIn(f'hreflang="en-AE" href="{canonical}"', arabic_html)
+            self.assertIn(f'hreflang="ar-AE" href="{arabic_url}"', arabic_html)
+            self.assertIn(f'hreflang="x-default" href="{canonical}"', arabic_html)
 
     def test_sitemap_exposes_only_public_site_urls(self):
         xml = text("sitemap.xml")
