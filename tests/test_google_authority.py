@@ -30,6 +30,24 @@ DOCTOR_FILES = [
     "dr-lana-masoud.html",
 ]
 
+DOCTOR_BRANCHES = {
+    "dr-munir-silwadi.html": {BANI_ID, RAHA_ID},
+    "dr-moheb-silwadi.html": {RAHA_ID},
+    "dr-hani-hasbini.html": {BANI_ID},
+    "dr-moammar-rifai.html": {BANI_ID},
+    "dr-ahmed-el-shehri.html": {BANI_ID},
+    "dr-fahed-khalil.html": {BANI_ID},
+    "dr-afnan-mashal.html": {BANI_ID},
+    "dr-krishnamurthy-katta-balajee.html": {BANI_ID, RAHA_ID},
+    "dr-ehab-hassouneh.html": {RAHA_ID},
+    "dr-sara-ismail.html": {RAHA_ID},
+    "dr-nasr-keshkiea.html": {BANI_ID},
+    "dr-dana-awad.html": {BANI_ID},
+    "dr-kashmira-pawar-jayprakash.html": {RAHA_ID},
+    "dr-nachiket-shah.html": {RAHA_ID},
+    "dr-lana-masoud.html": {RAHA_ID},
+}
+
 TREATMENT_FILES = [
     "dental-implants.html",
     "orthodontics.html",
@@ -83,25 +101,35 @@ def entity_by_id(path, entity_id):
     return None
 
 
+def person_branch_ids(path):
+    people = [e for e in jsonld_entities(path) if isinstance(e, dict) and e.get("@type") == "Person"]
+    if len(people) != 1:
+        raise AssertionError(f"{path} should expose one Person entity, found {len(people)}")
+    works_for = people[0].get("worksFor")
+    refs = works_for if isinstance(works_for, list) else [works_for]
+    return {ref.get("@id") for ref in refs if isinstance(ref, dict)}
+
+
 class GoogleAuthorityContract(unittest.TestCase):
     def test_homepage_defines_parent_brand_and_both_branches(self):
-        organization = entity_by_id("index.html", ORG_ID)
-        self.assertIsNotNone(organization, "Homepage must define the parent Silwadi organization")
-        self.assertEqual(organization.get("name"), "Silwadi Dental Center")
-        self.assertEqual(str(organization.get("foundingDate")), "1980")
+        for path in ("index.html", "ar/index.html"):
+            organization = entity_by_id(path, ORG_ID)
+            self.assertIsNotNone(organization, f"{path} must define the parent Silwadi organization")
+            self.assertEqual(organization.get("name"), "Silwadi Dental Center")
+            self.assertEqual(str(organization.get("foundingDate")), "1980")
 
-        bani = entity_by_id("index.html", BANI_ID)
-        raha = entity_by_id("index.html", RAHA_ID)
-        self.assertIsNotNone(bani, "Homepage must define Bani Yas branch")
-        self.assertIsNotNone(raha, "Homepage must define Al Raha branch")
-        self.assertEqual(bani.get("telephone"), "+97126262042")
-        self.assertEqual(raha.get("telephone"), "+97126662408")
-        self.assertEqual(bani.get("parentOrganization", {}).get("@id"), ORG_ID)
-        self.assertEqual(raha.get("parentOrganization", {}).get("@id"), ORG_ID)
+            bani = entity_by_id(path, BANI_ID)
+            raha = entity_by_id(path, RAHA_ID)
+            self.assertIsNotNone(bani, f"{path} must define Bani Yas branch")
+            self.assertIsNotNone(raha, f"{path} must define Al Raha branch")
+            self.assertEqual(bani.get("telephone"), "+97126262042")
+            self.assertEqual(raha.get("telephone"), "+97126662408")
+            self.assertEqual(bani.get("parentOrganization", {}).get("@id"), ORG_ID)
+            self.assertEqual(raha.get("parentOrganization", {}).get("@id"), ORG_ID)
 
-        website = entity_by_id("index.html", WEBSITE_ID)
-        self.assertIsNotNone(website)
-        self.assertEqual(website.get("publisher", {}).get("@id"), ORG_ID)
+            website = entity_by_id(path, WEBSITE_ID)
+            self.assertIsNotNone(website)
+            self.assertEqual(website.get("publisher", {}).get("@id"), ORG_ID)
 
     def test_about_page_is_about_parent_brand(self):
         about = entity_by_id("about.html", f"{BASE}/about.html#about")
@@ -118,27 +146,40 @@ class GoogleAuthorityContract(unittest.TestCase):
             self.assertEqual(bani.get("parentOrganization", {}).get("@id"), ORG_ID)
             self.assertEqual(raha.get("parentOrganization", {}).get("@id"), ORG_ID)
 
-    def test_doctor_worksfor_references_only_known_branches(self):
-        for filename in DOCTOR_FILES:
-            path = f"doctors/{filename}"
-            people = [e for e in jsonld_entities(path) if isinstance(e, dict) and e.get("@type") == "Person"]
-            self.assertEqual(len(people), 1, f"{path} should expose one Person entity")
-            works_for = people[0].get("worksFor")
-            refs = works_for if isinstance(works_for, list) else [works_for]
-            ids = {ref.get("@id") for ref in refs if isinstance(ref, dict)}
-            self.assertTrue(ids, f"{path} must identify at least one Silwadi branch")
-            self.assertTrue(ids <= ALLOWED_BRANCH_IDS, f"{path} has unknown worksFor IDs: {ids}")
+    def test_doctor_branch_assignments_are_exact_in_both_languages(self):
+        for filename, expected in DOCTOR_BRANCHES.items():
+            for prefix in ("doctors/", "ar/doctors/"):
+                path = f"{prefix}{filename}"
+                ids = person_branch_ids(path)
+                self.assertEqual(ids, expected, f"{path} has incorrect worksFor branch IDs")
+                self.assertTrue(ids <= ALLOWED_BRANCH_IDS)
 
-    def test_treatment_service_provider_resolves_to_parent_brand(self):
+    def test_treatment_service_provider_resolves_to_parent_brand_in_both_languages(self):
         for filename in TREATMENT_FILES:
-            path = f"treatments/{filename}"
+            for prefix in ("treatments/", "ar/treatments/"):
+                path = f"{prefix}{filename}"
+                services = [e for e in jsonld_entities(path) if isinstance(e, dict) and e.get("@type") == "Service"]
+                self.assertEqual(len(services), 1, f"{path} should expose one Service entity")
+                provider = services[0].get("provider", {})
+                self.assertEqual(provider.get("@id"), ORG_ID, f"{path} should connect service authority to the parent Silwadi brand")
+                self.assertEqual(services[0].get("isPartOf", {}).get("@id"), WEBSITE_ID)
+
+    def test_services_hub_service_entities_reference_parent_brand(self):
+        for path in ("services.html", "ar/services.html"):
             services = [e for e in jsonld_entities(path) if isinstance(e, dict) and e.get("@type") == "Service"]
-            self.assertEqual(len(services), 1, f"{path} should expose one Service entity")
-            provider = services[0].get("provider", {})
-            self.assertEqual(provider.get("@id"), ORG_ID, f"{path} should connect service authority to the parent Silwadi brand")
+            self.assertEqual(len(services), 9, f"{path} should expose the nine established service areas")
+            for service in services:
+                self.assertEqual(service.get("provider", {}).get("@id"), ORG_ID, f"{path}: {service.get('name')} has a disconnected provider")
+                self.assertEqual(service.get("isPartOf", {}).get("@id"), WEBSITE_ID)
+
+    def test_treatments_collection_is_connected_to_brand_and_website(self):
+        page = entity_by_id("treatments.html", f"{BASE}/treatments.html#page")
+        self.assertIsNotNone(page)
+        self.assertEqual(page.get("about", {}).get("@id"), ORG_ID)
+        self.assertEqual(page.get("isPartOf", {}).get("@id"), WEBSITE_ID)
 
     def test_public_metadata_avoids_unverifiable_superiority_claims(self):
-        paths = ["index.html", "about.html", "locations.html", "contact.html", "doctors.html", "treatments.html"]
+        paths = ["index.html", "about.html", "locations.html", "contact.html", "doctors.html", "treatments.html", "services.html"]
         paths += [f"doctors/{name}" for name in DOCTOR_FILES]
         paths += [f"treatments/{name}" for name in TREATMENT_FILES]
         for path in paths:
@@ -146,16 +187,25 @@ class GoogleAuthorityContract(unittest.TestCase):
             for phrase in PROHIBITED_META:
                 self.assertNotIn(phrase, page_head, f"{path} metadata contains prohibited phrase: {phrase}")
 
-    def test_english_pages_have_self_canonical_and_language_alternates(self):
+    def test_english_and_arabic_pages_have_reciprocal_canonical_hreflang(self):
         for path in PAIR_FILES:
-            html = text(path)
+            english_html = text(path)
             public_path = "/" if path == "index.html" else f"/{path}"
-            canonical = f'{BASE}{public_path}'
+            canonical = f"{BASE}{public_path}"
             ar_path = "/ar/" if path == "index.html" else f"/ar/{path}"
-            self.assertIn(f'rel="canonical" href="{canonical}"', html, f"{path} canonical mismatch")
-            self.assertIn(f'hreflang="en-AE" href="{canonical}"', html, f"{path} missing en-AE")
-            self.assertIn(f'hreflang="ar-AE" href="{BASE}{ar_path}"', html, f"{path} missing ar-AE")
-            self.assertIn(f'hreflang="x-default" href="{canonical}"', html, f"{path} missing x-default")
+            arabic_url = f"{BASE}{ar_path}"
+            arabic_file = "ar/index.html" if path == "index.html" else f"ar/{path}"
+            arabic_html = text(arabic_file)
+
+            self.assertIn(f'rel="canonical" href="{canonical}"', english_html, f"{path} canonical mismatch")
+            self.assertIn(f'hreflang="en-AE" href="{canonical}"', english_html, f"{path} missing en-AE")
+            self.assertIn(f'hreflang="ar-AE" href="{arabic_url}"', english_html, f"{path} missing ar-AE")
+            self.assertIn(f'hreflang="x-default" href="{canonical}"', english_html, f"{path} missing x-default")
+
+            self.assertIn(f'rel="canonical" href="{arabic_url}"', arabic_html, f"{arabic_file} canonical mismatch")
+            self.assertIn(f'hreflang="en-AE" href="{canonical}"', arabic_html, f"{arabic_file} missing en-AE")
+            self.assertIn(f'hreflang="ar-AE" href="{arabic_url}"', arabic_html, f"{arabic_file} missing ar-AE")
+            self.assertIn(f'hreflang="x-default" href="{canonical}"', arabic_html, f"{arabic_file} missing x-default")
 
     def test_sitemap_exposes_only_public_site_urls(self):
         xml = text("sitemap.xml")
