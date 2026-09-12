@@ -1,0 +1,37 @@
+name: Apply doctor profiles SEO once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-doctor-profiles-seo-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply approved doctor profile SEO changes
+        run: python scripts/apply_doctor_profiles_seo.py
+      - name: Verify doctor profile SEO contract before commit
+        run: python -m unittest tests.test_doctor_profiles_seo -v
+      - name: Commit approved doctor SEO pass
+        run: |
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add doctors/*.html sitemap.xml
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "seo: optimize doctor profile pages"
+          git push origin HEAD:main
