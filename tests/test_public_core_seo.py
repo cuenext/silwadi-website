@@ -191,6 +191,17 @@ class PublicCoreSeoContract(unittest.TestCase):
             self.assertNotIn('href="contact.html#consultation"', html, path)
             self.assertNotIn('href="../contact.html#consultation"', html, path)
 
+    def test_sitemap_has_current_or_newer_lastmod_for_core_pages(self):
+        sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
+        for path in PAGES:
+            url = f"https://silwadi.ae/{path}"
+            match = re.search(
+                rf"<loc>{re.escape(url)}</loc>\s*<lastmod>(\d{{4}}-\d{{2}}-\d{{2}})</lastmod>",
+                sitemap,
+            )
+            self.assertIsNotNone(match, f"missing sitemap entry for {url}")
+            self.assertGreaterEqual(match.group(1), "2026-09-12", url)
+
 
 if __name__ == "__main__":
     unittest.main()
