@@ -4,8 +4,11 @@ on:
   push:
     branches: [main]
     paths:
+      - 'doctors.html'
       - 'doctors/**.html'
+      - 'ar/doctors/dr-lana-masoud.html'
       - 'tests/test_doctor_profile_advertising_compliance.py'
+      - 'tests/test_lana_almasoud_name.py'
       - '.github/workflows/doctor-profile-advertising-compliance.yml'
   workflow_dispatch:
 
@@ -17,4 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: python -m unittest tests.test_doctor_profile_advertising_compliance -v
+      - name: Doctor profile source and advertising audit
+        run: python -m unittest tests.test_doctor_profile_advertising_compliance -v
+      - name: Lana Almasoud identity regression
+        run: python -m unittest tests.test_lana_almasoud_name -v
