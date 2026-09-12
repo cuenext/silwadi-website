@@ -5,7 +5,9 @@ on:
     branches: [main]
     paths:
       - 'tests/test_private_pediatric_review.py'
+      - 'tests/test_private_pediatric_gallery.py'
       - 'review/pediatric-dentistry-v1.html'
+      - 'assets/review/pediatric-clinic/**'
       - '.github/workflows/private-pediatric-review-test.yml'
 
 jobs:
@@ -14,4 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Verify private pediatric review contract
-        run: python -m unittest tests.test_private_pediatric_review
+        run: |
+          python -m unittest tests.test_private_pediatric_review -v
+          python -m unittest tests.test_private_pediatric_gallery -v
