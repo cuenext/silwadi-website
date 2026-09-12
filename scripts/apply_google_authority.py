@@ -74,12 +74,18 @@ def by_id(items, entity_id):
     return None
 
 
-def bani_entity():
+def local_page(path, locale):
+    if locale == "ar":
+        return f"{BASE}/ar/{path}"
+    return f"{BASE}/{path}"
+
+
+def bani_entity(locale="en"):
     return {
         "@type": "Dentist",
         "@id": BANI_ID,
         "name": "Dr. Munir Silwadi Dental Centre",
-        "url": f"{BASE}/locations.html#bani-yas",
+        "url": f"{local_page('locations.html', locale)}#bani-yas",
         "telephone": "+97126262042",
         "email": "info@silwadidentalcentres.ae",
         "image": f"{BASE}/assets/silwadi-logo-official.png",
@@ -115,12 +121,12 @@ def bani_entity():
     }
 
 
-def raha_entity():
+def raha_entity(locale="en"):
     return {
         "@type": "Dentist",
         "@id": RAHA_ID,
         "name": "Dr. Mohamed Munir Dental Centre - Al Raha Mall",
-        "url": f"{BASE}/locations.html#al-raha",
+        "url": f"{local_page('locations.html', locale)}#al-raha",
         "telephone": "+97126662408",
         "email": "info@silwadidentalcentres.ae",
         "image": f"{BASE}/assets/silwadi-logo-official.png",
@@ -152,7 +158,8 @@ def raha_entity():
     }
 
 
-def organization_entity():
+def organization_entity(locale="en"):
+    doctor_prefix = "ar/doctors" if locale == "ar" else "doctors"
     return {
         "@type": "Organization",
         "@id": ORG_ID,
@@ -162,13 +169,13 @@ def organization_entity():
         "logo": {"@type": "ImageObject", "url": f"{BASE}/assets/silwadi-logo-official.png"},
         "email": "info@silwadidentalcentres.ae",
         "foundingDate": "1980",
-        "founder": {"@id": f"{BASE}/doctors/dr-munir-silwadi.html#person"},
+        "founder": {"@id": f"{BASE}/{doctor_prefix}/dr-munir-silwadi.html#person"},
         "sameAs": ["https://www.instagram.com/dr.munirsilwadidental/"],
         "subOrganization": [{"@id": BANI_ID}, {"@id": RAHA_ID}],
     }
 
 
-def patch_home(data):
+def patch_home(data, locale="en"):
     items = graph(data)
     website = by_id(items, WEBSITE_ID)
     if website is None:
@@ -180,18 +187,18 @@ def patch_home(data):
         if not (isinstance(item, dict) and item.get("@id") in {ORG_ID, BANI_ID, RAHA_ID})
     ]
     website_index = items.index(website)
-    items[website_index:website_index] = [organization_entity()]
-    items.extend([bani_entity(), raha_entity()])
+    items[website_index:website_index] = [organization_entity(locale)]
+    items.extend([bani_entity(locale), raha_entity(locale)])
 
 
-def patch_core_branches(data):
+def patch_core_branches(data, locale="en"):
     items = graph(data)
     bani = by_id(items, BANI_ID)
     raha = by_id(items, RAHA_ID)
     if bani is None or raha is None:
         raise RuntimeError("Expected both branch entities")
-    bani.update(bani_entity())
-    raha.update(raha_entity())
+    bani.update(bani_entity(locale))
+    raha.update(raha_entity(locale))
 
 
 def patch_about(data):
@@ -249,11 +256,11 @@ def patch_doctor_branches(path, branch_ids):
 
 
 def main():
-    mutate_jsonld_script("index.html", "data-seo-schema", patch_home)
-    mutate_jsonld_script("ar/index.html", "data-seo-schema", patch_home)
+    mutate_jsonld_script("index.html", "data-seo-schema", lambda data: patch_home(data, "en"))
+    mutate_jsonld_script("ar/index.html", "data-seo-schema", lambda data: patch_home(data, "ar"))
 
-    mutate_jsonld_script("locations.html", "data-seo-schema", patch_core_branches)
-    mutate_jsonld_script("contact.html", "data-seo-schema", patch_core_branches)
+    mutate_jsonld_script("locations.html", "data-seo-schema", lambda data: patch_core_branches(data, "en"))
+    mutate_jsonld_script("contact.html", "data-seo-schema", lambda data: patch_core_branches(data, "en"))
     mutate_jsonld_script("about.html", "data-seo-schema", patch_about)
 
     patch_collection("doctors.html", "data-public-core-seo-v1", f"{BASE}/doctors.html#page")
