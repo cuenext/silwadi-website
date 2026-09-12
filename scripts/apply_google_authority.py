@@ -8,6 +8,13 @@ ORG_ID = f"{BASE}/#organization"
 BANI_ID = f"{BASE}/#dentist"
 RAHA_ID = f"{BASE}/#dentist-al-raha"
 WEBSITE_ID = f"{BASE}/#website"
+TREATMENT_FILES = [
+    "dental-implants.html",
+    "orthodontics.html",
+    "cosmetic-dentistry.html",
+    "general-dentistry.html",
+    "emergency-dentist.html",
+]
 
 
 def load(path):
@@ -141,8 +148,6 @@ def patch_home(data):
         raise RuntimeError("Homepage WebSite entity missing")
     website["publisher"] = {"@id": ORG_ID}
 
-    # Replace the branch definitions with the canonical factual versions while
-    # preserving all unrelated entities in the existing graph.
     items[:] = [item for item in items if not (isinstance(item, dict) and item.get("@id") in {ORG_ID, BANI_ID, RAHA_ID})]
     website_index = items.index(website)
     items[website_index:website_index] = [organization_entity()]
@@ -179,6 +184,17 @@ def patch_collection(path, page_id):
     mutate_jsonld_script(path, "data-public-core-seo-v1", mutate)
 
 
+def patch_treatment_service(path):
+    def mutate(data):
+        items = graph(data)
+        services = [item for item in items if isinstance(item, dict) and item.get("@type") == "Service"]
+        if len(services) != 1:
+            raise RuntimeError(f"Expected exactly one Service entity in {path}, found {len(services)}")
+        services[0]["provider"] = {"@id": ORG_ID}
+        services[0]["isPartOf"] = {"@id": WEBSITE_ID}
+    mutate_jsonld_script(path, "data-seo-schema", mutate)
+
+
 def main():
     mutate_jsonld_script("index.html", "data-seo-schema", patch_home)
     mutate_jsonld_script("locations.html", "data-seo-schema", patch_core_branches)
@@ -187,14 +203,15 @@ def main():
     patch_collection("doctors.html", f"{BASE}/doctors.html#page")
     patch_collection("locations.html", f"{BASE}/locations.html#page")
 
-    # ContactPage is not a graph in its secondary block, so add graph references
-    # without altering any visible content.
     def patch_contact_page(data):
         if not isinstance(data, dict) or data.get("@id") != f"{BASE}/contact.html#page":
             raise RuntimeError("ContactPage entity missing")
         data["isPartOf"] = {"@id": WEBSITE_ID}
         data["about"] = {"@id": ORG_ID}
     mutate_jsonld_script("contact.html", "data-public-core-seo-v1", patch_contact_page)
+
+    for filename in TREATMENT_FILES:
+        patch_treatment_service(f"treatments/{filename}")
 
     print("Applied Silwadi Google authority entity-graph patch")
 
