@@ -1,0 +1,15 @@
+name: Pediatric gallery repair RED check
+
+on:
+  push:
+    branches: [pediatric-gallery-red-check]
+    paths:
+      - '.github/workflows/pediatric-gallery-red-check.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm pediatric gallery regression is red before repair
+        run: python -m unittest tests.test_private_pediatric_gallery -v
