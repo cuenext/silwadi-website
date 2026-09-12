@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'doctors.html'
+      - 'doctors/dr-lana-masoud.html'
+      - 'ar/doctors/dr-lana-masoud.html'
       - 'tests/test_lana_almasoud_name.py'
       - '.github/workflows/lana-almasoud-name-test.yml'
 
