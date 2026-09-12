@@ -22,6 +22,7 @@ class PediatricClinicGalleryContract(unittest.TestCase):
             data = path.read_bytes()
             self.assertEqual(data[:4], b"RIFF", f"{name} must be a valid RIFF WebP")
             self.assertEqual(data[8:12], b"WEBP", f"{name} must be a valid WebP")
+            self.assertGreater(len(data), 25_000, f"{name} is suspiciously small and may be truncated/corrupt")
             self.assertLess(len(data), 150_000, f"{name} should remain lightweight for page load")
             self.assertIn(name, text)
         self.assertIn("data-pd-carousel", text)
@@ -29,6 +30,12 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertIn("data-pd-next", text)
         self.assertIn('fetchpriority="high"', text)
         self.assertGreaterEqual(text.count('loading="lazy"'), 4)
+
+    def test_gallery_heading_cannot_be_covered_by_slider(self):
+        text = PAGE.read_text(encoding="utf-8")
+        self.assertIn(".pd-clinic__head{position:relative;z-index:5;", text)
+        self.assertIn(".pd-clinic-carousel{position:relative;z-index:1;", text)
+        self.assertIn("margin-bottom:34px", text)
 
     def test_gallery_supports_arrows_keyboard_and_swipe(self):
         text = PAGE.read_text(encoding="utf-8")
