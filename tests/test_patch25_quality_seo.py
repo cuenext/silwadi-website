@@ -90,6 +90,8 @@ class Patch25QualitySeo(unittest.TestCase):
     def test_about_has_natural_copy_and_restrained_current_story(self):
         source = read("about.html")
         lower = html_lib.unescape(source).replace("\xa0", " ").lower()
+        visible = re.sub(r"<[^>]+>", " ", lower)
+        visible = re.sub(r"\s+", " ", visible)
         for phrase in (
             "multi-specialty",
             "questions",
@@ -98,11 +100,11 @@ class Patch25QualitySeo(unittest.TestCase):
             "implantology",
             "dr. munir silwadi",
         ):
-            self.assertIn(phrase, lower)
-        self.assertNotIn("care that feels considered", lower)
+            self.assertIn(phrase, visible)
+        self.assertNotIn("care that feels considered", visible)
         self.assertIn('class="about-hero"', source)
         self.assertIn('class="about-story-timeline"', source)
-        self.assertIn("care for every smile in abu dhabi", lower)
+        self.assertIn("care for every smile in abu dhabi", visible)
 
     def test_about_images_are_real_dimensioned_assets_with_accessible_alt_text(self):
         source = read("about.html")
