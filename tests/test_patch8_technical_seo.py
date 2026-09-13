@@ -104,7 +104,7 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
         self.assertIsNotNone(website)
         local = json.loads(read('data/local-business.json'))
         self.assertEqual(dentist['@id'], 'https://silwadi.ae/#dentist')
-        self.assertEqual(dentist['url'], 'https://silwadi.ae/')
+        self.assertEqual(dentist['url'], 'https://silwadi.ae/locations.html#bani-yas')
         self.assertEqual(dentist['telephone'], local['phone_e164'])
         self.assertEqual(dentist['email'], local['email'])
         self.assertIn('W Corniche Road', dentist['address']['streetAddress'])
@@ -148,8 +148,12 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
         self.assertEqual(person['name'], 'Dr. Munir Silwadi')
         self.assertEqual(person['jobTitle'], 'Specialist Prosthodontist & Implantologist')
         self.assertEqual(person['url'], 'https://silwadi.ae/doctors/dr-munir-silwadi.html')
-        self.assertEqual(person['image'], 'https://silwadi.ae/assets/doctors/dr-munir-silwadi.png')
-        self.assertEqual(person['worksFor']['@id'], 'https://silwadi.ae/#dentist')
+        self.assertEqual(person['image'], 'https://silwadi.ae/assets/dr-munir-new.webp?v=20260907-profilefix')
+        works_for = person['worksFor'] if isinstance(person['worksFor'], list) else [person['worksFor']]
+        self.assertEqual(
+            {item['@id'] for item in works_for},
+            {'https://silwadi.ae/#dentist', 'https://silwadi.ae/#dentist-al-raha'},
+        )
         self.assertFalse(has_key_deep(person, 'founder'))
         self.assertFalse(has_key_deep(person, 'founderOf'))
 
@@ -164,8 +168,13 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
         root = ET.fromstring(read('sitemap.xml'))
         ns = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
         locs = [el.text for el in root.findall('sm:url/sm:loc', ns)]
-        self.assertEqual(locs, list(PAGE_URLS.values()))
-        self.assertEqual(len(locs), 27)
+        routes = json.loads(read('data/arabic-seo.json'))
+        expected = set()
+        for route in routes:
+            expected.add('https://silwadi.ae/' if route == 'index.html' else f'https://silwadi.ae/{route}')
+            expected.add('https://silwadi.ae/ar/' if route == 'index.html' else f'https://silwadi.ae/ar/{route}')
+        self.assertEqual(set(locs), expected)
+        self.assertEqual(len(locs), len(expected))
         self.assertTrue(all(url.startswith('https://silwadi.ae/') for url in locs))
         self.assertFalse(any('silwadidentalcentres.ae' in url for url in locs))
 

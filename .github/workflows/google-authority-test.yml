@@ -5,6 +5,7 @@ on:
     paths:
       - '**/*.html'
       - 'sitemap.xml'
+      - 'data/arabic-seo.json'
       - 'tests/test_google_authority.py'
       - 'tests/test_doctor_profiles_seo.py'
       - 'tests/test_doctor_profile_advertising_compliance.py'
@@ -20,6 +21,7 @@ on:
     paths:
       - '**/*.html'
       - 'sitemap.xml'
+      - 'data/arabic-seo.json'
       - 'tests/test_google_authority.py'
       - 'tests/test_doctor_profiles_seo.py'
       - 'tests/test_doctor_profile_advertising_compliance.py'
