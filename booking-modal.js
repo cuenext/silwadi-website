@@ -1,9 +1,11 @@
 (function silwadiBookingModal() {
+  const BOOKING_ENDPOINT = window.SILWADI_BOOKING_ENDPOINT || 'https://booking.silwadi.ae/request';
+
   const EN = {
     title: 'Book your appointment',
     intro: 'Share a few details and our appointments team will confirm availability with you.',
     close: 'Close booking form',
-    privacy: 'Your email app will open with the details you enter. We use them only to respond to this appointment enquiry. Please do not include sensitive medical information.',
+    privacy: 'Your details are sent securely to our appointments team and used only to respond to this enquiry. Please do not include sensitive medical information.',
     name: 'Full name',
     mobile: 'Mobile',
     email: 'Email',
@@ -15,7 +17,9 @@
     choose: 'Please choose',
     consent: 'I agree that Silwadi may use these details to reply to my appointment enquiry.',
     submit: 'Send appointment request',
-    status: 'Your email app is opening with the appointment request.',
+    sending: 'Sending your appointment request…',
+    status: 'Appointment request sent. Our team will contact you to confirm.',
+    error: 'We could not send your request right now. Please try again or contact reception by phone or WhatsApp.',
     treatments: [
       ['General Dentistry', 'General Dentistry'],
       ['Preventive Dentistry', 'Preventive Dentistry'],
@@ -38,7 +42,7 @@
     title: 'احجز موعدك',
     intro: 'شاركنا بعض التفاصيل وسيتواصل معك فريق المواعيد لتأكيد الوقت المناسب.',
     close: 'إغلاق نموذج الحجز',
-    privacy: 'سيفتح تطبيق البريد الإلكتروني بالتفاصيل التي تدخلها. نستخدم هذه المعلومات فقط للرد على طلب الموعد. يرجى عدم إدخال معلومات طبية حساسة هنا.',
+    privacy: 'يتم إرسال بياناتك بشكل آمن إلى فريق المواعيد ونستخدمها فقط للرد على هذا الطلب. يرجى عدم إدخال معلومات طبية حساسة هنا.',
     name: 'الاسم الكامل',
     mobile: 'رقم الهاتف',
     email: 'البريد الإلكتروني',
@@ -50,7 +54,9 @@
     choose: 'يرجى الاختيار',
     consent: 'أوافق على استخدام مركز سلوادي لهذه البيانات للرد على طلب الموعد.',
     submit: 'أرسل طلب الموعد',
-    status: 'سيتم الآن فتح تطبيق البريد الإلكتروني مع تفاصيل طلب الموعد.',
+    sending: 'جارٍ إرسال طلب الموعد…',
+    status: 'تم إرسال طلب الموعد. سيتواصل معك فريقنا لتأكيده.',
+    error: 'تعذر إرسال طلبك الآن. يرجى المحاولة مرة أخرى أو التواصل مع الاستقبال عبر الهاتف أو واتساب.',
     treatments: [
       ['General Dentistry', 'طب الأسنان العام'],
       ['Preventive Dentistry', 'طب الأسنان الوقائي'],
@@ -147,35 +153,42 @@
 
       close?.addEventListener('click', () => bookingDialog.close());
 
-      form?.addEventListener('submit', event => {
+      form?.addEventListener('submit', async event => {
         event.preventDefault();
         if (!form.reportValidity()) return;
 
         const data = new FormData(form);
-        const name = String(data.get('name') || '').trim();
-        const email = String(data.get('email') || '').trim();
-        const phone = String(data.get('phone') || '').trim();
-        const treatment = String(data.get('treatment') || '').trim();
-        const date = String(data.get('date') || '').trim();
-        const time = String(data.get('time') || '').trim();
-        const clinic = String(data.get('clinic') || '').trim();
-        const notes = String(data.get('message') || '').trim();
-        const subject = treatment ? `Appointment request - ${treatment}` : 'Appointment request';
-        const body = [
-          `Name: ${name}`,
-          `Email: ${email}`,
-          `Phone: ${phone}`,
-          `Treatment: ${treatment || 'Not specified'}`,
-          `Preferred date: ${date || 'Not specified'}`,
-          `Preferred time: ${time || 'Not specified'}`,
-          `Preferred clinic: ${clinic || 'Not specified'}`,
-          '',
-          `Notes: ${notes || 'None'}`,
-        ].join('\n');
+        const payload = {
+          name: String(data.get('name') || '').trim(),
+          email: String(data.get('email') || '').trim(),
+          phone: String(data.get('phone') || '').trim(),
+          treatment: String(data.get('treatment') || '').trim(),
+          date: String(data.get('date') || '').trim(),
+          time: String(data.get('time') || '').trim(),
+          clinic: String(data.get('clinic') || '').trim(),
+          notes: String(data.get('message') || '').trim(),
+          language,
+        };
 
         const status = form.querySelector('[data-consultation-status]');
-        if (status) status.textContent = copy.status;
-        window.location.href = `mailto:appointment@silwadidentalcenter.ae?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        const submit = form.querySelector('.booking-modal__submit');
+        if (status) status.textContent = copy.sending;
+        if (submit) submit.disabled = true;
+
+        try {
+          const response = await fetch(BOOKING_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          if (!response.ok) throw new Error('booking_submit_failed');
+          form.reset();
+          if (status) status.textContent = copy.status;
+        } catch {
+          if (status) status.textContent = copy.error;
+        } finally {
+          if (submit) submit.disabled = false;
+        }
       });
     };
 
