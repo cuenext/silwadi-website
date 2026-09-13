@@ -1,5 +1,5 @@
 (function silwadiBookingModal() {
-  const BOOKING_ENDPOINT = '/booking-submit.php';
+  const BOOKING_ENDPOINT = 'https://booking.silwadi.ae/booking-submit.php';
 
   const EN = {
     title: 'Book your appointment',
