@@ -64,7 +64,7 @@ Private review of the Silwadi Dental Centre FAQ AI assistant. Do not change the 
 - Public `doctors.html` and the dedicated name regression require `Dr. Lana Almasoud`.
 - TDD RED was verified after updating the AI knowledge test first: the page contract, Worker contract and JavaScript syntax passed, while the knowledge contract failed against the stale `Dr. Lana Masoud` AI data.
 - Root-cause fix commit `02cc93109d6fb5adc9f8c0c31390bf2b1114ae3b` changes only the private AI clinic knowledge entry to `Dr. Lana Almasoud`; no public page was altered by the fix.
-- GREEN verification is pending the dedicated AI workflow on that commit.
+- TDD GREEN is verified on workflow run `34745799513`: page contract, AI knowledge contract, AI Worker contract, and both JavaScript syntax checks all passed.
 
 ## Safety constraints that must not regress
 
@@ -82,13 +82,12 @@ Private review of the Silwadi Dental Centre FAQ AI assistant. Do not change the 
 
 ## Exact next step
 
-1. Verify the dedicated private AI workflow turns GREEN after commit `02cc93109d6fb5adc9f8c0c31390bf2b1114ae3b`.
-2. Verify GitHub Pages deployment remains healthy and the public site was not changed.
-3. User creates/funds an OpenAI API project/account and creates a project API key. Never paste the key into chat.
-4. User creates a Cloudflare Worker and pastes `worker/silwadi-ai-worker.js` into it.
-5. User adds `OPENAI_API_KEY` as a Cloudflare **Secret** and adds the non-secret variables listed above.
-6. User deploys the Worker and shares only the public `workers.dev` URL (safe to share), not the API key.
-7. Agent follows TDD for the connection change, then sets the private page endpoint to `<workers.dev URL>/ask`.
-8. Run/verify the private AI workflow and GitHub Pages deployment.
-9. Test English, Arabic/RTL, unknown facts, medication, red flags, rate/timeout fallback, and static FAQ fallback on the private page.
-10. Keep all public FAQ/navigation/sitemap changes out of scope until explicit approval.
+1. Verify the newest GitHub Pages deployment is healthy and the private review URL serves the expected noindex review page.
+2. User creates/funds an OpenAI API project/account and creates a project API key. Never paste the key into chat.
+3. User creates a Cloudflare Worker and pastes `worker/silwadi-ai-worker.js` into it.
+4. User adds `OPENAI_API_KEY` as a Cloudflare **Secret** and adds the non-secret variables listed above.
+5. User deploys the Worker and shares only the public `workers.dev` URL (safe to share), not the API key.
+6. Agent follows TDD for the connection change, then sets the private page endpoint to `<workers.dev URL>/ask`.
+7. Run/verify the private AI workflow and GitHub Pages deployment.
+8. Test English, Arabic/RTL, unknown facts, medication, red flags, rate/timeout fallback, and static FAQ fallback on the private page.
+9. Keep all public FAQ/navigation/sitemap changes out of scope until explicit approval.
