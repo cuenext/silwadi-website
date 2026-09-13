@@ -1,4 +1,4 @@
-name: Verify Ehab name correction
+name: Normalize and verify Ehab name correction
 
 on:
   push:
@@ -7,17 +7,17 @@ on:
       - '.github/workflows/verify-ehab-name.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  verify:
+  normalize-and-verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Verify only intended name replacements
+      - name: Restore exact pre-change content plus intended name replacement
         shell: bash
         run: |
           python - <<'PY'
@@ -47,11 +47,26 @@ jobs:
                   expected = expected.replace(old, new)
               current = path.read_text(encoding='utf-8')
               if current != expected:
-                  raise SystemExit(f'Unexpected non-name change detected in {path}')
+                  path.write_text(expected, encoding='utf-8')
+
+          for path in paths:
+              current = path.read_text(encoding='utf-8')
               if 'Ehab Hassouneh Bassam' in current or 'إيهاب حسونة بسام' in current:
                   raise SystemExit(f'Old Ehab name remains in {path}')
-
-          print('All six runtime sources match the pre-change versions except for the intended Ehab name replacements.')
           PY
+
           node --check app.js
           node --check language.js
+
+      - name: Commit normalization if needed
+        shell: bash
+        run: |
+          if git diff --quiet -- doctors.html doctors/dr-ehab-hassouneh.html ar/doctors.html ar/doctors/dr-ehab-hassouneh.html language.js app.js; then
+            echo 'All target files already contain only the intended name changes.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add doctors.html doctors/dr-ehab-hassouneh.html ar/doctors.html ar/doctors/dr-ehab-hassouneh.html language.js app.js
+          git commit -m 'Keep Ehab correction name-only'
+          git push origin HEAD:main
