@@ -17,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Replace old Ehab name in all tracked text sources
+      - name: Replace old Ehab name in non-workflow tracked text sources
         shell: bash
         run: |
           python - <<'PY'
@@ -25,7 +25,6 @@ jobs:
           import json
           import subprocess
 
-          workflow = '.github/workflows/scan-ehab-name.yml'
           files = subprocess.check_output(['git', 'ls-files', '-z']).split(b'\0')
           replacements = [
               ('Dr. Ehab Hassouneh Bassam A', 'Dr. Ehab Hassouneh'),
@@ -39,7 +38,7 @@ jobs:
               if not raw:
                   continue
               path = Path(raw.decode('utf-8'))
-              if path.as_posix() == workflow:
+              if path.as_posix().startswith('.github/workflows/'):
                   continue
               try:
                   text = path.read_text(encoding='utf-8')
@@ -86,12 +85,12 @@ jobs:
           node --check language.js
           python -m py_compile scripts/refresh_doctor_profiles.py tests/site_contract_test.py tests/test_patch10_doctor_authority.py tests/test_patch22_roster_arabic.py
 
-          if git grep -n -I -e 'Ehab Hassouneh Bassam' -e 'إيهاب حسونة بسام' -- . ':(exclude).github/workflows/scan-ehab-name.yml'; then
-            echo 'Old Ehab name still remains.'
+          if git grep -n -I -e 'Ehab Hassouneh Bassam' -e 'إيهاب حسونة بسام' -- . ':(exclude).github/workflows/**'; then
+            echo 'Old Ehab name remains outside workflow files.'
             exit 1
           fi
 
-      - name: Commit site-wide correction
+      - name: Commit non-workflow correction
         shell: bash
         run: |
           if git diff --quiet; then
@@ -101,6 +100,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git reset .github/workflows/scan-ehab-name.yml
+          git reset .github/workflows/
           git commit -m 'Remove Bassam A from Ehab name everywhere'
           git push origin HEAD:main
