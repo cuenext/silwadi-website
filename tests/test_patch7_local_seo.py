@@ -20,6 +20,10 @@ def read(path):
     return (ROOT / path).read_text(encoding='utf-8')
 
 
+def normalized_markup(path):
+    return html_lib.unescape(read(path)).replace('\xa0', ' ')
+
+
 class PatchSevenLocalSEOContract(unittest.TestCase):
     def local_data(self):
         return json.loads(read('data/local-business.json'))
@@ -38,24 +42,24 @@ class PatchSevenLocalSEOContract(unittest.TestCase):
     def test_contact_and_locations_use_identical_nap(self):
         data = self.local_data()
         for rel in ['contact.html', 'locations.html']:
-            html = read(rel)
-            self.assertIn(data['brand_name'], html, rel)
-            self.assertIn(data['phone_display'], html, rel)
-            self.assertIn(data['email'], html, rel)
-            self.assertIn(data['address'], html, rel)
-            self.assertIn(f'tel:{data["phone_e164"]}', html, rel)
+            markup = normalized_markup(rel)
+            self.assertIn(data['brand_name'], markup, rel)
+            self.assertIn(data['phone_display'], markup, rel)
+            self.assertIn(data['email'], markup, rel)
+            self.assertIn(data['address'], markup, rel)
+            self.assertIn(f'tel:{data["phone_e164"]}', markup, rel)
 
     def test_verified_hours_are_consistent(self):
         expected = self.local_data()['hours_display']
         for rel in ['contact.html', 'locations.html']:
-            self.assertIn(expected, html_lib.unescape(read(rel)), rel)
+            self.assertIn(expected, normalized_markup(rel), rel)
 
     def test_sitewide_footer_contains_active_location_signals(self):
         for rel in ROOT_PAGES + NESTED_PAGES:
-            html = read(rel)
-            self.assertIn('+971 2 626 2042', html, rel)
-            self.assertIn('Bani Yas Tower', html, rel)
-            self.assertIn('W Corniche Road, Abu Dhabi', html, rel)
+            markup = normalized_markup(rel)
+            self.assertIn('+971 2 626 2042', markup, rel)
+            self.assertIn('Bani Yas Tower', markup, rel)
+            self.assertIn('W Corniche Road, Abu Dhabi', markup, rel)
 
     def test_locations_and_contact_have_google_map_paths(self):
         for rel in ['locations.html', 'contact.html']:

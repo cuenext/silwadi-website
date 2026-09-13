@@ -1,0 +1,64 @@
+name: Google authority SEO tests
+
+on:
+  push:
+    paths:
+      - '**/*.html'
+      - 'sitemap.xml'
+      - 'data/arabic-seo.json'
+      - 'tests/test_google_authority.py'
+      - 'tests/test_doctor_profiles_seo.py'
+      - 'tests/test_doctor_profile_advertising_compliance.py'
+      - 'tests/test_arabic_structured_data.py'
+      - 'tests/test_arabic_quality_seo_rebuild.py'
+      - 'tests/test_public_core_seo.py'
+      - 'tests/test_patch8_technical_seo.py'
+      - 'tests/test_private_*.py'
+      - 'tests/test_ai_knowledge_v1.py'
+      - 'tests/test_ai_worker_contract.py'
+      - '.github/workflows/google-authority-test.yml'
+  pull_request:
+    paths:
+      - '**/*.html'
+      - 'sitemap.xml'
+      - 'data/arabic-seo.json'
+      - 'tests/test_google_authority.py'
+      - 'tests/test_doctor_profiles_seo.py'
+      - 'tests/test_doctor_profile_advertising_compliance.py'
+      - 'tests/test_arabic_structured_data.py'
+      - 'tests/test_arabic_quality_seo_rebuild.py'
+      - 'tests/test_public_core_seo.py'
+      - 'tests/test_patch8_technical_seo.py'
+      - 'tests/test_private_*.py'
+      - 'tests/test_ai_knowledge_v1.py'
+      - 'tests/test_ai_worker_contract.py'
+      - '.github/workflows/google-authority-test.yml'
+
+jobs:
+  authority-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run Google authority and current-main nonvisual regressions
+        run: |
+          python -m unittest \
+            tests.test_google_authority \
+            tests.test_doctor_profiles_seo \
+            tests.test_doctor_profile_advertising_compliance \
+            tests.test_arabic_structured_data \
+            tests.test_arabic_quality_seo_rebuild \
+            tests.test_public_core_seo \
+            tests.test_patch8_technical_seo \
+            tests.test_private_ai_faq_review \
+            tests.test_ai_knowledge_v1 \
+            tests.test_ai_worker_contract \
+            tests.test_private_endodontics_review \
+            tests.test_private_faq_review \
+            tests.test_private_pediatric_gallery \
+            tests.test_private_pediatric_review \
+            tests.test_private_pod_raha_review \
+            tests.test_private_pod_review \
+            -v

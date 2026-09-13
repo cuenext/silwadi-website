@@ -1,4 +1,5 @@
 from pathlib import Path
+import html as html_lib
 import re
 import unittest
 
@@ -16,7 +17,10 @@ OFFICIAL_SERVICES = {
     "Prosthodontics",
 }
 
-HOME_SERVICE_NAMES = OFFICIAL_SERVICES | {"Prosthodontics &amp; Implantology"}
+HOME_SERVICE_NAMES = OFFICIAL_SERVICES | {
+    "Prosthodontics & Implantology",
+    "Cosmetic Dentistry & Teeth Whitening",
+}
 
 
 def read(rel):
@@ -41,7 +45,7 @@ class PatchFourteenOfficialContentAlignment(unittest.TestCase):
     def test_home_featured_treatments_are_official_service_names(self):
         html = read("index.html")
         featured = section(html, '<section class="section" id="treatments">', '<section class="section section--quiet"')
-        titles = set(re.findall(r"<h3>(.*?)</h3>", featured, re.S))
+        titles = {html_lib.unescape(title) for title in re.findall(r"<h3>(.*?)</h3>", featured, re.S)}
         self.assertTrue(titles)
         self.assertTrue(titles.issubset(HOME_SERVICE_NAMES), titles - HOME_SERVICE_NAMES)
         self.assertNotIn("Cosmetic & Restorative Dentistry", featured)

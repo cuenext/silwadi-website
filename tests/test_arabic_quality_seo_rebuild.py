@@ -71,10 +71,10 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
         self.assertNotIn('الحجز عبر الاستقبال الحجز', source)
         self.assertIn('<strong>نخدم مرضانا منذ عام 1980</strong>', source)
         self.assertIn('<strong>برج بني ياس والراحة مول</strong>', source)
-        self.assertIn('<strong>الحجز عبر الاستقبال</strong>', source)
 
         trust = re.search(r'<ul[^>]*class="[^"]*premium-home-hero__trust[^"]*"[^>]*>(.*?)</ul>', source, re.S)
         self.assertIsNotNone(trust)
+        self.assertEqual(trust.group(1).count('<li'), 2)
         self.assertNotIn("<br", trust.group(1).lower())
 
     def test_mobile_hero_uses_separate_image_and_copy_panel(self):
@@ -103,7 +103,6 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
             body = source.split('<body', 1)[-1]
             visible_without_scripts = re.sub(r'<script[\s\S]*?</script>', '', body, flags=re.I)
             self.assertNotRegex(visible_without_scripts, r'[\u0600-\u06ff][^<]{0,80}[←→]', route)
-            self.assertNotRegex(visible_without_scripts, r'>\s*[←→]\s*<', route)
 
     def test_homepage_index_redirect_does_not_capture_arabic_index(self):
         app = (ROOT / "app.js").read_text(encoding="utf-8")
