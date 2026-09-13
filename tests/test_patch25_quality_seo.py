@@ -102,7 +102,7 @@ class Patch25QualitySeo(unittest.TestCase):
         self.assertNotIn("care that feels considered", lower)
         self.assertIn('class="about-hero"', source)
         self.assertIn('class="about-story-timeline"', source)
-        self.assertIn("Care for every smile in Abu Dhabi", lower)
+        self.assertIn("care for every smile in abu dhabi", lower)
 
     def test_about_images_are_real_dimensioned_assets_with_accessible_alt_text(self):
         source = read("about.html")
