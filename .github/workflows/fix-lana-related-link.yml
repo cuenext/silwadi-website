@@ -1,0 +1,40 @@
+name: Fix Lana related-care link
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-lana-related-link.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-link:
+    if: github.ref == 'refs/heads/seo-authority-integration-0913'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: seo-authority-integration-0913
+          fetch-depth: 0
+      - name: Replace broken Endodontics destination only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('doctors/dr-lana-masoud.html')
+          source = path.read_text(encoding='utf-8')
+          old = 'href="../treatments/endodontics.html">Endodontics'
+          new = 'href="../services.html#endodontics">Endodontics'
+          if source.count(old) != 1:
+              raise SystemExit(f'Expected exactly one broken Lana Endodontics link, found {source.count(old)}')
+          path.write_text(source.replace(old, new), encoding='utf-8')
+          PY
+          git diff --check
+          git diff -- doctors/dr-lana-masoud.html
+      - name: Commit non-visual link correction
+        run: |
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add doctors/dr-lana-masoud.html
+          git commit -m "fix: point Lana related care to Endodontics service"
+          git push origin HEAD:seo-authority-integration-0913
