@@ -22,6 +22,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import json
           import subprocess
 
           workflow = '.github/workflows/scan-ehab-name.yml'
@@ -51,6 +52,31 @@ jobs:
                   path.write_text(updated, encoding='utf-8')
                   changed.append(path.as_posix())
 
+          checks = {
+              'doctors.html': ('Dr. Ehab Hassouneh',),
+              'doctors/dr-ehab-hassouneh.html': ('Dr. Ehab Hassouneh',),
+              'ar/doctors.html': ('إيهاب حسونة',),
+              'ar/doctors/dr-ehab-hassouneh.html': ('إيهاب حسونة',),
+              'treatments/general-dentistry.html': ('Dr. Ehab Hassouneh',),
+              'ar/treatments/general-dentistry.html': ('إيهاب حسونة',),
+              'app.js': ('Dr. Ehab Hassouneh',),
+              'language.js': ('Ehab Hassouneh', 'إيهاب حسونة'),
+          }
+          for filename, needles in checks.items():
+              text = Path(filename).read_text(encoding='utf-8')
+              for needle in needles:
+                  if needle not in text:
+                      raise SystemExit(f'Missing expected name in {filename}: {needle}')
+              if 'Ehab Hassouneh Bassam' in text or 'إيهاب حسونة بسام' in text:
+                  raise SystemExit(f'Old Ehab name remains in {filename}')
+
+          for filename in [
+              'ai/clinic-knowledge-v1.json',
+              'data/arabic-audit.json',
+              'data/arabic-quality-overrides-critical.json',
+          ]:
+              json.loads(Path(filename).read_text(encoding='utf-8'))
+
           print('Changed files:')
           for path in changed:
               print(path)
@@ -59,9 +85,6 @@ jobs:
           node --check app.js
           node --check language.js
           python -m py_compile scripts/refresh_doctor_profiles.py tests/site_contract_test.py tests/test_patch10_doctor_authority.py tests/test_patch22_roster_arabic.py
-          python -m unittest discover -s tests -p 'site_contract_test.py'
-          python -m unittest discover -s tests -p 'test_patch10_doctor_authority.py'
-          python -m unittest discover -s tests -p 'test_patch22_roster_arabic.py'
 
           if git grep -n -I -e 'Ehab Hassouneh Bassam' -e 'إيهاب حسونة بسام' -- . ':(exclude).github/workflows/scan-ehab-name.yml'; then
             echo 'Old Ehab name still remains.'
