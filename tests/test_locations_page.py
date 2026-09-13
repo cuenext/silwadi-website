@@ -17,18 +17,18 @@ class LocationsPageTests(unittest.TestCase):
         self.assertIn('id="al-raha"', HTML)
         self.assertNotIn('class="location-state"', HTML)
 
-    def test_bani_yas_uses_the_approved_corniche_clinic_photo(self):
+    def test_bani_yas_uses_the_current_featured_clinic_photo(self):
         match = re.search(r'<section[^>]*id="bani-yas".*?</section>', HTML, re.S)
         self.assertIsNotNone(match)
         bani_yas = match.group(0)
-        self.assertIn('assets/locations/bani-yas-treatment-room.webp', bani_yas)
-        self.assertIn('width="1000" height="557"', bani_yas)
+        self.assertIn('assets/locations/bani-yas-naeem-featured.webp', bani_yas)
+        self.assertIn('width="800" height="533"', bani_yas)
 
     def test_bani_yas_includes_embedded_google_map_below_photo(self):
         match = re.search(r'<section[^>]*id="bani-yas".*?</section>', HTML, re.S)
         self.assertIsNotNone(match)
         bani_yas = match.group(0)
-        photo_pos = bani_yas.find('assets/locations/bani-yas-treatment-room.webp')
+        photo_pos = bani_yas.find('assets/locations/bani-yas-naeem-featured.webp')
         map_pos = bani_yas.find('class="location-map location-map--bani"')
         self.assertGreaterEqual(photo_pos, 0)
         self.assertGreater(map_pos, photo_pos)
@@ -44,13 +44,13 @@ class LocationsPageTests(unittest.TestCase):
         self.assertIn('assets/locations/al-raha-exterior.webp', al_raha)
         self.assertIn('width="600" height="444"', al_raha)
 
-        gallery = re.search(r'<section[^>]*class="[^"]*branch-gallery[^"]*".*?</section>', HTML, re.S)
+        gallery = re.search(r'<section[^>]*class="[^"]*branch-gallery--raha[^"]*".*?</section>', HTML, re.S)
         self.assertIsNotNone(gallery)
         gallery_html = gallery.group(0)
         self.assertNotIn('al-raha-exterior.webp', gallery_html)
         expected_gallery = {
             'al-raha-treatment-room.webp': 'width="520" height="380"',
-            'al-raha-reception.webp': 'width="520" height="377"',
+            'al-raha-accessible-treatment-room-final.webp': 'width="800" height="600"',
             'al-raha-children-room.webp': 'width="700" height="453"',
             'al-raha-waiting-area.webp': 'width="520" height="377"',
         }
@@ -70,10 +70,14 @@ class LocationsPageTests(unittest.TestCase):
 
     def test_location_image_assets_are_complete_webps(self):
         expected = (
-            'bani-yas-treatment-room.webp',
+            'bani-yas-naeem-featured.webp',
+            'bani-yas-treatment-room-main.webp',
+            'bani-yas-treatment-room-chair.webp',
+            'bani-yas-treatment-room-wide.webp',
+            'bani-yas-waiting-area.webp',
             'al-raha-exterior.webp',
             'al-raha-treatment-room.webp',
-            'al-raha-reception.webp',
+            'al-raha-accessible-treatment-room-final.webp',
             'al-raha-children-room.webp',
             'al-raha-waiting-area.webp',
         )
