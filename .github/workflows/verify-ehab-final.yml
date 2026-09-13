@@ -1,0 +1,65 @@
+name: Verify final Ehab name correction
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-ehab-final.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Ehab name everywhere
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import subprocess
+
+          old_en = 'Ehab Hassouneh Bas' + 'sam'
+          old_ar = 'إيهاب حسونة بس' + 'ام'
+          expected = {
+              'doctors.html': 'Dr. Ehab Hassouneh',
+              'doctors/dr-ehab-hassouneh.html': 'Dr. Ehab Hassouneh',
+              'ar/doctors.html': 'إيهاب حسونة',
+              'ar/doctors/dr-ehab-hassouneh.html': 'إيهاب حسونة',
+              'treatments/general-dentistry.html': 'Dr. Ehab Hassouneh',
+              'ar/treatments/general-dentistry.html': 'إيهاب حسونة',
+              'app.js': 'Dr. Ehab Hassouneh',
+              'language.js': 'Ehab Hassouneh',
+              'ai/clinic-knowledge-v1.json': 'Ehab Hassouneh',
+              'scripts/refresh_doctor_profiles.py': 'Ehab Hassouneh',
+          }
+          for filename, needle in expected.items():
+              text = Path(filename).read_text(encoding='utf-8')
+              if needle not in text:
+                  raise SystemExit(f'Missing expected name in {filename}')
+
+          tracked = subprocess.check_output(['git', 'ls-files', '-z']).split(b'\0')
+          bad = []
+          for raw in tracked:
+              if not raw:
+                  continue
+              path = Path(raw.decode('utf-8'))
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except (UnicodeDecodeError, IsADirectoryError):
+                  continue
+              if old_en in text or old_ar in text:
+                  bad.append(path.as_posix())
+          if bad:
+              raise SystemExit('Old Ehab name remains in: ' + ', '.join(bad))
+
+          for filename in ['ai/clinic-knowledge-v1.json', 'data/arabic-audit.json', 'data/arabic-quality-overrides-critical.json']:
+              json.loads(Path(filename).read_text(encoding='utf-8'))
+          print('Verified: no old Ehab name remains in any tracked text file.')
+          PY
+          node --check app.js
+          node --check language.js
+          python -m py_compile scripts/refresh_doctor_profiles.py
