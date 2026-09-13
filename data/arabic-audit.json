@@ -1948,8 +1948,8 @@
     "override": false
   },
   {
-    "source": "Contact reception to request an appointment with Dr. Ehab Hassouneh Bassam A. The team can confirm availability and help route your enquiry.",
-    "arabic": "تواصل مع الاستقبال لطلب موعد مع د. إيهاب حسونة بسام. سيساعدك الفريق في التأكد من المواعيد المتاحة وتوجيه استفسارك.",
+    "source": "Contact reception to request an appointment with Dr. Ehab Hassouneh. The team can confirm availability and help route your enquiry.",
+    "arabic": "تواصل مع الاستقبال لطلب موعد مع د. إيهاب حسونة. سيساعدك الفريق في التأكد من المواعيد المتاحة وتوجيه استفسارك.",
     "routes": [
       "doctors/dr-ehab-hassouneh.html"
     ],
@@ -2831,8 +2831,8 @@
     "override": false
   },
   {
-    "source": "Dr. Ehab Hassouneh Bassam A",
-    "arabic": "د. إيهاب حسونة بسام",
+    "source": "Dr. Ehab Hassouneh",
+    "arabic": "د. إيهاب حسونة",
     "routes": [
       "doctors.html",
       "doctors/dr-ehab-hassouneh.html",
@@ -2841,16 +2841,16 @@
     "override": false
   },
   {
-    "source": "Dr. Ehab Hassouneh Bassam A · Silwadi Dental Center, Abu Dhabi",
-    "arabic": "د. إيهاب حسونة بسام · مركز سلوادي لطب الأسنان، أبوظبي",
+    "source": "Dr. Ehab Hassouneh · Silwadi Dental Center, Abu Dhabi",
+    "arabic": "د. إيهاب حسونة · مركز سلوادي لطب الأسنان، أبوظبي",
     "routes": [
       "doctors/dr-ehab-hassouneh.html"
     ],
     "override": false
   },
   {
-    "source": "Dr. Ehab Hassouneh Bassam A is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "الدكتور إيهاب حسونة بسام طبيب أسنان عام في مركز د. منير سلوادي لطب الأسنان، ويعمل في فرع الراحة مول.",
+    "source": "Dr. Ehab Hassouneh is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
+    "arabic": "الدكتور إيهاب حسونة طبيب أسنان عام في مركز د. منير سلوادي لطب الأسنان، ويعمل في فرع الراحة مول.",
     "routes": [
       "doctors/dr-ehab-hassouneh.html"
     ],

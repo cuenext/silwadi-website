@@ -109,12 +109,12 @@ for rel in ["doctors/dr-ehab-hassouneh.html", "ar/doctors/dr-ehab-hassouneh.html
 for path, name, focus in [
     ("doctors.html", "Dr. Kashmira Pawar Jayprakash", "Pediatric dentistry focused on prevention, restorative care, pulp therapy and age-appropriate support for children."),
     ("doctors.html", "Dr. Nasr Keshkiea", "General dentistry with interests in restorative care, prosthodontic rehabilitation, endodontics and aesthetic treatment."),
-    ("doctors.html", "Dr. Ehab Hassouneh Bassam A", "General dentistry with interests in restorative, digital, pediatric and preventive dental care."),
+    ("doctors.html", "Dr. Ehab Hassouneh", "General dentistry with interests in restorative, digital, pediatric and preventive dental care."),
     ("doctors.html", "Dr. Nachiket Shah", "Specialist periodontal care with implant privilege, tissue regeneration and selected laser-assisted procedures."),
     ("doctors.html", "Dr. Sara Ismail", "General dentistry with interests in restorative and aesthetic care, endodontics, pediatric dentistry and prevention."),
     ("ar/doctors.html", "Dr. Kashmira Pawar Jayprakash", "طب أسنان الأطفال مع التركيز على الوقاية والترميم وعلاج اللب والرعاية المناسبة لعمر الطفل."),
     ("ar/doctors.html", "Dr. Nasr Keshkiea", "طب الأسنان العام مع اهتمام بالترميم والتعويضات السنية وعلاج الجذور والعلاجات التجميلية."),
-    ("ar/doctors.html", "Dr. Ehab Hassouneh Bassam A", "طب الأسنان العام مع اهتمام بالعلاجات الترميمية والرقمية ورعاية الأطفال والوقاية."),
+    ("ar/doctors.html", "Dr. Ehab Hassouneh", "طب الأسنان العام مع اهتمام بالعلاجات الترميمية والرقمية ورعاية الأطفال والوقاية."),
     ("ar/doctors.html", "Dr. Nachiket Shah", "رعاية متخصصة للثة مع امتياز زراعة الأسنان وتجديد الأنسجة وإجراءات مختارة بمساعدة الليزر."),
     ("ar/doctors.html", "Dr. Sara Ismail", "طب الأسنان العام مع اهتمام بالترميم والتجميل وعلاج الجذور ورعاية الأطفال والوقاية."),
 ]:

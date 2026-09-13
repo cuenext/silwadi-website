@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DOCTORS = {
     'dr-afnan-mashal': ('Dr. Afnan Mashal', 'General Dentist', 'dr-afnan-mashal.webp', 'Bani Yas Tower, Abu Dhabi'),
     'dr-moheb-silwadi': ('Dr. Moheb Silwadi', 'General Dentist', 'dr-moheb-silwadi.webp', 'Al Raha Mall, Abu Dhabi'),
-    'dr-ehab-hassouneh': ('Dr. Ehab Hassouneh Bassam A', 'General Dentist', 'dr-ehab-hassouneh.webp', 'Al Raha Mall, Abu Dhabi'),
+    'dr-ehab-hassouneh': ('Dr. Ehab Hassouneh', 'General Dentist', 'dr-ehab-hassouneh.webp', 'Al Raha Mall, Abu Dhabi'),
     'dr-sara-ismail': ('Dr. Sara Ismail', 'General Dentist', None, 'Al Raha Mall, Abu Dhabi'),
     'dr-nasr-keshkiea': ('Dr. Nasr Keshkiea', 'General Dentist', None, 'Bani Yas Tower, Abu Dhabi'),
     'dr-dana-awad': ('Dr. Dana Awad', 'General Dentist', 'dr-dana-awad.webp', 'Bani Yas Tower, Abu Dhabi'),

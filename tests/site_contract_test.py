@@ -51,7 +51,7 @@ class PatchTwoDoctorsContract(unittest.TestCase):
             'Dr. Munir Silwadi', 'Dr. Moheb Silwadi', 'Dr. Hani Hasbini',
             'Dr. Moammar Mohamed Rifai', 'Dr. Ahmed El Shehri',
             'Dr. Fahed Abi Khalil', 'Dr. Afnan Mashal',
-            'Dr. Krishnamurthy Balajee', 'Dr. Ehab Hassouneh Bassam A',
+            'Dr. Krishnamurthy Balajee', 'Dr. Ehab Hassouneh',
             'Dr. Sara Ismail', 'Dr. Nasr Keshkiea', 'Dr. Dana Awad',
             'Dr. Kashmira Pawar Jayprakash', 'Dr. Nachiket Shah',
             'Dr. Lana Masoud'

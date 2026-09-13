@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 APPROVED_DOCTORS = [
     "Dr. Afnan Mashal",
     "Dr. Moheb Silwadi",
-    "Dr. Ehab Hassouneh Bassam A",
+    "Dr. Ehab Hassouneh",
     "Dr. Sara Ismail",
     "Dr. Nasr Keshkiea",
     "Dr. Dana Awad",
