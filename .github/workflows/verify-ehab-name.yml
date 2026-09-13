@@ -1,0 +1,57 @@
+name: Verify Ehab name correction
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-ehab-name.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify only intended name replacements
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          base = '6777e4d4196653187c14b727a417c8c6acf6d6ef'
+          paths = [
+              Path('doctors.html'),
+              Path('doctors/dr-ehab-hassouneh.html'),
+              Path('ar/doctors.html'),
+              Path('ar/doctors/dr-ehab-hassouneh.html'),
+              Path('language.js'),
+              Path('app.js'),
+          ]
+          replacements = [
+              ('Dr. Ehab Hassouneh Bassam A', 'Dr. Ehab Hassouneh'),
+              ('Ehab Hassouneh Bassam A', 'Ehab Hassouneh'),
+              ('إيهاب حسونة بسام أ', 'إيهاب حسونة'),
+              ('إيهاب حسونة بسام', 'إيهاب حسونة'),
+          ]
+
+          for path in paths:
+              before = subprocess.check_output(['git', 'show', f'{base}:{path.as_posix()}']).decode('utf-8')
+              expected = before
+              for old, new in replacements:
+                  expected = expected.replace(old, new)
+              current = path.read_text(encoding='utf-8')
+              if current != expected:
+                  raise SystemExit(f'Unexpected non-name change detected in {path}')
+              if 'Ehab Hassouneh Bassam' in current or 'إيهاب حسونة بسام' in current:
+                  raise SystemExit(f'Old Ehab name remains in {path}')
+
+          print('All six runtime sources match the pre-change versions except for the intended Ehab name replacements.')
+          PY
+          node --check app.js
+          node --check language.js
