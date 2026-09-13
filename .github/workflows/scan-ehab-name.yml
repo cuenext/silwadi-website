@@ -1,0 +1,24 @@
+name: Scan old Ehab name site-wide
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/scan-ehab-name.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Find every tracked occurrence of the old Ehab name
+        shell: bash
+        run: |
+          echo '=== MATCHES START ==='
+          git grep -n -I -e 'Ehab Hassouneh Bassam' -e 'إيهاب حسونة بسام' -- . ':(exclude).github/workflows/scan-ehab-name.yml' || true
+          echo '=== MATCHES END ==='
