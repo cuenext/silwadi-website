@@ -25,7 +25,7 @@ class AiKnowledgeV1Contract(unittest.TestCase):
         doctors = {d["name"]: d for d in data["doctors"]}
         self.assertEqual(len(doctors), 15)
         self.assertEqual(doctors["Dr. Kashmira Pawar Jayprakash"]["role"], "Specialist Pediatric Dentist")
-        self.assertEqual(doctors["Dr. Lana Masoud"]["role"], "Specialist Endodontist")
+        self.assertEqual(doctors["Dr. Lana Almasoud"]["role"], "Specialist Endodontist")
         self.assertEqual(doctors["Dr. Ahmed El Shehri"]["role"], "Specialist Endodontist")
         self.assertEqual(doctors["Dr. Munir Silwadi"]["role"], "Specialist Prosthodontist & Implantologist")
         self.assertEqual(doctors["Dr. Nasr Keshkiea"]["role"], "General Dentist")
@@ -34,9 +34,9 @@ class AiKnowledgeV1Contract(unittest.TestCase):
         page = DOCTORS_PAGE.read_text(encoding="utf-8")
         data = json.loads(CLINIC.read_text(encoding="utf-8"))
         names = {d["name"] for d in data["doctors"]}
-        self.assertIn("Dr. Lana Masoud", page)
-        self.assertIn("Dr. Lana Masoud", names)
-        self.assertNotIn("Dr. Lana Almasoud", names)
+        self.assertIn("Dr. Lana Almasoud", page)
+        self.assertIn("Dr. Lana Almasoud", names)
+        self.assertNotIn("Dr. Lana Masoud", names)
 
     def test_services_match_public_service_directory(self):
         data = json.loads(CLINIC.read_text(encoding="utf-8"))
