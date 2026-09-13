@@ -26,12 +26,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Verify private AI FAQ review contracts
-        run: |
-          python -m unittest tests.test_private_ai_faq_review -v
-          if [ -f tests/test_ai_knowledge_v1.py ]; then python -m unittest tests.test_ai_knowledge_v1 -v; fi
-          if [ -f tests/test_ai_worker_contract.py ]; then python -m unittest tests.test_ai_worker_contract -v; fi
+      - name: Verify private AI FAQ review page contract
+        run: python -m unittest tests.test_private_ai_faq_review -v
+      - name: Verify AI knowledge contract
+        if: always()
+        run: python -m unittest tests.test_ai_knowledge_v1 -v
+      - name: Verify AI Worker contract
+        if: always()
+        run: python -m unittest tests.test_ai_worker_contract -v
       - name: Syntax-check AI review JavaScript
+        if: always()
         run: |
           node --check review/dental-faq-ai-v1.js
           node --check worker/silwadi-ai-worker.js
