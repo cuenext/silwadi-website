@@ -62,9 +62,9 @@ Private review of the Silwadi Dental Centre FAQ AI assistant. Do not change the 
 
 - A fresh run on 2026-09-13 found one stale private-AI knowledge mismatch after a newer public doctor-name correction.
 - Public `doctors.html` and the dedicated name regression require `Dr. Lana Almasoud`.
-- `ai/clinic-knowledge-v1.json` still contains the older `Dr. Lana Masoud` spelling.
-- The AI knowledge test contract has now been updated first to require the current public spelling (`Dr. Lana Almasoud`). This is the RED step; the clinic knowledge file has deliberately not been changed yet until the failing test is observed.
-- The public doctors page is not being modified as part of this fix.
+- TDD RED was verified after updating the AI knowledge test first: the page contract, Worker contract and JavaScript syntax passed, while the knowledge contract failed against the stale `Dr. Lana Masoud` AI data.
+- Root-cause fix commit `02cc93109d6fb5adc9f8c0c31390bf2b1114ae3b` changes only the private AI clinic knowledge entry to `Dr. Lana Almasoud`; no public page was altered by the fix.
+- GREEN verification is pending the dedicated AI workflow on that commit.
 
 ## Safety constraints that must not regress
 
@@ -82,14 +82,13 @@ Private review of the Silwadi Dental Centre FAQ AI assistant. Do not change the 
 
 ## Exact next step
 
-1. Verify the updated AI knowledge contract fails against the stale `Dr. Lana Masoud` entry (TDD RED).
-2. Update only the private AI knowledge to `Dr. Lana Almasoud` and rerun the full AI workflow to GREEN.
-3. Verify GitHub Pages deployment remains healthy and the public site was not changed.
-4. User creates/funds an OpenAI API project/account and creates a project API key. Never paste the key into chat.
-5. User creates a Cloudflare Worker and pastes `worker/silwadi-ai-worker.js` into it.
-6. User adds `OPENAI_API_KEY` as a Cloudflare **Secret** and adds the non-secret variables listed above.
-7. User deploys the Worker and shares only the public `workers.dev` URL (safe to share), not the API key.
-8. Agent follows TDD for the connection change, then sets the private page endpoint to `<workers.dev URL>/ask`.
-9. Run/verify the private AI workflow and GitHub Pages deployment.
-10. Test English, Arabic/RTL, unknown facts, medication, red flags, rate/timeout fallback, and static FAQ fallback on the private page.
-11. Keep all public FAQ/navigation/sitemap changes out of scope until explicit approval.
+1. Verify the dedicated private AI workflow turns GREEN after commit `02cc93109d6fb5adc9f8c0c31390bf2b1114ae3b`.
+2. Verify GitHub Pages deployment remains healthy and the public site was not changed.
+3. User creates/funds an OpenAI API project/account and creates a project API key. Never paste the key into chat.
+4. User creates a Cloudflare Worker and pastes `worker/silwadi-ai-worker.js` into it.
+5. User adds `OPENAI_API_KEY` as a Cloudflare **Secret** and adds the non-secret variables listed above.
+6. User deploys the Worker and shares only the public `workers.dev` URL (safe to share), not the API key.
+7. Agent follows TDD for the connection change, then sets the private page endpoint to `<workers.dev URL>/ask`.
+8. Run/verify the private AI workflow and GitHub Pages deployment.
+9. Test English, Arabic/RTL, unknown facts, medication, red flags, rate/timeout fallback, and static FAQ fallback on the private page.
+10. Keep all public FAQ/navigation/sitemap changes out of scope until explicit approval.
