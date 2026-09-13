@@ -106,7 +106,7 @@ const preferredDoctorOrder = [
   'Dr. Fahed Abi Khalil',
   'Dr. Kashmira Pawar Jayprakash',
   'Dr. Krishnamurthy Balajee',
-  'Dr. Ehab Hassouneh Bassam A',
+  'Dr. Ehab Hassouneh',
   'Dr. Sara Ismail',
   'Dr. Nachiket Shah',
   'Dr. Nasr Keshkiea',

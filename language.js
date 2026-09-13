@@ -47,7 +47,7 @@
     'Medical team': 'الفريق الطبي',
     'Dr. Afnan Mashal': 'د. أفنان مشعل',
     'Dr. Moheb Silwadi': 'د. مهيب سلوادي',
-    'Dr. Ehab Hassouneh Bassam A': 'د. إيهاب حسونة بسام',
+    'Dr. Ehab Hassouneh': 'د. إيهاب حسونة',
     'Dr. Sara Ismail': 'د. سارة إسماعيل',
     'Dr. Nasr Keshkiea': 'د. نصر كشكية',
     'Dr. Dana Awad': 'د. دانا عوض',
@@ -384,8 +384,8 @@
       description: 'تعرّف إلى د. دانا عوض، طبيبة أسنان عامة في مركز سلوادي بأبوظبي، مع اهتمام بالوقاية والترميم وطب الأسنان التجميلي.',
     },
     'dr-ehab-hassouneh.html': {
-      title: 'د. إيهاب حسونة بسام | طبيب أسنان عام في أبوظبي | مركز سلوادي',
-      description: 'تعرّف إلى د. إيهاب حسونة بسام، طبيب أسنان عام في مركز سلوادي بأبوظبي، واطّلع على مجالات الرعاية ومعلومات الموعد.',
+      title: 'د. إيهاب حسونة | طبيب أسنان عام في أبوظبي | مركز سلوادي',
+      description: 'تعرّف إلى د. إيهاب حسونة، طبيب أسنان عام في مركز سلوادي بأبوظبي، واطّلع على مجالات الرعاية ومعلومات الموعد.',
     },
     'dr-fahed-khalil.html': {
       title: 'د. فهد أبي خليل | اختصاصي أمراض اللثة وزراعة الأسنان في أبوظبي | سلوادي',
@@ -1251,7 +1251,7 @@
     "His public profile references digital radiography and 3D imaging as part of endodontic assessment.": "يذكر ملفه المنشور التصوير الشعاعي الرقمي والتصوير ثلاثي الأبعاد ضمن تقييم علاج الجذور.",
     "His current centre profile emphasizes patient education, conservative treatment planning and the use of diagnostic imaging to support endodontic care.": "يركز ملفه الحالي في المركز على تثقيف المريض والتخطيط المحافظ للعلاج واستخدام التصوير التشخيصي لدعم علاج الجذور.",
     "Dr. Dana Awad is a dedicated General Dentist at Dr. Munir Silwadi Dental Centre, providing comprehensive dental care with a strong focus on preventive, restorative, and esthetic dentistry. She is committed to delivering evidence-based, patient-centered treatment while creating a comfortable and reassuring experience for every patient.": "الدكتورة دانا عوض طبيبة أسنان عامة في مركز الدكتور منير السلوادي لطب الأسنان، وتقدم رعاية شاملة مع تركيز على طب الأسنان الوقائي والترميمي والتجميلي. وهي حريصة على تقديم علاج يستند إلى الدليل ويتمحور حول المريض، مع توفير تجربة مريحة ومطمئنة لكل مريض.",
-    "Dr. Ehab Hassouneh Bassam A is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.": "يُدرج الدكتور إيهاب حسونة بسام أ كطبيب أسنان عام في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في الراحة مول.",
+    "Dr. Ehab Hassouneh is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.": "يُدرج الدكتور إيهاب حسونة كطبيب أسنان عام في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في الراحة مول.",
     "Assessment and management of common dental concerns.": "تقييم المشكلات السنية الشائعة وإدارتها.",
     "Routine examinations and preventive planning.": "فحوصات دورية وتخطيط وقائي.",
     "Restorative treatment based on clinical findings.": "علاج ترميمي يستند إلى نتائج الفحص السريري.",
