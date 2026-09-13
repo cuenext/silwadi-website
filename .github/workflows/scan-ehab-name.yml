@@ -1,4 +1,4 @@
-name: Scan old Ehab name site-wide
+name: Apply and verify Ehab name site-wide
 
 on:
   push:
@@ -7,18 +7,74 @@ on:
       - '.github/workflows/scan-ehab-name.yml'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  scan:
+  apply-and-verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Find every tracked occurrence of the old Ehab name
+
+      - name: Replace old Ehab name in all tracked text sources
         shell: bash
         run: |
-          echo '=== MATCHES START ==='
-          git grep -n -I -e 'Ehab Hassouneh Bassam' -e 'إيهاب حسونة بسام' -- . ':(exclude).github/workflows/scan-ehab-name.yml' || true
-          echo '=== MATCHES END ==='
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          workflow = '.github/workflows/scan-ehab-name.yml'
+          files = subprocess.check_output(['git', 'ls-files', '-z']).split(b'\0')
+          replacements = [
+              ('Dr. Ehab Hassouneh Bassam A', 'Dr. Ehab Hassouneh'),
+              ('Ehab Hassouneh Bassam A', 'Ehab Hassouneh'),
+              ('إيهاب حسونة بسام أ', 'إيهاب حسونة'),
+              ('إيهاب حسونة بسام', 'إيهاب حسونة'),
+          ]
+
+          changed = []
+          for raw in files:
+              if not raw:
+                  continue
+              path = Path(raw.decode('utf-8'))
+              if path.as_posix() == workflow:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except (UnicodeDecodeError, IsADirectoryError):
+                  continue
+              updated = text
+              for old, new in replacements:
+                  updated = updated.replace(old, new)
+              if updated != text:
+                  path.write_text(updated, encoding='utf-8')
+                  changed.append(path.as_posix())
+
+          print('Changed files:')
+          for path in changed:
+              print(path)
+          PY
+
+          node --check app.js
+          node --check language.js
+          python -m pytest -q tests/site_contract_test.py tests/test_patch10_doctor_authority.py tests/test_patch22_roster_arabic.py
+
+          if git grep -n -I -e 'Ehab Hassouneh Bassam' -e 'إيهاب حسونة بسام' -- . ':(exclude).github/workflows/scan-ehab-name.yml'; then
+            echo 'Old Ehab name still remains.'
+            exit 1
+          fi
+
+      - name: Commit site-wide correction
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo 'No additional changes needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git reset .github/workflows/scan-ehab-name.yml
+          git commit -m 'Remove Bassam A from Ehab name everywhere'
+          git push origin HEAD:main
