@@ -34,7 +34,7 @@ jobs:
             'Dr. Fahed Abi Khalil',
             'Dr. Kashmira Pawar Jayprakash',
             'Dr. Krishnamurthy Balajee',
-            'Dr. Ehab Hassouneh Bassam A',
+            'Dr. Ehab Hassouneh',
             'Dr. Sara Ismail',
             'Dr. Nachiket Shah',
             'Dr. Nasr Keshkiea',
@@ -55,7 +55,7 @@ jobs:
           expected = [
               'Dr. Munir Silwadi','Dr. Moheb Silwadi','Dr. Ahmed El Shehri','Dr. Hani Hasbini','Dr. Dana Awad','Dr. Afnan Mashal',
               'Dr. Lana Masoud','Dr. Fahed Abi Khalil','Dr. Kashmira Pawar Jayprakash','Dr. Krishnamurthy Balajee',
-              'Dr. Ehab Hassouneh Bassam A','Dr. Sara Ismail','Dr. Nachiket Shah','Dr. Nasr Keshkiea','Dr. Moammar Mohamed Rifai'
+              'Dr. Ehab Hassouneh','Dr. Sara Ismail','Dr. Nachiket Shah','Dr. Nasr Keshkiea','Dr. Moammar Mohamed Rifai'
           ]
           assert actual == expected, (actual, expected)
           PY
