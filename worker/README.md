@@ -2,6 +2,8 @@
 
 This Worker is the secure server-side bridge between the private Silwadi AI FAQ page and the OpenAI Responses API.
 
+Project status and the exact next handoff step are tracked in [`docs/superpowers/HANDOFF.md`](../docs/superpowers/HANDOFF.md). Keep that file updated when the private AI connection changes.
+
 Do **not** put the OpenAI API key in the website HTML, JavaScript, GitHub repository, or a public URL. `OPENAI_API_KEY` must be added as an encrypted Cloudflare Worker secret.
 
 ## Before you start
