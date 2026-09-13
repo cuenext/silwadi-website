@@ -1,5 +1,5 @@
 (function silwadiBookingModal() {
-  const BOOKING_ENDPOINT = window.SILWADI_BOOKING_ENDPOINT || 'https://booking.silwadi.ae/request';
+  const BOOKING_ENDPOINT = '/booking-submit.php';
 
   const EN = {
     title: 'Book your appointment',
@@ -113,6 +113,7 @@
           <p id="booking-modal-intro">${copy.intro}</p>
         </div>
         <form class="booking-modal__form" data-booking-form data-consultation-form aria-describedby="booking-modal-privacy">
+          <label aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden"><span>Website</span><input type="text" name="website" tabindex="-1" autocomplete="off"></label>
           <p class="booking-modal__privacy" id="booking-modal-privacy">${copy.privacy}</p>
           <div class="booking-modal__grid">
             <label><span>${copy.name} <b aria-hidden="true">*</b></span><input type="text" name="name" autocomplete="name" required></label>
@@ -168,6 +169,7 @@
           clinic: String(data.get('clinic') || '').trim(),
           notes: String(data.get('message') || '').trim(),
           language,
+          website: String(data.get('website') || '').trim(),
         };
 
         const status = form.querySelector('[data-consultation-status]');
