@@ -1,0 +1,57 @@
+name: Temporary apply homepage location card fix
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-apply-home-location-card-fix.yml'
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch homepage branch contact actions
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          replacements = {
+              Path('index.html'): [
+                  (
+                      '<div class="location-actions"><a href="tel:+97126262042">Call the centre</a><a href="mailto:info@silwadidentalcentres.ae?subject=Bani%20Yas%20Tower%20Directions">Ask for directions</a></div>',
+                      '<div class="location-actions"><a href="tel:+97126262042">+971 2 626 2042</a><a href="https://www.google.com/maps/search/?api=1&amp;query=Dr%20Munir%20Silwadi%20Dental%20Centre%20Bani%20Yas%20Tower%20Abu%20Dhabi" target="_blank" rel="noopener">Get Directions</a></div>'
+                  ),
+                  (
+                      '<div class="location-actions"><a href="tel:+97126662408">+971 2 666 2408</a><a href="locations.html">Location details</a></div>',
+                      '<div class="location-actions"><a href="tel:+97126662408">+971 2 666 2408</a><a href="https://www.google.com/maps/search/?api=1&amp;query=Dr%20Mohamed%20Munir%20Dental%20Centre%20Al%20Raha%20Mall%20Abu%20Dhabi" target="_blank" rel="noopener">Get Directions</a></div>'
+                  ),
+              ],
+              Path('ar/index.html'): [
+                  (
+                      '<div class="location-actions"><a href="tel:+97126262042">اتصل بالمركز</a><a href="mailto:info@silwadidentalcentres.ae?subject=Bani%20Yas%20Tower%20Directions">الاستفسار عن الاتجاهات</a></div>',
+                      '<div class="location-actions"><a href="tel:+97126262042">+971 2 626 2042</a><a href="https://www.google.com/maps/search/?api=1&amp;query=Dr%20Munir%20Silwadi%20Dental%20Centre%20Bani%20Yas%20Tower%20Abu%20Dhabi" target="_blank" rel="noopener">عرض الاتجاهات</a></div>'
+                  ),
+                  (
+                      '<div class="location-actions"><a href="tel:+97126662408">+971 2 666 2408</a><a href="/ar/locations.html">تفاصيل الموقع</a></div>',
+                      '<div class="location-actions"><a href="tel:+97126662408">+971 2 666 2408</a><a href="https://www.google.com/maps/search/?api=1&amp;query=Dr%20Mohamed%20Munir%20Dental%20Centre%20Al%20Raha%20Mall%20Abu%20Dhabi" target="_blank" rel="noopener">عرض الاتجاهات</a></div>'
+                  ),
+              ],
+          }
+
+          for path, pairs in replacements.items():
+              text = path.read_text(encoding='utf-8')
+              for old, new in pairs:
+                  if text.count(old) != 1:
+                      raise SystemExit(f'expected exactly one match in {path}: {old}')
+                  text = text.replace(old, new, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+
+          python -m unittest tests.test_patch16_truth_reviews_raha.PatchSixteenTruthReviewsRaha.test_home_location_cards_use_branch_phone_and_real_directions_links -v
+
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html ar/index.html
+          git commit -m "fix: correct homepage branch contact actions"
+          git push
