@@ -41,6 +41,10 @@ class PeopleOfDeterminationGalleryContract(unittest.TestCase):
         self.assertNotIn('al-raha-accessible-treatment-room-final.webp', self.html)
         self.assertNotIn('<section class="pod-clinic"', self.html)
 
+    def test_partnership_section_markup_remains_valid(self):
+        self.assertIn('<section class="pod-partnership" id="partnership">', self.html)
+        self.assertNotIn('<section class="pod-partnership id=', self.html)
+
     def test_gallery_matches_pediatrics_carousel_contract(self):
         required_markers = (
             "--pod-slide-width",
