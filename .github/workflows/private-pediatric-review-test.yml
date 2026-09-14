@@ -6,7 +6,11 @@ on:
     paths:
       - 'tests/test_private_pediatric_review.py'
       - 'tests/test_private_pediatric_gallery.py'
+      - 'tests/test_pediatric_booking_modal.py'
       - 'review/pediatric-dentistry-v1.html'
+      - 'app.js'
+      - 'booking-modal.js'
+      - 'booking-modal.css'
       - 'assets/review/pediatric-clinic/**'
       - '.github/workflows/private-pediatric-review-test.yml'
 
@@ -19,3 +23,4 @@ jobs:
         run: |
           python -m unittest tests.test_private_pediatric_review -v
           python -m unittest tests.test_private_pediatric_gallery -v
+          python -m unittest tests.test_pediatric_booking_modal -v
