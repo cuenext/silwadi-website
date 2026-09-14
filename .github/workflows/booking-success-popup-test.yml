@@ -9,8 +9,10 @@ on:
     paths:
       - booking-modal.js
       - booking-modal.css
+      - booking-email-validation.js
       - bilingual-routing.js
       - tests/test_booking_success_popup.py
+      - tests/test_booking_email_validation.py
       - .github/workflows/booking-success-popup-test.yml
 
 jobs:
@@ -21,5 +23,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Run booking success popup regression
-        run: python -m unittest tests/test_booking_success_popup.py
+      - name: Run booking regressions
+        run: python -m unittest tests/test_booking_success_popup.py tests/test_booking_email_validation.py
