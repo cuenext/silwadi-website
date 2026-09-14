@@ -3,7 +3,7 @@ on:
   push:
     branches: [fix-mobile-location-actions-0914]
     paths:
-      - 'styles.css'
+      - 'home-reviews.css'
       - 'tests/test_patch16_truth_reviews_raha.py'
       - '.github/workflows/tmp-mobile-location-align-test.yml'
 jobs:
