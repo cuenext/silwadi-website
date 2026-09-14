@@ -89,3 +89,10 @@
   .google-review-card{scroll-snap-align:start;scroll-snap-stop:always;flex:0 0 min(82vw,300px);width:min(82vw,300px);min-height:202px;padding:20px}
   .language-ar .google-review-card,.static-arabic .google-review-card{direction:rtl;text-align:right}
 }
+
+/* Keep the branch phone and directions CTA anchored to opposite edges on mobile. */
+@media(max-width:760px){
+  .location-actions{align-items:center;width:100%;flex-wrap:nowrap;gap:12px}
+  .location-actions>a{white-space:nowrap}
+  .location-actions>a:last-child{margin-inline-start:auto;white-space:nowrap;text-align:end}
+}
