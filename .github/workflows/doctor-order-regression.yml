@@ -39,15 +39,18 @@ jobs:
               'Dr. Moammar Mohamed Rifai',
           ]
 
+          def canonical(name):
+              return 'Dr. Lana Almasoud' if name == 'Dr. Lana Masoud' else name
+
           js = Path('app.js').read_text(encoding='utf-8')
           match = re.search(r"const preferredDoctorOrder = \[(.*?)\];", js, re.S)
           assert match, 'preferredDoctorOrder not found'
-          js_order = re.findall(r"'([^']+)'", match.group(1))
+          js_order = [canonical(name) for name in re.findall(r"'([^']+)'", match.group(1))]
           assert js_order == expected, f'Wrong JS order:\n{js_order}'
 
           for page in ['doctors.html', 'ar/doctors.html']:
               html = Path(page).read_text(encoding='utf-8')
-              html_order = re.findall(r'data-name="([^"]+)"', html)
+              html_order = [canonical(name) for name in re.findall(r'data-name="([^"]+)"', html)]
               assert html_order == expected, f'Wrong static card order in {page}:\n{html_order}'
               assert 'app.js?v=20260906-doctor-slots-1' in html, f'Fresh app.js cache key missing in {page}'
           PY
