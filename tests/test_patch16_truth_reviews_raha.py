@@ -76,6 +76,17 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         self.assertIn('<a href="tel:+97126662408">+971 2 666 2408</a>', self.home_ar)
         self.assertIn(f'<a href="{raha_map}" target="_blank" rel="noopener">عرض الاتجاهات</a>', self.home_ar)
 
+    def test_mobile_location_directions_anchor_to_opposite_edge(self):
+        compact = re.sub(r"\s+", "", self.css)
+        self.assertRegex(
+            compact,
+            r"@media\(max-width:760px\)[\s\S]*?\.location-actions\{[^}]*align-items:center;[^}]*width:100%;[^}]*flex-wrap:nowrap;[^}]*\}",
+        )
+        self.assertRegex(
+            compact,
+            r"@media\(max-width:760px\)[\s\S]*?\.location-actions>a:last-child\{[^}]*margin-inline-start:auto;[^}]*white-space:nowrap;[^}]*\}",
+        )
+
     def test_google_reviews_section_uses_real_listing_summary_and_maps_link(self):
         self.assertIn('class="home-google-reviews', self.home)
         self.assertIn('4.6', self.home)
