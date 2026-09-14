@@ -1,7 +1,9 @@
 body.booking-modal-open{overflow:hidden}
-.booking-modal{width:min(760px,calc(100% - 28px));max-width:760px;max-height:min(88dvh,820px);padding:0;border:0;border-radius:22px;background:transparent;color:#173943;box-shadow:none;overflow:visible}
+.booking-modal{width:min(760px,calc(100% - 28px));max-width:760px;max-height:min(88dvh,820px);padding:0;border:0;border-radius:22px;background:transparent;color:#173943;box-shadow:none;overflow:visible;transition:width .22s ease,max-width .22s ease}
+.booking-modal--success{width:min(500px,calc(100% - 28px));max-width:500px}
 .booking-modal::backdrop{background:rgba(4,29,37,.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.booking-modal__surface{position:relative;max-height:min(88dvh,820px);overflow-y:auto;overscroll-behavior:contain;padding:32px;border:1px solid rgba(210,224,227,.95);border-radius:22px;background:linear-gradient(145deg,#fff 0%,#fbfdfd 100%);box-shadow:0 34px 100px rgba(4,35,45,.28);-webkit-overflow-scrolling:touch}
+.booking-modal__surface{position:relative;max-height:min(88dvh,820px);overflow-y:auto;overscroll-behavior:contain;padding:32px;border:1px solid rgba(210,224,227,.95);border-radius:22px;background:linear-gradient(145deg,#fff 0%,#fbfdfd 100%);box-shadow:0 34px 100px rgba(4,35,45,.28);-webkit-overflow-scrolling:touch;opacity:1;transform:translateY(0) scale(1);transition:opacity .2s ease,transform .2s ease}
+.booking-modal__surface--leaving{opacity:0;transform:translateY(7px) scale(.985);pointer-events:none}
 .booking-modal__close{position:absolute;top:16px;right:16px;z-index:2;width:40px;height:40px;border:1px solid #d7e3e5;border-radius:50%;background:#fff;color:#31545e;font-size:25px;line-height:1;cursor:pointer;display:grid;place-items:center;transition:transform .18s ease,background .18s ease,border-color .18s ease}
 .booking-modal__close:hover,.booking-modal__close:focus-visible{background:#f1f7f8;border-color:#bcd4d9;transform:scale(1.04)}
 .booking-modal__head{padding:2px 54px 0 0;margin-bottom:22px}
@@ -22,6 +24,13 @@ body.booking-modal-open{overflow:hidden}
 .booking-modal__consent span{max-width:650px}
 .booking-modal__submit{width:100%;min-height:50px;margin-top:20px;border-radius:11px}
 .booking-modal__status{min-height:1.4em;margin:10px 0 0;color:#657b83;font-size:10px;text-align:center}
+.booking-modal__success{min-height:330px;max-height:none;overflow:hidden;padding:46px 42px 40px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;transform:translateY(10px) scale(.97)}
+.booking-modal__success--visible{opacity:1;transform:translateY(0) scale(1)}
+.booking-modal__success-icon{width:78px;height:78px;display:grid;place-items:center;border-radius:50%;background:#eaf7f5;color:#087b78;box-shadow:0 12px 34px rgba(8,123,120,.14);margin-bottom:24px}
+.booking-modal__success-icon svg{width:39px;height:39px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.booking-modal__success-title{margin:0;color:#062f3b;font-size:clamp(30px,5vw,38px);line-height:1.08;letter-spacing:-.035em;font-weight:750}
+.booking-modal__success-copy{max-width:390px;margin:15px auto 0;color:#627b83;font-size:15px;line-height:1.65}
+.booking-modal__success-done{min-width:170px;min-height:50px;margin-top:28px;border-radius:11px}
 html[dir="rtl"] .booking-modal__surface,.booking-modal__surface[dir="rtl"]{font-family:"Tajawal",Tahoma,Arial,sans-serif;text-align:right}
 .booking-modal__surface[dir="rtl"] .booking-modal__close{right:auto;left:16px}
 .booking-modal__surface[dir="rtl"] .booking-modal__head{padding-right:0;padding-left:54px}
@@ -29,9 +38,12 @@ html[dir="rtl"] .booking-modal__surface,.booking-modal__surface[dir="rtl"]{font-
 .booking-modal__surface[dir="rtl"] .booking-modal__head h2{letter-spacing:0;line-height:1.18}
 .booking-modal__surface[dir="rtl"] .booking-modal__form label,.booking-modal__surface[dir="rtl"] .booking-modal__form input,.booking-modal__surface[dir="rtl"] .booking-modal__form select,.booking-modal__surface[dir="rtl"] .booking-modal__form textarea{text-align:right;direction:rtl;font-family:"Tajawal",Tahoma,Arial,sans-serif}
 .booking-modal__surface[dir="rtl"] input[type="tel"],.booking-modal__surface[dir="rtl"] input[type="email"]{direction:ltr;text-align:left}
+.booking-modal__success[dir="rtl"]{text-align:center}
+.booking-modal__success[dir="rtl"] .booking-modal__success-title{letter-spacing:0;line-height:1.2}
 .appointment-disclaimer{display:none!important}
 @media(max-width:720px){
   .booking-modal{width:calc(100% - 18px);max-height:92dvh;border-radius:18px}
+  .booking-modal--success{width:min(470px,calc(100% - 18px))}
   .booking-modal__surface{max-height:92dvh;padding:24px 18px 22px;border-radius:18px}
   .booking-modal__close{top:12px;right:12px;width:38px;height:38px}
   .booking-modal__surface[dir="rtl"] .booking-modal__close{right:auto;left:12px}
@@ -44,10 +56,24 @@ html[dir="rtl"] .booking-modal__surface,.booking-modal__surface[dir="rtl"]{font-
   .booking-modal__grid{grid-template-columns:1fr;gap:14px}
   .booking-modal__notes{margin-top:14px}
   .booking-modal__submit{min-height:52px}
+  .booking-modal__success{min-height:300px;padding:38px 24px 32px}
+  .booking-modal__success-icon{width:70px;height:70px;margin-bottom:21px}
+  .booking-modal__success-icon svg{width:35px;height:35px}
+  .booking-modal__success-title{font-size:31px}
+  .booking-modal__success-copy{font-size:14px}
+  .booking-modal__success-done{width:100%;margin-top:25px}
 }
 @media(max-width:430px){
   .booking-modal{width:calc(100% - 10px);max-height:94dvh}
+  .booking-modal--success{width:calc(100% - 18px)}
   .booking-modal__surface{max-height:94dvh;padding:21px 15px 20px}
   .booking-modal__head h2{font-size:28px}
+  .booking-modal__success{min-height:290px;padding:34px 20px 28px}
+  .booking-modal__success-title{font-size:29px}
 }
-@media(prefers-reduced-motion:reduce){.booking-modal__close{transition:none}.booking-modal__close:hover,.booking-modal__close:focus-visible{transform:none}}
+@media(prefers-reduced-motion:reduce){
+  .booking-modal,.booking-modal__surface,.booking-modal__close{transition:none}
+  .booking-modal__close:hover,.booking-modal__close:focus-visible{transform:none}
+  .booking-modal__surface--leaving{opacity:0;transform:none}
+  .booking-modal__success{opacity:1;transform:none}
+}
