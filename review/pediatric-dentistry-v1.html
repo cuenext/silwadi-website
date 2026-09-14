@@ -10,7 +10,7 @@
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../styles.css">
   <style>
-    :root{--pd-navy:#083847;--pd-deep:#052a36;--pd-teal:#0d7c90;--pd-cyan:#8ee5e9;--pd-ink:#173943;--pd-muted:#647980;--pd-line:#dae6e8;--pd-soft:#f5f9fa;--pd-soft2:#edf6f7;--pd-white:#fff;--pd-shadow:0 28px 70px rgba(8,56,71,.1)}
+    :root{--pd-navy:#083847;--pd-deep:#052a36;--pd-teal:#0d7c90;--pd-cyan:#8ee5e9;--pd-ink:#173943;--pd-muted:#647980;--pd-line:#dae6e8;--pd-soft:#f5f9fa;--pd-soft2:#edf6f7;--pd-white:#fff;--pd-shadow:0 28px 70px rgba(8,56,71,.1);--pd-slide-width:min(78vw,960px)}
     body{background:#fff;color:var(--pd-ink)}
     .pd-private{background:var(--pd-deep);color:#c8dce0;font-size:10px;letter-spacing:.09em;text-transform:uppercase;position:relative;z-index:100}
     .pd-private .container{height:34px;display:flex;align-items:center;justify-content:space-between;gap:20px}
@@ -103,11 +103,11 @@
     .pd-clinic__head h2{margin:0;color:var(--pd-deep);font-size:clamp(36px,4.3vw,58px);line-height:.98;letter-spacing:-.05em;font-weight:680}
     .pd-clinic__head>p{margin:0 0 4px;color:var(--pd-muted);font-size:13px;line-height:1.65;max-width:430px}
     .pd-clinic-carousel{position:relative;touch-action:pan-y;user-select:none;outline:none}
-    .pd-clinic-stage{position:relative;height:clamp(310px,44vw,620px);margin:4px 0 10px}
-    .pd-clinic-slide{position:absolute;left:50%;top:50%;width:min(72vw,930px);margin:0;opacity:0;filter:blur(3px) saturate(.72);transform:translate(-50%,-50%) scale(.78);transition:transform .62s cubic-bezier(.22,.75,.24,1),opacity .45s ease,filter .45s ease;pointer-events:none;z-index:0}
-    .pd-clinic-slide.is-prev{opacity:.28;filter:blur(2.1px) saturate(.78);transform:translate(-147%,-50%) scale(.87);z-index:1;pointer-events:auto;cursor:pointer}
-    .pd-clinic-slide.is-active{opacity:1;filter:none;transform:translate(-50%,-50%) scale(1);z-index:3;pointer-events:auto}
-    .pd-clinic-slide.is-next{opacity:.28;filter:blur(2.1px) saturate(.78);transform:translate(47%,-50%) scale(.87);z-index:1;pointer-events:auto;cursor:pointer}
+    .pd-clinic-viewport{overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;padding:18px 0 28px}
+    .pd-clinic-viewport::-webkit-scrollbar{display:none}
+    .pd-clinic-track{display:flex;gap:22px;width:max-content;padding-inline:max(20px,calc((100vw - var(--pd-slide-width))/2))}
+    .pd-clinic-slide{flex:0 0 var(--pd-slide-width);width:var(--pd-slide-width);margin:0;scroll-snap-align:center;opacity:.42;transform:scale(.965);transition:opacity .28s ease,transform .35s cubic-bezier(.22,.75,.24,1);cursor:pointer}
+    .pd-clinic-slide.is-active{opacity:1;transform:scale(1);cursor:default}
     .pd-clinic-slide img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:22px;background:#dfecee;box-shadow:0 24px 64px rgba(8,56,71,.16)}
     .pd-clinic-controls{display:flex;align-items:center;justify-content:space-between;margin-top:0}
     .pd-clinic-status{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pd-muted)}
@@ -120,17 +120,19 @@
     @media(max-width:1000px){.pd-review-nav{display:none}.pd-hero__grid,.pd-visit-shell,.pd-faq-wrap{grid-template-columns:1fr;gap:42px}.pd-hero__visual{min-height:470px}.pd-visit-copy{position:static}.pd-specialist-card{grid-template-columns:300px 1fr}.pd-specialist-body{padding-left:46px}}
     @media(max-width:760px){.pd-private .container span:last-child{display:none}.pd-review-header__inner{height:70px}.pd-review-actions .pd-btn--secondary{display:none}.pd-section{padding:72px 0}.pd-hero{padding:24px 0 58px}.pd-breadcrumb{margin-bottom:26px}.pd-hero h1{font-size:47px}.pd-hero__lead{font-size:15px}.pd-hero__visual{min-height:390px}.pd-hero__caption{left:22px;right:22px;bottom:20px}.pd-care-grid{grid-template-columns:1fr}.pd-care-card{min-height:auto;padding:27px 25px 29px}.pd-care-card__top{margin-bottom:27px}.pd-specialist-card{grid-template-columns:1fr}.pd-specialist-photo{height:470px;min-height:0}.pd-specialist-body{padding:42px 0}.pd-specialist-body h2{font-size:46px}.pd-consultation__box{padding:34px 28px;display:block}.pd-consultation__box .pd-btn{margin-top:24px}.pd-visit-step{grid-template-columns:58px 1fr;gap:15px}.pd-faq-wrap{gap:30px}}
     @media(max-width:760px){
+      :root{--pd-slide-width:84vw}
       .pd-clinic{padding:26px 0 44px}
       .pd-clinic__head{display:block;margin-bottom:8px}
       .pd-clinic__head h2{font-size:41px}
       .pd-clinic__head>p{margin-top:12px;max-width:330px}
-      .pd-clinic-stage{height:clamp(250px,59vw,360px);margin:0 0 8px}
-      .pd-clinic-slide{width:86vw}
-      .pd-clinic-slide.is-prev{opacity:.24;filter:blur(1.5px) saturate(.8);transform:translate(-139%,-50%) scale(.9)}
-      .pd-clinic-slide.is-next{opacity:.24;filter:blur(1.5px) saturate(.8);transform:translate(39%,-50%) scale(.9)}
+      .pd-clinic-viewport{padding:10px 0 20px}
+      .pd-clinic-track{gap:12px;padding-inline:8vw}
+      .pd-clinic-slide{opacity:.5;transform:scale(.985)}
+      .pd-clinic-slide.is-active{opacity:1;transform:none}
       .pd-clinic-slide img{border-radius:18px;box-shadow:0 16px 40px rgba(8,56,71,.14)}
       .pd-clinic-arrow{width:44px;height:44px}
     }
+    @media(prefers-reduced-motion:reduce){.pd-clinic-viewport{scroll-behavior:auto}.pd-clinic-slide{transition:none}}
   </style>
 </head>
 <body class="pediatric-review">
@@ -153,12 +155,14 @@
         </div>
       </div>
       <div class="pd-clinic-carousel" data-pd-carousel tabindex="0" aria-roledescription="carousel" aria-label="Pediatric clinic photos">
-        <div class="pd-clinic-stage">
-          <figure class="pd-clinic-slide is-active" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2888.webp" alt="Pediatric dental treatment room at Silwadi Dental Center, Al Raha Mall" width="1200" height="800" fetchpriority="high" decoding="async"></figure>
-          <figure class="pd-clinic-slide is-next" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2905.webp" alt="Pediatric dental chair and child-focused clinic environment at Al Raha Mall" width="1200" height="800" loading="lazy" decoding="async"></figure>
-          <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2896.webp" alt="Wide view of the pediatric dental treatment room at Silwadi Dental Center" width="1200" height="800" loading="lazy" decoding="async"></figure>
-          <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2894.webp" alt="Child-focused dinosaur dental chair in the pediatric clinic" width="1200" height="800" loading="lazy" decoding="async"></figure>
-          <figure class="pd-clinic-slide is-prev" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2892.webp" alt="Pediatric clinic character and dental equipment at Al Raha Mall" width="1200" height="800" loading="lazy" decoding="async"></figure>
+        <div class="pd-clinic-viewport" data-pd-viewport>
+          <div class="pd-clinic-track">
+            <figure class="pd-clinic-slide is-active" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2888.webp" alt="Pediatric dental treatment room at Silwadi Dental Center, Al Raha Mall" width="1200" height="800" fetchpriority="high" decoding="async"></figure>
+            <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2905.webp" alt="Pediatric dental chair and child-focused clinic environment at Al Raha Mall" width="1200" height="800" loading="lazy" decoding="async"></figure>
+            <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2896.webp" alt="Wide view of the pediatric dental treatment room at Silwadi Dental Center" width="1200" height="800" loading="lazy" decoding="async"></figure>
+            <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2894.webp" alt="Child-focused dinosaur dental chair in the pediatric clinic" width="1200" height="800" loading="lazy" decoding="async"></figure>
+            <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2892.webp" alt="Pediatric clinic character and dental equipment at Al Raha Mall" width="1200" height="800" loading="lazy" decoding="async"></figure>
+          </div>
         </div>
         <div class="container pd-clinic-controls">
           <div class="pd-clinic-status"><span data-pd-current>01</span><span aria-hidden="true"> / </span><span>05</span></div>
@@ -247,26 +251,33 @@
     (() => {
       const carousel = document.querySelector('[data-pd-carousel]');
       if (!carousel) return;
+      const viewport = carousel.querySelector('[data-pd-viewport]');
       const slides = [...carousel.querySelectorAll('[data-pd-slide]')];
       const previous = carousel.querySelector('[data-pd-prev]');
       const next = carousel.querySelector('[data-pd-next]');
       const current = carousel.querySelector('[data-pd-current]');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       let index = 0;
-      let startX = null;
+      let settleTimer = null;
 
-      const render = () => {
+      const render = shouldScroll => {
         slides.forEach((slide, i) => {
-          slide.classList.toggle('is-active', i === index);
-          slide.classList.toggle('is-prev', i === (index - 1 + slides.length) % slides.length);
-          slide.classList.toggle('is-next', i === (index + 1) % slides.length);
-          slide.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+          const active = i === index;
+          slide.classList.toggle('is-active', active);
+          slide.setAttribute('aria-hidden', active ? 'false' : 'true');
         });
         current.textContent = String(index + 1).padStart(2, '0');
+        if (!shouldScroll) return;
+        const slide = slides[index];
+        const left = slide.offsetLeft - (viewport.clientWidth - slide.clientWidth) / 2;
+        viewport.scrollTo({left, behavior: reduceMotion ? 'auto' : 'smooth'});
       };
-      const go = delta => {
-        index = (index + delta + slides.length) % slides.length;
-        render();
+
+      const goTo = nextIndex => {
+        index = (nextIndex + slides.length) % slides.length;
+        render(true);
       };
+      const go = delta => goTo(index + delta);
 
       previous.addEventListener('click', () => go(-1));
       next.addEventListener('click', () => go(1));
@@ -274,22 +285,31 @@
         if (event.key === 'ArrowLeft') { event.preventDefault(); go(-1); }
         if (event.key === 'ArrowRight') { event.preventDefault(); go(1); }
       });
-      carousel.addEventListener('pointerdown', event => {
-        startX = event.clientX;
-        if (carousel.setPointerCapture) carousel.setPointerCapture(event.pointerId);
-      });
-      carousel.addEventListener('pointerup', event => {
-        if (startX === null) return;
-        const distance = event.clientX - startX;
-        startX = null;
-        if (Math.abs(distance) > 48) go(distance > 0 ? -1 : 1);
-      });
-      carousel.addEventListener('pointercancel', () => { startX = null; });
-      slides.forEach(slide => slide.addEventListener('click', () => {
-        if (slide.classList.contains('is-prev')) go(-1);
-        else if (slide.classList.contains('is-next')) go(1);
+      slides.forEach((slide, i) => slide.addEventListener('click', () => {
+        if (i !== index) goTo(i);
       }));
-      render();
+      viewport.addEventListener('scroll', () => {
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(() => {
+          const viewportCenter = viewport.scrollLeft + viewport.clientWidth / 2;
+          let nearest = index;
+          let nearestDistance = Infinity;
+          slides.forEach((slide, i) => {
+            const slideCenter = slide.offsetLeft + slide.clientWidth / 2;
+            const distance = Math.abs(slideCenter - viewportCenter);
+            if (distance < nearestDistance) {
+              nearest = i;
+              nearestDistance = distance;
+            }
+          });
+          if (nearest !== index) {
+            index = nearest;
+            render(false);
+          }
+        }, 90);
+      }, {passive:true});
+      window.addEventListener('resize', () => render(true), {passive:true});
+      render(false);
     })();
   </script>
   <script src="../app.js"></script>
