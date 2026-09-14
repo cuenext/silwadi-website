@@ -1,0 +1,45 @@
+name: Booking clinic backend test
+
+on:
+  push:
+    branches:
+      - fix/booking-clinic-backend-20260914
+    paths:
+      - 'tests/test_booking_direct_submit.py'
+      - 'tests/test_booking_php_endpoint.py'
+      - 'booking-modal.js'
+      - 'app.js'
+      - 'contact.html'
+      - 'ar/contact.html'
+      - 'bilingual-routing.js'
+      - 'backend/**'
+      - '.github/workflows/booking-clinic-backend-test.yml'
+  pull_request:
+    paths:
+      - 'tests/test_booking_direct_submit.py'
+      - 'tests/test_booking_php_endpoint.py'
+      - 'booking-modal.js'
+      - 'app.js'
+      - 'contact.html'
+      - 'ar/contact.html'
+      - 'bilingual-routing.js'
+      - 'backend/**'
+      - '.github/workflows/booking-clinic-backend-test.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify direct booking submission contract
+        run: |
+          python -m unittest tests.test_booking_direct_submit -v
+          python -m unittest tests.test_booking_php_endpoint -v
+          python -m unittest tests.test_booking_modal -v
+      - name: Verify JavaScript and PHP syntax
+        run: |
+          node --check booking-modal.js
+          node --check app.js
+          node --check bilingual-routing.js
+          php -l backend/booking-submit.php

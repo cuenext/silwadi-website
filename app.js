@@ -161,27 +161,57 @@ specialtyFilters.forEach(button => {
 filterDoctors();
 document.addEventListener('silwadi:languagechange', filterDoctors);
 
-// Prepare consultation requests in the visitor's email app for the appointments team.
+// Send consultation requests directly to the appointments team without opening a mail app.
+const CONSULTATION_BOOKING_ENDPOINT = 'https://booking.silwadi.ae/booking-submit.php';
 document.querySelectorAll('[data-consultation-form]').forEach(form => {
-  form.addEventListener('submit', event => {
+  form.addEventListener('submit', async event => {
     event.preventDefault();
+    if (!form.reportValidity()) return;
+
     const data = new FormData(form);
-    const name = String(data.get('name') || '').trim();
-    const email = String(data.get('email') || '').trim();
-    const phone = String(data.get('phone') || '').trim();
-    const treatment = String(data.get('treatment') || '').trim();
-    const date = String(data.get('date') || '').trim();
-    const time = String(data.get('time') || '').trim();
-    const clinic = String(data.get('clinic') || '').trim();
-    const subject = treatment ? `Appointment request - ${treatment}` : 'Consultation request';
-    const message = String(data.get('message') || '').trim();
-    const body = [`Name: ${name}`, `Email: ${email}`, `Phone: ${phone}`, `Treatment: ${treatment || 'Not specified'}`, `Preferred date: ${date || 'Not specified'}`, `Preferred time: ${time || 'Not specified'}`, `Preferred clinic: ${clinic || 'Not specified'}`, '', `Notes: ${message || 'None'}`].join('\\n');
-    window.location.href = `mailto:appointment@silwadidentalcenter.ae?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const language = (document.documentElement.lang || '').toLowerCase().startsWith('ar')
+      ? 'ar'
+      : (window.SilwadiLanguage?.getLanguage?.() || 'en');
+    const payload = {
+      name: String(data.get('name') || '').trim(),
+      email: String(data.get('email') || '').trim(),
+      phone: String(data.get('phone') || '').trim(),
+      treatment: String(data.get('treatment') || '').trim(),
+      date: String(data.get('date') || '').trim(),
+      time: String(data.get('time') || '').trim(),
+      clinic: String(data.get('clinic') || '').trim(),
+      notes: String(data.get('message') || '').trim(),
+      language,
+      website: String(data.get('website') || '').trim(),
+    };
+
     const status = form.querySelector('[data-consultation-status]');
-    if (status) {
-      const language = window.SilwadiLanguage?.getLanguage?.() || 'en';
-      const message = 'Your email app is opening with the appointment request.';
-      status.textContent = window.SilwadiLanguage?.translate?.(message, language) || message;
+    const submit = form.querySelector('button[type="submit"]');
+    const sendingMessage = language === 'ar' ? 'جارٍ إرسال طلب الموعد…' : 'Sending your appointment request…';
+    const successMessage = language === 'ar'
+      ? 'تم إرسال طلب الموعد ✓ سيتواصل معك فريقنا لتأكيد التوافر.'
+      : 'Appointment request sent ✓ Our team will contact you to confirm availability.';
+    const errorMessage = language === 'ar'
+      ? 'تعذر إرسال طلبك الآن. يرجى المحاولة مرة أخرى أو التواصل مع الاستقبال عبر الهاتف أو واتساب.'
+      : 'We could not send your request right now. Please try again or contact reception by phone or WhatsApp.';
+
+    if (status) status.textContent = sendingMessage;
+    if (submit) submit.disabled = true;
+
+    try {
+      const response = await fetch(CONSULTATION_BOOKING_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok || result.ok !== true) throw new Error('booking_submit_failed');
+      form.reset();
+      if (status) status.textContent = successMessage;
+    } catch (_) {
+      if (status) status.textContent = errorMessage;
+    } finally {
+      if (submit) submit.disabled = false;
     }
   });
 });
