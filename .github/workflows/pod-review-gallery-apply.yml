@@ -1,0 +1,84 @@
+name: Apply POD review gallery
+
+on:
+  push:
+    branches:
+      - pod-review-gallery
+    paths:
+      - .github/workflows/pod-review-gallery-apply.yml
+      - tests/test_people_of_determination_gallery.py
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: pod-review-gallery
+          fetch-depth: 0
+
+      - name: Verify contract is red before implementation
+        shell: bash
+        run: |
+          set +e
+          python -m unittest tests.test_people_of_determination_gallery
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "Expected the gallery contract to fail before implementation."
+            exit 1
+          fi
+          echo "Gallery contract fails before implementation as expected."
+
+      - name: Apply POD gallery using Pediatrics carousel pattern
+        shell: python
+        run: |
+          from pathlib import Path
+
+          page = Path('review/people-of-determination-raha-v1.html')
+          html = page.read_text(encoding='utf-8')
+
+          if 'data-pod-carousel' in html:
+              raise SystemExit('POD gallery is already present; refusing to apply twice.')
+
+          old_root = ':root{--pod-deep:#052d38;--pod-navy:#083847;--pod-teal:#0f7d8c;--pod-aqua:#52dbe0;--pod-ink:#173b44;--pod-muted:#667c83;--pod-line:#dce7e9;--pod-soft:#f4f8f8;--pod-white:#fff;--pod-mint:#dff2f1;--pod-cream:#f5f1e8}'
+          new_root = ':root{--pod-deep:#052d38;--pod-navy:#083847;--pod-teal:#0f7d8c;--pod-aqua:#52dbe0;--pod-ink:#173b44;--pod-muted:#667c83;--pod-line:#dce7e9;--pod-soft:#f4f8f8;--pod-white:#fff;--pod-mint:#dff2f1;--pod-cream:#f5f1e8;--pod-slide-width:min(82vw,1120px)}'
+          if old_root not in html:
+              raise SystemExit('Could not find POD root variables marker.')
+          html = html.replace(old_root, new_root, 1)
+
+          css_marker = '    @media(max-width:1200px){.pod-partnership__visual{margin-right:0}.pod-partnership__aside{display:none}}'
+          gallery_css = '''    .pod-clinic{position:relative;overflow:hidden;background:transparent;padding:14px 0 62px}\n    .pod-clinic__label{margin:0 0 8px;color:var(--pod-teal);font-size:10px;font-weight:850;letter-spacing:.16em;text-transform:uppercase}\n    .pod-clinic-carousel{position:relative;touch-action:pan-y;user-select:none;outline:none}\n    .pod-clinic-viewport{overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;padding:12px 0 28px}\n    .pod-clinic-viewport::-webkit-scrollbar{display:none}\n    .pod-clinic-track{display:flex;gap:22px;width:max-content;padding-inline:max(20px,calc((100vw - var(--pod-slide-width))/2))}\n    .pod-clinic-slide{flex:0 0 var(--pod-slide-width);width:var(--pod-slide-width);margin:0;scroll-snap-align:center;opacity:.42;transform:scale(.965);transition:opacity .28s ease,transform .35s cubic-bezier(.22,.75,.24,1);cursor:pointer}\n    .pod-clinic-slide.is-active{opacity:1;transform:scale(1);cursor:default}\n    .pod-clinic-slide img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:22px;background:#dfecee;box-shadow:0 24px 64px rgba(8,56,71,.16)}\n    .pod-clinic-controls{display:flex;align-items:center;justify-content:space-between;margin-top:0}\n    .pod-clinic-status{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pod-muted)}\n    .pod-clinic-controls__buttons{display:flex;gap:10px}\n    .pod-clinic-arrow{width:48px;height:48px;padding:0;border-radius:50%;border:1px solid var(--pod-line);background:rgba(255,255,255,.94);color:var(--pod-deep);display:grid;place-items:center;box-shadow:0 9px 28px rgba(8,56,71,.10);cursor:pointer;transition:transform .2s ease,background .2s ease,border-color .2s ease}\n    .pod-clinic-arrow:hover{transform:translateY(-2px);background:#fff;border-color:rgba(6,86,111,.28)}\n    .pod-clinic-arrow:focus-visible,.pod-clinic-carousel:focus-visible{outline:3px solid rgba(36,169,198,.22);outline-offset:3px}\n    .pod-clinic-arrow svg{width:19px;height:19px}\n\n    @media(max-width:760px){:root{--pod-slide-width:86vw}.pod-clinic{padding:8px 0 44px}.pod-clinic__label{margin-bottom:6px}.pod-clinic-viewport{padding:8px 0 20px}.pod-clinic-track{gap:12px;padding-inline:8vw}.pod-clinic-slide{position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:18px;opacity:.5;transform:scale(.985);box-shadow:0 16px 40px rgba(8,56,71,.14)}.pod-clinic-slide.is-active{opacity:1;transform:none}.pod-clinic-slide img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;border-radius:inherit;box-shadow:none}[data-pod-focal="center"] img{object-position:center 52%}[data-pod-focal="low"] img{object-position:center 68%}.pod-clinic-arrow{width:44px;height:44px}}\n    @media(max-width:480px){:root{--pod-slide-width:90vw}.pod-clinic-track{padding-inline:5vw}.pod-clinic-controls{padding-inline:20px}}\n    @media(prefers-reduced-motion:reduce){.pod-clinic-viewport{scroll-behavior:auto}.pod-clinic-slide{transition:none}}\n\n'''
+          if css_marker not in html:
+              raise SystemExit('Could not find POD responsive CSS marker.')
+          html = html.replace(css_marker, gallery_css + css_marker, 1)
+
+          partnership_marker = '    <section class="pod-partnership" id="partnership">'
+          gallery_markup = '''    <section class="pod-clinic" id="clinic" aria-label="Accessible dental treatment room photo gallery">\n      <div class="container"><p class="pod-clinic__label">Al Raha Mall · Accessible Treatment Room</p></div>\n      <div class="pod-clinic-carousel" data-pod-carousel tabindex="0" aria-roledescription="carousel" aria-label="Accessible dental treatment room photos">\n        <div class="pod-clinic-viewport" data-pod-viewport>\n          <div class="pod-clinic-track">\n            <figure class="pod-clinic-slide is-active" data-pod-slide data-pod-focal="center"><img src="../assets/DSCF2857.webp" alt="Wide view of the accessible dental treatment room at Silwadi Dental Center, Al Raha Mall" width="2048" height="1365" fetchpriority="high" decoding="async"></figure>\n            <figure class="pod-clinic-slide" data-pod-slide data-pod-focal="center"><img src="../assets/DSCF2868.webp" alt="Wheelchair-accessible dental chair and treatment equipment at Silwadi Dental Center, Al Raha Mall" width="2048" height="1365" loading="lazy" decoding="async"></figure>\n            <figure class="pod-clinic-slide" data-pod-slide data-pod-focal="center"><img src="../assets/DSCF2880.webp" alt="Dental treatment setup inside the accessible clinic room at Silwadi Dental Center, Al Raha Mall" width="2048" height="1365" loading="lazy" decoding="async"></figure>\n          </div>\n        </div>\n        <div class="container pod-clinic-controls">\n          <div class="pod-clinic-status"><span data-pod-current>01</span><span aria-hidden="true"> / </span><span>03</span></div>\n          <div class="pod-clinic-controls__buttons">\n            <button class="pod-clinic-arrow" type="button" data-pod-prev aria-label="Previous clinic photo"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>\n            <button class="pod-clinic-arrow" type="button" data-pod-next aria-label="Next clinic photo"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9.5 5 7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>\n          </div>\n        </div>\n      </div>\n    </section>\n\n'''
+          if partnership_marker not in html:
+              raise SystemExit('Could not find partnership section marker.')
+          html = html.replace(partnership_marker, gallery_markup + partnership_marker, 1)
+
+          script_marker = '  <script src="../app.js"></script>'
+          gallery_script = '''  <script>\n    (() => {\n      const carousel = document.querySelector('[data-pod-carousel]');\n      if (!carousel) return;\n      const viewport = carousel.querySelector('[data-pod-viewport]');\n      const track = carousel.querySelector('.pod-clinic-track');\n      const originalSlides = [...carousel.querySelectorAll('[data-pod-slide]')];\n      const previous = carousel.querySelector('[data-pod-prev]');\n      const next = carousel.querySelector('[data-pod-next]');\n      const current = carousel.querySelector('[data-pod-current]');\n      if (!viewport || !track || originalSlides.length < 2) return;\n      const ANIMATION_MS = 280;\n      const SWIPE_THRESHOLD = 42;\n      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;\n      const total = originalSlides.length;\n      const lastClone = originalSlides[total - 1].cloneNode(true);\n      const firstClone = originalSlides[0].cloneNode(true);\n      lastClone.dataset.podClone = 'last';\n      firstClone.dataset.podClone = 'first';\n      [lastClone, firstClone].forEach(clone => { clone.classList.remove('is-active'); clone.setAttribute('aria-hidden','true'); const image=clone.querySelector('img'); if(image) image.setAttribute('loading','lazy'); });\n      track.insertBefore(lastClone, originalSlides[0]);\n      track.appendChild(firstClone);\n      const slides=[...track.querySelectorAll('[data-pod-slide]')];\n      let trackIndex=1, animating=false, settleTimer=null, pointerStartX=null;\n      const logicalFromTrack = index => index===0 ? total-1 : index===total+1 ? 0 : index-1;\n      const targetLeft = index => slides[index].offsetLeft - (viewport.clientWidth-slides[index].clientWidth)/2;\n      const updateActive=()=>{ slides.forEach((slide,index)=>{ const active=index===trackIndex; slide.classList.toggle('is-active',active); slide.setAttribute('aria-hidden',active?'false':'true'); }); current.textContent=String(logicalFromTrack(trackIndex)+1).padStart(2,'0'); };\n      const jumpTo=index=>viewport.scrollTo({left:targetLeft(index),behavior:'auto'});\n      const normalizeLoopPosition = () => { if(trackIndex===0){trackIndex=total;jumpTo(trackIndex);updateActive();} else if(trackIndex===total+1){trackIndex=1;jumpTo(trackIndex);updateActive();} };\n      const animateTo=targetIndex=>{ if(animating)return; const boundedTarget=Math.max(0,Math.min(total+1,targetIndex)); if(reduceMotion){trackIndex=boundedTarget;jumpTo(trackIndex);updateActive();normalizeLoopPosition();return;} const start=viewport.scrollLeft,end=targetLeft(boundedTarget),distance=end-start; let startedAt=null; animating=true; viewport.style.scrollSnapType='none'; const step=timestamp=>{ if(startedAt===null)startedAt=timestamp; const progress=Math.min(1,(timestamp-startedAt)/ANIMATION_MS); const eased=1-Math.pow(1-progress,3); viewport.scrollLeft=start+distance*eased; if(progress<1){requestAnimationFrame(step);return;} viewport.scrollLeft=end; viewport.style.scrollSnapType=''; trackIndex=boundedTarget; updateActive(); animating=false; normalizeLoopPosition(); }; requestAnimationFrame(step); };\n      const go=delta=>animateTo(trackIndex+delta);\n      previous.addEventListener('click',()=>go(-1));\n      next.addEventListener('click',()=>go(1));\n      carousel.addEventListener('keydown',event=>{ if(event.key==='ArrowLeft'){event.preventDefault();go(-1);} if(event.key==='ArrowRight'){event.preventDefault();go(1);} });\n      slides.forEach((slide,index)=>slide.addEventListener('click',()=>{if(index!==trackIndex)animateTo(index);}));\n      carousel.addEventListener('pointerdown',event=>{if(event.pointerType==='mouse')return;pointerStartX=event.clientX;});\n      carousel.addEventListener('pointerup',event=>{if(pointerStartX===null)return;const distance=event.clientX-pointerStartX;pointerStartX=null;if(Math.abs(distance)>=SWIPE_THRESHOLD)go(distance<0?1:-1);});\n      carousel.addEventListener('pointercancel',()=>{pointerStartX=null;});\n      viewport.addEventListener('scroll',()=>{ if(animating)return; clearTimeout(settleTimer); settleTimer=setTimeout(()=>{const center=viewport.scrollLeft+viewport.clientWidth/2;let nearest=trackIndex,d=Infinity;slides.forEach((slide,index)=>{const sd=Math.abs(slide.offsetLeft+slide.clientWidth/2-center);if(sd<d){nearest=index;d=sd;}});trackIndex=nearest;updateActive();normalizeLoopPosition();},80); },{passive:true});\n      window.addEventListener('resize',()=>jumpTo(trackIndex),{passive:true});\n      requestAnimationFrame(()=>{jumpTo(trackIndex);updateActive();});\n    })();\n  </script>\n'''
+          if script_marker not in html:
+              raise SystemExit('Could not find app.js marker.')
+          html = html.replace(script_marker, gallery_script + script_marker, 1)
+
+          page.write_text(html, encoding='utf-8')
+
+      - name: Verify implementation
+        run: |
+          python -m unittest tests.test_people_of_determination_gallery
+          git diff --check
+
+      - name: Commit verified review-page implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add review/people-of-determination-raha-v1.html
+          git commit -m "feat: add POD clinic review gallery"
+          git push origin HEAD:pod-review-gallery
