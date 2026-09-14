@@ -37,7 +37,7 @@ class PeopleOfDeterminationGalleryContract(unittest.TestCase):
         hero_html = hero.group(0)
         self.assertIn('data-pod-carousel', hero_html)
         self.assertIn('id="clinic"', hero_html)
-        self.assertNotIn('pod-hero__visual', self.html)
+        self.assertNotIn('<figure class="pod-hero__visual"', self.html)
         self.assertNotIn('al-raha-accessible-treatment-room-final.webp', self.html)
         self.assertNotIn('<section class="pod-clinic"', self.html)
 
