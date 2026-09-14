@@ -60,18 +60,25 @@ HERO = """    <section class="pod-hero" id="hero">
 def main():
     html = PAGE.read_text(encoding="utf-8")
 
+    # Repair the malformed partnership opener produced by the first draft patch.
+    html = html.replace(
+        '<section class="pod-partnership id="partnership">',
+        '<section class="pod-partnership" id="partnership">',
+    )
+
     if MARKER not in html:
         if "  </style>" not in html:
             raise SystemExit("Could not find style closing tag")
         html = html.replace("  </style>", CSS + "  </style>", 1)
 
-    pattern = re.compile(
-        r'    <section class="pod-hero" id="hero">.*?(?=    <section class="pod-partnership")',
-        re.S,
-    )
-    html, count = pattern.subn(HERO + "\n\n", html, count=1)
-    if count != 1:
-        raise SystemExit(f"Expected one hero/gallery block, replaced {count}")
+    if 'class="pod-hero__intro"' not in html:
+        pattern = re.compile(
+            r'    <section class="pod-hero" id="hero">.*?(?=    <section class="pod-partnership")',
+            re.S,
+        )
+        html, count = pattern.subn(HERO + "\n\n", html, count=1)
+        if count != 1:
+            raise SystemExit(f"Expected one hero/gallery block, replaced {count}")
 
     PAGE.write_text(html, encoding="utf-8")
 
