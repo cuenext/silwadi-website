@@ -26,3 +26,9 @@ jobs:
           python -m unittest tests.test_booking_direct_submit -v
           python -m unittest tests.test_booking_php_endpoint -v
           python -m unittest tests.test_booking_modal -v
+      - name: Verify JavaScript and PHP syntax
+        run: |
+          node --check booking-modal.js
+          node --check app.js
+          node --check bilingual-routing.js
+          php -l backend/booking-submit.php
