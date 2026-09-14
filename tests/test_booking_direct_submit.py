@@ -19,8 +19,8 @@ class BookingDirectSubmitContract(unittest.TestCase):
     def test_contact_form_uses_same_direct_endpoint(self):
         app = (ROOT / "app.js").read_text(encoding="utf-8")
         self.assertNotIn(f"mailto:{RECIPIENT}", app)
-        self.assertIn(f"const BOOKING_ENDPOINT = '{ENDPOINT}';", app)
-        self.assertIn("fetch(BOOKING_ENDPOINT", app)
+        self.assertIn(f"const CONSULTATION_BOOKING_ENDPOINT = '{ENDPOINT}';", app)
+        self.assertIn("fetch(CONSULTATION_BOOKING_ENDPOINT", app)
         self.assertIn("Appointment request sent", app)
 
     def test_contact_pages_no_longer_claim_mail_app_will_open(self):
