@@ -69,11 +69,14 @@ class PrivatePodReviewTests(unittest.TestCase):
         self.assertEqual(self.html.count('class="pod-care-item"'), 4)
         self.assertEqual(self.html.count('class="pod-care-icon"'), 4)
 
-    def test_hero_uses_accessible_room_once(self):
+    def test_hero_uses_new_accessible_room_gallery(self):
         hero = re.search(r'<section class="pod-hero" id="hero">(.*?)</section>', self.html, re.S)
         self.assertIsNotNone(hero)
-        self.assertEqual(self.html.count("al-raha-accessible-treatment-room-final.webp"), 1)
-        self.assertEqual(hero.group(1).count("pod-btn--primary"), 1)
+        block = hero.group(1)
+        self.assertNotIn("al-raha-accessible-treatment-room-final.webp", self.html)
+        self.assertIn('data-pod-carousel', block)
+        self.assertEqual(block.count('data-pod-slide'), 7)
+        self.assertEqual(block.count("pod-btn--primary"), 1)
 
     def test_multiple_real_raha_visuals_are_used(self):
         self.assertIn("al-raha-reception.webp", self.html)
