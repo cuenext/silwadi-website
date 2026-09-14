@@ -32,21 +32,15 @@
     .pd-section-head h2{margin:0;color:var(--pd-deep);font-size:clamp(38px,4.4vw,56px);line-height:1.02;letter-spacing:-.052em;font-weight:680}
     .pd-section-head p{margin:16px 0 0;max-width:620px;color:var(--pd-muted);font-size:14px;line-height:1.75}
 
-    .pd-hero{padding:28px 0 88px;background:linear-gradient(180deg,#fff 0%,#fff 70%,var(--pd-soft) 70%)}
+    .pd-hero{padding:28px 0 46px;background:#fff}
     .pd-breadcrumb{display:flex;gap:8px;align-items:center;font-size:11px;color:#809199;margin-bottom:34px}
-    .pd-hero__grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:70px;align-items:center}
+    .pd-hero__grid{display:block;max-width:760px}
     .pd-hero h1{margin:0;color:var(--pd-deep);font-size:clamp(54px,6.4vw,82px);line-height:.95;letter-spacing:-.065em;font-weight:690;max-width:10.2ch}
     .pd-hero h1 span{display:block;color:var(--pd-teal);white-space:nowrap}
     .pd-hero__lead{margin:24px 0 0;max-width:610px;color:var(--pd-muted);font-size:17px;line-height:1.7}
     .pd-hero__actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:29px}
     .pd-hero__micro{display:flex;gap:26px;flex-wrap:wrap;margin-top:31px;padding-top:24px;border-top:1px solid var(--pd-line)}
     .pd-hero__micro span{color:#6c8087;font-size:11px;font-weight:700}
-    .pd-hero__visual{position:relative;min-height:560px;overflow:hidden;border-radius:2px;background:#dfecee;box-shadow:var(--pd-shadow)}
-    .pd-hero__visual img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
-    .pd-hero__visual:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,34,44,.03) 45%,rgba(4,34,44,.72) 100%)}
-    .pd-hero__caption{position:absolute;left:30px;right:30px;bottom:28px;z-index:2;color:#fff}
-    .pd-hero__caption strong{display:block;font-size:21px;letter-spacing:-.02em;margin-bottom:6px}
-    .pd-hero__caption span{display:block;color:rgba(255,255,255,.8);font-size:11px;line-height:1.6;max-width:430px}
 
     .pd-care-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--pd-line);border-left:1px solid var(--pd-line)}
     .pd-care-card{padding:34px 34px 36px;border-right:1px solid var(--pd-line);border-bottom:1px solid var(--pd-line);background:#fff;min-height:210px}
@@ -117,8 +111,8 @@
     .pd-clinic-arrow:focus-visible,.pd-clinic-carousel:focus-visible{outline:3px solid rgba(36,169,198,.22);outline-offset:3px}
     .pd-clinic-arrow svg{width:19px;height:19px}
 
-    @media(max-width:1000px){.pd-review-nav{display:none}.pd-hero__grid,.pd-visit-shell,.pd-faq-wrap{grid-template-columns:1fr;gap:42px}.pd-hero__visual{min-height:470px}.pd-visit-copy{position:static}.pd-specialist-card{grid-template-columns:300px 1fr}.pd-specialist-body{padding-left:46px}}
-    @media(max-width:760px){.pd-private .container span:last-child{display:none}.pd-review-header__inner{height:70px}.pd-review-actions .pd-btn--secondary{display:none}.pd-section{padding:72px 0}.pd-hero{padding:24px 0 58px}.pd-breadcrumb{margin-bottom:26px}.pd-hero h1{font-size:47px}.pd-hero__lead{font-size:15px}.pd-hero__visual{min-height:390px}.pd-hero__caption{left:22px;right:22px;bottom:20px}.pd-care-grid{grid-template-columns:1fr}.pd-care-card{min-height:auto;padding:27px 25px 29px}.pd-care-card__top{margin-bottom:27px}.pd-specialist-card{grid-template-columns:1fr}.pd-specialist-photo{height:470px;min-height:0}.pd-specialist-body{padding:42px 0}.pd-specialist-body h2{font-size:46px}.pd-consultation__box{padding:34px 28px;display:block}.pd-consultation__box .pd-btn{margin-top:24px}.pd-visit-step{grid-template-columns:58px 1fr;gap:15px}.pd-faq-wrap{gap:30px}}
+    @media(max-width:1000px){.pd-review-nav{display:none}.pd-visit-shell,.pd-faq-wrap{grid-template-columns:1fr;gap:42px}.pd-visit-copy{position:static}.pd-specialist-card{grid-template-columns:300px 1fr}.pd-specialist-body{padding-left:46px}}
+    @media(max-width:760px){.pd-private .container span:last-child{display:none}.pd-review-header__inner{height:70px}.pd-review-actions .pd-btn--secondary{display:none}.pd-section{padding:72px 0}.pd-hero{padding:24px 0 34px}.pd-breadcrumb{margin-bottom:26px}.pd-hero h1{font-size:47px}.pd-hero__lead{font-size:15px}.pd-care-grid{grid-template-columns:1fr}.pd-care-card{min-height:auto;padding:27px 25px 29px}.pd-care-card__top{margin-bottom:27px}.pd-specialist-card{grid-template-columns:1fr}.pd-specialist-photo{height:470px;min-height:0}.pd-specialist-body{padding:42px 0}.pd-specialist-body h2{font-size:46px}.pd-consultation__box{padding:34px 28px;display:block}.pd-consultation__box .pd-btn{margin-top:24px}.pd-visit-step{grid-template-columns:58px 1fr;gap:15px}.pd-faq-wrap{gap:30px}}
     @media(max-width:760px){
       :root{--pd-slide-width:86vw}
       .pd-clinic{padding:26px 0 44px}
@@ -140,13 +134,28 @@
 
   <header class="pd-review-header">
     <div class="container pd-review-header__inner">
-      <a class="pd-review-brand" href="#clinic" aria-label="Silwadi Dental Center review page"><img src="../assets/silwadi-logo-official.png" alt="Silwadi Dental Center"></a>
-      <nav class="pd-review-nav" aria-label="Preview navigation"><a href="#clinic">Clinic</a><a href="#care">Care</a><a href="#visit">Your visit</a><a href="#specialist">Specialist</a><a href="#faq">FAQ</a></nav>
+      <a class="pd-review-brand" href="#hero" aria-label="Silwadi Dental Center review page"><img src="../assets/silwadi-logo-official.png" alt="Silwadi Dental Center"></a>
+      <nav class="pd-review-nav" aria-label="Preview navigation"><a href="#hero">Overview</a><a href="#clinic">Clinic</a><a href="#care">Care</a><a href="#specialist">Specialist</a><a href="#faq">FAQ</a></nav>
       <div class="pd-review-actions"><a class="pd-btn pd-btn--secondary" href="#specialist">Meet Dr. Kashmira</a><a class="pd-btn pd-btn--primary" href="#consultation">Book Appointment</a></div>
     </div>
   </header>
 
   <main>
+    <section class="pd-hero" id="hero">
+      <div class="container">
+        <div class="pd-breadcrumb"><span>Home</span><span>/</span><span>Treatments</span><span>/</span><strong>Pediatric Dentistry</strong></div>
+        <div class="pd-hero__grid">
+          <div>
+            <p class="pd-eyebrow">Pediatric Dentistry · Pedodontics</p>
+            <h1>Pediatric Dentistry in <span>Abu&nbsp;Dhabi</span></h1>
+            <p class="pd-hero__lead">Specialist dental care for children at Al Raha Mall — focused on prevention, comfort and the right treatment for each stage of a growing smile.</p>
+            <div class="pd-hero__actions"><a class="pd-btn pd-btn--primary" href="#consultation">Book an Appointment</a><a class="pd-btn pd-btn--secondary" href="#specialist">Meet Dr. Kashmira</a></div>
+            <div class="pd-hero__micro"><span>Al Raha Mall</span><span>Children's dental care</span><span>Specialist pediatric dentist</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="pd-clinic" id="clinic" aria-labelledby="pd-clinic-title">
       <div class="container">
         <div class="pd-clinic__head">
@@ -169,25 +178,6 @@
           <div class="pd-clinic-controls__buttons">
             <button class="pd-clinic-arrow" type="button" data-pd-prev aria-label="Previous clinic photo"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             <button class="pd-clinic-arrow" type="button" data-pd-next aria-label="Next clinic photo"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9.5 5 7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="pd-hero" id="hero">
-      <div class="container">
-        <div class="pd-breadcrumb"><span>Home</span><span>/</span><span>Treatments</span><span>/</span><strong>Pediatric Dentistry</strong></div>
-        <div class="pd-hero__grid">
-          <div>
-            <p class="pd-eyebrow">Pediatric Dentistry · Pedodontics</p>
-            <h1>Pediatric Dentistry in <span>Abu&nbsp;Dhabi</span></h1>
-            <p class="pd-hero__lead">Specialist dental care for children at Al Raha Mall — focused on prevention, comfort and the right treatment for each stage of a growing smile.</p>
-            <div class="pd-hero__actions"><a class="pd-btn pd-btn--primary" href="#consultation">Book an Appointment</a><a class="pd-btn pd-btn--secondary" href="#specialist">Meet Dr. Kashmira</a></div>
-            <div class="pd-hero__micro"><span>Al Raha Mall</span><span>Children's dental care</span><span>Specialist pediatric dentist</span></div>
-          </div>
-          <div class="pd-hero__visual">
-            <img src="../assets/about/silwadi-hero.jpg" alt="Silwadi Dental Center clinical environment" loading="eager" decoding="async">
-            <div class="pd-hero__caption"><strong>Care that grows with your child.</strong><span>From first checkups to restorative care, treatment is planned around age, clinical findings and individual needs.</span></div>
           </div>
         </div>
       </div>
