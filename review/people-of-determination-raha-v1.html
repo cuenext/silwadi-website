@@ -10,7 +10,7 @@
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../styles.css">
   <style>
-    :root{--pod-deep:#052d38;--pod-navy:#083847;--pod-teal:#0f7d8c;--pod-aqua:#52dbe0;--pod-ink:#173b44;--pod-muted:#667c83;--pod-line:#dce7e9;--pod-soft:#f4f8f8;--pod-white:#fff;--pod-mint:#dff2f1;--pod-cream:#f5f1e8}
+    :root{--pod-deep:#052d38;--pod-navy:#083847;--pod-teal:#0f7d8c;--pod-aqua:#52dbe0;--pod-ink:#173b44;--pod-muted:#667c83;--pod-line:#dce7e9;--pod-soft:#f4f8f8;--pod-white:#fff;--pod-mint:#dff2f1;--pod-cream:#f5f1e8;--pod-slide-width:min(82vw,1120px)}
     body{background:var(--pod-white);color:var(--pod-ink)}
     .pod-private{background:var(--pod-deep);color:#c8dce0;font-size:10px;letter-spacing:.09em;text-transform:uppercase;position:relative;z-index:100}.pod-private .container{height:34px;display:flex;align-items:center;justify-content:space-between;gap:20px}.pod-private strong{color:#9ae6eb}
     .pod-header{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(8,56,71,.08)}.pod-header__inner{height:74px;display:flex;align-items:center;gap:24px}.pod-brand img{width:62px;height:62px;object-fit:contain}.pod-header .pod-btn{margin-left:auto}
@@ -32,6 +32,27 @@
     .pod-before{padding:58px 0;background:#fff}.pod-before__inner{display:grid;grid-template-columns:.7fr 1.3fr;gap:64px;align-items:center}.pod-before h2{margin:0;color:var(--pod-deep);font-size:32px;letter-spacing:-.03em}.pod-before p{margin:9px 0 0;color:var(--pod-muted);font-size:13px;line-height:1.65}.pod-before__tags{display:flex;flex-wrap:wrap;gap:10px}.pod-tag{display:inline-flex;align-items:center;min-height:40px;padding:0 15px;border:1px solid #d3e1e3;border-radius:999px;color:var(--pod-navy);font-size:11px;font-weight:750;background:#fff}.pod-tag:before{content:"";width:6px;height:6px;border-radius:50%;background:var(--pod-teal);margin-right:9px}
     .pod-raha{background:var(--pod-soft)}.pod-raha__grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:66px;align-items:center}.pod-raha__photo{height:470px;overflow:hidden}.pod-raha__photo img{width:100%;height:100%;display:block;object-fit:cover}.pod-raha__copy .pod-copy{margin:16px 0 0}.pod-raha__facts{margin:28px 0 0;border-top:1px solid var(--pod-line)}.pod-raha__fact{display:grid;grid-template-columns:122px 1fr;gap:20px;padding:16px 0;border-bottom:1px solid var(--pod-line);font-size:12px;line-height:1.6}.pod-raha__fact strong{color:var(--pod-navy)}.pod-raha__fact span,.pod-raha__fact a{color:var(--pod-muted)}.pod-raha__actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
     .pod-consultation{padding:34px 0 86px}.pod-consultation__box{background:var(--pod-deep);color:#fff;padding:50px 54px;display:flex;align-items:center;justify-content:space-between;gap:38px}.pod-consultation__box h2{margin:0;font-size:35px;line-height:1.08;letter-spacing:-.035em}.pod-consultation__box p{margin:10px 0 0;color:#c5d9dd;font-size:13px;line-height:1.65;max-width:650px}.pod-consultation__box .pod-btn{background:#fff;color:var(--pod-navy);flex:0 0 auto}
+
+    .pod-clinic{position:relative;overflow:hidden;background:transparent;padding:14px 0 62px}
+    .pod-clinic__label{margin:0 0 8px;color:var(--pod-teal);font-size:10px;font-weight:850;letter-spacing:.16em;text-transform:uppercase}
+    .pod-clinic-carousel{position:relative;touch-action:pan-y;user-select:none;outline:none}
+    .pod-clinic-viewport{overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;padding:12px 0 28px}
+    .pod-clinic-viewport::-webkit-scrollbar{display:none}
+    .pod-clinic-track{display:flex;gap:22px;width:max-content;padding-inline:max(20px,calc((100vw - var(--pod-slide-width))/2))}
+    .pod-clinic-slide{flex:0 0 var(--pod-slide-width);width:var(--pod-slide-width);margin:0;scroll-snap-align:center;opacity:.42;transform:scale(.965);transition:opacity .28s ease,transform .35s cubic-bezier(.22,.75,.24,1);cursor:pointer}
+    .pod-clinic-slide.is-active{opacity:1;transform:scale(1);cursor:default}
+    .pod-clinic-slide img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:22px;background:#dfecee;box-shadow:0 24px 64px rgba(8,56,71,.16)}
+    .pod-clinic-controls{display:flex;align-items:center;justify-content:space-between;margin-top:0}
+    .pod-clinic-status{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pod-muted)}
+    .pod-clinic-controls__buttons{display:flex;gap:10px}
+    .pod-clinic-arrow{width:48px;height:48px;padding:0;border-radius:50%;border:1px solid var(--pod-line);background:rgba(255,255,255,.94);color:var(--pod-deep);display:grid;place-items:center;box-shadow:0 9px 28px rgba(8,56,71,.10);cursor:pointer;transition:transform .2s ease,background .2s ease,border-color .2s ease}
+    .pod-clinic-arrow:hover{transform:translateY(-2px);background:#fff;border-color:rgba(6,86,111,.28)}
+    .pod-clinic-arrow:focus-visible,.pod-clinic-carousel:focus-visible{outline:3px solid rgba(36,169,198,.22);outline-offset:3px}
+    .pod-clinic-arrow svg{width:19px;height:19px}
+
+    @media(max-width:760px){:root{--pod-slide-width:86vw}.pod-clinic{padding:8px 0 44px}.pod-clinic__label{margin-bottom:6px}.pod-clinic-viewport{padding:8px 0 20px}.pod-clinic-track{gap:12px;padding-inline:8vw}.pod-clinic-slide{position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:18px;opacity:.5;transform:scale(.985);box-shadow:0 16px 40px rgba(8,56,71,.14)}.pod-clinic-slide.is-active{opacity:1;transform:none}.pod-clinic-slide img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;border-radius:inherit;box-shadow:none}[data-pod-focal="center"] img{object-position:center 52%}[data-pod-focal="low"] img{object-position:center 68%}.pod-clinic-arrow{width:44px;height:44px}}
+    @media(max-width:480px){:root{--pod-slide-width:90vw}.pod-clinic-track{padding-inline:5vw}.pod-clinic-controls{padding-inline:20px}}
+    @media(prefers-reduced-motion:reduce){.pod-clinic-viewport{scroll-behavior:auto}.pod-clinic-slide{transition:none}}
 
     @media(max-width:1200px){.pod-partnership__visual{margin-right:0}.pod-partnership__aside{display:none}}
     @media(max-width:1000px){.pod-hero__grid,.pod-complex__grid,.pod-raha__grid{grid-template-columns:1fr;gap:40px}.pod-hero__visual{height:500px}.pod-care-grid{grid-template-columns:1fr 1fr}.pod-care-item:nth-child(3){border-left:0;border-top:1px solid var(--pod-line)}.pod-care-item:nth-child(4){border-top:1px solid var(--pod-line)}.pod-partnership{padding:64px 0 82px}.pod-partnership__layout{grid-template-columns:1fr;gap:52px}.pod-partnership__content{max-width:760px}.pod-partnership__photo{height:560px}.pod-before__inner{grid-template-columns:1fr;gap:25px}}
@@ -71,6 +92,26 @@
           <div class="pod-hero__actions"><a class="pod-btn pod-btn--primary" href="../contact.html#consultation-form">Request an Appointment</a></div>
         </div>
         <figure class="pod-hero__visual"><img src="../assets/locations/al-raha-accessible-treatment-room-final.webp" alt="Accessible dental treatment room at Silwadi Dental Center Al Raha Mall branch in Abu Dhabi"></figure>
+      </div>
+    </section>
+
+    <section class="pod-clinic" id="clinic" aria-label="Accessible dental treatment room photo gallery">
+      <div class="container"><p class="pod-clinic__label">Al Raha Mall · Accessible Treatment Room</p></div>
+      <div class="pod-clinic-carousel" data-pod-carousel tabindex="0" aria-roledescription="carousel" aria-label="Accessible dental treatment room photos">
+        <div class="pod-clinic-viewport" data-pod-viewport>
+          <div class="pod-clinic-track">
+            <figure class="pod-clinic-slide is-active" data-pod-slide data-pod-focal="center"><img src="../assets/DSCF2857.webp" alt="Wide view of the accessible dental treatment room at Silwadi Dental Center, Al Raha Mall" width="2048" height="1365" fetchpriority="high" decoding="async"></figure>
+            <figure class="pod-clinic-slide" data-pod-slide data-pod-focal="center"><img src="../assets/DSCF2868.webp" alt="Wheelchair-accessible dental chair and treatment equipment at Silwadi Dental Center, Al Raha Mall" width="2048" height="1365" loading="lazy" decoding="async"></figure>
+            <figure class="pod-clinic-slide" data-pod-slide data-pod-focal="center"><img src="../assets/DSCF2880.webp" alt="Dental treatment setup inside the accessible clinic room at Silwadi Dental Center, Al Raha Mall" width="2048" height="1365" loading="lazy" decoding="async"></figure>
+          </div>
+        </div>
+        <div class="container pod-clinic-controls">
+          <div class="pod-clinic-status"><span data-pod-current>01</span><span aria-hidden="true"> / </span><span>03</span></div>
+          <div class="pod-clinic-controls__buttons">
+            <button class="pod-clinic-arrow" type="button" data-pod-prev aria-label="Previous clinic photo"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="pod-clinic-arrow" type="button" data-pod-next aria-label="Next clinic photo"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9.5 5 7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -161,6 +202,49 @@
 
   <footer class="site-footer"><div class="container footer-grid"><div class="footer-brand-block"><img class="site-footer-logo" src="../assets/silwadi-logo-official.png" alt="Silwadi Dental Center" width="180" height="180" loading="lazy" decoding="async"><p>Established dental care in Abu&nbsp;Dhabi since 1980.</p><a class="footer-social-link" href="https://www.instagram.com/dr.munirsilwadidental/" target="_blank" rel="noopener" aria-label="Follow Silwadi Dental Center on Instagram"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6Zm9.15 1.5a1.35 1.35 0 1 1 0 2.7 1.35 1.35 0 0 1 0-2.7ZM12 6.75A5.25 5.25 0 1 1 6.75 12 5.25 5.25 0 0 1 12 6.75Zm0 2A3.25 3.25 0 1 0 15.25 12 3.25 3.25 0 0 0 12 8.75Z"/></svg><span>Instagram <strong>@dr.munirsilwadidental</strong></span></a></div><div><h3>Care</h3><a href="../services.html">Services</a><a href="../treatments.html">Treatment information</a><a href="../doctors.html">Doctors</a></div><div><h3>Centre</h3><a href="../about.html">About</a><a href="../locations.html">Locations</a><a href="../contact.html">Contact</a></div><div class="footer-opening-hours"><h3>Opening hours</h3><span>Bani Yas Tower (Corniche)</span><strong>Sun–Wed: 09:00 AM to 09:00 PM</strong><strong>Thu &amp; Sat: 09:00 AM to 06:00 PM</strong><span class="footer-opening-hours__closed">Friday: Closed</span><span class="footer-opening-hours__separator" aria-hidden="true"></span><span>Al Raha Mall</span><strong>Sat–Thu: 10:00 AM to 07:00 PM</strong><span class="footer-opening-hours__closed">Friday: Closed</span></div><div><h3>Contact</h3><address class="footer-address"><strong>Dr. Munir Silwadi Dental Centre</strong><span>Bani Yas Tower (Corniche)</span><span>Bani Yas Tower, Building 117 C Floor</span><span>Sultan Bin Zayed The First St, W Corniche Road, Abu&nbsp;Dhabi, UAE</span><a href="tel:+97126262042">+971 2 626 2042</a><span class="footer-address__divider" aria-hidden="true"></span><strong>Dr. Mohamed Munir Dental Centre - Al Raha Mall</strong><span>F14 &amp; F15, Level 1, Al Raha Mall</span><span>Channel St, Al Rahah, Abu&nbsp;Dhabi, UAE</span><a href="tel:+97126662408">+971 2 666 2408</a><a href="mailto:info@silwadidentalcentres.ae">info@silwadidentalcentres.ae</a></address></div></div><div class="container footer-bottom"><span>© 2026 Dr. Munir Silwadi Dental Centre</span><span>Excellence for Every Ability, A Smile for Every Soul.</span></div></footer>
   <div class="mobile-actionbar" aria-label="Quick contact"><a class="mobile-actionbar__whatsapp" href="https://wa.me/971506260418?text=Hello%20Silwadi%20Dental%20Center%2C%20I%27d%20like%20to%20book%20an%20appointment." target="_blank" rel="noopener">WhatsApp</a><a href="tel:+97126662408">Call</a><a class="mobile-actionbar__primary" href="../contact.html#consultation-form">Book</a></div>
+  <script>
+    (() => {
+      const carousel = document.querySelector('[data-pod-carousel]');
+      if (!carousel) return;
+      const viewport = carousel.querySelector('[data-pod-viewport]');
+      const track = carousel.querySelector('.pod-clinic-track');
+      const originalSlides = [...carousel.querySelectorAll('[data-pod-slide]')];
+      const previous = carousel.querySelector('[data-pod-prev]');
+      const next = carousel.querySelector('[data-pod-next]');
+      const current = carousel.querySelector('[data-pod-current]');
+      if (!viewport || !track || originalSlides.length < 2) return;
+      const ANIMATION_MS = 280;
+      const SWIPE_THRESHOLD = 42;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const total = originalSlides.length;
+      const lastClone = originalSlides[total - 1].cloneNode(true);
+      const firstClone = originalSlides[0].cloneNode(true);
+      lastClone.dataset.podClone = 'last';
+      firstClone.dataset.podClone = 'first';
+      [lastClone, firstClone].forEach(clone => { clone.classList.remove('is-active'); clone.setAttribute('aria-hidden','true'); const image=clone.querySelector('img'); if(image) image.setAttribute('loading','lazy'); });
+      track.insertBefore(lastClone, originalSlides[0]);
+      track.appendChild(firstClone);
+      const slides=[...track.querySelectorAll('[data-pod-slide]')];
+      let trackIndex=1, animating=false, settleTimer=null, pointerStartX=null;
+      const logicalFromTrack = index => index===0 ? total-1 : index===total+1 ? 0 : index-1;
+      const targetLeft = index => slides[index].offsetLeft - (viewport.clientWidth-slides[index].clientWidth)/2;
+      const updateActive=()=>{ slides.forEach((slide,index)=>{ const active=index===trackIndex; slide.classList.toggle('is-active',active); slide.setAttribute('aria-hidden',active?'false':'true'); }); current.textContent=String(logicalFromTrack(trackIndex)+1).padStart(2,'0'); };
+      const jumpTo=index=>viewport.scrollTo({left:targetLeft(index),behavior:'auto'});
+      const normalizeLoopPosition = () => { if(trackIndex===0){trackIndex=total;jumpTo(trackIndex);updateActive();} else if(trackIndex===total+1){trackIndex=1;jumpTo(trackIndex);updateActive();} };
+      const animateTo=targetIndex=>{ if(animating)return; const boundedTarget=Math.max(0,Math.min(total+1,targetIndex)); if(reduceMotion){trackIndex=boundedTarget;jumpTo(trackIndex);updateActive();normalizeLoopPosition();return;} const start=viewport.scrollLeft,end=targetLeft(boundedTarget),distance=end-start; let startedAt=null; animating=true; viewport.style.scrollSnapType='none'; const step=timestamp=>{ if(startedAt===null)startedAt=timestamp; const progress=Math.min(1,(timestamp-startedAt)/ANIMATION_MS); const eased=1-Math.pow(1-progress,3); viewport.scrollLeft=start+distance*eased; if(progress<1){requestAnimationFrame(step);return;} viewport.scrollLeft=end; viewport.style.scrollSnapType=''; trackIndex=boundedTarget; updateActive(); animating=false; normalizeLoopPosition(); }; requestAnimationFrame(step); };
+      const go=delta=>animateTo(trackIndex+delta);
+      previous.addEventListener('click',()=>go(-1));
+      next.addEventListener('click',()=>go(1));
+      carousel.addEventListener('keydown',event=>{ if(event.key==='ArrowLeft'){event.preventDefault();go(-1);} if(event.key==='ArrowRight'){event.preventDefault();go(1);} });
+      slides.forEach((slide,index)=>slide.addEventListener('click',()=>{if(index!==trackIndex)animateTo(index);}));
+      carousel.addEventListener('pointerdown',event=>{if(event.pointerType==='mouse')return;pointerStartX=event.clientX;});
+      carousel.addEventListener('pointerup',event=>{if(pointerStartX===null)return;const distance=event.clientX-pointerStartX;pointerStartX=null;if(Math.abs(distance)>=SWIPE_THRESHOLD)go(distance<0?1:-1);});
+      carousel.addEventListener('pointercancel',()=>{pointerStartX=null;});
+      viewport.addEventListener('scroll',()=>{ if(animating)return; clearTimeout(settleTimer); settleTimer=setTimeout(()=>{const center=viewport.scrollLeft+viewport.clientWidth/2;let nearest=trackIndex,d=Infinity;slides.forEach((slide,index)=>{const sd=Math.abs(slide.offsetLeft+slide.clientWidth/2-center);if(sd<d){nearest=index;d=sd;}});trackIndex=nearest;updateActive();normalizeLoopPosition();},80); },{passive:true});
+      window.addEventListener('resize',()=>jumpTo(trackIndex),{passive:true});
+      requestAnimationFrame(()=>{jumpTo(trackIndex);updateActive();});
+    })();
+  </script>
   <script src="../app.js"></script>
 </body>
 </html>
