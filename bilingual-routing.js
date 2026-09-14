@@ -3,13 +3,13 @@
     if (!document.querySelector('link[data-booking-modal-styles]')) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = '/booking-modal.css?v=20260914-1';
+      link.href = '/booking-modal.css?v=20260914-success1';
       link.setAttribute('data-booking-modal-styles', '');
       document.head.appendChild(link);
     }
     if (!document.querySelector('script[data-booking-modal-script]')) {
       const script = document.createElement('script');
-      script.src = '/booking-modal.js?v=20260914-1';
+      script.src = '/booking-modal.js?v=20260914-success1';
       script.async = false;
       script.setAttribute('data-booking-modal-script', '');
       document.head.appendChild(script);
