@@ -1,0 +1,57 @@
+name: Temporary pediatric mobile crop patch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-pediatric-mobile-crop.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply mobile gallery crop fix and verify pediatric tests
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          p = Path('review/pediatric-dentistry-v1.html')
+          text = p.read_text(encoding='utf-8')
+
+          text = text.replace(
+              '.pd-clinic-slide{opacity:.5;transform:scale(.985)}',
+              '.pd-clinic-slide{position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:18px;opacity:.5;transform:scale(.985);box-shadow:0 16px 40px rgba(8,56,71,.14)}'
+          )
+          text = text.replace(
+              '.pd-clinic-slide img{border-radius:18px;box-shadow:0 16px 40px rgba(8,56,71,.14)}',
+              '.pd-clinic-slide img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;border-radius:inherit;box-shadow:none}\n      [data-pd-focal="center"] img{object-position:center 52%}\n      [data-pd-focal="low"] img{object-position:center 68%}'
+          )
+
+          replacements = {
+              '<figure class="pd-clinic-slide is-active" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2888.webp"': '<figure class="pd-clinic-slide is-active" data-pd-slide data-pd-focal="center"><img src="../assets/review/pediatric-clinic/dscf2888.webp"',
+              '<figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2905.webp"': '<figure class="pd-clinic-slide" data-pd-slide data-pd-focal="center"><img src="../assets/review/pediatric-clinic/dscf2905.webp"',
+              '<figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2896.webp"': '<figure class="pd-clinic-slide" data-pd-slide data-pd-focal="low"><img src="../assets/review/pediatric-clinic/dscf2896.webp"',
+              '<figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2894.webp"': '<figure class="pd-clinic-slide" data-pd-slide data-pd-focal="center"><img src="../assets/review/pediatric-clinic/dscf2894.webp"',
+              '<figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2892.webp"': '<figure class="pd-clinic-slide" data-pd-slide data-pd-focal="center"><img src="../assets/review/pediatric-clinic/dscf2892.webp"',
+          }
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'missing expected gallery markup: {old}')
+              text = text.replace(old, new, 1)
+
+          p.write_text(text, encoding='utf-8')
+          PY
+
+          python -m unittest tests.test_private_pediatric_review -v
+          python -m unittest tests.test_private_pediatric_gallery -v
+          python -m unittest tests.test_pediatric_booking_modal -v
+
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add review/pediatric-dentistry-v1.html
+          git commit -m "fix: crop pediatric gallery cleanly on mobile"
+          git push
