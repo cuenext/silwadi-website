@@ -1,93 +1,10 @@
-name: Temporary repair approved Endodontics hero
+name: Temporary Endodontics hero repair (disabled)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/tmp-repair-endodontics-hero.yml'
-
-permissions:
-  contents: write
+  workflow_dispatch:
 
 jobs:
-  repair:
+  disabled:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Rebuild exact approved hero from verified Git blobs
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-        run: |
-          python3 <<'PY'
-          import base64
-          import hashlib
-          import json
-          import os
-          import urllib.request
-          from pathlib import Path
-
-          shas = [
-              'd73bb12f40b34a9c22632248bf482cb296ffb0bc',
-              'bda368425933ee4f31718b3f8597df8689fcced5',
-              'aa4830786f96a4858efe791e47f6504b7c081fc3',
-              'acd6b0084ca4012222b30945d635b5f378f3b7ff',
-              '3164117e949249f3e766dd5a18708e606295ca5a',
-              '59e463cb5749bf365d02b03b3165237d3349f42f',
-              '497d3884c1d8850bd8e413acfb285399c8aa2045',
-          ]
-
-          token = os.environ['GH_TOKEN']
-          repo = os.environ['GH_REPO']
-          pieces = []
-          for sha in shas:
-              req = urllib.request.Request(
-                  f'https://api.github.com/repos/{repo}/git/blobs/{sha}',
-                  headers={
-                      'Authorization': f'Bearer {token}',
-                      'Accept': 'application/vnd.github+json',
-                      'X-GitHub-Api-Version': '2022-11-28',
-                  },
-              )
-              with urllib.request.urlopen(req) as response:
-                  payload = json.load(response)
-              pieces.append(base64.b64decode(payload['content']).decode('utf-8'))
-
-          encoded = ''.join(pieces)
-          image = base64.b64decode(encoded)
-
-          if len(image) != 45546:
-              raise SystemExit(f'unexpected image size: {len(image)}')
-          sha256 = hashlib.sha256(image).hexdigest()
-          if sha256 != '0704f2e74461b96b0b38fb46383071827a285c20ed9d0a6b3fdc00635e1256e8':
-              raise SystemExit(f'approved-image SHA256 mismatch: {sha256}')
-          git_sha = hashlib.sha1(f'blob {len(image)}\0'.encode() + image).hexdigest()
-          if git_sha != '1cbd7eb30f4b8e309e1fbda4ed8bc534c878baa5':
-              raise SystemExit(f'approved-image Git blob mismatch: {git_sha}')
-
-          Path('assets/services/endodontics.webp').write_bytes(image)
-          PY
-
-          file assets/services/endodontics.webp | grep -qi 'Web/P image\|WebP'
-
-      - name: Refresh browser cache token
-        run: |
-          python3 <<'PY'
-          from pathlib import Path
-          for path in [Path('services.html'), Path('ar/services.html')]:
-              text = path.read_text(encoding='utf-8')
-              old = 'endodontics.webp?v=20260914-endodontics-hero'
-              new = 'endodontics.webp?v=20260914-endodontics-hero-v2'
-              if text.count(old) != 1:
-                  raise SystemExit(f'expected one old cache token in {path}, found {text.count(old)}')
-              path.write_text(text.replace(old, new, 1), encoding='utf-8')
-          PY
-
-      - name: Commit exact approved image
-        run: |
-          git config user.name "ADVA Site Automation"
-          git config user.email "actions@users.noreply.github.com"
-          git add assets/services/endodontics.webp services.html ar/services.html
-          git commit -m "fix: apply exact approved Endodontics hero"
-          git push
+      - run: echo "Temporary Endodontics hero repair is disabled."
