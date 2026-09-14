@@ -21,6 +21,15 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertNotIn('<div class="pd-hero__visual">', text)
         self.assertNotIn('../assets/about/silwadi-hero.jpg', text)
 
+    def test_hero_blends_into_gallery_without_dead_white_gap(self):
+        text = PAGE.read_text(encoding="utf-8")
+        self.assertIn('.pd-hero{position:relative;overflow:hidden;', text)
+        self.assertIn('radial-gradient(ellipse at 72% 100%', text)
+        self.assertIn('linear-gradient(180deg,#fff 0%,#f7fbfb 70%,#eef7f8 100%)', text)
+        self.assertIn('.pd-hero__grid{display:block;max-width:920px}', text)
+        self.assertIn('.pd-clinic{position:relative;overflow:hidden;margin-top:-24px;', text)
+        self.assertIn('linear-gradient(180deg,#eef7f8 0%,#f7fbfb 34%,#fff 100%)', text)
+
     def test_gallery_uses_selected_images(self):
         text = PAGE.read_text(encoding="utf-8")
         names = ["dscf2888.webp", "dscf2905.webp", "dscf2896.webp", "dscf2894.webp", "dscf2892.webp"]
