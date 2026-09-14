@@ -102,7 +102,7 @@ const preferredDoctorOrder = [
   'Dr. Hani Hasbini',
   'Dr. Dana Awad',
   'Dr. Afnan Mashal',
-  'Dr. Lana Masoud',
+  'Dr. Lana Almasoud',
   'Dr. Fahed Abi Khalil',
   'Dr. Kashmira Pawar Jayprakash',
   'Dr. Krishnamurthy Balajee',
