@@ -118,9 +118,11 @@
       .pd-clinic__label{margin-bottom:6px}
       .pd-clinic-viewport{padding:8px 0 20px}
       .pd-clinic-track{gap:12px;padding-inline:8vw}
-      .pd-clinic-slide{opacity:.5;transform:scale(.985)}
+      .pd-clinic-slide{position:relative;aspect-ratio:4/3;overflow:hidden;border-radius:18px;opacity:.5;transform:scale(.985);box-shadow:0 16px 40px rgba(8,56,71,.14)}
       .pd-clinic-slide.is-active{opacity:1;transform:none}
-      .pd-clinic-slide img{border-radius:18px;box-shadow:0 16px 40px rgba(8,56,71,.14)}
+      .pd-clinic-slide img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;border-radius:inherit;box-shadow:none}
+      [data-pd-focal="center"] img{object-position:center 52%}
+      [data-pd-focal="low"] img{object-position:center 68%}
       .pd-clinic-arrow{width:44px;height:44px}
     }
     @media(max-width:480px){:root{--pd-slide-width:90vw}.pd-review-actions{display:none}.pd-review-header__inner{height:64px}.pd-review-brand img{width:56px;height:56px}.pd-hero__actions{display:grid;grid-template-columns:1fr}.pd-hero__actions .pd-btn{width:100%}.pd-clinic-track{padding-inline:5vw}.pd-clinic-controls{padding-inline:20px}.pd-specialist-photo{height:390px}.pd-specialist-body h2{font-size:38px}.pd-specialist-actions{display:grid;grid-template-columns:1fr}.pd-specialist-actions .pd-btn{width:100%}.pd-consultation__box{padding:28px 22px}.pd-consultation__box .pd-btn{width:100%}.pd-faq summary{font-size:15px}.pd-faq p{padding-right:34px}}
@@ -161,11 +163,11 @@
       <div class="pd-clinic-carousel" data-pd-carousel tabindex="0" aria-roledescription="carousel" aria-label="Pediatric clinic photos">
         <div class="pd-clinic-viewport" data-pd-viewport>
           <div class="pd-clinic-track">
-            <figure class="pd-clinic-slide is-active" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2888.webp" alt="Pediatric dental treatment room at Silwadi Dental Center, Al Raha Mall" width="1200" height="800" fetchpriority="high" decoding="async"></figure>
-            <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2905.webp" alt="Pediatric dental chair and child-focused clinic environment at Al Raha Mall" width="1200" height="800" loading="lazy" decoding="async"></figure>
-            <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2896.webp" alt="Wide view of the pediatric dental treatment room at Silwadi Dental Center" width="1200" height="800" loading="lazy" decoding="async"></figure>
-            <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2894.webp" alt="Child-focused dinosaur dental chair in the pediatric clinic" width="1200" height="800" loading="lazy" decoding="async"></figure>
-            <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2892.webp" alt="Pediatric clinic character and dental equipment at Al Raha Mall" width="1200" height="800" loading="lazy" decoding="async"></figure>
+            <figure class="pd-clinic-slide is-active" data-pd-slide data-pd-focal="center"><img src="../assets/review/pediatric-clinic/dscf2888.webp" alt="Pediatric dental treatment room at Silwadi Dental Center, Al Raha Mall" width="1200" height="800" fetchpriority="high" decoding="async"></figure>
+            <figure class="pd-clinic-slide" data-pd-slide data-pd-focal="center"><img src="../assets/review/pediatric-clinic/dscf2905.webp" alt="Pediatric dental chair and child-focused clinic environment at Al Raha Mall" width="1200" height="800" loading="lazy" decoding="async"></figure>
+            <figure class="pd-clinic-slide" data-pd-slide data-pd-focal="low"><img src="../assets/review/pediatric-clinic/dscf2896.webp" alt="Wide view of the pediatric dental treatment room at Silwadi Dental Center" width="1200" height="800" loading="lazy" decoding="async"></figure>
+            <figure class="pd-clinic-slide" data-pd-slide data-pd-focal="center"><img src="../assets/review/pediatric-clinic/dscf2894.webp" alt="Child-focused dinosaur dental chair in the pediatric clinic" width="1200" height="800" loading="lazy" decoding="async"></figure>
+            <figure class="pd-clinic-slide" data-pd-slide data-pd-focal="center"><img src="../assets/review/pediatric-clinic/dscf2892.webp" alt="Pediatric clinic character and dental equipment at Al Raha Mall" width="1200" height="800" loading="lazy" decoding="async"></figure>
           </div>
         </div>
         <div class="container pd-clinic-controls">
