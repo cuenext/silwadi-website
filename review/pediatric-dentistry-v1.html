@@ -34,16 +34,14 @@
 
     .pd-intro-gallery{overflow:hidden;background:radial-gradient(circle at 78% 36%,rgba(142,229,233,.24),rgba(142,229,233,0) 34%),linear-gradient(180deg,#fff 0%,#f8fbfb 44%,#eef7f8 74%,#fff 100%);border-bottom:1px solid rgba(8,56,71,.06)}
     .pd-hero{padding:28px 0 34px;background:transparent}
-    .pd-breadcrumb{display:flex;gap:8px;align-items:center;font-size:11px;color:#809199;margin-bottom:34px}
-    .pd-hero__grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(340px,.88fr);gap:72px;align-items:end}
+    .pd-breadcrumb{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:11px;color:#809199;margin-bottom:34px}
+    .pd-hero__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,.82fr);gap:88px;align-items:center}
     .pd-hero__title{min-width:0}
-    .pd-hero__details{max-width:560px;padding:0 0 7px}
+    .pd-hero__details{max-width:520px;padding:0}
     .pd-hero h1{margin:0;color:var(--pd-deep);font-size:clamp(54px,5.7vw,78px);line-height:.95;letter-spacing:-.06em;font-weight:690;max-width:10.6ch}
     .pd-hero h1 span{display:block;color:var(--pd-teal);white-space:nowrap}
     .pd-hero__lead{margin:0;max-width:560px;color:var(--pd-muted);font-size:16px;line-height:1.72}
     .pd-hero__actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:29px}
-    .pd-hero__micro{display:flex;gap:26px;flex-wrap:wrap;margin-top:31px;padding-top:24px;border-top:1px solid var(--pd-line)}
-    .pd-hero__micro span{color:#6c8087;font-size:11px;font-weight:700}
 
     .pd-care-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--pd-line);border-left:1px solid var(--pd-line)}
     .pd-care-card{padding:34px 34px 36px;border-right:1px solid var(--pd-line);border-bottom:1px solid var(--pd-line);background:#fff;min-height:210px}
@@ -112,8 +110,8 @@
     .pd-clinic-arrow:focus-visible,.pd-clinic-carousel:focus-visible{outline:3px solid rgba(36,169,198,.22);outline-offset:3px}
     .pd-clinic-arrow svg{width:19px;height:19px}
 
-    @media(max-width:1000px){.pd-review-nav{display:none}.pd-hero__grid{grid-template-columns:1fr;gap:28px}.pd-hero__details{max-width:700px}.pd-visit-shell,.pd-faq-wrap{grid-template-columns:1fr;gap:42px}.pd-visit-copy{position:static}.pd-specialist-card{grid-template-columns:300px 1fr}.pd-specialist-body{padding-left:46px}}
-    @media(max-width:760px){.pd-private .container span:last-child{display:none}.pd-review-header__inner{height:70px}.pd-review-actions .pd-btn--secondary{display:none}.pd-section{padding:72px 0}.pd-hero{padding:22px 0 26px}.pd-breadcrumb{margin-bottom:24px}.pd-hero__grid{gap:24px}.pd-hero h1{font-size:47px;max-width:10.8ch}.pd-hero__lead{font-size:15px}.pd-hero__details{padding-bottom:0}.pd-care-grid{grid-template-columns:1fr}.pd-care-card{min-height:auto;padding:27px 25px 29px}.pd-care-card__top{margin-bottom:27px}.pd-specialist-card{grid-template-columns:1fr}.pd-specialist-photo{height:470px;min-height:0}.pd-specialist-body{padding:42px 0}.pd-specialist-body h2{font-size:46px}.pd-consultation__box{padding:34px 28px;display:block}.pd-consultation__box .pd-btn{margin-top:24px}.pd-visit-step{grid-template-columns:58px 1fr;gap:15px}.pd-faq-wrap{gap:30px}}
+    @media(max-width:1000px){.pd-review-nav{display:none}.pd-hero__grid{grid-template-columns:1fr;gap:24px}.pd-hero__details{max-width:700px}.pd-visit-shell,.pd-faq-wrap{grid-template-columns:1fr;gap:42px}.pd-visit-copy{position:static}.pd-specialist-card{grid-template-columns:300px 1fr}.pd-specialist-body{padding-left:46px}}
+    @media(max-width:760px){.pd-private .container span:last-child{display:none}.pd-review-header__inner{height:70px}.pd-review-actions .pd-btn--secondary{display:none}.pd-section{padding:64px 0}.pd-hero{padding:20px 0 22px}.pd-breadcrumb{margin-bottom:22px}.pd-hero__grid{gap:20px}.pd-hero h1{font-size:clamp(42px,12.5vw,47px);max-width:10.8ch}.pd-hero__lead{font-size:15px;line-height:1.65}.pd-hero__details{padding:0}.pd-care-grid{grid-template-columns:1fr}.pd-care-card{min-height:auto;padding:25px 22px 27px}.pd-care-card__top{margin-bottom:24px}.pd-specialist-card{grid-template-columns:1fr}.pd-specialist-photo{height:430px;min-height:0}.pd-specialist-body{padding:38px 0}.pd-specialist-body h2{font-size:42px}.pd-consultation__box{padding:32px 26px;display:block}.pd-consultation__box .pd-btn{margin-top:22px}.pd-visit-step{grid-template-columns:54px 1fr;gap:14px}.pd-faq-wrap{gap:28px}}
     @media(max-width:760px){
       :root{--pd-slide-width:86vw}
       .pd-clinic{padding:8px 0 44px}
@@ -125,6 +123,7 @@
       .pd-clinic-slide img{border-radius:18px;box-shadow:0 16px 40px rgba(8,56,71,.14)}
       .pd-clinic-arrow{width:44px;height:44px}
     }
+    @media(max-width:480px){:root{--pd-slide-width:90vw}.pd-review-actions{display:none}.pd-review-header__inner{height:64px}.pd-review-brand img{width:56px;height:56px}.pd-hero__actions{display:grid;grid-template-columns:1fr}.pd-hero__actions .pd-btn{width:100%}.pd-clinic-track{padding-inline:5vw}.pd-clinic-controls{padding-inline:20px}.pd-specialist-photo{height:390px}.pd-specialist-body h2{font-size:38px}.pd-specialist-actions{display:grid;grid-template-columns:1fr}.pd-specialist-actions .pd-btn{width:100%}.pd-consultation__box{padding:28px 22px}.pd-consultation__box .pd-btn{width:100%}.pd-faq summary{font-size:15px}.pd-faq p{padding-right:34px}}
     @media(prefers-reduced-motion:reduce){.pd-clinic-viewport{scroll-behavior:auto}.pd-clinic-slide{transition:none}}
   </style>
 </head>
@@ -146,13 +145,12 @@
         <div class="pd-breadcrumb"><span>Home</span><span>/</span><span>Treatments</span><span>/</span><strong>Pediatric Dentistry</strong></div>
         <div class="pd-hero__grid">
           <div class="pd-hero__title">
-            <p class="pd-eyebrow">Pediatric Dentistry · Pedodontics</p>
+            <p class="pd-eyebrow">Specialist dental care for children</p>
             <h1>Pediatric Dentistry in <span>Abu&nbsp;Dhabi</span></h1>
           </div>
           <div class="pd-hero__details">
-            <p class="pd-hero__lead">Specialist dental care for children at Al Raha Mall — focused on prevention, comfort and the right treatment for each stage of a growing smile.</p>
+            <p class="pd-hero__lead">Care planned around your child’s age, dental needs and clinical findings, with prevention, restorative treatment and dental trauma assessment when appropriate.</p>
             <div class="pd-hero__actions"><a class="pd-btn pd-btn--primary" href="#consultation">Book an Appointment</a><a class="pd-btn pd-btn--secondary" href="#specialist">Meet Dr. Kashmira</a></div>
-            <div class="pd-hero__micro"><span>Al Raha Mall</span><span>Children's dental care</span><span>Specialist pediatric dentist</span></div>
           </div>
         </div>
       </div>
