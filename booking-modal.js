@@ -18,7 +18,9 @@
     consent: 'I agree that Silwadi may use these details to reply to my appointment enquiry.',
     submit: 'Send appointment request',
     sending: 'Sending your appointment request…',
-    status: 'Appointment request sent ✓ Our team will contact you to confirm availability.',
+    successTitle: 'Appointment request sent',
+    successBody: 'Our appointments team will contact you to confirm availability.',
+    done: 'Done',
     error: 'We could not send your request right now. Please try again or contact reception by phone or WhatsApp.',
     treatments: [
       ['General Dentistry', 'General Dentistry'],
@@ -55,7 +57,9 @@
     consent: 'أوافق على استخدام مركز سلوادي لهذه البيانات للرد على طلب الموعد.',
     submit: 'أرسل طلب الموعد',
     sending: 'جارٍ إرسال طلب الموعد…',
-    status: 'تم إرسال طلب الموعد ✓ سيتواصل معك فريقنا لتأكيد التوافر.',
+    successTitle: 'تم إرسال طلب الموعد',
+    successBody: 'سيتواصل معك فريق المواعيد لتأكيد التوافر.',
+    done: 'تم',
     error: 'تعذر إرسال طلبك الآن. يرجى المحاولة مرة أخرى أو التواصل مع الاستقبال عبر الهاتف أو واتساب.',
     treatments: [
       ['General Dentistry', 'طب الأسنان العام'],
@@ -134,6 +138,19 @@
       </div>`;
   }
 
+  function successMarkup(copy, language) {
+    const rtl = language === 'ar';
+    return `
+      <div class="booking-modal__surface booking-modal__success" dir="${rtl ? 'rtl' : 'ltr'}" role="status" aria-live="polite">
+        <div class="booking-modal__success-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false"><path d="M5 12.5 9.2 17 19 7.3"/></svg>
+        </div>
+        <h2 class="booking-modal__success-title" id="booking-modal-title">${copy.successTitle}</h2>
+        <p class="booking-modal__success-copy" id="booking-modal-intro">${copy.successBody}</p>
+        <button class="btn btn--primary booking-modal__success-done" type="button" data-booking-success-done>${copy.done}</button>
+      </div>`;
+  }
+
   function setup() {
     if (document.querySelector('[data-booking-modal]')) return;
 
@@ -145,9 +162,44 @@
     document.body.appendChild(bookingDialog);
 
     let lastTrigger = null;
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+    const showSuccess = (copy, language) => {
+      const formSurface = bookingDialog.querySelector('.booking-modal__surface');
+      let swapped = false;
+
+      const swapView = () => {
+        if (swapped) return;
+        swapped = true;
+        bookingDialog.classList.add('booking-modal--success');
+        bookingDialog.innerHTML = successMarkup(copy, language);
+
+        const success = bookingDialog.querySelector('.booking-modal__success');
+        const done = bookingDialog.querySelector('[data-booking-success-done]');
+        done?.addEventListener('click', () => bookingDialog.close());
+
+        const reveal = () => {
+          success?.classList.add('booking-modal__success--visible');
+          done?.focus({ preventScroll: true });
+        };
+
+        if (reduceMotion) reveal();
+        else requestAnimationFrame(() => requestAnimationFrame(reveal));
+      };
+
+      if (reduceMotion || !formSurface) {
+        swapView();
+        return;
+      }
+
+      formSurface.classList.add('booking-modal__surface--leaving');
+      formSurface.addEventListener('transitionend', swapView, { once: true });
+      window.setTimeout(swapView, 260);
+    };
 
     const render = language => {
       const copy = language === 'ar' ? AR : EN;
+      bookingDialog.classList.remove('booking-modal--success');
       bookingDialog.innerHTML = modalMarkup(copy, language);
       const form = bookingDialog.querySelector('[data-booking-form]');
       const close = bookingDialog.querySelector('[data-booking-modal-close]');
@@ -186,7 +238,7 @@
           const result = await response.json().catch(() => ({}));
           if (!response.ok || result.ok !== true) throw new Error('booking_submit_failed');
           form.reset();
-          if (status) status.textContent = copy.status;
+          showSuccess(copy, language);
         } catch (_) {
           if (status) status.textContent = copy.error;
         } finally {
@@ -228,6 +280,7 @@
 
     bookingDialog.addEventListener('close', () => {
       document.body.classList.remove('booking-modal-open');
+      bookingDialog.classList.remove('booking-modal--success');
       lastTrigger?.focus?.();
       lastTrigger = null;
     });
