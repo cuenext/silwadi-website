@@ -1,0 +1,19 @@
+name: Pediatric copy and mobile red check
+
+on:
+  push:
+    branches:
+      - pediatric-copy-mobile-polish-0914
+    paths:
+      - tests/test_private_pediatric_gallery.py
+      - .github/workflows/pediatric-copy-mobile-red.yml
+
+jobs:
+  red-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: pediatric-copy-mobile-polish-0914
+      - name: Verify pediatric copy/mobile contract
+        run: python -m unittest tests.test_private_pediatric_gallery -v
