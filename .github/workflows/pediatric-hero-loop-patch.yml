@@ -1,0 +1,151 @@
+name: One-time pediatric review hero patch
+
+on:
+  push:
+    branches:
+      - pediatric-review-hero-loop-0914
+    paths:
+      - .github/workflows/pediatric-hero-loop-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: pediatric-review-hero-loop-0914
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Update private pediatric review hero and order
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('review/pediatric-dentistry-v1.html')
+          text = p.read_text(encoding='utf-8')
+
+          text = text.replace(
+              '.pd-hero{padding:28px 0 88px;background:linear-gradient(180deg,#fff 0%,#fff 70%,var(--pd-soft) 70%)}',
+              '.pd-hero{padding:28px 0 46px;background:#fff}'
+          )
+          text = text.replace(
+              '.pd-hero__grid{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:70px;align-items:center}',
+              '.pd-hero__grid{display:block;max-width:760px}'
+          )
+
+          for rule in [
+              '    .pd-hero__visual{position:relative;min-height:560px;overflow:hidden;border-radius:2px;background:#dfecee;box-shadow:var(--pd-shadow)}\n',
+              '    .pd-hero__visual img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}\n',
+              '    .pd-hero__visual:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,34,44,.03) 45%,rgba(4,34,44,.72) 100%)}\n',
+              '    .pd-hero__caption{position:absolute;left:30px;right:30px;bottom:28px;z-index:2;color:#fff}\n',
+              '    .pd-hero__caption strong{display:block;color:#fff;font-size:21px;letter-spacing:-.02em;margin-bottom:6px}\n',
+              '    .pd-hero__caption strong{display:block;font-size:21px;letter-spacing:-.02em;margin-bottom:6px}\n',
+              '    .pd-hero__caption span{display:block;color:rgba(255,255,255,.8);font-size:11px;line-height:1.6;max-width:430px}\n',
+          ]:
+              text = text.replace(rule, '')
+
+          text = text.replace(
+              '@media(max-width:1000px){.pd-review-nav{display:none}.pd-hero__grid,.pd-visit-shell,.pd-faq-wrap{grid-template-columns:1fr;gap:42px}.pd-hero__visual{min-height:470px}.pd-visit-copy{position:static}.pd-specialist-card{grid-template-columns:300px 1fr}.pd-specialist-body{padding-left:46px}}',
+              '@media(max-width:1000px){.pd-review-nav{display:none}.pd-visit-shell,.pd-faq-wrap{grid-template-columns:1fr;gap:42px}.pd-visit-copy{position:static}.pd-specialist-card{grid-template-columns:300px 1fr}.pd-specialist-body{padding-left:46px}}'
+          )
+          text = text.replace(
+              '@media(max-width:760px){.pd-private .container span:last-child{display:none}.pd-review-header__inner{height:70px}.pd-review-actions .pd-btn--secondary{display:none}.pd-section{padding:72px 0}.pd-hero{padding:24px 0 58px}.pd-breadcrumb{margin-bottom:26px}.pd-hero h1{font-size:47px}.pd-hero__lead{font-size:15px}.pd-hero__visual{min-height:390px}.pd-hero__caption{left:22px;right:22px;bottom:20px}.pd-care-grid{grid-template-columns:1fr}.pd-care-card{min-height:auto;padding:27px 25px 29px}.pd-care-card__top{margin-bottom:27px}.pd-specialist-card{grid-template-columns:1fr}.pd-specialist-photo{height:470px;min-height:0}.pd-specialist-body{padding:42px 0}.pd-specialist-body h2{font-size:46px}.pd-consultation__box{padding:34px 28px;display:block}.pd-consultation__box .pd-btn{margin-top:24px}.pd-visit-step{grid-template-columns:58px 1fr;gap:15px}.pd-faq-wrap{gap:30px}}',
+              '@media(max-width:760px){.pd-private .container span:last-child{display:none}.pd-review-header__inner{height:70px}.pd-review-actions .pd-btn--secondary{display:none}.pd-section{padding:72px 0}.pd-hero{padding:24px 0 34px}.pd-breadcrumb{margin-bottom:26px}.pd-hero h1{font-size:47px}.pd-hero__lead{font-size:15px}.pd-care-grid{grid-template-columns:1fr}.pd-care-card{min-height:auto;padding:27px 25px 29px}.pd-care-card__top{margin-bottom:27px}.pd-specialist-card{grid-template-columns:1fr}.pd-specialist-photo{height:470px;min-height:0}.pd-specialist-body{padding:42px 0}.pd-specialist-body h2{font-size:46px}.pd-consultation__box{padding:34px 28px;display:block}.pd-consultation__box .pd-btn{margin-top:24px}.pd-visit-step{grid-template-columns:58px 1fr;gap:15px}.pd-faq-wrap{gap:30px}}'
+          )
+
+          text = text.replace(
+              '<a class="pd-review-brand" href="#clinic" aria-label="Silwadi Dental Center review page">',
+              '<a class="pd-review-brand" href="#hero" aria-label="Silwadi Dental Center review page">'
+          )
+          text = text.replace(
+              '<nav class="pd-review-nav" aria-label="Preview navigation"><a href="#clinic">Clinic</a><a href="#care">Care</a><a href="#visit">Your visit</a><a href="#specialist">Specialist</a><a href="#faq">FAQ</a></nav>',
+              '<nav class="pd-review-nav" aria-label="Preview navigation"><a href="#hero">Overview</a><a href="#clinic">Clinic</a><a href="#care">Care</a><a href="#specialist">Specialist</a><a href="#faq">FAQ</a></nav>'
+          )
+
+          main_start = text.index('  <main>')
+          care_start = text.index('    <section class="pd-section" id="care">')
+          new_top = '''  <main>
+              <section class="pd-hero" id="hero">
+                <div class="container">
+                  <div class="pd-breadcrumb"><span>Home</span><span>/</span><span>Treatments</span><span>/</span><strong>Pediatric Dentistry</strong></div>
+                  <div class="pd-hero__grid">
+                    <div>
+                      <p class="pd-eyebrow">Pediatric Dentistry · Pedodontics</p>
+                      <h1>Pediatric Dentistry in <span>Abu&nbsp;Dhabi</span></h1>
+                      <p class="pd-hero__lead">Specialist dental care for children at Al Raha Mall — focused on prevention, comfort and the right treatment for each stage of a growing smile.</p>
+                      <div class="pd-hero__actions"><a class="pd-btn pd-btn--primary" href="#consultation">Book an Appointment</a><a class="pd-btn pd-btn--secondary" href="#specialist">Meet Dr. Kashmira</a></div>
+                      <div class="pd-hero__micro"><span>Al Raha Mall</span><span>Children's dental care</span><span>Specialist pediatric dentist</span></div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="pd-clinic" id="clinic" aria-labelledby="pd-clinic-title">
+                <div class="container">
+                  <div class="pd-clinic__head">
+                    <div><p class="pd-eyebrow">Al Raha Mall · Pediatric Clinic</p><h2 id="pd-clinic-title">Explore Our Pediatric Clinic</h2></div>
+                    <p>A closer look at the child-focused treatment environment at our Al Raha Mall branch.</p>
+                  </div>
+                </div>
+                <div class="pd-clinic-carousel" data-pd-carousel tabindex="0" aria-roledescription="carousel" aria-label="Pediatric clinic photos">
+                  <div class="pd-clinic-viewport" data-pd-viewport>
+                    <div class="pd-clinic-track">
+                      <figure class="pd-clinic-slide is-active" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2888.webp" alt="Pediatric dental treatment room at Silwadi Dental Center, Al Raha Mall" width="1200" height="800" fetchpriority="high" decoding="async"></figure>
+                      <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2905.webp" alt="Pediatric dental chair and child-focused clinic environment at Al Raha Mall" width="1200" height="800" loading="lazy" decoding="async"></figure>
+                      <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2896.webp" alt="Wide view of the pediatric dental treatment room at Silwadi Dental Center" width="1200" height="800" loading="lazy" decoding="async"></figure>
+                      <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2894.webp" alt="Child-focused dinosaur dental chair in the pediatric clinic" width="1200" height="800" loading="lazy" decoding="async"></figure>
+                      <figure class="pd-clinic-slide" data-pd-slide><img src="../assets/review/pediatric-clinic/dscf2892.webp" alt="Pediatric clinic character and dental equipment at Al Raha Mall" width="1200" height="800" loading="lazy" decoding="async"></figure>
+                    </div>
+                  </div>
+                  <div class="container pd-clinic-controls">
+                    <div class="pd-clinic-status"><span data-pd-current>01</span><span aria-hidden="true"> / </span><span>05</span></div>
+                    <div class="pd-clinic-controls__buttons">
+                      <button class="pd-clinic-arrow" type="button" data-pd-prev aria-label="Previous clinic photo"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                      <button class="pd-clinic-arrow" type="button" data-pd-next aria-label="Next clinic photo"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9.5 5 7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+          '''
+          text = text[:main_start] + new_top + text[care_start:]
+
+          main = text.split('<main>', 1)[1]
+          assert main.index('id="hero"') < main.index('id="clinic"')
+          assert '<h1>Pediatric Dentistry in <span>Abu&nbsp;Dhabi</span></h1>' in text
+          assert '<div class="pd-hero__visual">' not in text
+          assert '../assets/about/silwadi-hero.jpg' not in text
+          assert 'index = (nextIndex + slides.length) % slides.length;' in text
+
+          p.write_text(text, encoding='utf-8')
+          PY
+      - name: Run full authority/private regression suite
+        run: |
+          python -m unittest \
+            tests.test_google_authority \
+            tests.test_doctor_profiles_seo \
+            tests.test_doctor_profile_advertising_compliance \
+            tests.test_arabic_structured_data \
+            tests.test_arabic_quality_seo_rebuild \
+            tests.test_public_core_seo \
+            tests.test_patch8_technical_seo \
+            tests.test_private_ai_faq_review \
+            tests.test_ai_knowledge_v1 \
+            tests.test_ai_worker_contract \
+            tests.test_private_endodontics_review \
+            tests.test_private_faq_review \
+            tests.test_private_pediatric_gallery \
+            tests.test_private_pediatric_review \
+            tests.test_private_pod_raha_review \
+            tests.test_private_pod_review -v
+      - name: Commit review-page implementation
+        run: |
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add review/pediatric-dentistry-v1.html
+          git commit -m "review: move pediatric hero above looping gallery"
+          git push origin HEAD:pediatric-review-hero-loop-0914
