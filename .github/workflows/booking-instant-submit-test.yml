@@ -1,0 +1,26 @@
+name: Booking instant submit test
+
+on:
+  push:
+    branches:
+      - fix/booking-instant-submit-20260914
+    paths:
+      - 'tests/test_booking_direct_submit.py'
+      - 'tests/test_booking_php_endpoint.py'
+      - 'booking-modal.js'
+      - 'app.js'
+      - 'contact.html'
+      - 'ar/contact.html'
+      - 'bilingual-routing.js'
+      - 'backend/**'
+      - '.github/workflows/booking-instant-submit-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify direct booking submission contract
+        run: |
+          python -m unittest discover -s tests -p 'test_booking_direct_submit.py' -v
+          python -m unittest tests.test_booking_modal -v
