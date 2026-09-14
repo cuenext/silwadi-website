@@ -1,0 +1,19 @@
+name: Pediatric booking modal review test
+
+on:
+  push:
+    branches: [pediatric-booking-modal-0914]
+    paths:
+      - 'tests/test_pediatric_booking_modal.py'
+      - 'review/pediatric-dentistry-v1.html'
+      - 'booking-modal.js'
+      - 'booking-modal.css'
+      - '.github/workflows/pediatric-booking-modal-test.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify booking popup contract
+        run: python -m unittest tests.test_pediatric_booking_modal -v
