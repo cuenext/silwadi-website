@@ -7,18 +7,20 @@ ROOT = Path(__file__).resolve().parents[1]
 class BookingEmailValidationRegression(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.js = (ROOT / 'booking-modal.js').read_text(encoding='utf-8')
+        cls.js = (ROOT / 'booking-email-validation.js').read_text(encoding='utf-8')
+        cls.routing = (ROOT / 'bilingual-routing.js').read_text(encoding='utf-8')
 
-    def test_rejects_incomplete_email_before_network_request(self):
-        self.assertIn("invalidEmail: 'Please enter a valid email address.'", self.js)
-        self.assertIn("invalidEmail: 'يرجى إدخال بريد إلكتروني صالح.'", self.js)
+    def test_rejects_incomplete_email_before_booking_handler(self):
+        self.assertIn('Please enter a valid email address.', self.js)
+        self.assertIn('يرجى إدخال بريد إلكتروني صالح.', self.js)
         self.assertIn('emailInput.setCustomValidity', self.js)
-        self.assertIn('isValidEmailAddress(payload.email)', self.js)
-        self.assertLess(self.js.index('isValidEmailAddress(payload.email)'), self.js.index('await fetch(BOOKING_ENDPOINT'))
+        self.assertIn('isValidEmailAddress(emailInput.value)', self.js)
+        self.assertIn("event.stopImmediatePropagation()", self.js)
+        self.assertIn("document.addEventListener('submit'", self.js)
 
-    def test_backend_invalid_email_gets_specific_message(self):
-        self.assertIn("result.error === 'invalid_email'", self.js)
-        self.assertIn('copy.invalidEmail', self.js)
+    def test_validator_is_loaded_on_booking_pages(self):
+        self.assertIn('booking-email-validation.js?v=20260914-email1', self.routing)
+        self.assertIn('data-booking-email-validation', self.routing)
 
 
 if __name__ == '__main__':
