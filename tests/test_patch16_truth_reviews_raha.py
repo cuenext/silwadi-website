@@ -3,6 +3,7 @@ import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+# Homepage location cards must expose each branch phone plus direct Google Maps directions.
 
 
 class PatchSixteenTruthReviewsRaha(unittest.TestCase):
