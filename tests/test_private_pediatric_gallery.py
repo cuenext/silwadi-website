@@ -1,7 +1,7 @@
 from pathlib import Path
 import unittest
 
-# Private pediatric hero + clinic carousel review contract.
+# Private pediatric hero + clinic carousel review contract, including mobile crop behavior.
 ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / "review/pediatric-dentistry-v1.html"
 
