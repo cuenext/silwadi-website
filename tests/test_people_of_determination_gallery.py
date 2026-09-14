@@ -20,6 +20,8 @@ class PeopleOfDeterminationGalleryContract(unittest.TestCase):
     def test_review_page_uses_a_minimal_three_image_pod_gallery(self):
         refs = re.findall(r'\.\./assets/(DSCF\d+\.webp)', self.html)
         self.assertEqual(refs, list(SELECTED_IMAGES))
+        slides = re.findall(r'<figure class="pod-clinic-slide[^>]*data-pod-slide', self.html)
+        self.assertEqual(len(slides), 3)
 
     def test_selected_gallery_assets_exist(self):
         for filename in SELECTED_IMAGES:
@@ -47,9 +49,11 @@ class PeopleOfDeterminationGalleryContract(unittest.TestCase):
     def test_gallery_keeps_accessible_semantics_and_loading_hints(self):
         self.assertIn('aria-roledescription="carousel"', self.html)
         self.assertIn('aria-label="Accessible dental treatment room photos"', self.html)
-        self.assertEqual(self.html.count('data-pod-slide'), 3)
-        self.assertEqual(self.html.count('loading="lazy"'), 5)  # two existing page images + gallery slides 2 and 3
-        self.assertIn('fetchpriority="high"', self.html)
+        gallery = re.search(r'<section class="pod-clinic".*?</section>', self.html, re.S)
+        self.assertIsNotNone(gallery)
+        gallery_html = gallery.group(0)
+        self.assertEqual(gallery_html.count('loading="lazy"'), 2)
+        self.assertEqual(gallery_html.count('fetchpriority="high"'), 1)
 
 
 if __name__ == "__main__":
