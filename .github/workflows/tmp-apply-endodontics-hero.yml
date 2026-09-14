@@ -1,0 +1,59 @@
+name: Temporary apply Endodontics hero image
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-apply-endodontics-hero.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild approved Endodontics hero asset
+        run: |
+          cat \
+            .tmp/endodontics-hero.part0 \
+            .tmp/endodontics-hero.part1 \
+            .tmp/endodontics-hero.part2 \
+            .tmp/endodontics-hero.part3 \
+            .tmp/endodontics-hero.part4 \
+            | base64 --decode > assets/services/endodontics.webp
+
+          test -s assets/services/endodontics.webp
+          file assets/services/endodontics.webp | grep -qi 'Web/P image\|WebP'
+          test "$(stat -c%s assets/services/endodontics.webp)" -gt 40000
+
+      - name: Bust cached hero image in English and Arabic pages
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          files = [Path('services.html'), Path('ar/services.html')]
+          old = 'endodontics.webp?v=20260906-servicefix-1'
+          new = 'endodontics.webp?v=20260914-endodontics-hero'
+
+          for path in files:
+              text = path.read_text(encoding='utf-8')
+              if text.count(old) != 1:
+                  raise SystemExit(f'expected exactly one hero cache token in {path}, found {text.count(old)}')
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+          grep -q 'endodontics.webp?v=20260914-endodontics-hero' services.html
+          grep -q 'endodontics.webp?v=20260914-endodontics-hero' ar/services.html
+
+      - name: Commit approved hero image
+        run: |
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/services/endodontics.webp services.html ar/services.html
+          git commit -m "feat: upgrade Endodontics hero image"
+          git push
