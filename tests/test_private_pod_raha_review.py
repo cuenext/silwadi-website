@@ -24,7 +24,9 @@ class PrivatePodRahaReviewContract(unittest.TestCase):
         self.assertIn("Al Raha Mall", self.text)
 
     def test_raha_accessibility_content_is_grounded(self):
-        self.assertIn("assets/locations/al-raha-accessible-treatment-room-final.webp", self.text)
+        self.assertNotIn("assets/locations/al-raha-accessible-treatment-room-final.webp", self.text)
+        self.assertIn('data-pod-carousel', self.text)
+        self.assertEqual(len(re.findall(r'\.\./assets/DSCF\d+\.webp', self.text)), 7)
         self.assertIn("F14 &amp; F15, Level 1, Al Raha Mall", self.text)
         self.assertIn("Accessible dental treatment room", self.text)
         self.assertNotIn("3 dedicated POD treatment rooms", self.text)
