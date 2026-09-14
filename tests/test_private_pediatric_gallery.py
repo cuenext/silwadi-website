@@ -1,6 +1,7 @@
 from pathlib import Path
 import unittest
 
+# Private pediatric clinic carousel review contract.
 ROOT = Path(__file__).resolve().parents[1]
 PAGE = ROOT / "review/pediatric-dentistry-v1.html"
 
@@ -30,14 +31,31 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertIn('fetchpriority="high"', text)
         self.assertGreaterEqual(text.count('loading="lazy"'), 4)
 
-    def test_gallery_supports_arrows_keyboard_and_swipe(self):
+    def test_gallery_uses_non_overlapping_scroll_snap_layout(self):
+        text = PAGE.read_text(encoding="utf-8")
+        self.assertIn('class="pd-clinic-viewport"', text)
+        self.assertIn('data-pd-viewport', text)
+        self.assertIn('class="pd-clinic-track"', text)
+        self.assertIn('scroll-snap-type:x mandatory', text)
+        self.assertIn('scroll-snap-align:center', text)
+        self.assertNotIn('.pd-clinic-slide{position:absolute', text)
+        self.assertNotIn('translate(-147%', text)
+        self.assertNotIn('translate(47%', text)
+
+    def test_desktop_gallery_keeps_one_dominant_center_slide(self):
+        text = PAGE.read_text(encoding="utf-8")
+        self.assertIn('--pd-slide-width:min(82vw,1120px)', text)
+        self.assertIn('--pd-slide-width:86vw', text)
+
+    def test_gallery_supports_arrows_keyboard_and_native_swipe(self):
         text = PAGE.read_text(encoding="utf-8")
         self.assertIn('aria-label="Previous clinic photo"', text)
         self.assertIn('aria-label="Next clinic photo"', text)
         self.assertIn("carousel.addEventListener('keydown'", text)
-        self.assertIn("carousel.addEventListener('pointerdown'", text)
-        self.assertIn("carousel.addEventListener('pointerup'", text)
+        self.assertIn("viewport.scrollTo({", text)
         self.assertIn("touch-action:pan-y", text)
+        self.assertNotIn("carousel.addEventListener('pointerdown'", text)
+        self.assertNotIn("carousel.addEventListener('pointerup'", text)
 
     def test_review_stays_private_and_uses_current_booking_anchor(self):
         text = PAGE.read_text(encoding="utf-8")
