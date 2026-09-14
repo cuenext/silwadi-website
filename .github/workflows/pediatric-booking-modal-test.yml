@@ -5,7 +5,10 @@ on:
     branches: [pediatric-booking-modal-0914]
     paths:
       - 'tests/test_pediatric_booking_modal.py'
+      - 'tests/test_private_pediatric_review.py'
+      - 'tests/test_private_pediatric_gallery.py'
       - 'review/pediatric-dentistry-v1.html'
+      - 'app.js'
       - 'booking-modal.js'
       - 'booking-modal.css'
       - '.github/workflows/pediatric-booking-modal-test.yml'
@@ -15,5 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify booking popup contract
-        run: python -m unittest tests.test_pediatric_booking_modal -v
+      - name: Verify booking popup and pediatric review contracts
+        run: |
+          python -m unittest tests.test_pediatric_booking_modal -v
+          python -m unittest tests.test_private_pediatric_review -v
+          python -m unittest tests.test_private_pediatric_gallery -v
