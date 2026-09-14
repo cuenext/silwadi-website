@@ -15,6 +15,7 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         cls.locations = (ROOT / "locations.html").read_text(encoding="utf-8")
         cls.contact = (ROOT / "contact.html").read_text(encoding="utf-8")
         cls.css = (ROOT / "home-reviews.css").read_text(encoding="utf-8")
+        cls.site_css = (ROOT / "styles.css").read_text(encoding="utf-8")
         cls.app = (ROOT / "app.js").read_text(encoding="utf-8")
         cls.sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
         cls.public_html = [p for p in ROOT.rglob("*.html") if ".github" not in p.parts]
@@ -75,6 +76,17 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         self.assertIn(f'<a href="{bani_map}" target="_blank" rel="noopener">عرض الاتجاهات</a>', self.home_ar)
         self.assertIn('<a href="tel:+97126662408">+971 2 666 2408</a>', self.home_ar)
         self.assertIn(f'<a href="{raha_map}" target="_blank" rel="noopener">عرض الاتجاهات</a>', self.home_ar)
+
+    def test_mobile_location_directions_anchor_to_opposite_edge(self):
+        compact = re.sub(r"\s+", "", self.site_css)
+        self.assertRegex(
+            compact,
+            r"@media\(max-width:760px\)[\s\S]*?\.location-actions>a:last-child\{margin-left:auto;\}",
+        )
+        self.assertRegex(
+            compact,
+            r"@media\(max-width:760px\)[\s\S]*?\.language-ar\.location-actions>a:last-child\{margin-left:0;margin-right:auto;\}",
+        )
 
     def test_google_reviews_section_uses_real_listing_summary_and_maps_link(self):
         self.assertIn('class="home-google-reviews', self.home)
