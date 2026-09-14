@@ -1,0 +1,15 @@
+name: Temporary mobile location alignment regression
+on:
+  push:
+    branches: [fix-mobile-location-actions-0914]
+    paths:
+      - 'styles.css'
+      - 'tests/test_patch16_truth_reviews_raha.py'
+      - '.github/workflows/tmp-mobile-location-align-test.yml'
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify location contact row alignment
+        run: python -m unittest tests.test_patch16_truth_reviews_raha.PatchSixteenTruthReviewsRaha.test_mobile_location_directions_anchor_to_opposite_edge -v
