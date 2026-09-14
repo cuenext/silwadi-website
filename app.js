@@ -297,4 +297,19 @@ document.addEventListener('keydown', event => {
   });
 })();
 
+// The private pediatric review reuses the site's existing appointment dialog.
+(function loadPediatricReviewBookingModal() {
+  if (!window.location.pathname.endsWith('/review/pediatric-dentistry-v1.html')) return;
+
+  const stylesheet = document.createElement('link');
+  stylesheet.rel = 'stylesheet';
+  stylesheet.href = '../booking-modal.css';
+  document.head.appendChild(stylesheet);
+
+  const script = document.createElement('script');
+  script.src = '../booking-modal.js';
+  script.async = false;
+  document.body.appendChild(script);
+})();
+
 window.SilwadiLanguage?.init?.();
