@@ -50,6 +50,14 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertIn('.pd-breadcrumb{display:flex;flex-wrap:wrap;', text)
         self.assertIn('.pd-specialist-photo{height:390px}', text)
 
+    def test_mobile_gallery_uses_fixed_landscape_crop_frames(self):
+        text = PAGE.read_text(encoding="utf-8")
+        self.assertIn('.pd-clinic-slide{position:relative;aspect-ratio:4/3;overflow:hidden;', text)
+        self.assertIn('.pd-clinic-slide img{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;', text)
+        self.assertGreaterEqual(text.count('data-pd-focal="'), 5)
+        self.assertIn('[data-pd-focal="low"] img{object-position:center 68%}', text)
+        self.assertIn('[data-pd-focal="center"] img{object-position:center 52%}', text)
+
     def test_gallery_uses_selected_images(self):
         text = PAGE.read_text(encoding="utf-8")
         names = ["dscf2888.webp", "dscf2905.webp", "dscf2896.webp", "dscf2894.webp", "dscf2892.webp"]
