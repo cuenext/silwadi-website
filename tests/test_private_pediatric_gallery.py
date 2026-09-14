@@ -47,7 +47,7 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertIn('.pd-hero__actions .pd-btn{width:100%}', text)
         self.assertIn('.pd-review-actions{display:none}', text)
         self.assertIn('--pd-slide-width:90vw', text)
-        self.assertIn('.pd-breadcrumb{flex-wrap:wrap}', text)
+        self.assertIn('.pd-breadcrumb{display:flex;flex-wrap:wrap;', text)
         self.assertIn('.pd-specialist-photo{height:390px}', text)
 
     def test_gallery_uses_selected_images(self):
