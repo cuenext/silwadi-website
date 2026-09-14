@@ -41,6 +41,11 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertNotIn('translate(-147%', text)
         self.assertNotIn('translate(47%', text)
 
+    def test_desktop_gallery_keeps_one_dominant_center_slide(self):
+        text = PAGE.read_text(encoding="utf-8")
+        self.assertIn('--pd-slide-width:min(82vw,1120px)', text)
+        self.assertIn('--pd-slide-width:86vw', text)
+
     def test_gallery_supports_arrows_keyboard_and_native_swipe(self):
         text = PAGE.read_text(encoding="utf-8")
         self.assertIn('aria-label="Previous clinic photo"', text)
