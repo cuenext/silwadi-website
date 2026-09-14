@@ -7,12 +7,19 @@ PAGE = ROOT / "review/pediatric-dentistry-v1.html"
 
 
 class PediatricClinicGalleryContract(unittest.TestCase):
-    def test_gallery_is_before_hero(self):
+    def test_hero_is_first_and_gallery_follows_it(self):
         text = PAGE.read_text(encoding="utf-8")
         main = text.split("<main>", 1)[1]
-        self.assertLess(main.index('id="clinic"'), main.index('id="hero"'))
-        self.assertIn("Explore Our Pediatric Clinic", text)
+        self.assertLess(main.index('id="hero"'), main.index('id="clinic"'))
+        self.assertIn('href="#hero">Overview</a>', text)
         self.assertIn('href="#clinic">Clinic</a>', text)
+        self.assertIn("Explore Our Pediatric Clinic", text)
+
+    def test_hero_uses_requested_heading_without_large_visual(self):
+        text = PAGE.read_text(encoding="utf-8")
+        self.assertIn('<h1>Pediatric Dentistry in <span>Abu&nbsp;Dhabi</span></h1>', text)
+        self.assertNotIn('<div class="pd-hero__visual">', text)
+        self.assertNotIn('../assets/about/silwadi-hero.jpg', text)
 
     def test_gallery_uses_selected_images(self):
         text = PAGE.read_text(encoding="utf-8")
@@ -47,13 +54,16 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertIn('--pd-slide-width:min(82vw,1120px)', text)
         self.assertIn('--pd-slide-width:86vw', text)
 
-    def test_gallery_supports_arrows_keyboard_and_native_swipe(self):
+    def test_gallery_supports_arrows_keyboard_native_swipe_and_button_looping(self):
         text = PAGE.read_text(encoding="utf-8")
         self.assertIn('aria-label="Previous clinic photo"', text)
         self.assertIn('aria-label="Next clinic photo"', text)
         self.assertIn("carousel.addEventListener('keydown'", text)
         self.assertIn("viewport.scrollTo({", text)
         self.assertIn("touch-action:pan-y", text)
+        self.assertIn('index = (nextIndex + slides.length) % slides.length;', text)
+        self.assertIn("previous.addEventListener('click', () => go(-1))", text)
+        self.assertIn("next.addEventListener('click', () => go(1))", text)
         self.assertNotIn("carousel.addEventListener('pointerdown'", text)
         self.assertNotIn("carousel.addEventListener('pointerup'", text)
 
