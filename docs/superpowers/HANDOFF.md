@@ -4,7 +4,7 @@ Last updated: 2026-09-14
 
 ## Current focus
 
-Private review of the pediatric dentistry page, specifically replacing the broken clinic-photo carousel with a clean centered slideshow. Do not change the public pediatric/service page, public navigation, sitemap, archived old website, or any other public design/copy without explicit user approval.
+Private review of the pediatric dentistry page, specifically the clinic-photo carousel. Do not change the public pediatric/service page, public navigation, sitemap, archived old website, or any other public design/copy without explicit user approval.
 
 The private FAQ AI assistant work remains preserved below and is still pending external Cloudflare/OpenAI setup.
 
@@ -15,36 +15,26 @@ The private FAQ AI assistant work remains preserved below and is still pending e
 - Current pediatric review branch: `pediatric-carousel-review-0914`
 - Hosting: GitHub Pages
 - Production site: `https://silwadi.ae`
-- Pediatric carousel branch was created from main commit `a76b852be4c488706a36131259b8d0b16337d2b0`.
-- Do not merge the pediatric branch to `main` until the user visually approves the private review and the full regression suite is green.
+- Pediatric carousel branch originated from main commit `a76b852be4c488706a36131259b8d0b16337d2b0`.
+- Do not merge the pediatric branch to `main` until the user explicitly approves the review result.
 
 ## Pediatric private review state
 
 - Page: `review/pediatric-dentistry-v1.html`
 - The page remains `noindex,nofollow,noarchive,nosnippet,noimageindex`, marked `Private review` / `Not published`, unlinked from the public site and absent from the sitemap.
-- The clinic-gallery section remains before the pediatric hero, as previously approved.
-- The old gallery used absolutely positioned slides and large left/right transforms. This produced the crowded/overlapping appearance the user rejected.
-- New carousel implementation uses a horizontal scroll-snap viewport/track instead of stacked absolute cards.
-- The center slide is the active slide; neighboring slides are natural side previews rather than cards layered over the center image.
-- Arrow buttons, keyboard navigation, click-to-center and native mobile swipe are retained.
-- Manual pointer-capture swipe code was removed so mobile uses native horizontal scrolling/snap behavior.
+- The clinic-gallery section remains before the pediatric hero.
+- The rejected absolute-position / transform-stack carousel has been removed.
+- The replacement uses a horizontal scroll-snap viewport/track, so slides no longer layer over one another.
+- Desktop center slide width is `min(82vw,1120px)`; mobile slide width is `86vw`, leaving controlled neighboring peeks while keeping the centered photo dominant.
+- Arrow buttons, keyboard navigation, click-to-center, native mobile swipe, centered-slide detection and the image counter are retained.
 - Reduced-motion behavior is included.
-- Public pages have not been changed by this branch.
+- Public page code has not been changed by this branch.
 
-### Pediatric TDD status
+### Pediatric assets
 
-- RED test commit: `07622b3213068a0ce082769377df8da7c2af9aa7` (`test: define pediatric carousel layout contract`).
-- RED workflow run: `34813425322`, completed with failure before implementation as expected.
-- Carousel implementation commit: `ec1d9564de50288ea3068c5f8546b16ed5cf01de` (`fix: rebuild pediatric clinic carousel layout`).
-- Implementation workflow run: `34813693467`.
-- In run `34813693467`, the new carousel layout/navigation tests passed, as did the existing private pediatric review tests and the rest of the Google-authority/private regression suite.
-- The only remaining failure is `test_gallery_uses_selected_images`, because the five WebP files already present in GitHub are corrupted/truncated.
-- GitHub currently reports these corrupted files at exactly 14,998–14,999 bytes each. The first file begins with invalid bytes instead of the required `RIFF....WEBP` signature.
-- This confirms the previous connector binary-upload limitation rather than a carousel-code problem.
+The five optimized 1500×1000 WebPs are now valid and stored in the intended review folder:
 
-### Correct pediatric assets prepared locally
-
-Correct optimized files are derived from the user's original high-resolution ZIP and retain valid WebP signatures:
+`assets/review/pediatric-clinic/`
 
 - `dscf2888.webp` — 127,912 bytes
 - `dscf2892.webp` — 122,232 bytes
@@ -52,20 +42,34 @@ Correct optimized files are derived from the user's original high-resolution ZIP
 - `dscf2896.webp` — 101,836 bytes
 - `dscf2905.webp` — 115,114 bytes
 
-They are 1500×1000 WebP gallery images with metadata stripped. The five-image set is about 0.53 MB total versus about 12 MB for the selected originals.
+All five pass the RIFF/WEBP signature checks and the lightweight-image limit. These blobs came from the user's successful manual binary upload and were reused exactly in the review folder; no connector re-encoding was used.
 
-Required repository path:
-`assets/review/pediatric-clinic/`
+The user's manual upload also placed unreferenced copies/ZIP under root `assets/` on `main`. Leave those untouched unless the user explicitly requests cleanup.
 
-Do not accept or merge a supposed image fix unless all five repo files are valid RIFF/WebP files and the full workflow turns green.
+### Pediatric TDD / verification status
+
+- Initial layout RED commit: `07622b3213068a0ce082769377df8da7c2af9aa7`.
+- Initial RED workflow: `34813425322`.
+- Scroll-snap implementation: `ec1d9564de50288ea3068c5f8546b16ed5cf01de`.
+- Valid optimized gallery blobs restored to the review folder in commit `b0787f63f96e5528d089e22c939a4ae56939edfc`.
+- Dominant-center-slide RED test commit: `a548b64388f2e1d2478acfe8e2fe7f13624c9f01`.
+- RED workflow `34817275259` ran 107 tests: 106 passed; only the new proportion requirement failed as intended. The image-integrity test passed at this point, proving the corrupted-image problem was fixed.
+- Final proportion implementation commit: `c21bfb308fdf4c927fbc4fc5bae3c137a200c608`.
+- Temporary one-time patch workflow was removed before final verification.
+- Final verification commit: `6b80dee9eaf262a56406c67e0d4871d7184b8544`.
+- Final Google authority/private regression workflow: `34817583900`.
+- Result: **107 tests run, 107 passed, 0 failures** (`Ran 107 tests ... OK`).
+- Final pediatric checks include valid WebP bytes, selected images, non-overlapping scroll-snap layout, dominant center proportions, arrows, keyboard behavior, native swipe contract, private/noindex state and booking anchor.
+
+### Visual-review note
+
+Automated browser rendering from the local container is blocked by the environment's browser administrator policy, so do not claim a live visual browser check from this session. Structural/layout behavior and asset integrity are fully regression-tested, but the user still needs to visually approve the private rendered page before any merge/publish step.
 
 ## Pediatric exact next step
 
-1. Replace the five corrupted repo WebPs on branch `pediatric-carousel-review-0914` with the five prepared optimized files using a binary-safe upload route. The current ChatGPT GitHub connector must not be used for these binaries because it truncates them near 15 KB.
-2. Re-run the Google authority/private regression workflow and require 0 failures.
-3. Visually verify the carousel on desktop and mobile: one dominant centered image, controlled neighboring previews, no overlap/collision, smooth arrows, keyboard behavior and native swipe.
-4. Give the user the private review result for approval.
-5. Only after explicit approval should any equivalent change be merged/published.
+1. Present the final pediatric review result to the user for visual approval through an appropriate private/review deployment path; do not merge/publish to the public service page automatically.
+2. If the user requests visual adjustments, make them only on `pediatric-carousel-review-0914` and preserve the 107-test green baseline.
+3. Only after explicit approval should equivalent pediatric changes be reconciled with current `main` and published.
 
 ## Approved AI design
 
