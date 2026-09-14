@@ -9,6 +9,7 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.home = (ROOT / "index.html").read_text(encoding="utf-8")
+        cls.home_ar = (ROOT / "ar" / "index.html").read_text(encoding="utf-8")
         cls.about = (ROOT / "about.html").read_text(encoding="utf-8")
         cls.locations = (ROOT / "locations.html").read_text(encoding="utf-8")
         cls.contact = (ROOT / "contact.html").read_text(encoding="utf-8")
@@ -57,6 +58,22 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         self.assertIn('id="al-raha"', self.locations)
         self.assertRegex(self.locations, r'id="al-raha"[\s\S]{0,4000}\+971 2 666 2408')
         self.assertNotIn('class="location-state"', self.locations)
+
+    def test_home_location_cards_use_branch_phone_and_real_directions_links(self):
+        bani_map = "https://www.google.com/maps/search/?api=1&amp;query=Dr%20Munir%20Silwadi%20Dental%20Centre%20Bani%20Yas%20Tower%20Abu%20Dhabi"
+        raha_map = "https://www.google.com/maps/search/?api=1&amp;query=Dr%20Mohamed%20Munir%20Dental%20Centre%20Al%20Raha%20Mall%20Abu%20Dhabi"
+
+        self.assertIn('<a href="tel:+97126262042">+971 2 626 2042</a>', self.home)
+        self.assertIn(f'<a href="{bani_map}" target="_blank" rel="noopener">Get Directions</a>', self.home)
+        self.assertIn('<a href="tel:+97126662408">+971 2 666 2408</a>', self.home)
+        self.assertIn(f'<a href="{raha_map}" target="_blank" rel="noopener">Get Directions</a>', self.home)
+        self.assertNotIn("Ask for directions", self.home)
+        self.assertNotIn("Call the centre", self.home)
+
+        self.assertIn('<a href="tel:+97126262042">+971 2 626 2042</a>', self.home_ar)
+        self.assertIn(f'<a href="{bani_map}" target="_blank" rel="noopener">عرض الاتجاهات</a>', self.home_ar)
+        self.assertIn('<a href="tel:+97126662408">+971 2 666 2408</a>', self.home_ar)
+        self.assertIn(f'<a href="{raha_map}" target="_blank" rel="noopener">عرض الاتجاهات</a>', self.home_ar)
 
     def test_google_reviews_section_uses_real_listing_summary_and_maps_link(self):
         self.assertIn('class="home-google-reviews', self.home)
