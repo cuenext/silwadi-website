@@ -54,9 +54,7 @@ HERO = """    <section class="pod-hero" id="hero">
           </div>
         </div>
       </div>
-    </section>
-
-    <section class="pod-partnership""" 
+    </section>"""
 
 
 def main():
@@ -68,10 +66,10 @@ def main():
         html = html.replace("  </style>", CSS + "  </style>", 1)
 
     pattern = re.compile(
-        r'    <section class="pod-hero" id="hero">.*?    <section class="pod-partnership"',
+        r'    <section class="pod-hero" id="hero">.*?(?=    <section class="pod-partnership")',
         re.S,
     )
-    html, count = pattern.subn(HERO, html, count=1)
+    html, count = pattern.subn(HERO + "\n\n", html, count=1)
     if count != 1:
         raise SystemExit(f"Expected one hero/gallery block, replaced {count}")
 
