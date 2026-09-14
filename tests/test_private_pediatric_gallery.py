@@ -13,7 +13,8 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertLess(main.index('id="hero"'), main.index('id="clinic"'))
         self.assertIn('href="#hero">Overview</a>', text)
         self.assertIn('href="#clinic">Clinic</a>', text)
-        self.assertIn("Explore Our Pediatric Clinic", text)
+        self.assertNotIn("Explore Our Pediatric Clinic", text)
+        self.assertIn("Al Raha Mall · Pediatric Clinic", text)
 
     def test_hero_uses_requested_heading_without_large_visual(self):
         text = PAGE.read_text(encoding="utf-8")
@@ -21,14 +22,15 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertNotIn('<div class="pd-hero__visual">', text)
         self.assertNotIn('../assets/about/silwadi-hero.jpg', text)
 
-    def test_hero_blends_into_gallery_without_dead_white_gap(self):
+    def test_hero_and_gallery_are_one_continuous_composition(self):
         text = PAGE.read_text(encoding="utf-8")
-        self.assertIn('.pd-hero{position:relative;overflow:hidden;', text)
-        self.assertIn('radial-gradient(ellipse at 72% 100%', text)
-        self.assertIn('linear-gradient(180deg,#fff 0%,#f7fbfb 70%,#eef7f8 100%)', text)
-        self.assertIn('.pd-hero__grid{display:block;max-width:920px}', text)
-        self.assertIn('.pd-clinic{position:relative;overflow:hidden;margin-top:-24px;', text)
-        self.assertIn('linear-gradient(180deg,#eef7f8 0%,#f7fbfb 34%,#fff 100%)', text)
+        self.assertIn('<div class="pd-intro-gallery">', text)
+        self.assertIn('.pd-intro-gallery{', text)
+        self.assertIn('.pd-hero__grid{display:grid;grid-template-columns:', text)
+        self.assertIn('class="pd-hero__title"', text)
+        self.assertIn('class="pd-hero__details"', text)
+        self.assertIn('.pd-clinic{position:relative;overflow:hidden;background:transparent;', text)
+        self.assertNotIn('.pd-clinic__head', text)
 
     def test_gallery_uses_selected_images(self):
         text = PAGE.read_text(encoding="utf-8")
@@ -63,18 +65,20 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertIn('--pd-slide-width:min(82vw,1120px)', text)
         self.assertIn('--pd-slide-width:86vw', text)
 
-    def test_gallery_supports_arrows_keyboard_native_swipe_and_button_looping(self):
+    def test_gallery_has_true_infinite_loop_with_fast_controlled_motion(self):
         text = PAGE.read_text(encoding="utf-8")
         self.assertIn('aria-label="Previous clinic photo"', text)
         self.assertIn('aria-label="Next clinic photo"', text)
         self.assertIn("carousel.addEventListener('keydown'", text)
-        self.assertIn("viewport.scrollTo({", text)
         self.assertIn("touch-action:pan-y", text)
-        self.assertIn('index = (nextIndex + slides.length) % slides.length;', text)
-        self.assertIn("previous.addEventListener('click', () => go(-1))", text)
-        self.assertIn("next.addEventListener('click', () => go(1))", text)
-        self.assertNotIn("carousel.addEventListener('pointerdown'", text)
-        self.assertNotIn("carousel.addEventListener('pointerup'", text)
+        self.assertIn('const ANIMATION_MS = 280;', text)
+        self.assertIn('cloneNode(true)', text)
+        self.assertIn("dataset.pdClone", text)
+        self.assertIn('const normalizeLoopPosition = () =>', text)
+        self.assertIn('requestAnimationFrame', text)
+        self.assertIn("previous.addEventListener('click'", text)
+        self.assertIn("next.addEventListener('click'", text)
+        self.assertNotIn('scroll-behavior:smooth', text)
 
     def test_review_stays_private_and_uses_current_booking_anchor(self):
         text = PAGE.read_text(encoding="utf-8")
