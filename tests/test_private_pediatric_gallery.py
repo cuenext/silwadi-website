@@ -32,6 +32,24 @@ class PediatricClinicGalleryContract(unittest.TestCase):
         self.assertIn('.pd-clinic{position:relative;overflow:hidden;background:transparent;', text)
         self.assertNotIn('.pd-clinic__head', text)
 
+    def test_hero_copy_is_clean_and_non_repetitive(self):
+        text = PAGE.read_text(encoding="utf-8")
+        self.assertIn('Specialist dental care for children', text)
+        self.assertNotIn('Pediatric Dentistry · Pedodontics', text)
+        self.assertNotIn('class="pd-hero__micro"', text)
+        self.assertIn("Care planned around your child’s age, dental needs and clinical findings", text)
+        self.assertIn('.pd-hero__grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(380px,.82fr);gap:88px;align-items:center}', text)
+
+    def test_mobile_layout_has_explicit_phone_optimization(self):
+        text = PAGE.read_text(encoding="utf-8")
+        self.assertIn('@media(max-width:480px){', text)
+        self.assertIn('.pd-hero__actions{display:grid;grid-template-columns:1fr}', text)
+        self.assertIn('.pd-hero__actions .pd-btn{width:100%}', text)
+        self.assertIn('.pd-review-actions{display:none}', text)
+        self.assertIn('--pd-slide-width:90vw', text)
+        self.assertIn('.pd-breadcrumb{flex-wrap:wrap}', text)
+        self.assertIn('.pd-specialist-photo{height:390px}', text)
+
     def test_gallery_uses_selected_images(self):
         text = PAGE.read_text(encoding="utf-8")
         names = ["dscf2888.webp", "dscf2905.webp", "dscf2896.webp", "dscf2894.webp", "dscf2892.webp"]
