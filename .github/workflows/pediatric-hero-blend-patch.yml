@@ -1,0 +1,85 @@
+name: One-time pediatric hero blend patch
+
+on:
+  push:
+    branches:
+      - pediatric-review-hero-blend-0914
+    paths:
+      - .github/workflows/pediatric-hero-blend-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: pediatric-review-hero-blend-0914
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Blend pediatric hero into clinic gallery
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('review/pediatric-dentistry-v1.html')
+          text = p.read_text(encoding='utf-8')
+
+          replacements = {
+              '.pd-hero{padding:28px 0 46px;background:#fff}':
+              '.pd-hero{position:relative;overflow:hidden;padding:28px 0 64px;background:radial-gradient(ellipse at 72% 100%,rgba(142,229,233,.28) 0%,rgba(142,229,233,.12) 26%,rgba(142,229,233,0) 58%),linear-gradient(180deg,#fff 0%,#f7fbfb 70%,#eef7f8 100%)}',
+              '.pd-hero__grid{display:block;max-width:760px}':
+              '.pd-hero__grid{display:block;max-width:920px}',
+              '.pd-hero h1{margin:0;color:var(--pd-deep);font-size:clamp(54px,6.4vw,82px);line-height:.95;letter-spacing:-.065em;font-weight:690;max-width:10.2ch}':
+              '.pd-hero h1{margin:0;color:var(--pd-deep);font-size:clamp(54px,6.1vw,80px);line-height:.96;letter-spacing:-.06em;font-weight:690;max-width:12.4ch}',
+              '.pd-hero__lead{margin:24px 0 0;max-width:610px;color:var(--pd-muted);font-size:17px;line-height:1.7}':
+              '.pd-hero__lead{margin:24px 0 0;max-width:700px;color:var(--pd-muted);font-size:17px;line-height:1.7}',
+              '.pd-clinic{position:relative;overflow:hidden;background:radial-gradient(circle at 50% 0,rgba(142,229,233,.20),transparent 38%),linear-gradient(180deg,#f8fbfc 0%,#fff 100%);padding:38px 0 62px;border-bottom:1px solid rgba(8,56,71,.06)}':
+              '.pd-clinic{position:relative;overflow:hidden;margin-top:-24px;background:radial-gradient(circle at 72% 0,rgba(142,229,233,.24),transparent 40%),linear-gradient(180deg,#eef7f8 0%,#f7fbfb 34%,#fff 100%);padding:52px 0 62px;border-bottom:1px solid rgba(8,56,71,.06)}',
+              '@media(max-width:760px){.pd-private .container span:last-child{display:none}.pd-review-header__inner{height:70px}.pd-review-actions .pd-btn--secondary{display:none}.pd-section{padding:72px 0}.pd-hero{padding:24px 0 34px}.pd-breadcrumb{margin-bottom:26px}.pd-hero h1{font-size:47px}.pd-hero__lead{font-size:15px}.pd-care-grid{grid-template-columns:1fr}.pd-care-card{min-height:auto;padding:27px 25px 29px}.pd-care-card__top{margin-bottom:27px}.pd-specialist-card{grid-template-columns:1fr}.pd-specialist-photo{height:470px;min-height:0}.pd-specialist-body{padding:42px 0}.pd-specialist-body h2{font-size:46px}.pd-consultation__box{padding:34px 28px;display:block}.pd-consultation__box .pd-btn{margin-top:24px}.pd-visit-step{grid-template-columns:58px 1fr;gap:15px}.pd-faq-wrap{gap:30px}}':
+              '@media(max-width:760px){.pd-private .container span:last-child{display:none}.pd-review-header__inner{height:70px}.pd-review-actions .pd-btn--secondary{display:none}.pd-section{padding:72px 0}.pd-hero{padding:24px 0 50px}.pd-breadcrumb{margin-bottom:24px}.pd-hero h1{font-size:47px;max-width:10.8ch}.pd-hero__lead{font-size:15px}.pd-care-grid{grid-template-columns:1fr}.pd-care-card{min-height:auto;padding:27px 25px 29px}.pd-care-card__top{margin-bottom:27px}.pd-specialist-card{grid-template-columns:1fr}.pd-specialist-photo{height:470px;min-height:0}.pd-specialist-body{padding:42px 0}.pd-specialist-body h2{font-size:46px}.pd-consultation__box{padding:34px 28px;display:block}.pd-consultation__box .pd-btn{margin-top:24px}.pd-visit-step{grid-template-columns:58px 1fr;gap:15px}.pd-faq-wrap{gap:30px}}',
+              '      .pd-clinic{padding:26px 0 44px}':
+              '      .pd-clinic{margin-top:-18px;padding:38px 0 44px}'
+          }
+
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f'Expected source rule not found: {old[:90]}')
+              text = text.replace(old, new, 1)
+
+          bridge = '    .pd-hero:after{content:"";position:absolute;left:50%;bottom:-54px;width:min(1180px,92vw);height:120px;transform:translateX(-50%);background:radial-gradient(ellipse at center,rgba(13,124,144,.08),rgba(13,124,144,0) 68%);pointer-events:none}\n'
+          marker = '    .pd-breadcrumb{display:flex;gap:8px;align-items:center;font-size:11px;color:#809199;margin-bottom:34px}\n'
+          if bridge not in text:
+              text = text.replace(marker, bridge + marker, 1)
+
+          p.write_text(text, encoding='utf-8')
+          PY
+      - name: Run full authority/private regression suite
+        run: |
+          python -m unittest \
+            tests.test_google_authority \
+            tests.test_doctor_profiles_seo \
+            tests.test_doctor_profile_advertising_compliance \
+            tests.test_arabic_structured_data \
+            tests.test_arabic_quality_seo_rebuild \
+            tests.test_public_core_seo \
+            tests.test_patch8_technical_seo \
+            tests.test_private_ai_faq_review \
+            tests.test_ai_knowledge_v1 \
+            tests.test_ai_worker_contract \
+            tests.test_private_endodontics_review \
+            tests.test_private_faq_review \
+            tests.test_private_pediatric_gallery \
+            tests.test_private_pediatric_review \
+            tests.test_private_pod_raha_review \
+            tests.test_private_pod_review -v
+      - name: Commit private review styling
+        run: |
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add review/pediatric-dentistry-v1.html
+          git commit -m "review: blend pediatric hero into clinic gallery"
+          git push origin HEAD:pediatric-review-hero-blend-0914
