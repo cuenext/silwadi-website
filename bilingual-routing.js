@@ -14,6 +14,13 @@
       script.setAttribute('data-booking-modal-script', '');
       document.head.appendChild(script);
     }
+    if (!document.querySelector('script[data-booking-email-validation]')) {
+      const validator = document.createElement('script');
+      validator.src = '/booking-email-validation.js?v=20260914-email1';
+      validator.async = false;
+      validator.setAttribute('data-booking-email-validation', '');
+      document.head.appendChild(validator);
+    }
   };
 
   const syncFooterSocials = () => {
