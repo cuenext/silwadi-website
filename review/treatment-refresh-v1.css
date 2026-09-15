@@ -176,3 +176,39 @@ button,input,textarea,select{font:inherit}
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}.btn,.signal-card,.doctor-card__photo img{transition:none}.btn:hover,.signal-card:hover{transform:none}
 }
+
+/* TREATMENT-REVIEW-POLISH-V2 */
+.language-switch{height:42px;padding:0 13px;border:1px solid #cbdadd;border-radius:5px;background:#fff;color:var(--navy);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;white-space:nowrap}
+.language-switch:hover{border-color:#9bbbc1;color:var(--teal)}
+.doctor-card__photo img.doctor-crop-hani{object-position:50% 16%}
+.doctor-card__photo img.doctor-crop-moammar{object-position:50% 14%}
+.doctor-card__photo img.doctor-crop-krish{object-position:50% 8%;transform:scale(1.14)}
+.doctor-card__photo img.doctor-crop-munir{object-position:50% 14%}
+.doctor-card__photo img.doctor-crop-fahed{object-position:50% 7%;transform:scale(1.18)}
+.doctor-card__photo img.doctor-crop-moheb{object-position:50% 14%}
+.doctor-card__photo img.doctor-crop-dana{object-position:50% 14%}
+.doctor-card__photo img.doctor-crop-afnan{object-position:50% 9%;transform:scale(1.12)}
+.doctor-card__photo img.doctor-crop-ahmed{object-position:50% 16%}
+.doctor-card__photo img.doctor-crop-lana{object-position:50% 18%}
+.doctor-card:hover .doctor-card__photo img.doctor-crop-krish{transform:scale(1.155)}
+.doctor-card:hover .doctor-card__photo img.doctor-crop-fahed{transform:scale(1.195)}
+.doctor-card:hover .doctor-card__photo img.doctor-crop-afnan{transform:scale(1.135)}
+[dir="rtl"] body{font-family:Tahoma,"Segoe UI",Arial,sans-serif}
+[dir="rtl"] .global-nav{margin-left:0;margin-right:auto}
+[dir="rtl"] .treatment-subnav__label{padding-right:0;padding-left:18px;border-right:0;border-left:1px solid var(--line)}
+[dir="rtl"] .breadcrumb,[dir="rtl"] .trust-row,[dir="rtl"] .hero-actions,[dir="rtl"] .global-actions{direction:rtl}
+[dir="rtl"] .section-head,[dir="rtl"] .process-step,[dir="rtl"] .doctor-card__body,[dir="rtl"] .cta-box{text-align:right}
+[dir="rtl"] .faq-list summary{text-align:right}
+[dir="rtl"] .faq-answer{padding:0 2px 24px 50px;text-align:right}
+[dir="rtl"] .doctor-card__link span{display:inline-block;transform:none}
+[dir="rtl"] .cta-actions{justify-content:flex-start}
+@media(max-width:760px){
+  [dir="rtl"] .section-head{text-align:right}
+  [dir="rtl"] .process-grid,[dir="rtl"] .process-step{text-align:right}
+  [dir="rtl"] .process-step{grid-template-columns:1fr 54px}
+  [dir="rtl"] .process-step__dot{grid-column:2;grid-row:1/3}
+  [dir="rtl"] .process-step h3,[dir="rtl"] .process-step p{grid-column:1}
+  [dir="rtl"] .process-step p{margin:6px 0 0}
+  [dir="rtl"] .faq-answer{padding-left:40px;padding-right:0}
+  .language-switch--mobile{width:100%;height:auto}
+}
