@@ -1,18 +1,51 @@
-name: POD remove reception image RED check
+name: POD remove reception image implementation
 on:
   push:
     branches: [pod-remove-reception-image]
+permissions:
+  contents: write
 jobs:
-  red-contract:
+  apply-and-verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: pod-remove-reception-image
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Confirm new contract fails before implementation
+      - name: Apply text-only complex-needs layout
         run: |
-          if python -m unittest tests.test_private_pod_review.PrivatePodReviewTests.test_complex_needs_section_is_text_only_and_uses_full_width -v; then
-            echo "Expected RED test to fail before implementation, but it passed."
-            exit 1
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('review/people-of-determination-raha-v1.html')
+          text = path.read_text(encoding='utf-8')
+
+          old_css = '.pod-complex{background:var(--pod-soft)}.pod-complex__grid{display:grid;grid-template-columns:1.08fr .92fr;gap:74px;align-items:center}.pod-complex__photo{height:520px;overflow:hidden}.pod-complex__photo img{width:100%;height:100%;display:block;object-fit:cover}.pod-complex__copy .pod-copy{margin:18px 0 0}'
+          new_css = '.pod-complex{background:var(--pod-soft)}.pod-complex__grid{display:block}.pod-complex__copy .pod-copy{margin:18px 0 0}'
+          if old_css in text:
+              text = text.replace(old_css, new_css, 1)
+
+          old_figure = '        <figure class="pod-complex__photo"><img src="../assets/locations/al-raha-reception.webp" alt="Silwadi Dental Center Al Raha Mall reception in Abu Dhabi" loading="lazy" decoding="async"></figure>\n'
+          text = text.replace(old_figure, '', 1)
+
+          text = text.replace('.pod-hero__grid,.pod-complex__grid,.pod-raha__grid{grid-template-columns:1fr;gap:40px}', '.pod-hero__grid,.pod-raha__grid{grid-template-columns:1fr;gap:40px}', 1)
+          text = text.replace('.pod-complex__photo,.pod-raha__photo{height:380px}', '.pod-raha__photo{height:380px}', 1)
+
+          path.write_text(text, encoding='utf-8')
+          PY
+      - name: Verify POD review contracts
+        run: |
+          python -m unittest tests.test_private_pod_review tests.test_private_pod_raha_review tests.test_people_of_determination_gallery -v
+      - name: Commit verified page change
+        run: |
+          if git diff --quiet; then
+            echo "No page changes to commit."
+            exit 0
           fi
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add review/people-of-determination-raha-v1.html
+          git commit -m "POD review: remove reception image"
+          git push origin HEAD:pod-remove-reception-image
