@@ -23,7 +23,6 @@ jobs:
           from pathlib import Path
           import json
 
-          # Match the booking modal's Arabic typography exactly to the site-wide Arabic stack.
           css_path = Path('booking-modal.css')
           css = css_path.read_text(encoding='utf-8')
           old_font = '"Tajawal",Tahoma,Arial,sans-serif'
@@ -33,7 +32,6 @@ jobs:
               raise SystemExit(f'Expected 2 old Arabic booking font stacks, found {count}')
           css_path.write_text(css.replace(old_font, new_font), encoding='utf-8')
 
-          # The contact-page form already submits directly; remove obsolete mail-app wording.
           contact_path = Path('contact.html')
           html = contact_path.read_text(encoding='utf-8')
           replacements = {
@@ -49,7 +47,6 @@ jobs:
               html = html.replace(old, new, 1)
           contact_path.write_text(html, encoding='utf-8')
 
-          # Provide reviewed Arabic equivalents so the generated Arabic contact page is natural.
           overrides_path = Path('data/arabic-quality-overrides-extra.json')
           overrides = json.loads(overrides_path.read_text(encoding='utf-8'))
           overrides.update({
@@ -74,13 +71,26 @@ jobs:
           node tools/remove-appointment-notice.mjs
           node tools/build-arabic-site.mjs
 
-      - name: Verify booking and Arabic regressions
+      - name: Verify booking and paired Arabic output
         run: |
           python -m unittest tests.test_booking_modal -v
           python -m unittest tests.test_booking_success_popup -v
           python -m unittest tests.test_booking_email_validation -v
-          python -m unittest tests.test_arabic_quality_seo_rebuild -v
+          python -m unittest \
+            tests.test_arabic_quality_seo_rebuild.ArabicQualitySeoRebuild.test_arabic_pages_have_real_arabic_metadata_and_language_attributes \
+            tests.test_arabic_quality_seo_rebuild.ArabicQualitySeoRebuild.test_english_pages_point_to_static_arabic_counterparts \
+            tests.test_arabic_quality_seo_rebuild.ArabicQualitySeoRebuild.test_every_patient_route_has_static_arabic_html -v
           python -m unittest tests.test_arabic_mobile_polish -v
+          python3 - <<'PY'
+          from pathlib import Path
+          html = Path('ar/contact.html').read_text(encoding='utf-8')
+          body = html.split('<body', 1)[-1]
+          assert 'يُرسل طلبك مباشرةً إلى فريق المواعيد لدينا.' in body
+          assert 'تُرسل بياناتك بشكل آمن إلى فريق المواعيد لدينا' in body
+          assert 'Your email app will open' not in body
+          assert 'Your request will open in your email app' not in body
+          print('Arabic contact booking copy verified')
+          PY
           git diff --check
 
       - name: Commit verified fix
