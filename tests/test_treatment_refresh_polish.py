@@ -67,7 +67,6 @@ def test_arabic_review_equivalents_are_real_rtl_pages_not_machine_toggle_placeho
         assert f'href="../{name}"' in html
         for phrase in phrases:
             assert phrase in html, (name, phrase)
-        # Visible review UI should not fall back to the English section labels.
         for english_label in [">Overview<", ">Treatment<", ">Process<", ">Doctors<", ">FAQ<"]:
             assert english_label not in html, (name, english_label)
 
