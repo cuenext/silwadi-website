@@ -1,0 +1,16 @@
+name: POD remove reception image PR check
+on:
+  pull_request:
+    paths:
+      - 'review/people-of-determination-raha-v1.html'
+      - 'tests/test_private_pod_review.py'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run POD review contract
+        run: python -m unittest tests.test_private_pod_review -v
