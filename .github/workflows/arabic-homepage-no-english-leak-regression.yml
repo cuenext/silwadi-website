@@ -1,0 +1,30 @@
+name: Arabic homepage no-English-leak regression
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject known English leaks in Arabic homepage UI
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          ar = Path('ar/index.html').read_text(encoding='utf-8')
+          forbidden = [
+              'Dental implant care',
+              'Hollywood Smile &amp; professional whitening',
+              'Learn about Silwadi Dental Centre since 1980',
+              'View Bani Yas Tower and Al Raha Mall locations',
+          ]
+          offenders = [s for s in forbidden if s in ar]
+          assert not offenders, 'English UI/accessibility copy leaked into Arabic homepage:\n' + '\n'.join(offenders)
+          assert 'رعاية زراعة الأسنان' in ar, 'Missing Arabic implant navigation subtitle'
+          assert 'هوليوود سمايل والتبييض الاحترافي' in ar, 'Missing Arabic cosmetic navigation subtitle'
+          assert 'تعرّف على مركز سلوادي لطب الأسنان منذ عام 1980' in ar, 'Missing Arabic about accessibility label'
+          assert 'عرض فرعي برج بني ياس والراحة مول' in ar, 'Missing Arabic locations accessibility label'
+          PY
