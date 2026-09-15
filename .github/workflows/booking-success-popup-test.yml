@@ -11,6 +11,9 @@ on:
       - booking-modal.css
       - booking-email-validation.js
       - bilingual-routing.js
+      - contact.html
+      - arabic-quality.css
+      - tests/test_booking_modal.py
       - tests/test_booking_success_popup.py
       - tests/test_booking_email_validation.py
       - .github/workflows/booking-success-popup-test.yml
@@ -24,4 +27,4 @@ jobs:
         with:
           python-version: '3.12'
       - name: Run booking regressions
-        run: python -m unittest tests/test_booking_success_popup.py tests/test_booking_email_validation.py
+        run: python -m unittest tests/test_booking_modal.py tests/test_booking_success_popup.py tests/test_booking_email_validation.py
