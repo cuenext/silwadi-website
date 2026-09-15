@@ -1,0 +1,333 @@
+name: Temporary fix POD gallery and Arabic treatment pairs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-fix-pod-arabic-treatment-pairs.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: RED - reproduce both reported bugs
+        run: |
+          if python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          pod = Path('review/people-of-determination-raha-v1.html').read_text(encoding='utf-8')
+          endo = Path('treatments/endodontics.html').read_text(encoding='utf-8')
+          ped = Path('treatments/pediatric-dentistry.html').read_text(encoding='utf-8')
+          seo = json.loads(Path('data/arabic-seo.json').read_text(encoding='utf-8'))
+
+          assert 'aspect-ratio:3/2;overflow:hidden;border-radius:22px' in pod
+          assert '.pod-clinic-slide img{display:block;width:100%;height:100%;aspect-ratio:auto' in pod
+          assert '/ar/treatments/endodontics.html' in endo
+          assert '/ar/services.html#endodontics' not in endo
+          assert '/ar/treatments/pediatric-dentistry.html' in ped
+          assert '/ar/services.html#pedodontics' not in ped
+          assert 'treatments/endodontics.html' in seo
+          assert 'treatments/pediatric-dentistry.html' in seo
+          assert Path('ar/treatments/endodontics.html').exists()
+          assert Path('ar/treatments/pediatric-dentistry.html').exists()
+          PY
+          then
+            echo 'Bug contract unexpectedly already passes.'
+            exit 1
+          else
+            echo 'Expected pre-fix failure reproduced.'
+          fi
+
+      - name: Apply source fixes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          # 1) POD: constrain the FIGURE itself to the same landscape-card model as Pediatrics.
+          # This prevents the intrinsic 2048x1365 image element from creating a very tall slide.
+          p = Path('review/people-of-determination-raha-v1.html')
+          s = p.read_text(encoding='utf-8')
+          old_slide = '.pod-clinic-slide{flex:0 0 var(--pod-slide-width);width:var(--pod-slide-width);margin:0;scroll-snap-align:center;opacity:.42;transform:scale(.965);transition:opacity .28s ease,transform .35s cubic-bezier(.22,.75,.24,1);cursor:pointer}'
+          new_slide = '.pod-clinic-slide{flex:0 0 var(--pod-slide-width);width:var(--pod-slide-width);aspect-ratio:3/2;overflow:hidden;border-radius:22px;margin:0;scroll-snap-align:center;opacity:.42;transform:scale(.965);transition:opacity .28s ease,transform .35s cubic-bezier(.22,.75,.24,1);cursor:pointer}'
+          old_img = '.pod-clinic-slide img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:22px;background:#dfecee;box-shadow:0 24px 64px rgba(8,56,71,.16)}'
+          new_img = '.pod-clinic-slide img{display:block;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;border-radius:inherit;background:#dfecee;box-shadow:0 24px 64px rgba(8,56,71,.16)}'
+          if old_slide not in s or old_img not in s:
+              raise SystemExit('POD gallery CSS markers changed; refusing blind edit')
+          s = s.replace(old_slide, new_slide, 1).replace(old_img, new_img, 1)
+          p.write_text(s, encoding='utf-8')
+
+          # 2) English treatment pages: the language control must point to the paired page,
+          # never back to the generic Arabic services page.
+          pairs = [
+              ('treatments/endodontics.html', '/ar/services.html#endodontics', '/ar/treatments/endodontics.html'),
+              ('treatments/pediatric-dentistry.html', '/ar/services.html#pedodontics', '/ar/treatments/pediatric-dentistry.html'),
+          ]
+          for filename, old, new in pairs:
+              path = Path(filename)
+              html = path.read_text(encoding='utf-8')
+              marker = f'href="{old}" lang="ar" hreflang="ar"'
+              replacement = f'href="{new}" data-page-language-switch lang="ar" hreflang="ar"'
+              count = html.count(marker)
+              if count != 2:
+                  raise SystemExit(f'{filename}: expected 2 language links, found {count}')
+              html = html.replace(marker, replacement)
+              path.write_text(html, encoding='utf-8')
+
+          # 3) Register the two newly approved English treatment routes in the existing
+          # static Arabic build system so it generates true paired Arabic pages.
+          seo_path = Path('data/arabic-seo.json')
+          seo = json.loads(seo_path.read_text(encoding='utf-8'))
+          seo['treatments/endodontics.html'] = {
+              'title': 'علاج جذور الأسنان في أبوظبي | مركز سلوادي',
+              'description': 'علاج جذور الأسنان التخصصي في مركز سلوادي بأبوظبي، بما في ذلك علاج القنوات وإعادة العلاج والجراحة المجهرية وإصابات الأسنان مع التركيز على الحفاظ على السن الطبيعي.'
+          }
+          seo['treatments/pediatric-dentistry.html'] = {
+              'title': 'طب أسنان الأطفال في أبوظبي | مركز سلوادي',
+              'description': 'رعاية أسنان الأطفال في مركز سلوادي بالراحة مول، بما في ذلك الوقاية والحشوات وعلاج لب الأسنان وتقييم إصابات الأسنان مع خطة تناسب عمر الطفل واحتياجاته.'
+          }
+          seo_path.write_text(json.dumps(seo, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+          # 4) Add reviewed Arabic copy for the custom treatment-page text.
+          overrides_path = Path('data/arabic-quality-overrides-extra.json')
+          overrides = json.loads(overrides_path.read_text(encoding='utf-8'))
+          additions = {
+            'On this page': 'في هذه الصفحة',
+            'Clinic': 'العيادة',
+            'Symptoms': 'الأعراض',
+            'Specialists': 'الاختصاصيون',
+            'Specialist': 'الاختصاصي',
+            'FAQ': 'الأسئلة الشائعة',
+            'What to expect': 'ما الذي تتوقعه',
+            'Primary navigation': 'التنقل الرئيسي',
+            'Open navigation': 'فتح القائمة',
+            'Close navigation': 'إغلاق القائمة',
+            'Breadcrumb': 'مسار التنقل',
+            'Quick contact': 'تواصل سريع',
+            'Chat with Silwadi Dental Center on WhatsApp': 'تواصل مع مركز سلوادي لطب الأسنان عبر واتساب',
+
+            'Specialist Endodontics': 'علاج جذور الأسنان التخصصي',
+            'Root Canal Treatment in': 'علاج جذور الأسنان في',
+            'Specialist assessment and treatment for problems affecting the dental pulp and root canal system, with care focused on preserving the natural tooth whenever clinically appropriate.': 'تقييم وعلاج تخصصي للمشكلات التي تصيب لب السن ونظام قنوات الجذر، مع التركيز على الحفاظ على السن الطبيعي متى كان ذلك مناسباً سريرياً.',
+            'Meet Our Endodontists': 'تعرّف إلى اختصاصيي علاج الجذور',
+            'Specialist-led care': 'رعاية بإشراف اختصاصيين',
+            'Endodontic diagnosis and treatment planning': 'تشخيص وتخطيط علاجي متخصص لقنوات الجذر',
+            'Tooth preservation': 'الحفاظ على السن',
+            'Focused on retaining natural teeth when appropriate': 'التركيز على إبقاء الأسنان الطبيعية متى كان ذلك مناسباً',
+            'What is endodontics?': 'ما هو علاج جذور الأسنان؟',
+            'Endodontics focuses on the dental pulp and tissues around the roots. Root canal treatment may be recommended when the pulp becomes inflamed, infected or injured and the tooth is suitable for treatment.': 'يختص علاج جذور الأسنان بلب السن والأنسجة المحيطة بالجذور. قد يُنصح بعلاج قناة الجذر عند التهاب اللب أو إصابته بالعدوى أو الضرر، إذا كان السن مناسباً للعلاج.',
+            'When to seek assessment': 'متى تحتاج إلى تقييم',
+            'Symptoms that may need an endodontist.': 'أعراض قد تستدعي مراجعة اختصاصي علاج الجذور.',
+            'Some symptoms can come from the pulp or tissues around the root. An examination and appropriate imaging are needed to determine the cause.': 'قد تنشأ بعض الأعراض من لب السن أو الأنسجة المحيطة بالجذر. يلزم الفحص والتصوير المناسب لتحديد السبب.',
+            'Severe toothache': 'ألم شديد في السن',
+            'Persistent or worsening pain, especially when biting or chewing.': 'ألم مستمر أو متزايد، خصوصاً عند العض أو المضغ.',
+            'Hot or cold sensitivity': 'حساسية للحرارة أو البرودة',
+            'Sensitivity that lingers after the temperature stimulus is removed.': 'حساسية تستمر بعد زوال المؤثر الحراري.',
+            'Swelling or tenderness': 'تورم أو ألم عند اللمس',
+            'Swelling, gum tenderness or discomfort around a specific tooth.': 'تورم أو ألم في اللثة أو انزعاج حول سن محدد.',
+            'Pain after a previous root canal': 'ألم بعد علاج جذور سابق',
+            'New symptoms or persistent disease in a previously treated tooth.': 'أعراض جديدة أو مشكلة مستمرة في سن سبق علاجه.',
+            'Dental trauma': 'إصابات الأسنان',
+            'A cracked, fractured, displaced or injured tooth after an accident.': 'سن متشقق أو مكسور أو متحرك من مكانه أو مصاب بعد حادث.',
+            'These symptoms do not always mean root canal treatment is required. The diagnosis depends on the examination and clinical findings.': 'لا تعني هذه الأعراض دائماً أن علاج الجذور ضروري؛ فالتشخيص يعتمد على الفحص والنتائج السريرية.',
+            'Treatment options': 'خيارات العلاج',
+            'Endodontic care, clearly explained.': 'علاج جذور الأسنان بشرح واضح.',
+            'The treatment recommended depends on the condition of the tooth, previous care and whether the tooth can be restored appropriately.': 'يعتمد العلاج الموصى به على حالة السن والعلاج السابق وإمكانية ترميم السن بشكل مناسب.',
+            'Root Canal Treatment': 'علاج قناة الجذر',
+            'Removal of inflamed or infected pulp tissue, followed by cleaning, disinfection, shaping and sealing of the root canal system.': 'إزالة أنسجة اللب الملتهبة أو المصابة، ثم تنظيف قنوات الجذر وتعقيمها وتشكيلها وإغلاقها.',
+            'Root Canal Retreatment': 'إعادة علاج قناة الجذر',
+            'Reassessment and repeat endodontic treatment for selected teeth when symptoms or disease persist or recur after previous treatment.': 'إعادة تقييم وعلاج بعض الأسنان عند استمرار الأعراض أو عودة المشكلة بعد علاج جذور سابق.',
+            'Endodontic Microsurgery': 'الجراحة المجهرية لعلاج الجذور',
+            'A surgical endodontic approach for selected cases where disease around the root tip cannot be managed through conventional treatment alone.': 'إجراء جراحي تخصصي لبعض الحالات التي لا يمكن علاج المشكلة حول ذروة الجذر بالعلاج التقليدي وحده.',
+            'Vital Pulp Therapy & Dental Trauma': 'علاج اللب الحيوي وإصابات الأسنان',
+            'Care aimed at preserving viable pulp tissue where appropriate, together with assessment and management of traumatised teeth.': 'رعاية تهدف إلى الحفاظ على أنسجة اللب الحيوية متى كان ذلك مناسباً، مع تقييم ومعالجة الأسنان المصابة.',
+            'A straightforward treatment pathway.': 'خطوات علاج واضحة ومباشرة.',
+            'Your exact appointment sequence may vary depending on the tooth and diagnosis, but the process generally follows these stages.': 'قد تختلف مواعيد وخطوات العلاج بحسب السن والتشخيص، لكن المسار عادةً يمر بهذه المراحل.',
+            'Assessment': 'التقييم',
+            'Symptoms, clinical tests and imaging are reviewed to establish the diagnosis.': 'تُراجع الأعراض والفحوص السريرية والصور لتحديد التشخيص.',
+            'Treatment': 'العلاج',
+            'Local anaesthesia is used and the root canal system is accessed when treatment is indicated.': 'يُستخدم التخدير الموضعي ويتم الوصول إلى قنوات الجذر عندما يكون العلاج مطلوباً.',
+            'Disinfection & Sealing': 'التعقيم والإغلاق',
+            'The canals are cleaned, shaped, disinfected and sealed according to the clinical situation.': 'تُنظف القنوات وتُشكّل وتُعقّم وتُغلق بحسب الحالة السريرية.',
+            'Restoration & Review': 'الترميم والمتابعة',
+            'The tooth is restored as appropriate and reviewed when clinically required.': 'يُرمم السن بالطريقة المناسبة وتتم متابعته عند الحاجة السريرية.',
+            'Our endodontists': 'اختصاصيو علاج الجذور لدينا',
+            'Meet the specialists.': 'تعرّف إلى الاختصاصيين.',
+            'Specialist endodontic care is provided by clinicians whose practice focuses on diagnosis and treatment of the dental pulp and root canal system.': 'يقدم رعاية علاج الجذور اختصاصيون يركز عملهم على تشخيص وعلاج لب السن ونظام قنوات الجذر.',
+            'Specialist Endodontist': 'اختصاصي علاج جذور الأسنان',
+            'Dr. Lana Almasoud': 'د. لانا المسعود',
+            'Provides specialist endodontic diagnosis and root canal care, including assessment of complex cases.': 'يقدم تشخيصاً تخصصياً وعلاجاً لقنوات الجذر، بما في ذلك تقييم الحالات المعقدة.',
+            'Provides specialist root canal treatment, retreatment and endodontic care with the use of magnification and imaging where clinically appropriate.': 'تقدم علاجاً تخصصياً لقنوات الجذر وإعادة العلاج مع استخدام التكبير والتصوير عندما يكون ذلك مناسباً سريرياً.',
+            'Corniche': 'الكورنيش',
+            'Al Raha': 'الراحة',
+            'View profile →': 'عرض الملف',
+            'Common questions': 'أسئلة شائعة',
+            'Root canal treatment FAQs.': 'أسئلة شائعة عن علاج جذور الأسنان.',
+            'Short answers to common questions before an endodontic appointment.': 'إجابات مختصرة عن أسئلة شائعة قبل موعد علاج الجذور.',
+            'What is root canal treatment?': 'ما هو علاج قناة الجذر؟',
+            'Root canal treatment removes inflamed or infected pulp tissue from inside the tooth. The root canal system is then cleaned, disinfected, shaped and sealed before the tooth receives the restoration appropriate for its condition.': 'يزيل علاج قناة الجذر أنسجة اللب الملتهبة أو المصابة من داخل السن، ثم تُنظف القنوات وتُعقم وتُشكل وتُغلق قبل ترميم السن بما يناسب حالته.',
+            'Does root canal treatment hurt?': 'هل علاج قناة الجذر مؤلم؟',
+            'Root canal treatment is generally carried out under local anaesthesia. Some tenderness can occur afterwards, particularly when the tooth was inflamed or infected before treatment.': 'يُجرى علاج قناة الجذر عادةً تحت التخدير الموضعي. قد يحدث بعض الألم أو الحساسية بعد العلاج، خاصة إذا كان السن ملتهباً أو مصاباً قبل العلاج.',
+            'Can a root canal save my natural tooth?': 'هل يمكن لعلاج الجذور الحفاظ على سني الطبيعي؟',
+            'Preserving the natural tooth is an important aim of endodontic care when the tooth is suitable for treatment and can be restored appropriately.': 'الحفاظ على السن الطبيعي هدف مهم في علاج الجذور عندما يكون السن مناسباً للعلاج ويمكن ترميمه بصورة مناسبة.',
+            'Why would a tooth need root canal retreatment?': 'لماذا قد يحتاج السن إلى إعادة علاج الجذور؟',
+            'A previously treated tooth may need reassessment if symptoms persist, infection recurs or the previous root canal system requires additional treatment.': 'قد يحتاج السن المعالج سابقاً إلى إعادة التقييم إذا استمرت الأعراض أو عادت العدوى أو احتاج علاج القنوات السابق إلى تدخل إضافي.',
+            'Will I need a crown after root canal treatment?': 'هل سأحتاج إلى تاج بعد علاج الجذور؟',
+            'The final restoration depends on the tooth, the amount of remaining tooth structure and the clinical situation. Your dentist or specialist will advise on the appropriate restoration after treatment.': 'يعتمد الترميم النهائي على السن وكمية بنية السن المتبقية والحالة السريرية. سيشرح لك طبيب الأسنان أو الاختصاصي الترميم المناسب بعد العلاج.',
+            'Concerned about tooth pain or a previous root canal?': 'هل تعاني من ألم في السن أو مشكلة بعد علاج جذور سابق؟',
+            'Book an assessment with the Silwadi team so the tooth can be examined and the appropriate next step discussed.': 'احجز تقييماً مع فريق سلوادي لفحص السن ومناقشة الخطوة العلاجية المناسبة.',
+
+            'Specialist dental care for children': 'رعاية أسنان تخصصية للأطفال',
+            'Pediatric Dentistry in': 'طب أسنان الأطفال في',
+            'Care planned around your child’s age, dental needs and clinical findings, with prevention, restorative treatment and dental trauma assessment when appropriate.': 'رعاية تُخطط بحسب عمر طفلك واحتياجاته السنية والنتائج السريرية، وتشمل الوقاية والعلاج الترميمي وتقييم إصابات الأسنان عند الحاجة.',
+            'Meet Dr. Kashmira': 'تعرّف إلى د. كاشميرا',
+            'Al Raha Mall · Pediatric Clinic': 'الراحة مول · عيادة أسنان الأطفال',
+            'Pediatric clinic photo gallery': 'معرض صور عيادة أسنان الأطفال',
+            'Pediatric clinic photos': 'صور عيادة أسنان الأطفال',
+            'Previous clinic photo': 'الصورة السابقة للعيادة',
+            'Next clinic photo': 'الصورة التالية للعيادة',
+            'Pediatric dental treatment room at Silwadi Dental Center, Al Raha Mall': 'غرفة علاج أسنان الأطفال في مركز سلوادي لطب الأسنان بالراحة مول',
+            'Pediatric dental chair and child-focused clinic environment at Al Raha Mall': 'كرسي أسنان وبيئة عيادة مهيأة للأطفال في الراحة مول',
+            'Wide view of the pediatric dental treatment room at Silwadi Dental Center': 'منظر واسع لغرفة علاج أسنان الأطفال في مركز سلوادي',
+            'What we help with': 'مجالات الرعاية',
+            "Four areas of children's dental care.": 'أربعة مجالات أساسية في رعاية أسنان الأطفال.',
+            'A clear overview of the most common reasons families see our pediatric dentist.': 'نظرة واضحة على أكثر الأسباب شيوعاً لزيارة العائلات لاختصاصية أسنان الأطفال.',
+            'Prevention & growing teeth': 'الوقاية ونمو الأسنان',
+            'Checkups, fluoride, fissure sealants and guidance as baby teeth fall out and permanent teeth develop.': 'فحوصات دورية وفلورايد وسدادات الشقوق وإرشادات خلال تبدل الأسنان اللبنية ونمو الأسنان الدائمة.',
+            'Cavities & pulp therapy': 'التسوس وعلاج لب الأسنان',
+            'Fillings, pediatric crowns and pulp therapy such as pulpotomy or pulpectomy when clinically indicated.': 'حشوات وتيجان للأطفال وعلاج لب الأسنان مثل بتر اللب أو استئصاله عندما تكون هناك حاجة سريرية.',
+            'Assessment after chipped, loosened, displaced or injured primary and permanent teeth.': 'تقييم الأسنان اللبنية والدائمة بعد الكسر أو التخلخل أو التحرك من مكانها أو الإصابة.',
+            'Anxiety & additional support': 'القلق والدعم الإضافي',
+            'Age-appropriate communication, behavior guidance and nitrous oxide conscious sedation when clinically appropriate.': 'تواصل مناسب لعمر الطفل وتوجيه سلوكي وإمكانية استخدام أكسيد النيتروز للتهدئة الواعية عندما يكون مناسباً سريرياً.',
+            'A simpler visit for you and your child.': 'زيارة أبسط لك ولطفلك.',
+            'No long process. We understand the concern, examine what is needed, then explain the next step clearly.': 'نبدأ بفهم المشكلة، ثم نفحص ما يلزم ونشرح الخطوة التالية بوضوح دون تعقيد.',
+            'Understand': 'فهم الحالة',
+            "We start with your child's symptoms, dental history, medical information and any concerns you want us to know.": 'نبدأ بأعراض طفلك وتاريخه السني والمعلومات الطبية وأي ملاحظات تود أن نعرفها.',
+            'Examine': 'الفحص',
+            'The dentist checks the teeth, gums, bite and development. Dental X-rays are considered only when clinically indicated.': 'يفحص الطبيب الأسنان واللثة والإطباق والنمو، وتُطلب الأشعة فقط عند وجود حاجة سريرية.',
+            'Plan': 'الخطة',
+            'Findings are explained in plain language and suitable treatment, prevention or follow-up is discussed with the parent or caregiver.': 'تُشرح النتائج بلغة واضحة وتُناقش خطة العلاج أو الوقاية أو المتابعة المناسبة مع الوالد أو مقدم الرعاية.',
+            'Specialist Pediatric Dentist': 'اختصاصية طب أسنان الأطفال',
+            'Dr. Kashmira Pawar Jayprakash, Specialist Pediatric Dentist': 'د. كاشميرا باوار جايبراكاش، اختصاصية طب أسنان الأطفال',
+            "With over nine years of clinical experience, Dr. Kashmira's work includes preventive and restorative pediatric dentistry, pulp therapy, dental trauma and behavior guidance for children.": 'بخبرة سريرية تتجاوز تسع سنوات، تشمل ممارسة د. كاشميرا الوقاية والترميم في طب أسنان الأطفال وعلاج اللب وإصابات الأسنان والتوجيه السلوكي للأطفال.',
+            'Qualifications': 'المؤهلات',
+            'BDS · MDS in Pediatric Dentistry': 'بكالوريوس طب الأسنان · ماجستير طب أسنان الأطفال',
+            'Training': 'التدريب',
+            'Nitrous oxide conscious sedation · PALS · BLS': 'التهدئة الواعية بأكسيد النيتروز · PALS · BLS',
+            'View Doctor Profile': 'عرض ملف الطبيبة',
+            'Request Appointment': 'طلب موعد',
+            'Parent questions': 'أسئلة الوالدين',
+            'Before the appointment.': 'قبل الموعد.',
+            "Four common questions parents ask about children's dental care.": 'أربعة أسئلة شائعة يطرحها الوالدان عن رعاية أسنان الأطفال.',
+            'When should my child first see a dentist?': 'متى يجب أن يزور طفلي طبيب الأسنان لأول مرة؟',
+            'A first dental visit is generally recommended by the first birthday, or sooner if there is pain, visible decay, trauma or another concern. Early visits focus mainly on prevention and development.': 'يُنصح عادةً بالزيارة الأولى لطبيب الأسنان بحلول عمر سنة، أو قبل ذلك عند وجود ألم أو تسوس ظاهر أو إصابة أو أي قلق آخر. تركز الزيارات المبكرة على الوقاية ومتابعة النمو.',
+            'Do baby teeth really need treatment?': 'هل تحتاج الأسنان اللبنية فعلاً إلى العلاج؟',
+            'Yes. Baby teeth support chewing, speech and space for developing permanent teeth. The right treatment depends on the tooth, symptoms, clinical findings and prognosis.': 'نعم. تساعد الأسنان اللبنية في المضغ والكلام وتحافظ على المساحة للأسنان الدائمة. يعتمد العلاج المناسب على السن والأعراض والنتائج السريرية والتوقعات العلاجية.',
+            'What if my child is scared of the dentist?': 'ماذا لو كان طفلي خائفاً من طبيب الأسنان؟',
+            'Pediatric care can use age-appropriate communication and behavior guidance. Nitrous oxide conscious sedation may also be considered when clinically appropriate after assessment.': 'يمكن استخدام التواصل المناسب للعمر وأساليب التوجيه السلوكي. وقد تُدرس التهدئة الواعية بأكسيد النيتروز عندما تكون مناسبة سريرياً بعد التقييم.',
+            'What should I do after a dental injury?': 'ماذا أفعل بعد إصابة في الأسنان؟',
+            'Contact a dental professional promptly if a tooth is chipped, loose, displaced or causing significant pain. The next step depends on the injury and whether the affected tooth is primary or permanent.': 'تواصل مع طبيب الأسنان بسرعة إذا كان السن مكسوراً أو متخلخلاً أو متحركاً من مكانه أو يسبب ألماً شديداً. تعتمد الخطوة التالية على نوع الإصابة وما إذا كان السن لبنياً أم دائماً.',
+            "Arrange your child's dental visit.": 'رتّب زيارة طفلك لعيادة الأسنان.',
+            'Contact Silwadi Dental Center to request an appointment with our pediatric dentist at Al Raha Mall.': 'تواصل مع مركز سلوادي لطب الأسنان لطلب موعد مع اختصاصية أسنان الأطفال في الراحة مول.'
+          }
+          overrides.update(additions)
+          overrides_path.write_text(json.dumps(overrides, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+          # 5) Generated Arabic versions of these custom pages need a true reverse switch.
+          build_path = Path('tools/build-arabic-site.mjs')
+          build = build_path.read_text(encoding='utf-8')
+          needle = "  translateDocument(document, route, dom.window);\n  polishArabicStructure(document, route);\n\n  if (!document.querySelector('link[href=\"/arabic-quality.css\"]')) {"
+          replacement = "  translateDocument(document, route, dom.window);\n  polishArabicStructure(document, route);\n\n  document.querySelectorAll('[data-page-language-switch]').forEach(switcher => {\n    switcher.href = englishUrl(route);\n    switcher.textContent = 'English';\n    switcher.lang = 'en';\n    switcher.hreflang = 'en';\n    switcher.setAttribute('aria-label', 'View this page in English');\n  });\n\n  if (!document.querySelector('link[href=\"/arabic-quality.css\"]')) {"
+          if needle not in build:
+              raise SystemExit('Arabic builder insertion marker not found')
+          build = build.replace(needle, replacement, 1)
+          build_path.write_text(build, encoding='utf-8')
+
+          # 6) Make the audit page-count assertion scale with registered bilingual routes.
+          test_path = Path('tests/test_arabic_quality_seo_rebuild.py')
+          test = test_path.read_text(encoding='utf-8')
+          old = 'self.assertIn("SEO launch audit: 54 pages, 0 errors", result.stdout)'
+          new = 'self.assertIn(f"SEO launch audit: {len(SEO) * 2} pages, 0 errors", result.stdout)'
+          if old not in test:
+              raise SystemExit('Arabic audit count assertion marker not found')
+          test_path.write_text(test.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Arabic build dependency
+        run: npm install --no-save --no-package-lock jsdom@24.1.3
+
+      - name: Build paired Arabic treatment pages
+        run: node tools/build-arabic-site.mjs
+
+      - name: GREEN - verify the reported behavior is fixed
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json, re
+
+          pod = Path('review/people-of-determination-raha-v1.html').read_text(encoding='utf-8')
+          endo = Path('treatments/endodontics.html').read_text(encoding='utf-8')
+          ped = Path('treatments/pediatric-dentistry.html').read_text(encoding='utf-8')
+          seo = json.loads(Path('data/arabic-seo.json').read_text(encoding='utf-8'))
+          ar_endo = Path('ar/treatments/endodontics.html').read_text(encoding='utf-8')
+          ar_ped = Path('ar/treatments/pediatric-dentistry.html').read_text(encoding='utf-8')
+
+          assert 'aspect-ratio:3/2;overflow:hidden;border-radius:22px' in pod
+          assert '.pod-clinic-slide img{display:block;width:100%;height:100%;aspect-ratio:auto' in pod
+          assert '--pod-slide-width:min(60vw,760px)' in pod
+
+          assert '/ar/treatments/endodontics.html' in endo
+          assert '/ar/services.html#endodontics' not in endo
+          assert '/ar/treatments/pediatric-dentistry.html' in ped
+          assert '/ar/services.html#pedodontics' not in ped
+          assert endo.count('data-page-language-switch') == 2
+          assert ped.count('data-page-language-switch') == 2
+
+          for route, html, english in [
+              ('treatments/endodontics.html', ar_endo, 'https://silwadi.ae/treatments/endodontics.html'),
+              ('treatments/pediatric-dentistry.html', ar_ped, 'https://silwadi.ae/treatments/pediatric-dentistry.html'),
+          ]:
+              assert route in seo
+              assert '<html lang="ar" dir="rtl"' in html or '<html dir="rtl" lang="ar"' in html
+              assert html.count('data-page-language-switch') == 2
+              assert html.count(f'href="{english}"') >= 2
+              assert '>English</a>' in html
+              body = html.split('<body',1)[-1]
+              body = re.sub(r'<script[\s\S]*?</script>|<style[\s\S]*?</style>', '', body, flags=re.I)
+              assert 'Root Canal Treatment in' not in body
+              assert 'Specialist dental care for children' not in body
+
+          sitemap = Path('sitemap.xml').read_text(encoding='utf-8')
+          assert 'https://silwadi.ae/ar/treatments/endodontics.html' in sitemap
+          assert 'https://silwadi.ae/ar/treatments/pediatric-dentistry.html' in sitemap
+          print('POD sizing + Arabic treatment pair contract passed')
+          PY
+
+      - name: Run Arabic quality regressions
+        run: |
+          python -m unittest tests.test_arabic_quality_seo_rebuild -v
+          python -m unittest tests.test_arabic_structured_data -v
+          python -m unittest tests.test_arabic_mobile_polish -v
+          python -m unittest tests.test_booking_modal -v
+          git diff --check
+
+      - name: Commit verified fix
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -A
+          git commit -m 'fix: pair Arabic treatment pages and constrain POD gallery [skip arabic build]'
+          git push
