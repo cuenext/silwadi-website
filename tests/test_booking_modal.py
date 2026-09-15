@@ -38,6 +38,26 @@ class BookingModalContract(unittest.TestCase):
         self.assertIn('.booking-modal__close', css)
         self.assertIn('@media(max-width:720px)', css)
 
+    def test_contact_form_uses_same_direct_booking_backend_and_current_copy(self):
+        html = (ROOT / "contact.html").read_text(encoding="utf-8")
+        app = (ROOT / "app.js").read_text(encoding="utf-8")
+        modal = (ROOT / "booking-modal.js").read_text(encoding="utf-8")
+        endpoint = 'https://booking.silwadi.ae/booking-submit.php'
+
+        self.assertIn(endpoint, app)
+        self.assertIn(endpoint, modal)
+        self.assertNotIn('Your email app will open', html)
+        self.assertNotIn('Your request will open in your email app', html)
+        self.assertIn('Your details are sent securely to our appointments team', html)
+
+    def test_arabic_booking_font_matches_sitewide_stack(self):
+        sitewide = (ROOT / "arabic-quality.css").read_text(encoding="utf-8")
+        modal_css = (ROOT / "booking-modal.css").read_text(encoding="utf-8")
+        font_stack = '"Tajawal","IBM Plex Sans Arabic",Arial,sans-serif'
+
+        self.assertIn(font_stack, sitewide)
+        self.assertGreaterEqual(modal_css.count(font_stack), 2)
+
     def test_important_notice_is_removed_from_source_contact_page(self):
         html = (ROOT / "contact.html").read_text(encoding="utf-8")
         css = (ROOT / "contact-pages.css").read_text(encoding="utf-8")
