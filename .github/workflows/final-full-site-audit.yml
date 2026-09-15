@@ -1,0 +1,408 @@
+name: Final exhaustive website QA
+
+on:
+  push:
+    branches: ['audit/final-full-site-2026-09-16']
+    paths:
+      - '.github/workflows/final-full-site-audit.yml'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Regression suites
+        shell: bash
+        run: |
+          mkdir -p audit-results
+          set +e
+          python -m unittest discover -s tests -p 'test_*.py' -v > audit-results/unittest.txt 2>&1
+          echo $? > audit-results/unittest.exit
+          if [ -f tests/site_contract_test.py ]; then
+            python tests/site_contract_test.py > audit-results/site-contract.txt 2>&1
+            echo $? > audit-results/site-contract.exit
+          fi
+          set -e
+
+      - name: Static, SEO, link, Arabic and booking audit
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urljoin, urlparse
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError
+          import collections, html, json, re, ssl, time, xml.etree.ElementTree as ET
+
+          ROOT=Path('.')
+          OUT=ROOT/'audit-results'; OUT.mkdir(exist_ok=True)
+          BASE='https://silwadi.ae/'
+          errors=[]; warnings=[]; info=[]
+
+          class P(HTMLParser):
+            def __init__(self):
+              super().__init__(convert_charrefs=True)
+              self.lang=''; self.dir=''; self.title=[]; self.in_title=False
+              self.meta=[]; self.links=[]; self.images=[]; self.buttons=[]; self.forms=[]; self.fields=[]
+              self.ids=[]; self.h1=0; self.scripts=[]; self.styles=[]; self.jsonld=[]; self.in_json=False; self.jsonbuf=[]
+              self.visible=[]; self.skip_depth=0; self.current_button=None
+            def handle_starttag(self,t,attrs):
+              a=dict(attrs)
+              if t=='html': self.lang=a.get('lang',''); self.dir=a.get('dir','')
+              if t=='title': self.in_title=True
+              if t=='meta': self.meta.append(a)
+              if t=='link':
+                self.links.append(('link',a))
+                if 'stylesheet' in (a.get('rel') or '').lower() and a.get('href'): self.styles.append(a['href'])
+              if t=='a': self.links.append(('a',a))
+              if t=='img': self.images.append(a)
+              if t=='button': self.current_button={'attrs':a,'text':[]}; self.buttons.append(self.current_button)
+              if t=='form': self.forms.append(a)
+              if t in ('input','select','textarea'): self.fields.append((t,a))
+              if a.get('id'): self.ids.append(a['id'])
+              if t=='h1': self.h1+=1
+              if t=='script':
+                if a.get('src'): self.scripts.append(a['src'])
+                if a.get('type')=='application/ld+json': self.in_json=True; self.jsonbuf=[]
+                self.skip_depth += 1
+              if t=='style': self.skip_depth += 1
+            def handle_endtag(self,t):
+              if t=='title': self.in_title=False
+              if t=='button': self.current_button=None
+              if t=='script':
+                if self.in_json:
+                  self.jsonld.append(''.join(self.jsonbuf).strip()); self.in_json=False
+                if self.skip_depth: self.skip_depth-=1
+              if t=='style' and self.skip_depth: self.skip_depth-=1
+            def handle_data(self,d):
+              if self.in_title: self.title.append(d)
+              if self.in_json: self.jsonbuf.append(d)
+              if self.current_button is not None: self.current_button['text'].append(d)
+              if not self.skip_depth and d.strip(): self.visible.append(d.strip())
+
+          ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          sm=ET.parse(ROOT/'sitemap.xml')
+          urls=[x.text.strip() for x in sm.findall('.//s:loc',ns)]
+          info.append(f'SITEMAP_URLS={len(urls)}')
+          if len(urls)!=len(set(urls)): errors.append('SITEMAP duplicate <loc> entries')
+
+          def local_file(u):
+            path=urlparse(u).path
+            if path in ('','/'): return ROOT/'index.html'
+            p=ROOT/path.lstrip('/')
+            return p/'index.html' if path.endswith('/') else p
+
+          parsed={}; titles=collections.defaultdict(list); descs=collections.defaultdict(list)
+          for u in urls:
+            f=local_file(u)
+            if not f.exists(): errors.append(f'SITEMAP_MISSING_FILE | {u} -> {f}'); continue
+            raw=f.read_text(encoding='utf-8',errors='replace'); p=P(); p.feed(raw); parsed[u]=(f,p,raw)
+            title=''.join(p.title).strip()
+            metas_name={m.get('name','').lower():m.get('content','').strip() for m in p.meta if m.get('name')}
+            metas_prop={m.get('property',''):m.get('content','').strip() for m in p.meta if m.get('property')}
+            desc=metas_name.get('description','')
+            canon=[a.get('href','') for typ,a in p.links if typ=='link' and (a.get('rel') or '').lower()=='canonical']
+            alts=[(a.get('hreflang'),a.get('href')) for typ,a in p.links if typ=='link' and (a.get('rel') or '').lower()=='alternate' and a.get('hreflang')]
+            if not title: errors.append(f'NO_TITLE | {f}')
+            else:
+              titles[title].append(str(f))
+              if len(title)>65: warnings.append(f'TITLE_LONG {len(title)} | {f} | {title}')
+            if not desc: errors.append(f'NO_META_DESCRIPTION | {f}')
+            else:
+              descs[desc].append(str(f))
+              if len(desc)>170: warnings.append(f'DESCRIPTION_LONG {len(desc)} | {f}')
+            if p.h1!=1: errors.append(f'H1_COUNT={p.h1} | {f}')
+            if len(canon)!=1: errors.append(f'CANONICAL_COUNT={len(canon)} | {f}')
+            elif canon[0]!=u: errors.append(f'CANONICAL_MISMATCH | {f} | {canon[0]} != {u}')
+            langs={x[0] for x in alts}
+            if not {'en-AE','ar-AE','x-default'}.issubset(langs): errors.append(f'HREFLANG_INCOMPLETE | {f} | {sorted(langs)}')
+            if '/ar/' in u:
+              if p.lang!='ar' or p.dir!='rtl': errors.append(f'AR_LANG_DIR | {f} | lang={p.lang} dir={p.dir}')
+            elif p.lang!='en': errors.append(f'EN_LANG | {f} | lang={p.lang}')
+            dups=sorted(k for k,v in collections.Counter(p.ids).items() if v>1)
+            if dups: errors.append(f'DUPLICATE_IDS | {f} | {dups}')
+            for block in p.jsonld:
+              if block:
+                try: json.loads(block)
+                except Exception as e: errors.append(f'INVALID_JSONLD | {f} | {e}')
+            for req in ('og:title','og:description','og:url','og:image'):
+              if not metas_prop.get(req): warnings.append(f'MISSING_{req.upper()} | {f}')
+            if not metas_name.get('robots'): warnings.append(f'NO_META_ROBOTS | {f}')
+            for im in p.images:
+              src=im.get('src','')
+              if im.get('alt') is None: errors.append(f'IMG_NO_ALT | {f} | {src}')
+              if not im.get('width') or not im.get('height'): warnings.append(f'IMG_NO_DIMENSIONS | {f} | {src}')
+              if src and not src.startswith(('http://','https://','data:')):
+                clean=src.split('?',1)[0]
+                target=(ROOT/clean.lstrip('/')) if clean.startswith('/') else (f.parent/clean)
+                if not target.exists(): errors.append(f'IMG_MISSING_FILE | {f} | {src}')
+            for b in p.buttons:
+              label=''.join(b['text']).strip() or b['attrs'].get('aria-label','') or b['attrs'].get('title','')
+              if not label: errors.append(f'UNLABELED_BUTTON | {f} | {b["attrs"]}')
+            for href in p.scripts+p.styles:
+              if href and not href.startswith(('http://','https://','//','data:')):
+                clean=href.split('?',1)[0]
+                target=(ROOT/clean.lstrip('/')) if clean.startswith('/') else (f.parent/clean)
+                if not target.exists(): errors.append(f'MISSING_LOCAL_ASSET | {f} | {href}')
+            if 'Your email app will open' in raw or 'Your request will open in your email app' in raw:
+              errors.append(f'STALE_BOOKING_COPY | {f}')
+
+          for k,v in titles.items():
+            if len(v)>1: warnings.append(f'DUPLICATE_TITLE | {k} | {v}')
+          for k,v in descs.items():
+            if len(v)>1: warnings.append(f'DUPLICATE_DESCRIPTION | {v}')
+
+          # Required English/Arabic counterparts.
+          uset=set(urls)
+          for u in urls:
+            path=urlparse(u).path
+            if path.startswith('/ar/'):
+              cp=BASE if path=='/ar/' else BASE.rstrip('/')+path[3:]
+            else:
+              cp=BASE+'ar/' if path=='/' else BASE.rstrip('/')+'/ar'+path
+            if cp not in uset: errors.append(f'MISSING_LANGUAGE_COUNTERPART | {u} -> {cp}')
+
+          # Internal link and fragment targets, repository-side.
+          for u,(f,p,raw) in parsed.items():
+            same_ids=set(p.ids)
+            for typ,a in p.links:
+              if typ!='a': continue
+              href=a.get('href','')
+              if not href:
+                warnings.append(f'EMPTY_HREF | {f} | {a}'); continue
+              if href.startswith(('#','mailto:','tel:','javascript:','data:')):
+                if href.startswith('#') and len(href)>1 and href[1:] not in same_ids:
+                  errors.append(f'BROKEN_FRAGMENT | {f} | {href}')
+                continue
+              q=urlparse(urljoin(u,href))
+              if q.netloc and q.netloc!='silwadi.ae': continue
+              target=ROOT/'index.html' if q.path=='/' else ROOT/q.path.lstrip('/')
+              if q.path.endswith('/'): target=target/'index.html'
+              if not target.exists(): errors.append(f'BROKEN_INTERNAL_LINK | {f} | {href} -> {target}')
+              if q.fragment and q.path==urlparse(u).path and q.fragment not in same_ids:
+                errors.append(f'BROKEN_FRAGMENT | {f} | {href}')
+
+          # Booking implementation. No POST / no real appointment.
+          endpoint='https://booking.silwadi.ae/booking-submit.php'
+          for js in ('app.js','booking-modal.js'):
+            txt=(ROOT/js).read_text(encoding='utf-8',errors='replace')
+            if endpoint not in txt: errors.append(f'BOOKING_ENDPOINT_MISSING | {js}')
+          required=['name="name"','name="phone"','name="email"','name="treatment"','name="time"','name="clinic"','name="privacy-consent"']
+          for fp in (ROOT/'contact.html',ROOT/'ar/contact.html'):
+            raw=fp.read_text(encoding='utf-8',errors='replace')
+            if 'data-consultation-form' not in raw: errors.append(f'BOOKING_FORM_HOOK_MISSING | {fp}')
+            for token in required:
+              if token not in raw: errors.append(f'BOOKING_FIELD_MISSING | {fp} | {token}')
+
+          # Arabic visible-copy scan. Proper names/brand abbreviations are allowed; English UI/descriptive text is not.
+          allowed_phrases=[
+            'Google','WhatsApp','Instagram','Invisalign','F14','F15','DOH','BDS','MSc','MClinDent','DDS','DMD','PhD','FRACDS','MOrth',
+            'Ahmed H','Emily Campbell Scully','Victoriya Davydova','Sanaa Freihat','Sahar Alsalman','@dr.munirsilwadidental'
+          ]
+          for u,(f,p,raw) in parsed.items():
+            if '/ar/' not in u: continue
+            text=' '.join(p.visible)
+            scrub=text
+            for x in allowed_phrases: scrub=scrub.replace(x,' ')
+            suspects=[]
+            for m in re.finditer(r'(?<![@\w])[A-Za-z][A-Za-z0-9.&+’\-]*(?:\s+[A-Za-z][A-Za-z0-9.&+’\-]*){1,11}',scrub):
+              s=' '.join(m.group(0).split()).strip()
+              if len(s)>=5 and s not in suspects: suspects.append(s)
+            for s in suspects[:80]: warnings.append(f'ARABIC_LATIN_VISIBLE_SUSPECT | {f} | {s}')
+            known=[
+              'Prosthodontic restorations','Cosmetic dentistry and teeth whitening',
+              'Treatment room at Silwadi Dental Centre','Silwadi Dental Centre at Al Raha Mall',
+              'Bani Yas Tower (Corniche)','Sun–Wed:','Thu & Sat:','Sat–Thu:',
+              'Dr. Mohamed Munir Dental Centre - Al Raha Mall','Level 1, Al Raha Mall','Channel St, Al Rahah',
+              'Excellence for Every Ability, A Smile for Every Soul.'
+            ]
+            for s in known:
+              if s in raw: errors.append(f'ARABIC_ENGLISH_LEAK | {f} | {s}')
+
+          # robots.txt and sitemap declaration.
+          r=(ROOT/'robots.txt').read_text(encoding='utf-8',errors='replace') if (ROOT/'robots.txt').exists() else ''
+          if not r: errors.append('ROBOTS_MISSING')
+          if 'Sitemap:' not in r: warnings.append('ROBOTS_NO_SITEMAP')
+          if re.search(r'^\s*Disallow:\s*/\s*$',r,re.M): errors.append('ROBOTS_BLOCKS_ALL')
+
+          # Live status for every sitemap URL; deduplicated live internal targets too.
+          sslctx=ssl.create_default_context(); live=[]
+          checks=set(urls)
+          for u,(f,p,raw) in parsed.items():
+            for typ,a in p.links:
+              if typ!='a': continue
+              href=a.get('href','')
+              if href.startswith(('#','mailto:','tel:','javascript:','data:')) or not href: continue
+              q=urlparse(urljoin(u,href))
+              if q.netloc=='silwadi.ae': checks.add(q._replace(fragment='',query='').geturl())
+          for i,u in enumerate(sorted(checks)):
+            t=time.time()
+            try:
+              req=Request(u,headers={'User-Agent':'Silwadi-QA-Audit/2026-09-16'})
+              with urlopen(req,timeout=20,context=sslctx) as rr:
+                status=getattr(rr,'status',200); ctype=rr.headers.get('Content-Type','')
+                rr.read(16384)
+              ms=int((time.time()-t)*1000); live.append((status,ms,u,ctype))
+              if status!=200: errors.append(f'LIVE_HTTP_{status} | {u}')
+            except HTTPError as e:
+              live.append((e.code,-1,u,'')); errors.append(f'LIVE_HTTP_{e.code} | {u}')
+            except Exception as e:
+              live.append(('ERR',-1,u,'')); errors.append(f'LIVE_FAIL | {u} | {type(e).__name__}: {e}')
+          try:
+            req=Request(endpoint,headers={'User-Agent':'Silwadi-QA-Audit/2026-09-16'})
+            try:
+              with urlopen(req,timeout=15,context=sslctx) as rr: code=getattr(rr,'status',200)
+            except HTTPError as e: code=e.code
+            info.append(f'BOOKING_ENDPOINT_GET_HTTP={code} (reachability only; NO appointment submitted)')
+            if int(code)>=500: errors.append(f'BOOKING_ENDPOINT_SERVER_ERROR | HTTP {code}')
+          except Exception as e: errors.append(f'BOOKING_ENDPOINT_UNREACHABLE | {e}')
+
+          report=['SILWADI FINAL FULL-SITE STATIC/LIVE AUDIT','',*info,'',f'ERRORS={len(errors)}',f'WARNINGS={len(warnings)}','', '=== ERRORS ===',*(errors or ['None']),'','=== WARNINGS ===',*(warnings or ['None']),'','=== LIVE URLS ===']
+          report += [f'{st} | {ms}ms | {u} | {ct}' for st,ms,u,ct in live]
+          (OUT/'static-live-report.txt').write_text('\n'.join(report),encoding='utf-8')
+          (OUT/'summary.json').write_text(json.dumps({'sitemap_urls':len(urls),'errors':errors,'warnings':warnings,'info':info},ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+
+      - name: Browser interaction and mobile rendering audit
+        shell: bash
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium >/dev/null
+          cat > /tmp/browser-audit.mjs <<'JS'
+          import fs from 'fs';
+          import { chromium } from 'playwright';
+          const xml=fs.readFileSync('sitemap.xml','utf8');
+          const urls=[...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m=>m[1]);
+          const out=[]; const errors=[]; const warnings=[];
+          const browser=await chromium.launch({headless:true});
+          const page=await browser.newPage({viewport:{width:1440,height:1000}});
+          page.setDefaultTimeout(10000);
+          let current='';
+          page.on('pageerror',e=>errors.push(`PAGEERROR | ${current} | ${e.message}`));
+          page.on('console',m=>{ if(m.type()==='error') warnings.push(`CONSOLE_ERROR | ${current} | ${m.text()}`) });
+          for(const u of urls){
+            current=u;
+            try{
+              const r=await page.goto(u,{waitUntil:'domcontentloaded',timeout:20000});
+              const status=r?.status()||0;
+              const state=await page.evaluate(()=>({
+                title:document.title,
+                h1:document.querySelectorAll('h1').length,
+                main:!!document.querySelector('main'),
+                bodyText:(document.body?.innerText||'').trim().length,
+                buttons:[...document.querySelectorAll('button')].map(b=>({text:(b.innerText||b.getAttribute('aria-label')||'').trim(),type:b.type,disabled:b.disabled})),
+                links:document.querySelectorAll('a[href]').length
+              }));
+              out.push({u,status,...state});
+              if(status!==200) errors.push(`BROWSER_HTTP_${status} | ${u}`);
+              if(!state.main || state.bodyText<100) errors.push(`BROWSER_EMPTY_OR_NO_MAIN | ${u}`);
+            }catch(e){errors.push(`BROWSER_LOAD_FAIL | ${u} | ${e.message}`)}
+          }
+          // Core user journeys, explicitly avoiding any form submit.
+          try{
+            await page.goto('https://silwadi.ae/',{waitUntil:'domcontentloaded'});
+            const book=page.locator('a[href*="contact.html#consultation-form"]').first();
+            if(await book.count()){
+              await book.click(); await page.waitForLoadState('domcontentloaded');
+              if(!page.url().includes('contact.html')) errors.push(`BOOK_BUTTON_WRONG_DESTINATION | ${page.url()}`);
+            } else errors.push('HOME_BOOK_BUTTON_MISSING');
+            if(!(await page.locator('#consultation-form').count())) errors.push('CONTACT_FORM_ANCHOR_MISSING_AFTER_BOOK_CLICK');
+          }catch(e){errors.push(`BOOK_JOURNEY_FAIL | ${e.message}`)}
+          try{
+            await page.goto('https://silwadi.ae/contact.html',{waitUntil:'domcontentloaded'});
+            const form=page.locator('[data-consultation-form]').first();
+            if(!await form.count()) errors.push('EN_CONTACT_FORM_MISSING');
+            else {
+              const req=await form.locator('[required]').count();
+              if(req<4) warnings.push(`EN_CONTACT_FEW_REQUIRED_FIELDS=${req}`);
+            }
+            await page.goto('https://silwadi.ae/ar/contact.html',{waitUntil:'domcontentloaded'});
+            if(!await page.locator('[data-consultation-form]').count()) errors.push('AR_CONTACT_FORM_MISSING');
+          }catch(e){errors.push(`CONTACT_BROWSER_CHECK_FAIL | ${e.message}`)}
+          try{
+            await page.goto('https://silwadi.ae/',{waitUntil:'domcontentloaded'});
+            const review=page.locator('[data-review-expand]').first();
+            if(await review.count()){
+              await review.click();
+              const dlg=page.locator('[data-review-dialog]');
+              if(!(await dlg.evaluate(el=>el.open))) errors.push('REVIEW_DIALOG_DID_NOT_OPEN');
+              await page.locator('[data-review-close]').click();
+            }
+          }catch(e){errors.push(`REVIEW_INTERACTION_FAIL | ${e.message}`)}
+          // Mobile: every sitemap page, horizontal overflow + mobile menu on home.
+          const mobile=await browser.newPage({viewport:{width:390,height:844},isMobile:true});
+          for(const u of urls){
+            try{
+              await mobile.goto(u,{waitUntil:'domcontentloaded',timeout:20000});
+              const d=await mobile.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
+              if(d.sw>d.cw+3) warnings.push(`MOBILE_HORIZONTAL_OVERFLOW ${d.sw-d.cw}px | ${u}`);
+            }catch(e){errors.push(`MOBILE_LOAD_FAIL | ${u} | ${e.message}`)}
+          }
+          try{
+            await mobile.goto('https://silwadi.ae/',{waitUntil:'domcontentloaded'});
+            const btn=mobile.locator('[data-menu-button]');
+            if(await btn.count()){
+              await btn.click();
+              const expanded=await btn.getAttribute('aria-expanded');
+              if(expanded!=='true') errors.push(`MOBILE_MENU_NOT_EXPANDED | aria-expanded=${expanded}`);
+            } else errors.push('MOBILE_MENU_BUTTON_MISSING');
+          }catch(e){errors.push(`MOBILE_MENU_FAIL | ${e.message}`)}
+          await browser.close();
+          fs.writeFileSync('audit-results/browser-pages.json',JSON.stringify(out,null,2));
+          fs.writeFileSync('audit-results/browser-report.txt',[`BROWSER_PAGES=${out.length}`,`ERRORS=${errors.length}`,`WARNINGS=${warnings.length}`,'','=== ERRORS ===',...(errors.length?errors:['None']),'','=== WARNINGS ===',...(warnings.length?warnings:['None'])].join('\n'));
+          JS
+          node /tmp/browser-audit.mjs
+
+      - name: Lighthouse representative page templates
+        shell: bash
+        run: |
+          mkdir -p audit-results/lighthouse
+          for spec in \
+            'home|https://silwadi.ae/' \
+            'services|https://silwadi.ae/services.html' \
+            'doctors|https://silwadi.ae/doctors.html' \
+            'contact|https://silwadi.ae/contact.html' \
+            'locations|https://silwadi.ae/locations.html' \
+            'doctor-profile|https://silwadi.ae/doctors/dr-munir-silwadi.html' \
+            'treatment|https://silwadi.ae/treatments/endodontics.html' \
+            'pediatric|https://silwadi.ae/treatments/pediatric-dentistry.html' \
+            'arabic-home|https://silwadi.ae/ar/' \
+            'arabic-contact|https://silwadi.ae/ar/contact.html' \
+            'arabic-treatment|https://silwadi.ae/ar/treatments/endodontics.html'; do
+            name="${spec%%|*}"; url="${spec#*|}"
+            npx --yes lighthouse "$url" --quiet --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' --only-categories=performance,accessibility,best-practices,seo --output=json --output-path="audit-results/lighthouse/$name.json" || true
+          done
+          python <<'PY'
+          import json,glob,os
+          lines=['LIGHTHOUSE REPRESENTATIVE SCORES','']
+          for f in sorted(glob.glob('audit-results/lighthouse/*.json')):
+            try:
+              d=json.load(open(f)); c=d['categories']; s={k:round(v['score']*100) for k,v in c.items()}
+              lines.append(f"{os.path.basename(f)} | performance={s.get('performance')} accessibility={s.get('accessibility')} best-practices={s.get('best-practices')} seo={s.get('seo')}")
+              bad=[]
+              for aid,a in d.get('audits',{}).items():
+                score=a.get('score')
+                if score is not None and score<1 and a.get('scoreDisplayMode') not in ('notApplicable','informative','manual'):
+                  bad.append((score,a.get('title',''),aid))
+              for score,title,aid in sorted(bad,key=lambda x:(x[0],x[1]))[:25]: lines.append(f"  FAIL {score} | {aid} | {title}")
+            except Exception as e: lines.append(f'{f} | ERROR {e}')
+          open('audit-results/lighthouse-summary.txt','w').write('\n'.join(lines))
+          PY
+
+      - name: Upload complete QA evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: silwadi-final-site-audit
+          path: audit-results/
+          retention-days: 7
