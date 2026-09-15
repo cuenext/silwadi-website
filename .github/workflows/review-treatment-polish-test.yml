@@ -15,6 +15,6 @@ jobs:
           python-version: '3.12'
       - name: Install test dependency
         run: python -m pip install pytest
-      - name: Run treatment review polish contract
-        run: python -m pytest tests/test_treatment_refresh_polish.py -q
+      - name: Run treatment review contract and five audits
+        run: python -m pytest tests/test_treatment_refresh_polish.py tests/test_treatment_review_five_checks.py -q
       # This workflow is branch-only and will be removed after verification.
