@@ -177,7 +177,7 @@ img{max-width:100%}
 /* Patch 16 sitewide brand */
 .site-brand-logo{display:flex;align-items:center;justify-content:center;width:82px;height:72px;flex:0 0 82px;overflow:visible}
 .site-brand-logo img{display:block;width:68px;height:68px;object-fit:contain;object-position:center}
-.site-footer-logo{display:block;width:108px;height:108px;object-fit:contain;margin:0 0 10px}
+.site-footer-logo{display:block;width:108px;height:108px;object-fit:contain;margin:0 0 10px;mix-blend-mode:multiply}
 @media(max-width:720px){.site-brand-logo{width:68px;height:62px;flex-basis:68px}.site-brand-logo img{width:58px;height:58px}.site-footer-logo{width:92px;height:92px}}
 
 /* Patch 19: WhatsApp + direct services navigation */
@@ -344,3 +344,15 @@ html[lang="ar"] p, html[lang="ar"] a, html[lang="ar"] span, html[lang="ar"] stro
 @media(min-width:1101px){.featured-doctors{grid-template-columns:repeat(5,minmax(0,1fr))}}
 
 .footer-opening-hours__separator{display:block;width:100%;height:1px;background:rgba(8,56,71,.14);margin:14px 0 12px}
+
+
+/* Patch 25: POD mobile dividers + footer logo matte */
+/* The official footer PNG contains a white matte. Multiply lets the real logo sit naturally on the footer background without a visible white square. */
+.site-footer-logo{mix-blend-mode:multiply}
+@media(max-width:700px){
+  .pod-review .pod-care-grid{border:0!important}
+  .pod-review .pod-care-item,
+  .pod-review .pod-care-item:nth-child(3),
+  .pod-review .pod-care-item:nth-child(4){border:0!important;border-bottom:1px solid var(--pod-line)!important}
+  .pod-review .pod-care-item:last-child{border-bottom:0!important}
+}
