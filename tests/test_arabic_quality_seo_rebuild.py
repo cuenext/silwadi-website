@@ -139,7 +139,7 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
             capture_output=True,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("SEO launch audit: 54 pages, 0 errors", result.stdout)
+        self.assertIn(f"SEO launch audit: {len(SEO) * 2} pages, 0 errors", result.stdout)
 
     def test_core_arabic_ui_phrases_are_professional_and_compact(self):
         layers = {}

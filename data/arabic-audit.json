@@ -29,7 +29,8 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -71,7 +72,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -104,74 +107,6 @@
     "arabic": "03 · نموذج إلكتروني",
     "routes": [
       "contact.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "09:00 AM to 06:00 PM",
-    "arabic": "09:00 ص إلى 06:00 م",
-    "routes": [
-      "index.html",
-      "about.html",
-      "services.html",
-      "treatments.html",
-      "doctors.html",
-      "locations.html",
-      "contact.html",
-      "doctors/dr-afnan-mashal.html",
-      "doctors/dr-ahmed-el-shehri.html",
-      "doctors/dr-dana-awad.html",
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-fahed-khalil.html",
-      "doctors/dr-hani-hasbini.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html",
-      "doctors/dr-krishnamurthy-katta-balajee.html",
-      "doctors/dr-lana-masoud.html",
-      "doctors/dr-moammar-rifai.html",
-      "doctors/dr-moheb-silwadi.html",
-      "doctors/dr-munir-silwadi.html",
-      "doctors/dr-nachiket-shah.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html",
-      "treatments/cosmetic-dentistry.html",
-      "treatments/dental-implants.html",
-      "treatments/emergency-dentist.html",
-      "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "09:00 AM to 09:00 PM",
-    "arabic": "09:00 ص إلى 09:00 م",
-    "routes": [
-      "index.html",
-      "about.html",
-      "services.html",
-      "treatments.html",
-      "doctors.html",
-      "locations.html",
-      "contact.html",
-      "doctors/dr-afnan-mashal.html",
-      "doctors/dr-ahmed-el-shehri.html",
-      "doctors/dr-dana-awad.html",
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-fahed-khalil.html",
-      "doctors/dr-hani-hasbini.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html",
-      "doctors/dr-krishnamurthy-katta-balajee.html",
-      "doctors/dr-lana-masoud.html",
-      "doctors/dr-moammar-rifai.html",
-      "doctors/dr-moheb-silwadi.html",
-      "doctors/dr-munir-silwadi.html",
-      "doctors/dr-nachiket-shah.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html",
-      "treatments/cosmetic-dentistry.html",
-      "treatments/dental-implants.html",
-      "treatments/emergency-dentist.html",
-      "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
     ],
     "override": false
   },
@@ -226,6 +161,14 @@
     "override": false
   },
   {
+    "source": "2nd Level University Master’s in Oral Surgery & Implantology, UniCamillus, Rome",
+    "arabic": "2nd Level University Master’s in Oral Surgery & Implantology, UniCamillus, Rome",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
+    ],
+    "override": false
+  },
+  {
     "source": "35 years+ experience",
     "arabic": "خبرة تزيد على 35 عاماً",
     "routes": [
@@ -250,6 +193,14 @@
     "override": false
   },
   {
+    "source": "A clear overview of the most common reasons families see our pediatric dentist.",
+    "arabic": "نظرة واضحة على أكثر الأسباب شيوعاً لزيارة العائلات لاختصاصية أسنان الأطفال.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "A clear place to begin.",
     "arabic": "بداية واضحة لرعايتك.",
     "routes": [
@@ -258,10 +209,26 @@
     "override": false
   },
   {
+    "source": "A cracked, fractured, displaced or injured tooth after an accident.",
+    "arabic": "سن متشقق أو مكسور أو متحرك من مكانه أو مصاب بعد حادث.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "A familiar name in",
     "arabic": "اسم راسخ في",
     "routes": [
       "about.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "A first dental visit is generally recommended by the first birthday, or sooner if there is pain, visible decay, trauma or another concern. Early visits focus mainly on prevention and development.",
+    "arabic": "يُنصح عادةً بالزيارة الأولى لطبيب الأسنان بحلول عمر سنة، أو قبل ذلك عند وجود ألم أو تسوس ظاهر أو إصابة أو أي قلق آخر. تركز الزيارات المبكرة على الوقاية ومتابعة النمو.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -282,12 +249,44 @@
     "override": false
   },
   {
+    "source": "A previously treated tooth may need reassessment if symptoms persist, infection recurs or the previous root canal system requires additional treatment.",
+    "arabic": "قد يحتاج السن المعالج سابقاً إلى إعادة التقييم إذا استمرت الأعراض أو عادت العدوى أو احتاج علاج القنوات السابق إلى تدخل إضافي.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "A simple care pathway",
     "arabic": "مسار رعاية بسيط",
     "routes": [
       "treatments/general-dentistry.html"
     ],
     "override": false
+  },
+  {
+    "source": "A simpler visit for you and your child.",
+    "arabic": "زيارة أبسط لك ولطفلك.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "A straightforward treatment pathway.",
+    "arabic": "خطوات علاج واضحة ومباشرة.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "A surgical endodontic approach for selected cases where disease around the root tip cannot be managed through conventional treatment alone.",
+    "arabic": "إجراء جراحي تخصصي لبعض الحالات التي لا يمكن علاج المشكلة حول ذروة الجذر بالعلاج التقليدي وحده.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "About",
@@ -319,7 +318,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -343,7 +344,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -380,10 +383,26 @@
     "override": false
   },
   {
+    "source": "Accessible dental treatment room at Silwadi Dental Centre Al Raha Mall branch in Abu Dhabi",
+    "arabic": "Accessible dental treatment room at Silwadi Dental Centre Al Raha Mall branch in Abu Dhabi",
+    "routes": [
+      "locations.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Active membership, European Society of Lingual Orthodontics (ESLO), as recorded by the centre",
     "arabic": "عضوية فعالة في الجمعية الأوروبية للتقويم اللساني (ESLO)، وفق سجلات المركز",
     "routes": [
       "doctors/dr-krishnamurthy-katta-balajee.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Additional Fellowship training in Successful Endodontic Practice under Prof. Dr. Talal Al Nahlawi",
+    "arabic": "Additional Fellowship training in Successful Endodontic Practice under Prof. Dr. Talal Al Nahlawi",
+    "routes": [
+      "doctors/dr-sara-ismail.html"
     ],
     "override": false
   },
@@ -404,16 +423,8 @@
     "override": false
   },
   {
-    "source": "Aesthetic dental care including veneers, smile design and restorative options selected after a clinical assessment of the teeth and bite.",
-    "arabic": "رعاية تجميلية تشمل القشور وتصميم الابتسامة وخيارات ترميمية تُختار بعد تقييم الأسنان والإطباق.",
-    "routes": [
-      "services.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Aesthetic dental care including whitening, veneers and restorative smile planning after assessment.",
-    "arabic": "رعاية تجميلية تشمل التبييض والقشور والتخطيط الترميمي للابتسامة بعد التقييم.",
+    "source": "Aesthetic dental care including Hollywood Smile planning, veneers, smile design and professional teeth whitening after assessment.",
+    "arabic": "خدمات تجميلية تشمل هوليوود سمايل، والقشور، وتصميم الابتسامة، وتبييض الأسنان الاحترافي بعد التقييم.",
     "routes": [
       "index.html"
     ],
@@ -429,10 +440,10 @@
     "override": false
   },
   {
-    "source": "Age-appropriate preventive guidance and planning.",
-    "arabic": "إرشادات وقائية وخطة رعاية تناسب العمر.",
+    "source": "Age-appropriate communication, behavior guidance and nitrous oxide conscious sedation when clinically appropriate.",
+    "arabic": "تواصل مناسب لعمر الطفل وتوجيه سلوكي وإمكانية استخدام أكسيد النيتروز للتهدئة الواعية عندما يكون مناسباً سريرياً.",
     "routes": [
-      "doctors/dr-kashmira-pawar-jayprakash.html"
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -453,6 +464,14 @@
     "override": false
   },
   {
+    "source": "Al Raha",
+    "arabic": "الراحة",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Al Raha location",
     "arabic": "فرع الراحة مول",
     "routes": [
@@ -467,14 +486,33 @@
     "routes": [
       "index.html",
       "about.html",
+      "services.html",
+      "treatments.html",
+      "doctors.html",
       "locations.html",
       "contact.html",
+      "doctors/dr-afnan-mashal.html",
+      "doctors/dr-ahmed-el-shehri.html",
+      "doctors/dr-dana-awad.html",
       "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-fahed-khalil.html",
+      "doctors/dr-hani-hasbini.html",
       "doctors/dr-kashmira-pawar-jayprakash.html",
+      "doctors/dr-krishnamurthy-katta-balajee.html",
       "doctors/dr-lana-masoud.html",
+      "doctors/dr-moammar-rifai.html",
       "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-munir-silwadi.html",
       "doctors/dr-nachiket-shah.html",
-      "doctors/dr-sara-ismail.html"
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html",
+      "treatments/cosmetic-dentistry.html",
+      "treatments/dental-implants.html",
+      "treatments/emergency-dentist.html",
+      "treatments/general-dentistry.html",
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -487,6 +525,14 @@
     "override": false
   },
   {
+    "source": "Al Raha Mall · Pediatric Clinic",
+    "arabic": "الراحة مول · عيادة أسنان الأطفال",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Al Raha Mall, Abu Dhabi",
     "arabic": "الراحة مول، أبوظبي",
     "routes": [
@@ -495,7 +541,8 @@
       "doctors/dr-lana-masoud.html",
       "doctors/dr-moheb-silwadi.html",
       "doctors/dr-nachiket-shah.html",
-      "doctors/dr-sara-ismail.html"
+      "doctors/dr-sara-ismail.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -566,6 +613,38 @@
     "override": false
   },
   {
+    "source": "Anterior and posterior composite restorations, veneers and in-office teeth whitening.",
+    "arabic": "Anterior and posterior composite restorations, veneers and in-office teeth whitening.",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Anterior and posterior composite restorations, veneers, in-office teeth whitening and CAD/CAM restorations.",
+    "arabic": "Anterior and posterior composite restorations, veneers, in-office teeth whitening and CAD/CAM restorations.",
+    "routes": [
+      "doctors/dr-sara-ismail.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Anxiety & additional support",
+    "arabic": "القلق والدعم الإضافي",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Anxiety & special-care dentistry",
+    "arabic": "Anxiety & special-care dentistry",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Appointment request",
     "arabic": "طلب موعد",
     "routes": [
@@ -579,6 +658,15 @@
     "routes": [
       "about.html",
       "services.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Approach to care",
+    "arabic": "Approach to care",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html"
     ],
     "override": false
   },
@@ -607,10 +695,10 @@
     "override": false
   },
   {
-    "source": "Ask for directions",
-    "arabic": "الاستفسار عن الاتجاهات",
+    "source": "Arrange your child's dental visit.",
+    "arabic": "رتّب زيارة طفلك لعيادة الأسنان.",
     "routes": [
-      "index.html"
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -628,25 +716,24 @@
     "arabic": "التقييم",
     "routes": [
       "treatments/emergency-dentist.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html"
     ],
     "override": true
   },
   {
-    "source": "Assessment and care for the gums and supporting tissues.",
-    "arabic": "تقييم اللثة والأنسجة الداعمة والعناية بها.",
+    "source": "Assessment after chipped, loosened, displaced or injured primary and permanent teeth.",
+    "arabic": "تقييم الأسنان اللبنية والدائمة بعد الكسر أو التخلخل أو التحرك من مكانها أو الإصابة.",
     "routes": [
-      "doctors/dr-nachiket-shah.html"
+      "treatments/pediatric-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
-    "source": "Assessment and management of common dental concerns.",
-    "arabic": "تقييم المشكلات السنية الشائعة وإدارتها.",
+    "source": "Assessment and surgical management of periodontal conditions, including procedures for gum recession and crown lengthening where indicated.",
+    "arabic": "Assessment and surgical management of periodontal conditions, including procedures for gum recession and crown lengthening where indicated.",
     "routes": [
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html"
+      "doctors/dr-nachiket-shah.html"
     ],
     "override": false
   },
@@ -663,6 +750,14 @@
     "arabic": "تقييم وتخطيط علاج اصطفاف الأسنان وتصحيح الإطباق.",
     "routes": [
       "doctors/dr-moammar-rifai.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Assessment and treatment planning for avulsed, luxated and fractured teeth.",
+    "arabic": "Assessment and treatment planning for avulsed, luxated and fractured teeth.",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
     ],
     "override": false
   },
@@ -696,6 +791,22 @@
     "override": false
   },
   {
+    "source": "Bachelor of Dental Surgery from RAK College of Dental Sciences",
+    "arabic": "Bachelor of Dental Surgery from RAK College of Dental Sciences",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Bachelor’s Degree in Dentistry, Damascus University, 2017",
+    "arabic": "Bachelor’s Degree in Dentistry, Damascus University, 2017",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Bani Yas Tower",
     "arabic": "برج بني ياس",
     "routes": [
@@ -724,6 +835,42 @@
     "arabic": "برج بني ياس · أبوظبي",
     "routes": [
       "contact.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Bani Yas Tower (Corniche)",
+    "arabic": "Bani Yas Tower (Corniche)",
+    "routes": [
+      "index.html",
+      "about.html",
+      "services.html",
+      "treatments.html",
+      "doctors.html",
+      "locations.html",
+      "contact.html",
+      "doctors/dr-afnan-mashal.html",
+      "doctors/dr-ahmed-el-shehri.html",
+      "doctors/dr-dana-awad.html",
+      "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-fahed-khalil.html",
+      "doctors/dr-hani-hasbini.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "doctors/dr-krishnamurthy-katta-balajee.html",
+      "doctors/dr-lana-masoud.html",
+      "doctors/dr-moammar-rifai.html",
+      "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-munir-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html",
+      "treatments/cosmetic-dentistry.html",
+      "treatments/dental-implants.html",
+      "treatments/emergency-dentist.html",
+      "treatments/general-dentistry.html",
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -793,7 +940,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -835,10 +984,50 @@
     "override": false
   },
   {
+    "source": "BDS · MDS in Pediatric Dentistry",
+    "arabic": "بكالوريوس طب الأسنان · ماجستير طب أسنان الأطفال",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "BDS, 2001",
+    "arabic": "BDS, 2001",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "BDS, D.Y. Patil University",
+    "arabic": "BDS, D.Y. Patil University",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Before the appointment.",
+    "arabic": "قبل الموعد.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Before your visit",
     "arabic": "قبل زيارتك",
     "routes": [
       "contact.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Behavioral guidance and nitrous oxide conscious sedation where clinically appropriate, including individualized care for children with additional needs.",
+    "arabic": "Behavioral guidance and nitrous oxide conscious sedation where clinically appropriate, including individualized care for children with additional needs.",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
     ],
     "override": false
   },
@@ -855,6 +1044,14 @@
     "arabic": "تخطيط للإطباق واصطفاف الأسنان",
     "routes": [
       "treatments/orthodontics.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Bone & soft-tissue procedures",
+    "arabic": "Bone & soft-tissue procedures",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
     ],
     "override": false
   },
@@ -888,7 +1085,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -922,7 +1121,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -938,7 +1139,17 @@
     "source": "Book an Appointment",
     "arabic": "احجز موعداً",
     "routes": [
-      "index.html"
+      "index.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Book an assessment with the Silwadi team so the tooth can be examined and the appropriate next step discussed.",
+    "arabic": "احجز تقييماً مع فريق سلوادي لفحص السن ومناقشة الخطوة العلاجية المناسبة.",
+    "routes": [
+      "treatments/endodontics.html"
     ],
     "override": true
   },
@@ -947,14 +1158,6 @@
     "arabic": "احجز موعدك",
     "routes": [
       "contact.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "booking",
-    "arabic": "الحجز",
-    "routes": [
-      "index.html"
     ],
     "override": false
   },
@@ -1038,9 +1241,11 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Bright dental treatment room at Silwadi Dental Centre Al Raha Mall branch in Abu Dhabi",
@@ -1128,7 +1333,8 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -1187,14 +1393,6 @@
       "about.html"
     ],
     "override": false
-  },
-  {
-    "source": "Call the centre",
-    "arabic": "اتصل بالمركز",
-    "routes": [
-      "index.html"
-    ],
-    "override": true
   },
   {
     "source": "Call the Centre",
@@ -1276,6 +1474,14 @@
     "override": false
   },
   {
+    "source": "Can a root canal save my natural tooth?",
+    "arabic": "هل يمكن لعلاج الجذور الحفاظ على سني الطبيعي؟",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Can adults have orthodontic treatment?",
     "arabic": "هل يمكن للبالغين الخضوع لتقويم الأسنان؟",
     "routes": [
@@ -1337,17 +1543,19 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
   {
-    "source": "Care focused on preserving natural teeth where clinically appropriate.",
-    "arabic": "رعاية تركز على الحفاظ على الأسنان الطبيعية عندما يكون ذلك مناسباً سريرياً.",
+    "source": "Care aimed at preserving viable pulp tissue where appropriate, together with assessment and management of traumatised teeth.",
+    "arabic": "رعاية تهدف إلى الحفاظ على أنسجة اللب الحيوية متى كان ذلك مناسباً، مع تقييم ومعالجة الأسنان المصابة.",
     "routes": [
-      "doctors/dr-lana-masoud.html"
+      "treatments/endodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Care for every smile in",
@@ -1356,6 +1564,22 @@
       "about.html"
     ],
     "override": false
+  },
+  {
+    "source": "Care planned around your child’s age, dental needs and clinical findings, with prevention, restorative treatment and dental trauma assessment when appropriate.",
+    "arabic": "رعاية تُخطط بحسب عمر طفلك واحتياجاته السنية والنتائج السريرية، وتشمل الوقاية والعلاج الترميمي وتقييم إصابات الأسنان عند الحاجة.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Cavities & pulp therapy",
+    "arabic": "التسوس وعلاج لب الأسنان",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
   },
   {
     "source": "Centre",
@@ -1387,7 +1611,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -1406,6 +1632,58 @@
       "doctors/dr-hani-hasbini.html"
     ],
     "override": true
+  },
+  {
+    "source": "Certifications in Nitrous Oxide Conscious Sedation and Professional Dental Bleaching",
+    "arabic": "Certifications in Nitrous Oxide Conscious Sedation and Professional Dental Bleaching",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Certifications in Nitrous Oxide Conscious Sedation, PALS and BLS",
+    "arabic": "Certifications in Nitrous Oxide Conscious Sedation, PALS and BLS",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Channel St, Al Rahah, Abu Dhabi, UAE",
+    "arabic": "Channel St, Al Rahah, Abu Dhabi, UAE",
+    "routes": [
+      "index.html",
+      "about.html",
+      "services.html",
+      "treatments.html",
+      "doctors.html",
+      "locations.html",
+      "contact.html",
+      "doctors/dr-afnan-mashal.html",
+      "doctors/dr-ahmed-el-shehri.html",
+      "doctors/dr-dana-awad.html",
+      "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-fahed-khalil.html",
+      "doctors/dr-hani-hasbini.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "doctors/dr-krishnamurthy-katta-balajee.html",
+      "doctors/dr-lana-masoud.html",
+      "doctors/dr-moammar-rifai.html",
+      "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-munir-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html",
+      "treatments/cosmetic-dentistry.html",
+      "treatments/dental-implants.html",
+      "treatments/emergency-dentist.html",
+      "treatments/general-dentistry.html",
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": false
   },
   {
     "source": "Chat on WhatsApp",
@@ -1471,9 +1749,11 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Check availability",
@@ -1488,6 +1768,22 @@
     "arabic": "افحص صحة الفم والتركيبات الموجودة والإطباق.",
     "routes": [
       "treatments/cosmetic-dentistry.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Checkups, fluoride, fissure sealants and guidance as baby teeth fall out and permanent teeth develop.",
+    "arabic": "فحوصات دورية وفلورايد وسدادات الشقوق وإرشادات خلال تبدل الأسنان اللبنية ونمو الأسنان الدائمة.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Child-focused dinosaur dental chair in the pediatric clinic",
+    "arabic": "Child-focused dinosaur dental chair in the pediatric clinic",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -1631,20 +1927,13 @@
     "override": false
   },
   {
-    "source": "Clear explanations for children and their families.",
-    "arabic": "شرح واضح للأطفال وعائلاتهم.",
-    "routes": [
-      "doctors/dr-kashmira-pawar-jayprakash.html"
-    ],
-    "override": false
-  },
-  {
     "source": "Clinic",
     "arabic": "العيادة",
     "routes": [
-      "treatments/emergency-dentist.html"
+      "treatments/emergency-dentist.html",
+      "treatments/pediatric-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Clinic highlights",
@@ -1717,6 +2006,22 @@
     "override": false
   },
   {
+    "source": "Clinical technology & approach",
+    "arabic": "Clinical technology & approach",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Clinical treatment room at the Bani Yas Tower branch of Silwadi Dental Centre",
+    "arabic": "Clinical treatment room at the Bani Yas Tower branch of Silwadi Dental Centre",
+    "routes": [
+      "locations.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Close review",
     "arabic": "إغلاق التقييم",
     "routes": [
@@ -1731,7 +2036,16 @@
       "treatments/cosmetic-dentistry.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Complete and partial dentures, crowns, bridges and restorative planning for patients requiring functional rehabilitation.",
+    "arabic": "Complete and partial dentures, crowns, bridges and restorative planning for patients requiring functional rehabilitation.",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
     ],
     "override": false
   },
@@ -1784,6 +2098,14 @@
     "override": false
   },
   {
+    "source": "Concerned about tooth pain or a previous root canal?",
+    "arabic": "هل تعاني من ألم في السن أو مشكلة بعد علاج جذور سابق؟",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Conservative care",
     "arabic": "علاج محافظ",
     "routes": [
@@ -1820,7 +2142,6 @@
     "source": "Consultant Orthodontist",
     "arabic": "استشاري تقويم أسنان",
     "routes": [
-      "index.html",
       "doctors.html",
       "doctors/dr-hani-hasbini.html"
     ],
@@ -1903,7 +2224,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -1914,6 +2237,14 @@
       "contact.html"
     ],
     "override": false
+  },
+  {
+    "source": "Contact a dental professional promptly if a tooth is chipped, loose, displaced or causing significant pain. The next step depends on the injury and whether the affected tooth is primary or permanent.",
+    "arabic": "تواصل مع طبيب الأسنان بسرعة إذا كان السن مكسوراً أو متخلخلاً أو متحركاً من مكانه أو يسبب ألماً شديداً. تعتمد الخطوة التالية على نوع الإصابة وما إذا كان السن لبنياً أم دائماً.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
   },
   {
     "source": "Contact reception to request a consultation with Dr. Munir Silwadi. The team can help with appointment availability and treatment enquiries.",
@@ -1988,8 +2319,8 @@
     "override": false
   },
   {
-    "source": "Contact reception to request an appointment with Dr. Lana Masoud. The team can confirm availability and help route your enquiry.",
-    "arabic": "تواصل مع الاستقبال لطلب موعد مع د. لانا مسعود. سيساعدك الفريق في التأكد من المواعيد المتاحة وتوجيه استفسارك.",
+    "source": "Contact reception to request an appointment with Dr. Lana Almasoud. The team can confirm availability and help route your enquiry.",
+    "arabic": "تواصل مع الاستقبال لطلب موعد مع Dr. Lana Almasoud. سيساعدك الفريق في التأكد من المواعيد المتاحة وتوجيه استفسارك.",
     "routes": [
       "doctors/dr-lana-masoud.html"
     ],
@@ -2036,6 +2367,22 @@
     "override": false
   },
   {
+    "source": "Contact Silwadi Dental Center to request an appointment with our pediatric dentist at Al Raha Mall.",
+    "arabic": "تواصل مع مركز سلوادي لطب الأسنان لطلب موعد مع اختصاصية أسنان الأطفال في الراحة مول.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Corniche",
+    "arabic": "الكورنيش",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Corniche location",
     "arabic": "فرع برج بني ياس",
     "routes": [
@@ -2044,10 +2391,17 @@
     "override": true
   },
   {
+    "source": "Cosmetic dental care including Hollywood Smile planning, veneers, smile design and professional teeth whitening, selected after a clinical assessment of the teeth, gums and bite.",
+    "arabic": "Cosmetic dental care including Hollywood Smile planning, veneers, smile design and professional teeth whitening, selected after a clinical assessment of the teeth, gums and bite.",
+    "routes": [
+      "services.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Cosmetic dentistry",
     "arabic": "طب الأسنان التجميلي",
     "routes": [
-      "index.html",
       "doctors/dr-moheb-silwadi.html"
     ],
     "override": false
@@ -2056,34 +2410,18 @@
     "source": "Cosmetic Dentistry",
     "arabic": "طب الأسنان التجميلي",
     "routes": [
-      "index.html",
       "treatments.html",
       "contact.html",
       "doctors/dr-afnan-mashal.html",
       "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-sara-ismail.html",
       "treatments/cosmetic-dentistry.html"
     ],
     "override": true
   },
   {
-    "source": "Cosmetic Dentistry in",
-    "arabic": "تجميل الأسنان في",
-    "routes": [
-      "treatments/cosmetic-dentistry.html"
-    ],
-    "override": true
-  },
-  {
-    "source": "Cosmetic dentistry should begin with a clinical assessment. The condition of the teeth and gums, the bite and any existing restorations can affect which aesthetic options make sense.",
-    "arabic": "يبدأ تجميل الأسنان بتقييم سريري. فقد تؤثر حالة الأسنان واللثة والإطباق والتركيبات الموجودة في الخيارات التجميلية المناسبة.",
-    "routes": [
-      "treatments/cosmetic-dentistry.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Cosmetics",
-    "arabic": "تجميل الأسنان",
+    "source": "Cosmetic Dentistry & Teeth Whitening",
+    "arabic": "تجميل الأسنان وتبييضها",
     "routes": [
       "index.html",
       "about.html",
@@ -2116,12 +2454,36 @@
     "override": false
   },
   {
-    "source": "Cosmetics dental care at Silwadi Dental Center Abu Dhabi",
-    "arabic": "رعاية تجميل الأسنان في مركز سلوادي بأبوظبي",
+    "source": "Cosmetic dentistry and teeth whitening",
+    "arabic": "Cosmetic dentistry and teeth whitening",
+    "routes": [
+      "index.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Cosmetic Dentistry in",
+    "arabic": "تجميل الأسنان في",
+    "routes": [
+      "treatments/cosmetic-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Cosmetic dentistry should begin with a clinical assessment. The condition of the teeth and gums, the bite and any existing restorations can affect which aesthetic options make sense.",
+    "arabic": "يبدأ تجميل الأسنان بتقييم سريري. فقد تؤثر حالة الأسنان واللثة والإطباق والتركيبات الموجودة في الخيارات التجميلية المناسبة.",
+    "routes": [
+      "treatments/cosmetic-dentistry.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Cosmetic dentistry, Hollywood Smile and teeth whitening at Silwadi Dental Center Abu Dhabi",
+    "arabic": "Cosmetic dentistry, Hollywood Smile and teeth whitening at Silwadi Dental Center Abu Dhabi",
     "routes": [
       "services.html"
     ],
-    "override": true
+    "override": false
   },
   {
     "source": "Crowns & restorative care",
@@ -2140,6 +2502,14 @@
     "override": false
   },
   {
+    "source": "Crowns, bridges, dentures and restorative planning around your bite.",
+    "arabic": "Crowns, bridges, dentures and restorative planning around your bite.",
+    "routes": [
+      "services.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Crowns, partial crowns and broader general restorative treatment.",
     "arabic": "تيجان وتيجان جزئية وعلاج ترميمي عام أوسع.",
     "routes": [
@@ -2152,6 +2522,14 @@
     "arabic": "الفرع الحالي",
     "routes": [
       "index.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "DDS from Ajman University",
+    "arabic": "DDS from Ajman University",
+    "routes": [
+      "doctors/dr-sara-ismail.html"
     ],
     "override": false
   },
@@ -2180,20 +2558,20 @@
     "override": true
   },
   {
-    "source": "Dental assessment and care for children and adolescents.",
-    "arabic": "تقييم ورعاية أسنان الأطفال واليافعين.",
-    "routes": [
-      "doctors/dr-kashmira-pawar-jayprakash.html"
-    ],
-    "override": false
-  },
-  {
     "source": "Dental care",
     "arabic": "رعاية الأسنان",
     "routes": [
       "treatments.html"
     ],
     "override": true
+  },
+  {
+    "source": "Dental care at Silwadi Dental Center Abu Dhabi",
+    "arabic": "Dental care at Silwadi Dental Center Abu Dhabi",
+    "routes": [
+      "services.html"
+    ],
+    "override": false
   },
   {
     "source": "Dental care for children",
@@ -2230,14 +2608,6 @@
     "override": true
   },
   {
-    "source": "Dental care for children and adolescents.",
-    "arabic": "رعاية أسنان الأطفال واليافعين.",
-    "routes": [
-      "doctors.html"
-    ],
-    "override": false
-  },
-  {
     "source": "Dental care for children from infancy through adolescence, including preventive care, fluoride, sealants and restorative treatment.",
     "arabic": "رعاية أسنان الأطفال من مرحلة الرضاعة حتى المراهقة، وتشمل الوقاية والفلورايد والحشوات الوقائية والعلاج الترميمي.",
     "routes": [
@@ -2254,10 +2624,60 @@
     "override": false
   },
   {
+    "source": "Dental chair and clinical room at Silwadi Dental Centre, Bani Yas Tower",
+    "arabic": "Dental chair and clinical room at Silwadi Dental Centre, Bani Yas Tower",
+    "routes": [
+      "locations.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Dental examinations",
     "arabic": "فحوصات الأسنان",
     "routes": [
       "treatments/general-dentistry.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Dental implant care",
+    "arabic": "Dental implant care",
+    "routes": [
+      "index.html",
+      "about.html",
+      "services.html",
+      "treatments.html",
+      "doctors.html",
+      "locations.html",
+      "contact.html",
+      "doctors/dr-afnan-mashal.html",
+      "doctors/dr-ahmed-el-shehri.html",
+      "doctors/dr-dana-awad.html",
+      "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-fahed-khalil.html",
+      "doctors/dr-hani-hasbini.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "doctors/dr-krishnamurthy-katta-balajee.html",
+      "doctors/dr-lana-masoud.html",
+      "doctors/dr-moammar-rifai.html",
+      "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-munir-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html",
+      "treatments/cosmetic-dentistry.html",
+      "treatments/dental-implants.html",
+      "treatments/emergency-dentist.html",
+      "treatments/general-dentistry.html",
+      "treatments/orthodontics.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Dental implant care at Silwadi Dental Center Abu Dhabi",
+    "arabic": "Dental implant care at Silwadi Dental Center Abu Dhabi",
+    "routes": [
+      "services.html"
     ],
     "override": false
   },
@@ -2277,6 +2697,7 @@
       "contact.html",
       "doctors/dr-fahed-khalil.html",
       "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
       "treatments/dental-implants.html"
     ],
     "override": false
@@ -2306,6 +2727,30 @@
     "override": true
   },
   {
+    "source": "Dental implants replace missing tooth roots and can support crowns, bridges or dentures after clinical assessment and treatment planning.",
+    "arabic": "تعوّض زراعة الأسنان جذور الأسنان المفقودة، ويمكنها دعم التيجان والجسور أو أطقم الأسنان بعد التقييم ووضع خطة العلاج المناسبة.",
+    "routes": [
+      "index.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Dental Internship Program, Ajman University",
+    "arabic": "Dental Internship Program, Ajman University",
+    "routes": [
+      "doctors/dr-sara-ismail.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Dental internship training across restorative, endodontic, prosthetic and simple surgical rotations",
+    "arabic": "Dental internship training across restorative, endodontic, prosthetic and simple surgical rotations",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Dental laser techniques used for selected soft- and hard-tissue procedures when clinically appropriate.",
     "arabic": "تقنيات الليزر المستخدمة في إجراءات مختارة للأنسجة الرخوة والصلبة عندما تكون مناسبة سريرياً.",
     "routes": [
@@ -2328,14 +2773,6 @@
       "treatments/emergency-dentist.html"
     ],
     "override": false
-  },
-  {
-    "source": "Dental restoration and prosthodontic care",
-    "arabic": "رعاية ترميم الأسنان وتركيباتها",
-    "routes": [
-      "services.html"
-    ],
-    "override": true
   },
   {
     "source": "Dental services",
@@ -2404,12 +2841,29 @@
     "override": false
   },
   {
-    "source": "Dental treatment room at Dr. Munir Silwadi Dental Centre, Bani Yas Tower on W Corniche Road in Abu Dhabi",
-    "arabic": "غرفة علاج أسنان في مركز د. منير سلوادي، برج بني ياس على شارع الكورنيش الغربي في أبوظبي",
+    "source": "Dental trauma",
+    "arabic": "إصابات الأسنان",
+    "routes": [
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Dental trauma management",
+    "arabic": "Dental trauma management",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Dental treatment room at Silwadi Dental Centre, Bani Yas Tower in Abu Dhabi",
+    "arabic": "Dental treatment room at Silwadi Dental Centre, Bani Yas Tower in Abu Dhabi",
     "routes": [
       "locations.html"
     ],
-    "override": true
+    "override": false
   },
   {
     "source": "Dental visits designed for children from infancy to adolescence.",
@@ -2484,14 +2938,6 @@
     "override": false
   },
   {
-    "source": "Diagnosis of conditions affecting the dental pulp and root canal system.",
-    "arabic": "تشخيص الحالات التي تصيب لب السن وقنوات الجذر.",
-    "routes": [
-      "doctors/dr-lana-masoud.html"
-    ],
-    "override": false
-  },
-  {
     "source": "Diagnosis, treatment planning, and management of common dental conditions with a patient-centered approach.",
     "arabic": "تشخيص الحالات الشائعة وتخطيط علاجها وإدارتها بأسلوب يضع المريض في صميم الرعاية.",
     "routes": [
@@ -2520,6 +2966,22 @@
     "arabic": "طب الأسنان الرقمي",
     "routes": [
       "doctors/dr-moheb-silwadi.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Digital dentistry & prosthodontics",
+    "arabic": "Digital dentistry & prosthodontics",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Digital intra-oral assessment, CAD/CAM scanner workflows and fixed or removable prosthodontic care within general practice.",
+    "arabic": "Digital intra-oral assessment, CAD/CAM scanner workflows and fixed or removable prosthodontic care within general practice.",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
     ],
     "override": false
   },
@@ -2605,6 +3067,22 @@
     "override": false
   },
   {
+    "source": "Diploma in Advanced Esthetic Dentistry, Mastery Academy, Dubai",
+    "arabic": "Diploma in Advanced Esthetic Dentistry, Mastery Academy, Dubai",
+    "routes": [
+      "doctors/dr-sara-ismail.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Direct composite restorations, professional dental bleaching and restorative treatment planning.",
+    "arabic": "Direct composite restorations, professional dental bleaching and restorative treatment planning.",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Discuss",
     "arabic": "المناقشة",
     "routes": [
@@ -2629,12 +3107,28 @@
     "override": false
   },
   {
+    "source": "Disinfection & Sealing",
+    "arabic": "التعقيم والإغلاق",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Do all implant cases use guided surgery?",
     "arabic": "هل تستخدم الجراحة الموجّهة في كل حالات الزراعة؟",
     "routes": [
       "treatments/dental-implants.html"
     ],
     "override": false
+  },
+  {
+    "source": "Do baby teeth really need treatment?",
+    "arabic": "هل تحتاج الأسنان اللبنية فعلاً إلى العلاج؟",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
   },
   {
     "source": "Do I need an appointment for an urgent dental problem?",
@@ -2657,6 +3151,14 @@
     "arabic": "هل تقدمون رعاية أسنان وقائية؟",
     "routes": [
       "treatments/general-dentistry.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Doctor of Dental Medicine (DMD), Gulf Medical University",
+    "arabic": "Doctor of Dental Medicine (DMD), Gulf Medical University",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
     ],
     "override": false
   },
@@ -2712,7 +3214,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -2725,6 +3229,14 @@
     "override": false
   },
   {
+    "source": "Does root canal treatment hurt?",
+    "arabic": "هل علاج قناة الجذر مؤلم؟",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "DOH licensed in prosthodontics and implantology",
     "arabic": "مرخص من دائرة الصحة في التركيبات وزراعة الأسنان",
     "routes": [
@@ -2733,10 +3245,17 @@
     "override": false
   },
   {
+    "source": "DOH-licensed Specialist Endodontist",
+    "arabic": "DOH-licensed Specialist Endodontist",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Dr. Afnan Mashal",
     "arabic": "د. أفنان مشعل",
     "routes": [
-      "index.html",
       "doctors.html",
       "doctors/dr-afnan-mashal.html",
       "treatments/cosmetic-dentistry.html",
@@ -2767,7 +3286,8 @@
       "index.html",
       "doctors.html",
       "doctors/dr-ahmed-el-shehri.html",
-      "doctors/dr-munir-silwadi.html"
+      "doctors/dr-munir-silwadi.html",
+      "treatments/endodontics.html"
     ],
     "override": false
   },
@@ -2791,6 +3311,7 @@
     "source": "Dr. Dana Awad",
     "arabic": "د. دانا عوض",
     "routes": [
+      "index.html",
       "doctors.html",
       "doctors/dr-dana-awad.html",
       "treatments/cosmetic-dentistry.html",
@@ -2849,18 +3370,25 @@
     "override": false
   },
   {
-    "source": "Dr. Ehab Hassouneh is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "الدكتور إيهاب حسونة طبيب أسنان عام في مركز د. منير سلوادي لطب الأسنان، ويعمل في فرع الراحة مول.",
+    "source": "Dr. Ehab Hassouneh is a General Dentist providing care for adult and pediatric patients. He combines restorative and preventive dentistry with digital workflows and clear treatment planning, with a focus on helping patients understand their options at each stage of care.",
+    "arabic": "Dr. Ehab Hassouneh is a General Dentist providing care for adult and pediatric patients. He combines restorative and preventive dentistry with digital workflows and clear treatment planning, with a focus on helping patients understand their options at each stage of care.",
     "routes": [
       "doctors/dr-ehab-hassouneh.html"
     ],
-    "override": true
+    "override": false
+  },
+  {
+    "source": "Dr. Ehab places emphasis on attentive communication and individualized treatment planning. His consultations focus on understanding the patient’s concerns, explaining findings clearly and supporting long-term oral health.",
+    "arabic": "Dr. Ehab places emphasis on attentive communication and individualized treatment planning. His consultations focus on understanding the patient’s concerns, explaining findings clearly and supporting long-term oral health.",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
+    ],
+    "override": false
   },
   {
     "source": "Dr. Fahed Abi Khalil",
     "arabic": "د. فهد أبي خليل",
     "routes": [
-      "index.html",
       "doctors.html",
       "doctors/dr-fahed-khalil.html"
     ],
@@ -2920,11 +3448,21 @@
     "override": false
   },
   {
+    "source": "Dr. Kashmira emphasizes prevention, education and clear communication with both children and their families. Treatment is planned around the child’s clinical needs, age and level of cooperation.",
+    "arabic": "Dr. Kashmira emphasizes prevention, education and clear communication with both children and their families. Treatment is planned around the child’s clinical needs, age and level of cooperation.",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Dr. Kashmira Pawar Jayprakash",
     "arabic": "د. كاشميرا باوار جايبراكاش",
     "routes": [
+      "index.html",
       "doctors.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html"
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -2937,10 +3475,18 @@
     "override": false
   },
   {
-    "source": "Dr. Kashmira Pawar Jayprakash is listed as a Pediatric Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "الدكتورة كاشميرا باوار جايبراكاش اختصاصية طب أسنان الأطفال في مركز د. منير سلوادي لطب الأسنان، وتعمل في فرع الراحة مول.",
+    "source": "Dr. Kashmira Pawar Jayprakash is a Specialist Pediatric Dentist with over nine years of clinical experience. Her approach centres on prevention, early intervention and age-appropriate care, with particular attention to children who may feel anxious or require additional support during dental treatment.",
+    "arabic": "Dr. Kashmira Pawar Jayprakash is a Specialist Pediatric Dentist with over nine years of clinical experience. Her approach centres on prevention, early intervention and age-appropriate care, with particular attention to children who may feel anxious or require additional support during dental treatment.",
     "routes": [
       "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Dr. Kashmira Pawar Jayprakash, Specialist Pediatric Dentist",
+    "arabic": "د. كاشميرا باوار جايبراكاش، اختصاصية طب أسنان الأطفال",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -2971,29 +3517,31 @@
     "override": false
   },
   {
-    "source": "Dr. Lana Masoud",
-    "arabic": "د. لانا مسعود",
+    "source": "Dr. Lana Almasoud",
+    "arabic": "د. لانا المسعود",
     "routes": [
+      "index.html",
       "doctors.html",
-      "doctors/dr-lana-masoud.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Dr. Lana Masoud · Silwadi Dental Center, Abu Dhabi",
-    "arabic": "د. لانا مسعود · مركز سلوادي لطب الأسنان، أبوظبي",
-    "routes": [
-      "doctors/dr-lana-masoud.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Dr. Lana Masoud is listed as a Endodontist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "الدكتورة لانا مسعود اختصاصية علاج جذور الأسنان في مركز د. منير سلوادي لطب الأسنان، وتعمل في فرع الراحة مول.",
-    "routes": [
-      "doctors/dr-lana-masoud.html"
+      "doctors/dr-lana-masoud.html",
+      "treatments/endodontics.html"
     ],
     "override": true
+  },
+  {
+    "source": "Dr. Lana Almasoud · Silwadi Dental Center, Abu Dhabi",
+    "arabic": "Dr. Lana Almasoud · مركز سلوادي لطب الأسنان، أبوظبي",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Dr. Lana Almasoud is a DOH-licensed Specialist Endodontist at Dr. Munir Silwadi Dental Centre. Her clinical work includes root canal treatment, complex retreatment, vital pulp therapy, endodontic microsurgery and dental trauma management, with a focus on preserving natural teeth where clinically appropriate.",
+    "arabic": "Dr. Lana Almasoud is a DOH-licensed Specialist Endodontist at Dr. Munir Silwadi Dental Centre. Her clinical work includes root canal treatment, complex retreatment, vital pulp therapy, endodontic microsurgery and dental trauma management, with a focus on preserving natural teeth where clinically appropriate.",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
   },
   {
     "source": "Dr. Moammar Mohamed Rifai",
@@ -3022,9 +3570,46 @@
     "override": false
   },
   {
+    "source": "Dr. Mohamed Munir Dental Centre - Al Raha Mall",
+    "arabic": "Dr. Mohamed Munir Dental Centre - Al Raha Mall",
+    "routes": [
+      "index.html",
+      "about.html",
+      "services.html",
+      "treatments.html",
+      "doctors.html",
+      "locations.html",
+      "contact.html",
+      "doctors/dr-afnan-mashal.html",
+      "doctors/dr-ahmed-el-shehri.html",
+      "doctors/dr-dana-awad.html",
+      "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-fahed-khalil.html",
+      "doctors/dr-hani-hasbini.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "doctors/dr-krishnamurthy-katta-balajee.html",
+      "doctors/dr-lana-masoud.html",
+      "doctors/dr-moammar-rifai.html",
+      "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-munir-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html",
+      "treatments/cosmetic-dentistry.html",
+      "treatments/dental-implants.html",
+      "treatments/emergency-dentist.html",
+      "treatments/general-dentistry.html",
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Dr. Moheb Silwadi",
     "arabic": "د. مهيب سلوادي",
     "routes": [
+      "index.html",
       "doctors.html",
       "doctors/dr-moheb-silwadi.html",
       "treatments/cosmetic-dentistry.html",
@@ -3107,7 +3692,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -3124,6 +3711,14 @@
     "arabic": "يشمل عمل الدكتور منير سلوادي السريري زراعة الأسنان وإعادة تأهيل الفم بالكامل وطب الأسنان التجميلي بتقنيات CAD/CAM. ويتضمن ملفه المهني أيضاً محاضرات دولية وتدريباً على تقنية CEREC.",
     "routes": [
       "doctors/dr-munir-silwadi.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Dr. Nachiket communicates in English, Hindi, Gujarati and Marathi, with working Arabic. He emphasizes clear treatment education, careful surgical planning and patient comfort throughout periodontal and implant care.",
+    "arabic": "Dr. Nachiket communicates in English, Hindi, Gujarati and Marathi, with working Arabic. He emphasizes clear treatment education, careful surgical planning and patient comfort throughout periodontal and implant care.",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
     ],
     "override": false
   },
@@ -3145,12 +3740,12 @@
     "override": false
   },
   {
-    "source": "Dr. Nachiket Shah is listed as a Periodontist & Implantologist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "الدكتور ناشيكيت شاه اختصاصي أمراض اللثة وزراعة الأسنان في مركز د. منير سلوادي لطب الأسنان، ويعمل في فرع الراحة مول.",
+    "source": "Dr. Nachiket Shah is a DOH-licensed Specialist Periodontist with implant privilege and more than 14 years of clinical experience across India and the UAE. His practice focuses on periodontal treatment, implant dentistry, tissue regeneration and selected oral surgical procedures.",
+    "arabic": "Dr. Nachiket Shah is a DOH-licensed Specialist Periodontist with implant privilege and more than 14 years of clinical experience across India and the UAE. His practice focuses on periodontal treatment, implant dentistry, tissue regeneration and selected oral surgical procedures.",
     "routes": [
       "doctors/dr-nachiket-shah.html"
     ],
-    "override": true
+    "override": false
   },
   {
     "source": "Dr. Nasr Keshkiea",
@@ -3171,12 +3766,20 @@
     "override": false
   },
   {
-    "source": "Dr. Nasr Keshkiea is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Bani Yas Tower.",
-    "arabic": "الدكتور نصر كشكية طبيب أسنان عام في مركز د. منير سلوادي لطب الأسنان، ويعمل في فرع برج بني ياس.",
+    "source": "Dr. Nasr Keshkiea is a DOH-licensed General Dentist with over eight years of clinical experience across restorative, prosthodontic, endodontic and aesthetic dentistry. His postgraduate training in removable prosthodontics supports a strong interest in functional rehabilitation and restorative treatment planning.",
+    "arabic": "Dr. Nasr Keshkiea is a DOH-licensed General Dentist with over eight years of clinical experience across restorative, prosthodontic, endodontic and aesthetic dentistry. His postgraduate training in removable prosthodontics supports a strong interest in functional rehabilitation and restorative treatment planning.",
     "routes": [
       "doctors/dr-nasr-keshkiea.html"
     ],
-    "override": true
+    "override": false
+  },
+  {
+    "source": "Dr. Nasr speaks Arabic and English. He focuses on clear communication, individualized treatment planning and coordinating restorative care around each patient’s functional and aesthetic needs.",
+    "arabic": "Dr. Nasr speaks Arabic and English. He focuses on clear communication, individualized treatment planning and coordinating restorative care around each patient’s functional and aesthetic needs.",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
+    ],
+    "override": false
   },
   {
     "source": "Dr. Sara Ismail",
@@ -3197,18 +3800,34 @@
     "override": false
   },
   {
-    "source": "Dr. Sara Ismail is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.",
-    "arabic": "الدكتورة سارة إسماعيل طبيبة أسنان عامة في مركز د. منير سلوادي لطب الأسنان، وتعمل في فرع الراحة مول.",
+    "source": "Dr. Sara Ismail is a General Dentist with four years of clinical experience and additional training in aesthetic and endodontic dentistry. Her clinical interests include restorative and aesthetic care, root canal treatment, pediatric dentistry and preventive treatment.",
+    "arabic": "Dr. Sara Ismail is a General Dentist with four years of clinical experience and additional training in aesthetic and endodontic dentistry. Her clinical interests include restorative and aesthetic care, root canal treatment, pediatric dentistry and preventive treatment.",
     "routes": [
       "doctors/dr-sara-ismail.html"
     ],
-    "override": true
+    "override": false
+  },
+  {
+    "source": "Dr. Sara speaks Arabic and English. She places emphasis on clear communication, patient comfort and treatment plans tailored to the clinical needs of adults and children.",
+    "arabic": "Dr. Sara speaks Arabic and English. She places emphasis on clear communication, patient comfort and treatment plans tailored to the clinical needs of adults and children.",
+    "routes": [
+      "doctors/dr-sara-ismail.html"
+    ],
+    "override": false
   },
   {
     "source": "Dr. Silwadi's published centre profile highlights immediate implants, All-on-4 / All-on-6 concepts, computer-guided implant treatment, full-mouth rehabilitation, CAD/CAM veneers and crowns, and digital smile design. Suitability for any treatment is determined after clinical assessment.",
     "arabic": "يبرز ملف الدكتور سلوادي المنشور في المركز الزراعة الفورية ومفاهيم All-on-4 وAll-on-6 وعلاج الزراعة الموجّه بالحاسوب وإعادة تأهيل الفم بالكامل وقشور وتيجان CAD/CAM وتصميم الابتسامة الرقمي. وتُحدد ملاءمة أي علاج بعد التقييم السريري.",
     "routes": [
       "doctors/dr-munir-silwadi.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Early guidance",
+    "arabic": "Early guidance",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
     ],
     "override": false
   },
@@ -3224,11 +3843,17 @@
     "source": "Education & professional background",
     "arabic": "الخلفية الأكاديمية والمهنية",
     "routes": [
+      "doctors/dr-ehab-hassouneh.html",
       "doctors/dr-fahed-khalil.html",
       "doctors/dr-hani-hasbini.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
       "doctors/dr-krishnamurthy-katta-balajee.html",
+      "doctors/dr-lana-masoud.html",
       "doctors/dr-moammar-rifai.html",
-      "doctors/dr-moheb-silwadi.html"
+      "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html"
     ],
     "override": false
   },
@@ -3298,18 +3923,59 @@
     "override": false
   },
   {
-    "source": "Endodontic assessment",
-    "arabic": "تقييم علاج الجذور",
+    "source": "Endodontic & pediatric care",
+    "arabic": "Endodontic & pediatric care",
     "routes": [
-      "doctors/dr-lana-masoud.html"
+      "doctors/dr-ehab-hassouneh.html"
     ],
     "override": false
+  },
+  {
+    "source": "Endodontic care",
+    "arabic": "Endodontic care",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Endodontic care, clearly explained.",
+    "arabic": "علاج جذور الأسنان بشرح واضح.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "Endodontic diagnosis and root canal care.",
     "arabic": "تشخيص حالات جذور الأسنان وعلاج قنوات الجذر.",
     "routes": [
       "doctors.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Endodontic diagnosis and treatment planning",
+    "arabic": "تشخيص وتخطيط علاجي متخصص لقنوات الجذر",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Endodontic Microsurgery",
+    "arabic": "الجراحة المجهرية لعلاج الجذور",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Endodontic root canal treatment using a rubber dam and rotary file",
+    "arabic": "Endodontic root canal treatment using a rubber dam and rotary file",
+    "routes": [
+      "treatments/endodontics.html"
     ],
     "override": false
   },
@@ -3343,7 +4009,8 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html"
     ],
     "override": true
   },
@@ -3356,15 +4023,12 @@
     "override": true
   },
   {
-    "source": "Endodontist",
-    "arabic": "اختصاصي علاج جذور الأسنان",
+    "source": "Endodontics focuses on the dental pulp and tissues around the roots. Root canal treatment may be recommended when the pulp becomes inflamed, infected or injured and the tooth is suitable for treatment.",
+    "arabic": "يختص علاج جذور الأسنان بلب السن والأنسجة المحيطة بالجذور. قد يُنصح بعلاج قناة الجذر عند التهاب اللب أو إصابته بالعدوى أو الضرر، إذا كان السن مناسباً للعلاج.",
     "routes": [
-      "index.html",
-      "doctors.html",
-      "doctors/dr-ahmed-el-shehri.html",
-      "doctors/dr-lana-masoud.html"
+      "treatments/endodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Established dental care in Abu Dhabi since 1980.",
@@ -3396,7 +4060,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -3433,16 +4099,33 @@
     "override": false
   },
   {
-    "source": "Examine",
-    "arabic": "افحص",
+    "source": "Examinations, preventive care, fluoride, sealants, restorations and pediatric crowns based on clinical need.",
+    "arabic": "Examinations, preventive care, fluoride, sealants, restorations and pediatric crowns based on clinical need.",
     "routes": [
-      "treatments/general-dentistry.html"
+      "doctors/dr-kashmira-pawar-jayprakash.html"
     ],
     "override": false
   },
   {
-    "source": "Expert care. Lasting smiles.",
-    "arabic": "رعاية متخصصة وابتسامات تدوم.",
+    "source": "Examinations, preventive care, simple extractions and assessment of urgent dental concerns.",
+    "arabic": "Examinations, preventive care, simple extractions and assessment of urgent dental concerns.",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Examine",
+    "arabic": "الفحص",
+    "routes": [
+      "treatments/general-dentistry.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Excellence for Every Ability, A Smile for Every Soul.",
+    "arabic": "Excellence for Every Ability, A Smile for Every Soul.",
     "routes": [
       "index.html",
       "about.html",
@@ -3470,7 +4153,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -3511,6 +4196,42 @@
     "arabic": "استكشف مجالات رعاية الأسنان في مركز سلوادي، أو تواصل معنا إذا لم تعرف من أين تبدأ.",
     "routes": [
       "treatments.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "F14 & F15, Level 1, Al Raha Mall",
+    "arabic": "F14 & F15, Level 1, Al Raha Mall",
+    "routes": [
+      "index.html",
+      "about.html",
+      "services.html",
+      "treatments.html",
+      "doctors.html",
+      "locations.html",
+      "contact.html",
+      "doctors/dr-afnan-mashal.html",
+      "doctors/dr-ahmed-el-shehri.html",
+      "doctors/dr-dana-awad.html",
+      "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-fahed-khalil.html",
+      "doctors/dr-hani-hasbini.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "doctors/dr-krishnamurthy-katta-balajee.html",
+      "doctors/dr-lana-masoud.html",
+      "doctors/dr-moammar-rifai.html",
+      "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-munir-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html",
+      "treatments/cosmetic-dentistry.html",
+      "treatments/dental-implants.html",
+      "treatments/emergency-dentist.html",
+      "treatments/general-dentistry.html",
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -3561,12 +4282,13 @@
     "override": false
   },
   {
-    "source": "Family communication",
-    "arabic": "التواصل مع العائلة",
+    "source": "FAQ",
+    "arabic": "الأسئلة الشائعة",
     "routes": [
-      "doctors/dr-kashmira-pawar-jayprakash.html"
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Feel good about your daily care.",
@@ -3609,6 +4331,14 @@
     "override": false
   },
   {
+    "source": "Fillings, pediatric crowns and pulp therapy such as pulpotomy or pulpectomy when clinically indicated.",
+    "arabic": "حشوات وتيجان للأطفال وعلاج لب الأسنان مثل بتر اللب أو استئصاله عندما تكون هناك حاجة سريرية.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Filter doctors by specialty",
     "arabic": "تصفية الأطباء حسب التخصص",
     "routes": [
@@ -3643,6 +4373,14 @@
     "override": false
   },
   {
+    "source": "Findings are explained in plain language and suitable treatment, prevention or follow-up is discussed with the parent or caregiver.",
+    "arabic": "تُشرح النتائج بلغة واضحة وتُناقش خطة العلاج أو الوقاية أو المتابعة المناسبة مع الوالد أو مقدم الرعاية.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Fixed braces",
     "arabic": "تقويم ثابت",
     "routes": [
@@ -3659,20 +4397,12 @@
     "override": false
   },
   {
-    "source": "focuses on planning and surgically placing dental implants—artificial tooth roots that support replacement teeth.",
-    "arabic": "يهتم بتخطيط زراعة الأسنان ووضعها جراحياً، وهي جذور صناعية تدعم الأسنان التعويضية.",
+    "source": "Focused on retaining natural teeth when appropriate",
+    "arabic": "التركيز على إبقاء الأسنان الطبيعية متى كان ذلك مناسباً",
     "routes": [
-      "services.html"
+      "treatments/endodontics.html"
     ],
-    "override": false
-  },
-  {
-    "source": "focuses on restoring or replacing teeth with crowns, bridges, veneers, dentures and implant-supported restorations, including full-mouth rehabilitation.",
-    "arabic": "يهتم بترميم الأسنان أو تعويضها بالتيجان والجسور والقشور والأطقم والتركيبات المدعومة بالزراعة، بما في ذلك إعادة تأهيل الفم بالكامل.",
-    "routes": [
-      "services.html"
-    ],
-    "override": false
+    "override": true
   },
   {
     "source": "Follow Silwadi Dental Center on Instagram",
@@ -3704,7 +4434,8 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -3729,6 +4460,30 @@
     "arabic": "للفحوصات الدورية أو مشكلات الأسنان الشائعة أو عندما لا تعرف التخصص المناسب، يكون طبيب الأسنان العام أفضل نقطة للبدء.",
     "routes": [
       "treatments/general-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Former clinical supervisor in removable prosthodontics at Hama University and Damascus University",
+    "arabic": "Former clinical supervisor in removable prosthodontics at Hama University and Damascus University",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Four areas of children's dental care.",
+    "arabic": "أربعة مجالات أساسية في رعاية أسنان الأطفال.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Four common questions parents ask about children's dental care.",
+    "arabic": "أربعة أسئلة شائعة يطرحها الوالدان عن رعاية أسنان الأطفال.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -3770,7 +4525,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -3816,6 +4573,14 @@
     "override": true
   },
   {
+    "source": "General & emergency care",
+    "arabic": "General & emergency care",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
+    ],
+    "override": false
+  },
+  {
     "source": "General and specialist dental care across ten established service areas.",
     "arabic": "رعاية أسنان عامة وتخصصية ضمن عشرة مجالات واضحة.",
     "routes": [
@@ -3827,9 +4592,6 @@
     "source": "General dental care",
     "arabic": "رعاية أسنان عامة",
     "routes": [
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html",
       "treatments/general-dentistry.html"
     ],
     "override": false
@@ -3837,14 +4599,6 @@
   {
     "source": "General dental care and patient-centred treatment planning.",
     "arabic": "رعاية الأسنان العامة وتخطيط علاجي يتمحور حول المريض.",
-    "routes": [
-      "doctors.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "General dental care and routine treatment planning.",
-    "arabic": "رعاية الأسنان العامة وتخطيط العلاجات الروتينية.",
     "routes": [
       "doctors.html"
     ],
@@ -3862,6 +4616,7 @@
     "source": "General Dentist",
     "arabic": "طبيب أسنان عام",
     "routes": [
+      "index.html",
       "doctors.html",
       "doctors/dr-afnan-mashal.html",
       "doctors/dr-dana-awad.html",
@@ -3922,10 +4677,7 @@
       "doctors/dr-afnan-mashal.html",
       "doctors/dr-dana-awad.html",
       "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html",
-      "doctors/dr-lana-masoud.html",
       "doctors/dr-moheb-silwadi.html",
-      "doctors/dr-nachiket-shah.html",
       "doctors/dr-nasr-keshkiea.html",
       "doctors/dr-sara-ismail.html",
       "treatments/general-dentistry.html"
@@ -3947,6 +4699,30 @@
       "treatments/general-dentistry.html"
     ],
     "override": true
+  },
+  {
+    "source": "General dentistry with interests in restorative and aesthetic care, endodontics, pediatric dentistry and prevention.",
+    "arabic": "General dentistry with interests in restorative and aesthetic care, endodontics, pediatric dentistry and prevention.",
+    "routes": [
+      "doctors.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "General dentistry with interests in restorative care, prosthodontic rehabilitation, endodontics and aesthetic treatment.",
+    "arabic": "General dentistry with interests in restorative care, prosthodontic rehabilitation, endodontics and aesthetic treatment.",
+    "routes": [
+      "doctors.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "General dentistry with interests in restorative, digital, pediatric and preventive dental care.",
+    "arabic": "General dentistry with interests in restorative, digital, pediatric and preventive dental care.",
+    "routes": [
+      "doctors.html"
+    ],
+    "override": false
   },
   {
     "source": "General dentists and specialists care for families across two locations.",
@@ -3976,6 +4752,7 @@
     "source": "Get Directions",
     "arabic": "الاتجاهات",
     "routes": [
+      "index.html",
       "locations.html"
     ],
     "override": true
@@ -4051,6 +4828,14 @@
     "arabic": "مساعدتك؟",
     "routes": [
       "index.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Her endodontic practice includes the use of dental microscopes and Cone Beam Computed Tomography (CBCT) for selected cases. Dr. Lana speaks Arabic and English and emphasizes clear communication, careful treatment planning and patient comfort throughout care.",
+    "arabic": "Her endodontic practice includes the use of dental microscopes and Cone Beam Computed Tomography (CBCT) for selected cases. Dr. Lana speaks Arabic and English and emphasizes clear communication, careful treatment planning and patient comfort throughout care.",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
     ],
     "override": false
   },
@@ -4159,8 +4944,8 @@
     "override": false
   },
   {
-    "source": "Home",
-    "arabic": "الرئيسية",
+    "source": "Hollywood Smile & professional whitening",
+    "arabic": "Hollywood Smile & professional whitening",
     "routes": [
       "index.html",
       "about.html",
@@ -4191,6 +4976,50 @@
       "treatments/orthodontics.html"
     ],
     "override": false
+  },
+  {
+    "source": "Home",
+    "arabic": "الرئيسية",
+    "routes": [
+      "index.html",
+      "about.html",
+      "services.html",
+      "treatments.html",
+      "doctors.html",
+      "locations.html",
+      "contact.html",
+      "doctors/dr-afnan-mashal.html",
+      "doctors/dr-ahmed-el-shehri.html",
+      "doctors/dr-dana-awad.html",
+      "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-fahed-khalil.html",
+      "doctors/dr-hani-hasbini.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "doctors/dr-krishnamurthy-katta-balajee.html",
+      "doctors/dr-lana-masoud.html",
+      "doctors/dr-moammar-rifai.html",
+      "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-munir-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html",
+      "treatments/cosmetic-dentistry.html",
+      "treatments/dental-implants.html",
+      "treatments/emergency-dentist.html",
+      "treatments/general-dentistry.html",
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Hot or cold sensitivity",
+    "arabic": "حساسية للحرارة أو البرودة",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "How can we",
@@ -4241,14 +5070,6 @@
     "override": false
   },
   {
-    "source": "Implant assessment and treatment planning for suitable patients.",
-    "arabic": "تقييم زراعة الأسنان وتخطيط العلاج للحالات المناسبة.",
-    "routes": [
-      "doctors/dr-nachiket-shah.html"
-    ],
-    "override": true
-  },
-  {
     "source": "Implant care can involve restorative and periodontal input depending on the case. These public clinician profiles list implant dentistry among their clinical interests.",
     "arabic": "قد تتطلب رعاية الزراعة مشاركة اختصاصي التركيبات أو اللثة بحسب الحالة. وتذكر هذه الملفات التعريفية المنشورة زراعة الأسنان ضمن الاهتمامات السريرية لأصحابها.",
     "routes": [
@@ -4270,6 +5091,7 @@
     "routes": [
       "doctors/dr-fahed-khalil.html",
       "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
       "treatments/dental-implants.html"
     ],
     "override": false
@@ -4318,9 +5140,33 @@
     "source": "Implantology",
     "arabic": "زراعة الأسنان",
     "routes": [
+      "index.html",
+      "about.html",
       "services.html",
       "treatments.html",
-      "doctors/dr-nachiket-shah.html"
+      "doctors.html",
+      "locations.html",
+      "contact.html",
+      "doctors/dr-afnan-mashal.html",
+      "doctors/dr-ahmed-el-shehri.html",
+      "doctors/dr-dana-awad.html",
+      "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-fahed-khalil.html",
+      "doctors/dr-hani-hasbini.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "doctors/dr-krishnamurthy-katta-balajee.html",
+      "doctors/dr-lana-masoud.html",
+      "doctors/dr-moammar-rifai.html",
+      "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-munir-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html",
+      "treatments/cosmetic-dentistry.html",
+      "treatments/dental-implants.html",
+      "treatments/emergency-dentist.html",
+      "treatments/general-dentistry.html",
+      "treatments/orthodontics.html"
     ],
     "override": false
   },
@@ -4329,22 +5175,6 @@
     "arabic": "زراعة الأسنان وإعادة تأهيل الفم الكامل وطب الأسنان التجميلي بتقنيات CAD/CAM.",
     "routes": [
       "doctors.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Implants replace missing tooth roots; prosthodontic restorations rebuild the visible teeth and bite with crowns, bridges, dentures and implant-supported solutions.",
-    "arabic": "تعوّض زراعة الأسنان جذور الأسنان المفقودة، بينما تعيد التركيبات بناء الأسنان الظاهرة والإطباق باستخدام التيجان والجسور والأطقم والحلول المدعومة بالزراعة.",
-    "routes": [
-      "index.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Implants, crowns, bridges and dentures planned around your bite.",
-    "arabic": "زراعة وتيجان وجسور وأطقم تُخطط بما يناسب إطباقك.",
-    "routes": [
-      "services.html"
     ],
     "override": false
   },
@@ -4386,7 +5216,17 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Inside the centre",
+    "arabic": "Inside the centre",
+    "routes": [
+      "locations.html"
     ],
     "override": false
   },
@@ -4420,7 +5260,8 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -4435,7 +5276,7 @@
   },
   {
     "source": "Insurance accepted",
-    "arabic": "نقبل التأمين",
+    "arabic": "تحقّق من التغطية التأمينية",
     "routes": [
       "index.html"
     ],
@@ -4472,6 +5313,16 @@
     "routes": [
       "doctors.html",
       "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Languages & approach",
+    "arabic": "Languages & approach",
+    "routes": [
+      "doctors/dr-nachiket-shah.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html"
     ],
     "override": false
   },
@@ -4516,6 +5367,14 @@
       "services.html"
     ],
     "override": true
+  },
+  {
+    "source": "Laser-assisted & oral surgical care",
+    "arabic": "Laser-assisted & oral surgical care",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
+    ],
+    "override": false
   },
   {
     "source": "Laser-assisted procedures",
@@ -4568,16 +5427,16 @@
     "override": true
   },
   {
-    "source": "Learn more about Cosmetics",
-    "arabic": "تعرّف إلى تجميل الأسنان",
+    "source": "Learn about Silwadi Dental Centre since 1980",
+    "arabic": "Learn about Silwadi Dental Centre since 1980",
     "routes": [
-      "services.html"
+      "index.html"
     ],
     "override": false
   },
   {
-    "source": "Learn More about Cosmetics",
-    "arabic": "تعرّف إلى تجميل الأسنان",
+    "source": "Learn More about Cosmetic Dentistry & Teeth Whitening",
+    "arabic": "تعرّف إلى تجميل الأسنان وتبييضها",
     "routes": [
       "services.html"
     ],
@@ -4594,6 +5453,14 @@
   {
     "source": "Learn More about Endodontics",
     "arabic": "تعرّف إلى علاج الجذور",
+    "routes": [
+      "services.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Learn More about Implantology",
+    "arabic": "تعرّف إلى زراعة الأسنان",
     "routes": [
       "services.html"
     ],
@@ -4680,32 +5547,8 @@
     "override": false
   },
   {
-    "source": "Learn more about Prosthodontics & Implantology",
-    "arabic": "تعرّف إلى تركيبات وزراعة الأسنان",
-    "routes": [
-      "services.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Learn More about Prosthodontics & Implantology",
-    "arabic": "تعرّف إلى تركيبات وزراعة الأسنان",
-    "routes": [
-      "services.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Learn more about Teeth Whitening",
-    "arabic": "تعرّف إلى تبييض الأسنان",
-    "routes": [
-      "services.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Learn More about Teeth Whitening",
-    "arabic": "تعرّف إلى تبييض الأسنان",
+    "source": "Learn More about Prosthodontics",
+    "arabic": "تعرّف إلى تركيبات الأسنان",
     "routes": [
       "services.html"
     ],
@@ -4728,13 +5571,12 @@
     "override": false
   },
   {
-    "source": "LM",
-    "arabic": "LM",
+    "source": "Local anaesthesia is used and the root canal system is accessed when treatment is indicated.",
+    "arabic": "يُستخدم التخدير الموضعي ويتم الوصول إلى قنوات الجذر عندما يكون العلاج مطلوباً.",
     "routes": [
-      "doctors.html",
-      "doctors/dr-lana-masoud.html"
+      "treatments/endodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Location",
@@ -4744,7 +5586,8 @@
       "treatments/cosmetic-dentistry.html",
       "treatments/dental-implants.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -4785,7 +5628,6 @@
     "source": "Location details",
     "arabic": "تفاصيل الموقع",
     "routes": [
-      "index.html",
       "locations.html"
     ],
     "override": false
@@ -4820,7 +5662,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -4836,8 +5680,15 @@
     "source": "Maintenance",
     "arabic": "المتابعة والمحافظة",
     "routes": [
-      "doctors/dr-fahed-khalil.html",
-      "doctors/dr-nachiket-shah.html"
+      "doctors/dr-fahed-khalil.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Management of selected persistent endodontic conditions, including retreatment, apicoectomy and retrieval of separated instruments.",
+    "arabic": "Management of selected persistent endodontic conditions, including retreatment, apicoectomy and retrieval of separated instruments.",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
     ],
     "override": false
   },
@@ -4859,6 +5710,22 @@
     "override": false
   },
   {
+    "source": "Master of Science in Removable Prosthodontics, Hama University, 2022",
+    "arabic": "Master of Science in Removable Prosthodontics, Hama University, 2022",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Master’s Degree in Endodontics, Gulf Medical University; Dean’s List",
+    "arabic": "Master’s Degree in Endodontics, Gulf Medical University; Dean’s List",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Master’s in periodontology, 2006",
     "arabic": "ماجستير في أمراض اللثة، 2006",
     "routes": [
@@ -4867,12 +5734,36 @@
     "override": true
   },
   {
+    "source": "MDS in Pediatric Dentistry, RGUHS",
+    "arabic": "MDS in Pediatric Dentistry, RGUHS",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "MDS in Periodontology and Implantology, 2009",
+    "arabic": "MDS in Periodontology and Implantology, 2009",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Medical team",
     "arabic": "الفريق الطبي",
     "routes": [
       "doctors.html"
     ],
     "override": false
+  },
+  {
+    "source": "Meet Dr. Kashmira",
+    "arabic": "تعرّف إلى د. كاشميرا",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
   },
   {
     "source": "Meet Dr. Munir",
@@ -4890,6 +5781,14 @@
       "about.html"
     ],
     "override": false
+  },
+  {
+    "source": "Meet Our Endodontists",
+    "arabic": "تعرّف إلى اختصاصيي علاج الجذور",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "Meet some of our dentists and specialists, or browse the full team by specialty.",
@@ -4916,6 +5815,14 @@
     "override": true
   },
   {
+    "source": "Meet the specialists.",
+    "arabic": "تعرّف إلى الاختصاصيين.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Meet the team",
     "arabic": "تعرّف إلى الفريق",
     "routes": [
@@ -4930,6 +5837,14 @@
       "contact.html"
     ],
     "override": true
+  },
+  {
+    "source": "Microscope-assisted root canal treatment",
+    "arabic": "Microscope-assisted root canal treatment",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
   },
   {
     "source": "Minimally invasive approach",
@@ -4990,6 +5905,14 @@
     "override": false
   },
   {
+    "source": "MSc in Quality and Safety in Healthcare Management, Royal College of Surgeons in Ireland",
+    "arabic": "MSc in Quality and Safety in Healthcare Management, Royal College of Surgeons in Ireland",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Name or specialty",
     "arabic": "الاسم أو التخصص",
     "routes": [
@@ -5023,6 +5946,22 @@
     "override": false
   },
   {
+    "source": "New symptoms or persistent disease in a previously treated tooth.",
+    "arabic": "أعراض جديدة أو مشكلة مستمرة في سن سبق علاجه.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Next clinic photo",
+    "arabic": "الصورة التالية للعيادة",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Next step",
     "arabic": "الخطوة التالية",
     "routes": [
@@ -5034,10 +5973,26 @@
     "override": true
   },
   {
+    "source": "Nitrous oxide conscious sedation · PALS · BLS",
+    "arabic": "التهدئة الواعية بأكسيد النيتروز · PALS · BLS",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "No doctors match your current search. Try a different name or specialty.",
     "arabic": "لا توجد نتائج مطابقة. جرّب اسماً أو تخصصاً آخر.",
     "routes": [
       "doctors.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "No long process. We understand the concern, examine what is needed, then explain the next step clearly.",
+    "arabic": "نبدأ بفهم المشكلة، ثم نفحص ما يلزم ونشرح الخطوة التالية بوضوح دون تعقيد.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -5155,6 +6110,15 @@
     "override": false
   },
   {
+    "source": "On this page",
+    "arabic": "في هذه الصفحة",
+    "routes": [
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "One centre, clear next steps",
     "arabic": "مركز واحد وخطوات واضحة",
     "routes": [
@@ -5164,7 +6128,7 @@
   },
   {
     "source": "One connected clinical team",
-    "arabic": "فريق سريري واحد متكامل",
+    "arabic": "فريق طبي متكامل بخبرة راسخة",
     "routes": [
       "about.html"
     ],
@@ -5191,14 +6155,6 @@
     "arabic": "تشكل المراجعة الدورية للثة والوقاية جزءاً من رعاية اللثة التخصصية.",
     "routes": [
       "doctors/dr-fahed-khalil.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Ongoing periodontal review based on clinical needs.",
-    "arabic": "مراجعة دورية للثة وفق الاحتياجات السريرية.",
-    "routes": [
-      "doctors/dr-nachiket-shah.html"
     ],
     "override": false
   },
@@ -5240,9 +6196,11 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Open patient review",
@@ -5290,7 +6248,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -5420,16 +6380,6 @@
     "override": true
   },
   {
-    "source": "Orthodontist",
-    "arabic": "اختصاصي تقويم أسنان",
-    "routes": [
-      "doctors.html",
-      "doctors/dr-krishnamurthy-katta-balajee.html",
-      "doctors/dr-moammar-rifai.html"
-    ],
-    "override": false
-  },
-  {
     "source": "Other / Not sure",
     "arabic": "أخرى / لست متأكداً",
     "routes": [
@@ -5442,6 +6392,14 @@
     "arabic": "أطباؤنا",
     "routes": [
       "index.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Our endodontists",
+    "arabic": "اختصاصيو علاج الجذور لدينا",
+    "routes": [
+      "treatments/endodontics.html"
     ],
     "override": true
   },
@@ -5511,6 +6469,22 @@
     "override": false
   },
   {
+    "source": "Pain after a previous root canal",
+    "arabic": "ألم بعد علاج جذور سابق",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Parent questions",
+    "arabic": "أسئلة الوالدين",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Paris postgraduate training",
     "arabic": "تدريب دراسات عليا في باريس",
     "routes": [
@@ -5560,19 +6534,66 @@
     "override": false
   },
   {
-    "source": "Pediatric care",
-    "arabic": "رعاية الأطفال",
+    "source": "Patient waiting area at Silwadi Dental Centre, Bani Yas Tower",
+    "arabic": "Patient waiting area at Silwadi Dental Centre, Bani Yas Tower",
     "routes": [
-      "doctors/dr-kashmira-pawar-jayprakash.html"
+      "locations.html"
     ],
     "override": false
   },
   {
-    "source": "Pediatric Dentist",
-    "arabic": "اختصاصي طب أسنان الأطفال",
+    "source": "Pediatric care can use age-appropriate communication and behavior guidance. Nitrous oxide conscious sedation may also be considered when clinically appropriate after assessment.",
+    "arabic": "يمكن استخدام التواصل المناسب للعمر وأساليب التوجيه السلوكي. وقد تُدرس التهدئة الواعية بأكسيد النيتروز عندما تكون مناسبة سريرياً بعد التقييم.",
     "routes": [
-      "doctors.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html"
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Pediatric clinic character and dental equipment at Al Raha Mall",
+    "arabic": "Pediatric clinic character and dental equipment at Al Raha Mall",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Pediatric clinic photo gallery",
+    "arabic": "معرض صور عيادة أسنان الأطفال",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Pediatric clinic photos",
+    "arabic": "صور عيادة أسنان الأطفال",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Pediatric dental chair and child-focused clinic environment at Al Raha Mall",
+    "arabic": "كرسي أسنان وبيئة عيادة مهيأة للأطفال في الراحة مول",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Pediatric dental treatment room at Silwadi Dental Center, Al Raha Mall",
+    "arabic": "غرفة علاج أسنان الأطفال في مركز سلوادي لطب الأسنان بالراحة مول",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Pediatric dentistry",
+    "arabic": "طب أسنان الأطفال",
+    "routes": [
+      "doctors/dr-sara-ismail.html"
     ],
     "override": false
   },
@@ -5580,7 +6601,25 @@
     "source": "Pediatric Dentistry",
     "arabic": "طب أسنان الأطفال",
     "routes": [
+      "doctors.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Pediatric dentistry focused on prevention, restorative care, pulp therapy and age-appropriate support for children.",
+    "arabic": "Pediatric dentistry focused on prevention, restorative care, pulp therapy and age-appropriate support for children.",
+    "routes": [
       "doctors.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Pediatric Dentistry in",
+    "arabic": "طب أسنان الأطفال في",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -5631,8 +6670,7 @@
     "arabic": "رعاية اللثة",
     "routes": [
       "index.html",
-      "doctors/dr-fahed-khalil.html",
-      "doctors/dr-nachiket-shah.html"
+      "doctors/dr-fahed-khalil.html"
     ],
     "override": false
   },
@@ -5641,6 +6679,14 @@
     "arabic": "رعاية اللثة والمحافظة على صحتها وزراعة الأسنان.",
     "routes": [
       "doctors.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Periodontal treatment",
+    "arabic": "Periodontal treatment",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
     ],
     "override": false
   },
@@ -5687,15 +6733,12 @@
     "override": true
   },
   {
-    "source": "Periodontist & Implantologist",
-    "arabic": "اختصاصي أمراض اللثة وزراعة الأسنان",
+    "source": "Persistent or worsening pain, especially when biting or chewing.",
+    "arabic": "ألم مستمر أو متزايد، خصوصاً عند العض أو المضغ.",
     "routes": [
-      "index.html",
-      "doctors.html",
-      "doctors/dr-fahed-khalil.html",
-      "doctors/dr-nachiket-shah.html"
+      "treatments/endodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Philosophy of Care",
@@ -5720,9 +6763,18 @@
     "routes": [
       "treatments/cosmetic-dentistry.html",
       "treatments/dental-implants.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
+  },
+  {
+    "source": "Planning and placement of dental implants to replace missing teeth and support crowns, bridges or dentures, with treatment tailored to oral health and restorative needs.",
+    "arabic": "Planning and placement of dental implants to replace missing teeth and support crowns, bridges or dentures, with treatment tailored to oral health and restorative needs.",
+    "routes": [
+      "services.html"
+    ],
+    "override": false
   },
   {
     "source": "Planning your treatment",
@@ -5813,6 +6865,22 @@
     "override": false
   },
   {
+    "source": "Preserving the natural tooth is an important aim of endodontic care when the tooth is suitable for treatment and can be restored appropriately.",
+    "arabic": "الحفاظ على السن الطبيعي هدف مهم في علاج الجذور عندما يكون السن مناسباً للعلاج ويمكن ترميمه بصورة مناسبة.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Prevention & growing teeth",
+    "arabic": "الوقاية ونمو الأسنان",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Prevention and hygiene",
     "arabic": "الوقاية والعناية اليومية",
     "routes": [
@@ -5829,6 +6897,14 @@
     "override": false
   },
   {
+    "source": "Preventive & emergency care",
+    "arabic": "Preventive & emergency care",
+    "routes": [
+      "doctors/dr-sara-ismail.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Preventive & Periodontal Care",
     "arabic": "الرعاية الوقائية ورعاية اللثة",
     "routes": [
@@ -5837,13 +6913,26 @@
     "override": false
   },
   {
-    "source": "Preventive care",
-    "arabic": "رعاية وقائية",
+    "source": "Preventive & restorative pediatric care",
+    "arabic": "Preventive & restorative pediatric care",
     "routes": [
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html",
-      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Preventive and restorative care for children, including pulp therapy, stainless-steel crowns, sealants, fluoride and habit counselling.",
+    "arabic": "Preventive and restorative care for children, including pulp therapy, stainless-steel crowns, sealants, fluoride and habit counselling.",
+    "routes": [
       "doctors/dr-sara-ismail.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Preventive care & simple oral surgery",
+    "arabic": "Preventive care & simple oral surgery",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
     ],
     "override": false
   },
@@ -5915,6 +7004,30 @@
     "override": false
   },
   {
+    "source": "Previous clinic photo",
+    "arabic": "الصورة السابقة للعيادة",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Previous experience in healthcare quality control and insurance coding in Abu Dhabi",
+    "arabic": "Previous experience in healthcare quality control and insurance coding in Abu Dhabi",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Primary and complex root canal procedures supported by magnification where clinically appropriate.",
+    "arabic": "Primary and complex root canal procedures supported by magnification where clinically appropriate.",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Primary navigation",
     "arabic": "التنقل الرئيسي",
     "routes": [
@@ -5944,9 +7057,11 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Professional cleaning and guidance for an easier home routine.",
@@ -5955,48 +7070,6 @@
       "treatments.html"
     ],
     "override": false
-  },
-  {
-    "source": "Professional whitening",
-    "arabic": "تبييض احترافي",
-    "routes": [
-      "index.html",
-      "about.html",
-      "services.html",
-      "treatments.html",
-      "doctors.html",
-      "locations.html",
-      "contact.html",
-      "doctors/dr-afnan-mashal.html",
-      "doctors/dr-ahmed-el-shehri.html",
-      "doctors/dr-dana-awad.html",
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-fahed-khalil.html",
-      "doctors/dr-hani-hasbini.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html",
-      "doctors/dr-krishnamurthy-katta-balajee.html",
-      "doctors/dr-lana-masoud.html",
-      "doctors/dr-moammar-rifai.html",
-      "doctors/dr-moheb-silwadi.html",
-      "doctors/dr-munir-silwadi.html",
-      "doctors/dr-nachiket-shah.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html",
-      "treatments/cosmetic-dentistry.html",
-      "treatments/dental-implants.html",
-      "treatments/emergency-dentist.html",
-      "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
-    ],
-    "override": true
-  },
-  {
-    "source": "Professional whitening options for suitable patients, planned after an examination to assess the teeth, existing restorations and the cause of discoloration.",
-    "arabic": "خيارات تبييض احترافية للحالات المناسبة، تُحدد بعد فحص الأسنان والتركيبات الموجودة وسبب تغير اللون.",
-    "routes": [
-      "services.html"
-    ],
-    "override": true
   },
   {
     "source": "Profile highlights",
@@ -6018,49 +7091,41 @@
     "routes": [
       "doctors/dr-afnan-mashal.html",
       "doctors/dr-ahmed-el-shehri.html",
-      "doctors/dr-ehab-hassouneh.html",
       "doctors/dr-fahed-khalil.html",
       "doctors/dr-hani-hasbini.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html",
       "doctors/dr-krishnamurthy-katta-balajee.html",
-      "doctors/dr-lana-masoud.html",
       "doctors/dr-moammar-rifai.html",
-      "doctors/dr-moheb-silwadi.html",
-      "doctors/dr-nachiket-shah.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html"
+      "doctors/dr-moheb-silwadi.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Prosthodontic rehabilitation",
+    "arabic": "Prosthodontic rehabilitation",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Prosthodontic restorations",
+    "arabic": "Prosthodontic restorations",
+    "routes": [
+      "index.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Prosthodontic restorative care at Silwadi Dental Center Abu Dhabi",
+    "arabic": "Prosthodontic restorative care at Silwadi Dental Center Abu Dhabi",
+    "routes": [
+      "services.html"
     ],
     "override": false
   },
   {
     "source": "Prosthodontics",
     "arabic": "تركيبات الأسنان",
-    "routes": [
-      "services.html",
-      "treatments.html",
-      "doctors.html"
-    ],
-    "override": true
-  },
-  {
-    "source": "Prosthodontics · aesthetic restorative care",
-    "arabic": "تركيبات الأسنان · رعاية ترميمية تجميلية",
-    "routes": [
-      "treatments/cosmetic-dentistry.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Prosthodontics & implantology",
-    "arabic": "تركيبات وزراعة الأسنان",
-    "routes": [
-      "doctors/dr-munir-silwadi.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Prosthodontics & Implantology",
-    "arabic": "تركيبات وزراعة الأسنان",
     "routes": [
       "index.html",
       "about.html",
@@ -6090,23 +7155,23 @@
       "treatments/general-dentistry.html",
       "treatments/orthodontics.html"
     ],
+    "override": true
+  },
+  {
+    "source": "Prosthodontics · aesthetic restorative care",
+    "arabic": "تركيبات الأسنان · رعاية ترميمية تجميلية",
+    "routes": [
+      "treatments/cosmetic-dentistry.html"
+    ],
     "override": false
   },
   {
-    "source": "Prosthodontics and implantology",
+    "source": "Prosthodontics & implantology",
     "arabic": "تركيبات وزراعة الأسنان",
     "routes": [
-      "index.html"
+      "doctors/dr-munir-silwadi.html"
     ],
     "override": false
-  },
-  {
-    "source": "Prosthodontics and implantology care at Silwadi Dental Center Abu Dhabi",
-    "arabic": "رعاية تركيبات وزراعة الأسنان في مركز سلوادي بأبوظبي",
-    "routes": [
-      "services.html"
-    ],
-    "override": true
   },
   {
     "source": "Protect your smile",
@@ -6121,6 +7186,54 @@
     "arabic": "تقديم الرعاية العامة وإشراك اختصاصي عند الحاجة.",
     "routes": [
       "treatments/general-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Provides specialist endodontic diagnosis and root canal care, including assessment of complex cases.",
+    "arabic": "يقدم تشخيصاً تخصصياً وعلاجاً لقنوات الجذر، بما في ذلك تقييم الحالات المعقدة.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Provides specialist root canal treatment, retreatment and endodontic care with the use of magnification and imaging where clinically appropriate.",
+    "arabic": "تقدم علاجاً تخصصياً لقنوات الجذر وإعادة العلاج مع استخدام التكبير والتصوير عندما يكون ذلك مناسباً سريرياً.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Published researcher and member of the IDA and IAPD",
+    "arabic": "Published researcher and member of the IDA and IAPD",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Pulp therapy & dental trauma",
+    "arabic": "Pulp therapy & dental trauma",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Pulpotomy, pulpectomy and assessment of dental injuries and urgent pediatric concerns.",
+    "arabic": "Pulpotomy, pulpectomy and assessment of dental injuries and urgent pediatric concerns.",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Qualifications",
+    "arabic": "المؤهلات",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -6162,7 +7275,16 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Radiographic assessment, routine cleaning, oral-health education and simple tooth extractions where indicated.",
+    "arabic": "Radiographic assessment, routine cleaning, oral-health education and simple tooth extractions where indicated.",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
     ],
     "override": false
   },
@@ -6207,6 +7329,14 @@
     "override": false
   },
   {
+    "source": "Reassessment and repeat endodontic treatment for selected teeth when symptoms or disease persist or recur after previous treatment.",
+    "arabic": "إعادة تقييم وعلاج بعض الأسنان عند استمرار الأعراض أو عودة المشكلة بعد علاج جذور سابق.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Rebuild a comfortable bite.",
     "arabic": "استعادة إطباق مريح.",
     "routes": [
@@ -6223,26 +7353,18 @@
     "override": false
   },
   {
-    "source": "Reception can guide your enquiry to the right dentist or specialist. You do not need to know the treatment name before you contact us.",
-    "arabic": "يمكن للاستقبال توجيه استفسارك إلى طبيب الأسنان أو الاختصاصي المناسب. لا تحتاج إلى معرفة اسم العلاج قبل التواصل معنا.",
+    "source": "Reception at Dr. Munir Silwadi Dental Centre, Bani Yas Tower in Abu Dhabi",
+    "arabic": "Reception at Dr. Munir Silwadi Dental Centre, Bani Yas Tower in Abu Dhabi",
     "routes": [
-      "treatments.html"
+      "locations.html"
     ],
     "override": false
   },
   {
-    "source": "Reception desk at Silwadi Dental Centre Al Raha Mall branch in Abu Dhabi",
-    "arabic": "منطقة الاستقبال في فرع مركز سلوادي بالراحة مول في أبوظبي",
+    "source": "Reception can guide your enquiry to the right dentist or specialist. You do not need to know the treatment name before you contact us.",
+    "arabic": "يمكن للاستقبال توجيه استفسارك إلى طبيب الأسنان أو الاختصاصي المناسب. لا تحتاج إلى معرفة اسم العلاج قبل التواصل معنا.",
     "routes": [
-      "locations.html"
-    ],
-    "override": true
-  },
-  {
-    "source": "Reception-led",
-    "arabic": "الحجز عبر الاستقبال",
-    "routes": [
-      "index.html"
+      "treatments.html"
     ],
     "override": false
   },
@@ -6292,6 +7414,14 @@
     "override": false
   },
   {
+    "source": "Removal of inflamed or infected pulp tissue, followed by cleaning, disinfection, shaping and sealing of the root canal system.",
+    "arabic": "إزالة أنسجة اللب الملتهبة أو المصابة، ثم تنظيف قنوات الجذر وتعقيمها وتشكيلها وإغلاقها.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Replace or repair teeth",
     "arabic": "تعويض الأسنان أو ترميمها",
     "routes": [
@@ -6316,6 +7446,40 @@
     "override": true
   },
   {
+    "source": "Request Appointment",
+    "arabic": "طلب موعد",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Residency training at Thumbay Dental Hospital",
+    "arabic": "Residency training at Thumbay Dental Hospital",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Restoration & Review",
+    "arabic": "الترميم والمتابعة",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Restorative & aesthetic dentistry",
+    "arabic": "Restorative & aesthetic dentistry",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Restorative and aesthetic care",
     "arabic": "رعاية ترميمية وتجميلية",
     "routes": [
@@ -6327,10 +7491,7 @@
     "source": "Restorative care",
     "arabic": "رعاية ترميمية",
     "routes": [
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-moheb-silwadi.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html"
+      "doctors/dr-moheb-silwadi.html"
     ],
     "override": false
   },
@@ -6339,16 +7500,6 @@
     "arabic": "طب الأسنان الترميمي",
     "routes": [
       "doctors/dr-dana-awad.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "Restorative treatment based on clinical findings.",
-    "arabic": "علاج ترميمي يستند إلى نتائج الفحص السريري.",
-    "routes": [
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html"
     ],
     "override": false
   },
@@ -6419,6 +7570,14 @@
     "override": false
   },
   {
+    "source": "Retreatment & endodontic microsurgery",
+    "arabic": "Retreatment & endodontic microsurgery",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Review",
     "arabic": "المراجعة",
     "routes": [
@@ -6480,10 +7639,17 @@
     "source": "Root canal care",
     "arabic": "علاج الجذور",
     "routes": [
-      "doctors/dr-ahmed-el-shehri.html",
-      "doctors/dr-lana-masoud.html"
+      "doctors/dr-ahmed-el-shehri.html"
     ],
     "override": false
+  },
+  {
+    "source": "Root Canal Retreatment",
+    "arabic": "إعادة علاج قناة الجذر",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "Root canal treatment",
@@ -6494,10 +7660,50 @@
     "override": false
   },
   {
-    "source": "Root canal treatment planning based on clinical findings.",
-    "arabic": "تخطيط علاج الجذور استناداً إلى نتائج الفحص السريري.",
+    "source": "Root Canal Treatment",
+    "arabic": "علاج قناة الجذر",
     "routes": [
-      "doctors/dr-lana-masoud.html"
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Root canal treatment FAQs.",
+    "arabic": "أسئلة شائعة عن علاج جذور الأسنان.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Root Canal Treatment in",
+    "arabic": "علاج جذور الأسنان في",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Root canal treatment is generally carried out under local anaesthesia. Some tenderness can occur afterwards, particularly when the tooth was inflamed or infected before treatment.",
+    "arabic": "يُجرى علاج قناة الجذر عادةً تحت التخدير الموضعي. قد يحدث بعض الألم أو الحساسية بعد العلاج، خاصة إذا كان السن ملتهباً أو مصاباً قبل العلاج.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Root canal treatment removes inflamed or infected pulp tissue from inside the tooth. The root canal system is then cleaned, disinfected, shaped and sealed before the tooth receives the restoration appropriate for its condition.",
+    "arabic": "يزيل علاج قناة الجذر أنسجة اللب الملتهبة أو المصابة من داخل السن، ثم تُنظف القنوات وتُعقم وتُشكل وتُغلق قبل ترميم السن بما يناسب حالته.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Root canal treatment using contemporary rotary techniques, with additional training in microscopic endodontics and 3D imaging.",
+    "arabic": "Root canal treatment using contemporary rotary techniques, with additional training in microscopic endodontics and 3D imaging.",
+    "routes": [
+      "doctors/dr-sara-ismail.html"
     ],
     "override": false
   },
@@ -6544,18 +7750,8 @@
     "override": false
   },
   {
-    "source": "Routine examinations and preventive planning.",
-    "arabic": "فحوصات دورية وتخطيط وقائي.",
-    "routes": [
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html"
-    ],
-    "override": false
-  },
-  {
     "source": "Routine examinations, preventive planning and care that supports ongoing oral health.",
-    "arabic": "فحوصات دورية وتخطيط وقائي ورعاية تدعم صحة الفم المستمرة.",
+    "arabic": "فحوصات دورية وخطط وقائية تساعد على الحفاظ على صحة الفم والأسنان.",
     "routes": [
       "index.html"
     ],
@@ -6574,6 +7770,30 @@
     "arabic": "فحوصات دورية وإرشادات احترافية للعناية بالفم وتخطيط وقائي لحماية الأسنان واللثة واكتشاف المشكلات مبكراً.",
     "routes": [
       "services.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Routine root canal treatment together with preventive and restorative dental care for children.",
+    "arabic": "Routine root canal treatment together with preventive and restorative dental care for children.",
+    "routes": [
+      "doctors/dr-ehab-hassouneh.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Routine root canal treatment using rotary instrumentation within general dental practice.",
+    "arabic": "Routine root canal treatment using rotary instrumentation within general dental practice.",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Routine scale and polish, simple extractions, abscess management and assessment of urgent dental concerns.",
+    "arabic": "Routine scale and polish, simple extractions, abscess management and assessment of urgent dental concerns.",
+    "routes": [
+      "doctors/dr-sara-ismail.html"
     ],
     "override": false
   },
@@ -6598,6 +7818,50 @@
     "arabic": "Sanaa Freihat",
     "routes": [
       "index.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Sat–Thu: 10:00 AM to 07:00 PM",
+    "arabic": "Sat–Thu: 10:00 AM to 07:00 PM",
+    "routes": [
+      "index.html",
+      "about.html",
+      "services.html",
+      "treatments.html",
+      "doctors.html",
+      "locations.html",
+      "contact.html",
+      "doctors/dr-afnan-mashal.html",
+      "doctors/dr-ahmed-el-shehri.html",
+      "doctors/dr-dana-awad.html",
+      "doctors/dr-ehab-hassouneh.html",
+      "doctors/dr-fahed-khalil.html",
+      "doctors/dr-hani-hasbini.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "doctors/dr-krishnamurthy-katta-balajee.html",
+      "doctors/dr-lana-masoud.html",
+      "doctors/dr-moammar-rifai.html",
+      "doctors/dr-moheb-silwadi.html",
+      "doctors/dr-munir-silwadi.html",
+      "doctors/dr-nachiket-shah.html",
+      "doctors/dr-nasr-keshkiea.html",
+      "doctors/dr-sara-ismail.html",
+      "treatments/cosmetic-dentistry.html",
+      "treatments/dental-implants.html",
+      "treatments/emergency-dentist.html",
+      "treatments/general-dentistry.html",
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Saturday–Thursday 10:00 AM–7:00 PM · Friday closed",
+    "arabic": "Saturday–Thursday 10:00 AM–7:00 PM · Friday closed",
+    "routes": [
+      "locations.html"
     ],
     "override": false
   },
@@ -6674,6 +7938,14 @@
     "override": false
   },
   {
+    "source": "Sensitivity that lingers after the temperature stimulus is removed.",
+    "arabic": "حساسية تستمر بعد زوال المؤثر الحراري.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Services",
     "arabic": "الخدمات",
     "routes": [
@@ -6703,7 +7975,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -6748,6 +8022,14 @@
     "override": false
   },
   {
+    "source": "Severe toothache",
+    "arabic": "ألم شديد في السن",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "SF",
     "arabic": "SF",
     "routes": [
@@ -6772,13 +8054,12 @@
     "override": false
   },
   {
-    "source": "SI",
-    "arabic": "SI",
+    "source": "Short answers to common questions before an endodontic appointment.",
+    "arabic": "إجابات مختصرة عن أسئلة شائعة قبل موعد علاج الجذور.",
     "routes": [
-      "doctors.html",
-      "doctors/dr-sara-ismail.html"
+      "treatments/endodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Silwadi at a glance",
@@ -6818,7 +8099,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -6852,7 +8135,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -6887,6 +8172,14 @@
       "locations.html"
     ],
     "override": true
+  },
+  {
+    "source": "Silwadi Dental Centre at Al Raha Mall",
+    "arabic": "Silwadi Dental Centre at Al Raha Mall",
+    "routes": [
+      "index.html"
+    ],
+    "override": false
   },
   {
     "source": "Silwadi Dental Centre began serving patients in Abu Dhabi in 1980. Today, a multi-specialty, multidisciplinary team of general dentists and specialists works together across prosthodontics, implantology, orthodontics, endodontics and everyday dental care.",
@@ -6962,6 +8255,14 @@
     "override": true
   },
   {
+    "source": "Single-tooth, partial and full-arch implant treatment planning within his granted implant privilege.",
+    "arabic": "Single-tooth, partial and full-arch implant treatment planning within his granted implant privilege.",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Skip to content",
     "arabic": "انتقل إلى المحتوى",
     "routes": [
@@ -6996,40 +8297,6 @@
     "override": false
   },
   {
-    "source": "Smile aesthetics",
-    "arabic": "تجميل الابتسامة",
-    "routes": [
-      "index.html",
-      "about.html",
-      "services.html",
-      "treatments.html",
-      "doctors.html",
-      "locations.html",
-      "contact.html",
-      "doctors/dr-afnan-mashal.html",
-      "doctors/dr-ahmed-el-shehri.html",
-      "doctors/dr-dana-awad.html",
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-fahed-khalil.html",
-      "doctors/dr-hani-hasbini.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html",
-      "doctors/dr-krishnamurthy-katta-balajee.html",
-      "doctors/dr-lana-masoud.html",
-      "doctors/dr-moammar-rifai.html",
-      "doctors/dr-moheb-silwadi.html",
-      "doctors/dr-munir-silwadi.html",
-      "doctors/dr-nachiket-shah.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html",
-      "treatments/cosmetic-dentistry.html",
-      "treatments/dental-implants.html",
-      "treatments/emergency-dentist.html",
-      "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
-    ],
-    "override": true
-  },
-  {
     "source": "Smile and prevention",
     "arabic": "الابتسامة والوقاية",
     "routes": [
@@ -7050,6 +8317,30 @@
     "arabic": "تخطيط ترميمي يركز على الابتسامة وقشور الأسنان والحشوات التجميلية.",
     "routes": [
       "doctors/dr-moheb-silwadi.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Socket preservation, localized ridge augmentation, bone grafting and connective-tissue grafting.",
+    "arabic": "Socket preservation, localized ridge augmentation, bone grafting and connective-tissue grafting.",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Some symptoms can come from the pulp or tissues around the root. An examination and appropriate imaging are needed to determine the cause.",
+    "arabic": "قد تنشأ بعض الأعراض من لب السن أو الأنسجة المحيطة بالجذر. يلزم الفحص والتصوير المناسب لتحديد السبب.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Space maintenance, interceptive appliances, oral-habit counselling and practical guidance for parents and caregivers.",
+    "arabic": "Space maintenance, interceptive appliances, oral-habit counselling and practical guidance for parents and caregivers.",
+    "routes": [
+      "doctors/dr-kashmira-pawar-jayprakash.html"
     ],
     "override": false
   },
@@ -7084,12 +8375,28 @@
     "override": true
   },
   {
+    "source": "Specialist",
+    "arabic": "الاختصاصي",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Specialist assessment and non-surgical root canal care.",
     "arabic": "تقييم تخصصي وعلاج غير جراحي لقنوات الجذر.",
     "routes": [
       "doctors/dr-ahmed-el-shehri.html"
     ],
     "override": false
+  },
+  {
+    "source": "Specialist assessment and treatment for problems affecting the dental pulp and root canal system, with care focused on preserving the natural tooth whenever clinically appropriate.",
+    "arabic": "تقييم وعلاج تخصصي للمشكلات التي تصيب لب السن ونظام قنوات الجذر، مع التركيز على الحفاظ على السن الطبيعي متى كان ذلك مناسباً سريرياً.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "Specialist care for alignment, gums and the tissues that support your teeth.",
@@ -7101,7 +8408,7 @@
   },
   {
     "source": "Specialist care for braces, aligners, tooth alignment and bite correction.",
-    "arabic": "رعاية تخصصية للتقويم والصفافات وتصحيح اصطفاف الأسنان والإطباق.",
+    "arabic": "رعاية تخصصية لتقويم الأسنان باستخدام التقويم والصفافات الشفافة وتصحيح اصطفاف الأسنان والإطباق.",
     "routes": [
       "index.html"
     ],
@@ -7109,11 +8416,27 @@
   },
   {
     "source": "Specialist care for the gums and supporting tissues around the teeth.",
-    "arabic": "رعاية تخصصية للثة والأنسجة الداعمة المحيطة بالأسنان.",
+    "arabic": "رعاية تخصصية للثة والأنسجة الداعمة للأسنان.",
     "routes": [
       "index.html"
     ],
     "override": false
+  },
+  {
+    "source": "Specialist dental care for children",
+    "arabic": "رعاية أسنان تخصصية للأطفال",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Specialist endodontic care is provided by clinicians whose practice focuses on diagnosis and treatment of the dental pulp and root canal system.",
+    "arabic": "يقدم رعاية علاج الجذور اختصاصيون يركز عملهم على تشخيص وعلاج لب السن ونظام قنوات الجذر.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "Specialist endodontics",
@@ -7125,11 +8448,24 @@
   },
   {
     "source": "Specialist Endodontics",
-    "arabic": "اختصاصي علاج الجذور",
+    "arabic": "علاج جذور الأسنان التخصصي",
     "routes": [
-      "doctors/dr-munir-silwadi.html"
+      "doctors/dr-munir-silwadi.html",
+      "treatments/endodontics.html"
     ],
-    "override": false
+    "override": true
+  },
+  {
+    "source": "Specialist Endodontist",
+    "arabic": "اختصاصي علاج جذور الأسنان",
+    "routes": [
+      "index.html",
+      "doctors.html",
+      "doctors/dr-ahmed-el-shehri.html",
+      "doctors/dr-lana-masoud.html",
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "Specialist expertise. Personal care.",
@@ -7183,7 +8519,29 @@
     "source": "Specialist Orthodontist",
     "arabic": "اختصاصي تقويم الأسنان",
     "routes": [
+      "doctors.html",
+      "doctors/dr-krishnamurthy-katta-balajee.html",
+      "doctors/dr-moammar-rifai.html",
       "treatments/orthodontics.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Specialist Pediatric Dentist",
+    "arabic": "اختصاصية طب أسنان الأطفال",
+    "routes": [
+      "index.html",
+      "doctors.html",
+      "doctors/dr-kashmira-pawar-jayprakash.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Specialist periodontal care with implant privilege, tissue regeneration and selected laser-assisted procedures.",
+    "arabic": "Specialist periodontal care with implant privilege, tissue regeneration and selected laser-assisted procedures.",
+    "routes": [
+      "doctors.html"
     ],
     "override": false
   },
@@ -7212,6 +8570,16 @@
     "override": false
   },
   {
+    "source": "Specialist Periodontist & Implantologist",
+    "arabic": "Specialist Periodontist & Implantologist",
+    "routes": [
+      "doctors.html",
+      "doctors/dr-fahed-khalil.html",
+      "doctors/dr-nachiket-shah.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Specialist planning",
     "arabic": "تخطيط تخصصي",
     "routes": [
@@ -7231,12 +8599,43 @@
     "source": "Specialist Prosthodontist & Implantologist",
     "arabic": "اختصاصي تركيبات وزراعة الأسنان",
     "routes": [
-      "index.html",
       "doctors.html",
       "doctors/dr-munir-silwadi.html",
       "treatments/dental-implants.html"
     ],
     "override": false
+  },
+  {
+    "source": "Specialist restorative care focused on repairing or replacing teeth with crowns, bridges, veneers, dentures and implant-supported restorations, including full-mouth rehabilitation when indicated.",
+    "arabic": "Specialist restorative care focused on repairing or replacing teeth with crowns, bridges, veneers, dentures and implant-supported restorations, including full-mouth rehabilitation when indicated.",
+    "routes": [
+      "services.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Specialist restorative care for repairing or replacing teeth with crowns, bridges, veneers, dentures and other prosthetic solutions.",
+    "arabic": "رعاية تخصصية لترميم الأسنان أو تعويض المفقود منها باستخدام التيجان والجسور والقشور والأطقم وغيرها من الحلول.",
+    "routes": [
+      "index.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Specialist-led care",
+    "arabic": "رعاية بإشراف اختصاصيين",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Specialists",
+    "arabic": "الاختصاصيون",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "Specialty",
@@ -7322,7 +8721,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -7336,8 +8737,8 @@
     "override": false
   },
   {
-    "source": "Sunday - Wednesday",
-    "arabic": "الأحد - الأربعاء",
+    "source": "Sun–Wed: 09:00 AM to 09:00 PM",
+    "arabic": "Sun–Wed: 09:00 AM to 09:00 PM",
     "routes": [
       "index.html",
       "about.html",
@@ -7365,7 +8766,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -7382,6 +8785,54 @@
     "arabic": "تورم أو إصابة في الأسنان",
     "routes": [
       "treatments/emergency-dentist.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Swelling or tenderness",
+    "arabic": "تورم أو ألم عند اللمس",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Swelling, gum tenderness or discomfort around a specific tooth.",
+    "arabic": "تورم أو ألم في اللثة أو انزعاج حول سن محدد.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Symptoms",
+    "arabic": "الأعراض",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Symptoms that may need an endodontist.",
+    "arabic": "أعراض قد تستدعي مراجعة اختصاصي علاج الجذور.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Symptoms, clinical tests and imaging are reviewed to establish the diagnosis.",
+    "arabic": "تُراجع الأعراض والفحوص السريرية والصور لتحديد التشخيص.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Syrian Board Certification in Removable Prosthodontics, 2023",
+    "arabic": "Syrian Board Certification in Removable Prosthodontics, 2023",
+    "routes": [
+      "doctors/dr-nasr-keshkiea.html"
     ],
     "override": false
   },
@@ -7415,46 +8866,12 @@
     "override": false
   },
   {
-    "source": "Teeth Whitening",
-    "arabic": "تبييض الأسنان",
+    "source": "Techniques intended to preserve pulp vitality or support regeneration when indicated by the clinical assessment.",
+    "arabic": "Techniques intended to preserve pulp vitality or support regeneration when indicated by the clinical assessment.",
     "routes": [
-      "index.html",
-      "about.html",
-      "services.html",
-      "treatments.html",
-      "doctors.html",
-      "locations.html",
-      "contact.html",
-      "doctors/dr-afnan-mashal.html",
-      "doctors/dr-ahmed-el-shehri.html",
-      "doctors/dr-dana-awad.html",
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-fahed-khalil.html",
-      "doctors/dr-hani-hasbini.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html",
-      "doctors/dr-krishnamurthy-katta-balajee.html",
-      "doctors/dr-lana-masoud.html",
-      "doctors/dr-moammar-rifai.html",
-      "doctors/dr-moheb-silwadi.html",
-      "doctors/dr-munir-silwadi.html",
-      "doctors/dr-nachiket-shah.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html",
-      "treatments/cosmetic-dentistry.html",
-      "treatments/dental-implants.html",
-      "treatments/emergency-dentist.html",
-      "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "doctors/dr-lana-masoud.html"
     ],
-    "override": true
-  },
-  {
-    "source": "Teeth Whitening dental care at Silwadi Dental Center Abu Dhabi",
-    "arabic": "رعاية تبييض الأسنان في مركز سلوادي بأبوظبي",
-    "routes": [
-      "services.html"
-    ],
-    "override": true
+    "override": false
   },
   {
     "source": "Tell our team what you need help with and we can guide you toward the appropriate clinician.",
@@ -7513,6 +8930,14 @@
     "override": false
   },
   {
+    "source": "The canals are cleaned, shaped, disinfected and sealed according to the clinical situation.",
+    "arabic": "تُنظف القنوات وتُشكّل وتُعقّم وتُغلق بحسب الحالة السريرية.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "The centre accepts insurance and submits most claims electronically on behalf of patients. Coverage varies by provider and plan, so contact reception with your insurance details before your visit.",
     "arabic": "يقبل المركز التأمين ويرسل معظم المطالبات إلكترونياً نيابة عن المرضى. تختلف التغطية حسب شركة التأمين والخطة، لذا تواصل مع الاستقبال بتفاصيل تأمينك قبل الزيارة.",
     "routes": [
@@ -7529,12 +8954,28 @@
     "override": false
   },
   {
+    "source": "The dentist checks the teeth, gums, bite and development. Dental X-rays are considered only when clinically indicated.",
+    "arabic": "يفحص الطبيب الأسنان واللثة والإطباق والنمو، وتُطلب الأشعة فقط عند وجود حاجة سريرية.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "The dentist examines the problem before recommending treatment.",
     "arabic": "يفحص طبيب الأسنان المشكلة قبل التوصية بالعلاج.",
     "routes": [
       "treatments/emergency-dentist.html"
     ],
     "override": false
+  },
+  {
+    "source": "The final restoration depends on the tooth, the amount of remaining tooth structure and the clinical situation. Your dentist or specialist will advise on the appropriate restoration after treatment.",
+    "arabic": "يعتمد الترميم النهائي على السن وكمية بنية السن المتبقية والحالة السريرية. سيشرح لك طبيب الأسنان أو الاختصاصي الترميم المناسب بعد العلاج.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "The final restorative stage follows the appropriate clinical steps.",
@@ -7569,6 +9010,22 @@
     "override": true
   },
   {
+    "source": "The tooth is restored as appropriate and reviewed when clinically required.",
+    "arabic": "يُرمم السن بالطريقة المناسبة وتتم متابعته عند الحاجة السريرية.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "The treatment recommended depends on the condition of the tooth, previous care and whether the tooth can be restored appropriately.",
+    "arabic": "يعتمد العلاج الموصى به على حالة السن والعلاج السابق وإمكانية ترميم السن بشكل مناسب.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "There is time for questions at every visit. We explain treatment in plain language, keep your comfort in mind and help you find the right next step.",
     "arabic": "نخصص وقتاً لأسئلتك في كل زيارة. نشرح العلاج بلغة واضحة، ونضع راحتك في الاعتبار، ونساعدك في اختيار الخطوة التالية المناسبة.",
     "routes": [
@@ -7577,23 +9034,18 @@
     "override": false
   },
   {
+    "source": "These symptoms do not always mean root canal treatment is required. The diagnosis depends on the examination and clinical findings.",
+    "arabic": "لا تعني هذه الأعراض دائماً أن علاج الجذور ضروري؛ فالتشخيص يعتمد على الفحص والنتائج السريرية.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Thinking about changing the colour, shape or appearance of your smile? The first step is to understand the health of the teeth and which options are appropriate.",
     "arabic": "هل تفكر في تغيير لون ابتسامتك أو شكلها أو مظهرها؟ تبدأ الخطوة الأولى بفهم صحة الأسنان والخيارات المناسبة لك.",
     "routes": [
       "treatments/cosmetic-dentistry.html"
-    ],
-    "override": false
-  },
-  {
-    "source": "This profile is intentionally limited to the doctor’s confirmed role and location from the centre’s current medical team list. Contact reception for appointment availability and further information.",
-    "arabic": "يقتصر هذا الملف على دور الطبيب وموقعه المؤكدين وفق قائمة الفريق الطبي الحالية في المركز. تواصل مع الاستقبال لمعرفة المواعيد المتاحة والمزيد من المعلومات.",
-    "routes": [
-      "doctors/dr-ehab-hassouneh.html",
-      "doctors/dr-kashmira-pawar-jayprakash.html",
-      "doctors/dr-lana-masoud.html",
-      "doctors/dr-nachiket-shah.html",
-      "doctors/dr-nasr-keshkiea.html",
-      "doctors/dr-sara-ismail.html"
     ],
     "override": false
   },
@@ -7606,8 +9058,8 @@
     "override": true
   },
   {
-    "source": "Thursday & Saturday",
-    "arabic": "الخميس والسبت",
+    "source": "Thu & Sat: 09:00 AM to 06:00 PM",
+    "arabic": "Thu & Sat: 09:00 AM to 06:00 PM",
     "routes": [
       "index.html",
       "about.html",
@@ -7635,7 +9087,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -7649,11 +9103,19 @@
   },
   {
     "source": "Tooth preservation",
-    "arabic": "الحفاظ على الأسنان الطبيعية",
+    "arabic": "الحفاظ على السن",
     "routes": [
-      "doctors/dr-lana-masoud.html"
+      "treatments/endodontics.html"
     ],
-    "override": false
+    "override": true
+  },
+  {
+    "source": "Training",
+    "arabic": "التدريب",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
   },
   {
     "source": "Treat or refer",
@@ -7667,9 +9129,10 @@
     "source": "Treatment",
     "arabic": "العلاج",
     "routes": [
-      "contact.html"
+      "contact.html",
+      "treatments/endodontics.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Treatment information",
@@ -7701,7 +9164,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -7712,6 +9177,14 @@
       "doctors/dr-munir-silwadi.html"
     ],
     "override": false
+  },
+  {
+    "source": "Treatment options",
+    "arabic": "خيارات العلاج",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "Treatment overview",
@@ -7726,6 +9199,14 @@
     "override": false
   },
   {
+    "source": "Treatment room at Silwadi Dental Centre, Bani Yas Tower with Abu Dhabi Corniche view",
+    "arabic": "Treatment room at Silwadi Dental Centre, Bani Yas Tower with Abu Dhabi Corniche view",
+    "routes": [
+      "index.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Treatments",
     "arabic": "العلاجات",
     "routes": [
@@ -7735,7 +9216,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -7754,6 +9237,14 @@
       "about.html"
     ],
     "override": false
+  },
+  {
+    "source": "Understand",
+    "arabic": "فهم الحالة",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
   },
   {
     "source": "Understand the concern and assess the teeth and gums.",
@@ -7800,6 +9291,14 @@
     "arabic": "قد تشمل مشكلات الأسنان العاجلة ألماً شديداً أو سناً مكسوراً أو متشظياً أو حشوة أو تاجاً مفقوداً أو تورماً أو إصابة في الأسنان. اتصل بالمركز ليتحقق الاستقبال من توفر المواعيد ويوجهك إلى الرعاية المناسبة.",
     "routes": [
       "treatments/emergency-dentist.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "Use of Diode and Er:YAG laser techniques for selected periodontal and soft-tissue procedures, together with surgical extractions where clinically indicated.",
+    "arabic": "Use of Diode and Er:YAG laser techniques for selected periodontal and soft-tissue procedures, together with surgical extractions where clinically indicated.",
+    "routes": [
+      "doctors/dr-nachiket-shah.html"
     ],
     "override": false
   },
@@ -7895,18 +9394,26 @@
     "override": false
   },
   {
-    "source": "View Dr. Munir’s profile →",
-    "arabic": "عرض ملف د. منير",
+    "source": "View Bani Yas Tower and Al Raha Mall locations",
+    "arabic": "View Bani Yas Tower and Al Raha Mall locations",
     "routes": [
-      "treatments/dental-implants.html"
+      "index.html"
+    ],
+    "override": false
+  },
+  {
+    "source": "View Doctor Profile",
+    "arabic": "عرض ملف الطبيبة",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
   {
-    "source": "View medical team",
-    "arabic": "عرض الفريق الطبي",
+    "source": "View Dr. Munir’s profile →",
+    "arabic": "عرض ملف د. منير",
     "routes": [
-      "index.html"
+      "treatments/dental-implants.html"
     ],
     "override": true
   },
@@ -7916,6 +9423,14 @@
     "routes": [
       "index.html",
       "doctors.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "View profile →",
+    "arabic": "عرض الملف",
+    "routes": [
+      "treatments/endodontics.html"
     ],
     "override": true
   },
@@ -7966,10 +9481,34 @@
     "override": false
   },
   {
+    "source": "Vital Pulp Therapy & Dental Trauma",
+    "arabic": "علاج اللب الحيوي وإصابات الأسنان",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Vital pulp therapy & regenerative procedures",
+    "arabic": "Vital pulp therapy & regenerative procedures",
+    "routes": [
+      "doctors/dr-lana-masoud.html"
+    ],
+    "override": false
+  },
+  {
     "source": "Waiting area and corridor at Silwadi Dental Centre Al Raha Mall branch in Abu Dhabi",
     "arabic": "منطقة الانتظار والممر في فرع مركز سلوادي بالراحة مول في أبوظبي",
     "routes": [
       "locations.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "We start with your child's symptoms, dental history, medical information and any concerns you want us to know.",
+    "arabic": "نبدأ بأعراض طفلك وتاريخه السني والمعلومات الطبية وأي ملاحظات تود أن نعرفها.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -8006,6 +9545,30 @@
     "override": false
   },
   {
+    "source": "What if my child is scared of the dentist?",
+    "arabic": "ماذا لو كان طفلي خائفاً من طبيب الأسنان؟",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "What is endodontics?",
+    "arabic": "ما هو علاج جذور الأسنان؟",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "What is root canal treatment?",
+    "arabic": "ما هو علاج قناة الجذر؟",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "What orthodontic treatment addresses",
     "arabic": "ما الذي يعالجه تقويم الأسنان؟",
     "routes": [
@@ -8022,10 +9585,28 @@
     "override": false
   },
   {
-    "source": "What to expect",
-    "arabic": "ما الذي تتوقعه؟",
+    "source": "What should I do after a dental injury?",
+    "arabic": "ماذا أفعل بعد إصابة في الأسنان؟",
     "routes": [
-      "treatments/orthodontics.html"
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "What to expect",
+    "arabic": "ما الذي تتوقعه",
+    "routes": [
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "What we help with",
+    "arabic": "مجالات الرعاية",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -8059,7 +9640,9 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/endodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": true
   },
@@ -8093,7 +9676,8 @@
       "treatments/dental-implants.html",
       "treatments/emergency-dentist.html",
       "treatments/general-dentistry.html",
-      "treatments/orthodontics.html"
+      "treatments/orthodontics.html",
+      "treatments/pediatric-dentistry.html"
     ],
     "override": false
   },
@@ -8106,12 +9690,28 @@
     "override": false
   },
   {
+    "source": "When should my child first see a dentist?",
+    "arabic": "متى يجب أن يزور طفلي طبيب الأسنان لأول مرة؟",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "When to call for urgent dental care",
     "arabic": "متى تتصل للحصول على رعاية أسنان عاجلة؟",
     "routes": [
       "treatments/emergency-dentist.html"
     ],
     "override": false
+  },
+  {
+    "source": "When to seek assessment",
+    "arabic": "متى تحتاج إلى تقييم",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "Where to find us",
@@ -8138,6 +9738,30 @@
     "override": true
   },
   {
+    "source": "Why would a tooth need root canal retreatment?",
+    "arabic": "لماذا قد يحتاج السن إلى إعادة علاج الجذور؟",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Wide view of the pediatric dental treatment room at Silwadi Dental Center",
+    "arabic": "منظر واسع لغرفة علاج أسنان الأطفال في مركز سلوادي",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
+    "source": "Will I need a crown after root canal treatment?",
+    "arabic": "هل سأحتاج إلى تاج بعد علاج الجذور؟",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Will I need retainers after treatment?",
     "arabic": "هل سأحتاج إلى مثبتات بعد العلاج؟",
     "routes": [
@@ -8146,12 +9770,28 @@
     "override": false
   },
   {
+    "source": "With over nine years of clinical experience, Dr. Kashmira's work includes preventive and restorative pediatric dentistry, pulp therapy, dental trauma and behavior guidance for children.",
+    "arabic": "بخبرة سريرية تتجاوز تسع سنوات، تشمل ممارسة د. كاشميرا الوقاية والترميم في طب أسنان الأطفال وعلاج اللب وإصابات الأسنان والتوجيه السلوكي للأطفال.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
+  },
+  {
     "source": "Yes. A dental assessment helps identify decay, gum problems, existing restorations or bite issues that may affect the plan.",
     "arabic": "نعم. يساعد فحص الأسنان في اكتشاف التسوس ومشكلات اللثة والتركيبات الموجودة أو مشكلات الإطباق التي قد تؤثر في الخطة.",
     "routes": [
       "treatments/cosmetic-dentistry.html"
     ],
     "override": false
+  },
+  {
+    "source": "Yes. Baby teeth support chewing, speech and space for developing permanent teeth. The right treatment depends on the tooth, symptoms, clinical findings and prognosis.",
+    "arabic": "نعم. تساعد الأسنان اللبنية في المضغ والكلام وتحافظ على المساحة للأسنان الدائمة. يعتمد العلاج المناسب على السن والأعراض والنتائج السريرية والتوقعات العلاجية.",
+    "routes": [
+      "treatments/pediatric-dentistry.html"
+    ],
+    "override": true
   },
   {
     "source": "Yes. If the problem needs specialist care, the dentist can direct you to the appropriate discipline.",
@@ -8184,6 +9824,14 @@
       "contact.html"
     ],
     "override": false
+  },
+  {
+    "source": "Your exact appointment sequence may vary depending on the tooth and diagnosis, but the process generally follows these stages.",
+    "arabic": "قد تختلف مواعيد وخطوات العلاج بحسب السن والتشخيص، لكن المسار عادةً يمر بهذه المراحل.",
+    "routes": [
+      "treatments/endodontics.html"
+    ],
+    "override": true
   },
   {
     "source": "Your request will open in your email app addressed to the appointments team. They will confirm availability and guide you to the right clinician.",

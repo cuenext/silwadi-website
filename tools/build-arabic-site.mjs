@@ -254,11 +254,25 @@ function makeArabicPage(source, route) {
   translateDocument(document, route, dom.window);
   polishArabicStructure(document, route);
 
+  document.querySelectorAll('[data-page-language-switch]').forEach(switcher => {
+    switcher.href = englishUrl(route);
+    switcher.textContent = 'English';
+    switcher.lang = 'en';
+    switcher.hreflang = 'en';
+    switcher.setAttribute('aria-label', 'View this page in English');
+  });
+
   if (!document.querySelector('link[href="/arabic-quality.css"]')) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = '/arabic-quality.css';
     document.head.appendChild(link);
+  }
+
+  if (!document.querySelector('script[src="/arabic-static.js"]')) {
+    const script = document.createElement('script');
+    script.src = '/arabic-static.js';
+    document.body.appendChild(script);
   }
 
   return '<!doctype html>\n' + document.documentElement.outerHTML;

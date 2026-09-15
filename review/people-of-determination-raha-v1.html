@@ -39,9 +39,9 @@
     .pod-clinic-viewport{overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;padding:12px 0 28px}
     .pod-clinic-viewport::-webkit-scrollbar{display:none}
     .pod-clinic-track{display:flex;gap:22px;width:max-content;padding-inline:max(20px,calc((100vw - var(--pod-slide-width))/2))}
-    .pod-clinic-slide{flex:0 0 var(--pod-slide-width);width:var(--pod-slide-width);margin:0;scroll-snap-align:center;opacity:.42;transform:scale(.965);transition:opacity .28s ease,transform .35s cubic-bezier(.22,.75,.24,1);cursor:pointer}
+    .pod-clinic-slide{flex:0 0 var(--pod-slide-width);width:var(--pod-slide-width);aspect-ratio:3/2;overflow:hidden;border-radius:22px;margin:0;scroll-snap-align:center;opacity:.42;transform:scale(.965);transition:opacity .28s ease,transform .35s cubic-bezier(.22,.75,.24,1);cursor:pointer}
     .pod-clinic-slide.is-active{opacity:1;transform:scale(1);cursor:default}
-    .pod-clinic-slide img{display:block;width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:22px;background:#dfecee;box-shadow:0 24px 64px rgba(8,56,71,.16)}
+    .pod-clinic-slide img{display:block;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;border-radius:inherit;background:#dfecee;box-shadow:0 24px 64px rgba(8,56,71,.16)}
     .pod-clinic-controls{display:flex;align-items:center;justify-content:space-between;margin-top:0}
     .pod-clinic-status{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--pod-muted)}
     .pod-clinic-controls__buttons{display:flex;gap:10px}
