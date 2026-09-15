@@ -78,8 +78,14 @@ class PrivatePodReviewTests(unittest.TestCase):
         self.assertEqual(block.count('data-pod-slide'), 7)
         self.assertEqual(block.count("pod-btn--primary"), 1)
 
-    def test_multiple_real_raha_visuals_are_used(self):
-        self.assertIn("al-raha-reception.webp", self.html)
+    def test_complex_needs_section_is_text_only_and_uses_full_width(self):
+        complex_section = re.search(r'<section class="pod-section pod-complex" id="complex-needs">(.*?)</section>', self.html, re.S)
+        self.assertIsNotNone(complex_section)
+        block = complex_section.group(1)
+        self.assertNotIn("al-raha-reception.webp", self.html)
+        self.assertNotIn('class="pod-complex__photo"', block)
+        self.assertIn('class="container pod-complex__grid"', block)
+        self.assertIn('.pod-complex__grid{display:block}', self.html)
         self.assertIn("al-raha-exterior.webp", self.html)
 
     def test_before_visit_strip_is_scannable(self):
