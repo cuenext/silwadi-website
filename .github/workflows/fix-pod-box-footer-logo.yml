@@ -1,0 +1,69 @@
+name: Apply POD and footer visual fixes
+
+on:
+  push:
+    branches:
+      - fix-pod-box-footer-logo
+    paths:
+      - .github/workflows/fix-pod-box-footer-logo.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix-pod-box-footer-logo
+          fetch-depth: 0
+
+      - name: Patch site-wide footer logo and POD mobile care dividers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('styles.css')
+          css = path.read_text(encoding='utf-8')
+
+          old_logo = '.site-footer-logo{display:block;width:108px;height:108px;object-fit:contain;margin:0 0 10px}'
+          new_logo = '.site-footer-logo{display:block;width:108px;height:108px;object-fit:contain;margin:0 0 10px;mix-blend-mode:multiply}'
+          if old_logo not in css and new_logo not in css:
+              raise SystemExit('Expected site-footer-logo rule was not found')
+          css = css.replace(old_logo, new_logo, 1)
+
+          marker = '/* Patch 25: POD mobile dividers + footer logo matte */'
+          override = '''\n\n/* Patch 25: POD mobile dividers + footer logo matte */\n/* The official footer PNG contains a white matte. Multiply lets the real logo sit naturally on the footer background without a visible white square. */\n.site-footer-logo{mix-blend-mode:multiply}\n@media(max-width:700px){\n  .pod-review .pod-care-grid{border:0!important}\n  .pod-review .pod-care-item,\n  .pod-review .pod-care-item:nth-child(3),\n  .pod-review .pod-care-item:nth-child(4){border:0!important;border-bottom:1px solid var(--pod-line)!important}\n  .pod-review .pod-care-item:last-child{border-bottom:0!important}\n}\n'''
+          if marker not in css:
+              css += override
+
+          path.write_text(css, encoding='utf-8')
+          PY
+
+      - name: Verify visual-fix contract
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          css = Path('styles.css').read_text(encoding='utf-8')
+          assert '.site-footer-logo{mix-blend-mode:multiply}' in css
+          assert '.pod-review .pod-care-grid{border:0!important}' in css
+          assert 'border-bottom:1px solid var(--pod-line)!important' in css
+          print('Footer matte and POD mobile outline fixes are present.')
+          PY
+
+      - name: Run repository tests
+        run: |
+          if [ -d tests ]; then
+            python -m unittest discover -s tests -p 'test*.py'
+          fi
+
+      - name: Commit verified changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/fix-pod-box-footer-logo.yml
+          git add styles.css
+          git commit -m 'Fix POD mobile dividers and footer logo matte'
+          git push origin HEAD:fix-pod-box-footer-logo
