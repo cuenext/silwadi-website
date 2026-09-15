@@ -344,3 +344,15 @@ html[lang="ar"] p, html[lang="ar"] a, html[lang="ar"] span, html[lang="ar"] stro
 @media(min-width:1101px){.featured-doctors{grid-template-columns:repeat(5,minmax(0,1fr))}}
 
 .footer-opening-hours__separator{display:block;width:100%;height:1px;background:rgba(8,56,71,.14);margin:14px 0 12px}
+
+
+/* Patch 25: POD mobile dividers + footer logo matte */
+/* The official footer logo has a white matte; multiply makes white inherit the pale footer surface instead of rendering as a square. */
+.site-footer-logo{mix-blend-mode:multiply}
+@media(max-width:700px){
+  .pod-review .pod-care-grid{border:0!important}
+  .pod-review .pod-care-item,
+  .pod-review .pod-care-item:nth-child(3),
+  .pod-review .pod-care-item:nth-child(4){border:0!important;border-bottom:1px solid var(--pod-line)!important}
+  .pod-review .pod-care-item:last-child{border-bottom:0!important}
+}
