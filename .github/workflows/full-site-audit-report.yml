@@ -1,0 +1,312 @@
+name: Exhaustive full-site QA report
+
+on:
+  push:
+    branches: ['audit/full-site-2026-09-16']
+    paths:
+      - '.github/workflows/full-site-audit-report.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run regression suites
+        shell: bash
+        run: |
+          mkdir -p audit-results
+          set +e
+          python -m unittest discover -s tests -p 'test_*.py' -v > audit-results/unittest.log 2>&1
+          echo $? > audit-results/unittest.exit
+          python tests/site_contract_test.py > audit-results/site-contract.log 2>&1
+          echo $? > audit-results/site-contract.exit
+          set -e
+
+      - name: Run exhaustive static and live audit
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urljoin, urlparse
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError, URLError
+          import json, re, ssl, time, xml.etree.ElementTree as ET
+
+          ROOT = Path('.')
+          BASE = 'https://silwadi.ae/'
+          OUT = ROOT / 'audit-results'
+          OUT.mkdir(exist_ok=True)
+          errors=[]; warnings=[]; notices=[]
+
+          class PageParser(HTMLParser):
+              def __init__(self):
+                  super().__init__(convert_charrefs=True)
+                  self.title=[]; self.in_title=False; self.desc=[]; self.canonical=[]; self.hreflang=[]
+                  self.h1=0; self.links=[]; self.images=[]; self.ids=[]; self.forms=[]; self.inputs=[]; self.buttons=[]
+                  self.lang=''; self.dir=''; self.jsonld=[]; self.in_json=False; self.jsonbuf=[]; self.text=[]
+                  self.scripts=[]; self.styles=[]; self.metas={}; self.og={}; self.current_button=None
+              def handle_starttag(self, tag, attrs):
+                  a=dict(attrs)
+                  if tag=='html': self.lang=a.get('lang',''); self.dir=a.get('dir','')
+                  if tag=='title': self.in_title=True
+                  if tag=='meta':
+                      if a.get('name'): self.metas[a.get('name','').lower()]=a.get('content','')
+                      if a.get('property','').startswith('og:'): self.og[a.get('property')]=a.get('content','')
+                      if a.get('name','').lower()=='description': self.desc.append(a.get('content',''))
+                  if tag=='link':
+                      rel=(a.get('rel') or '').lower()
+                      if rel=='canonical': self.canonical.append(a.get('href',''))
+                      if rel=='alternate' and a.get('hreflang'): self.hreflang.append((a.get('hreflang'),a.get('href','')))
+                      if 'stylesheet' in rel and a.get('href'): self.styles.append(a.get('href'))
+                  if tag=='h1': self.h1+=1
+                  if tag=='a': self.links.append(a)
+                  if tag=='img': self.images.append(a)
+                  if a.get('id'): self.ids.append(a['id'])
+                  if tag=='form': self.forms.append(a)
+                  if tag in ('input','select','textarea'): self.inputs.append((tag,a))
+                  if tag=='button': self.current_button={'attrs':a,'text':[]}; self.buttons.append(self.current_button)
+                  if tag=='script':
+                      if a.get('src'): self.scripts.append(a.get('src'))
+                      self.in_json = a.get('type')=='application/ld+json'; self.jsonbuf=[]
+              def handle_endtag(self, tag):
+                  if tag=='title': self.in_title=False
+                  if tag=='button': self.current_button=None
+                  if tag=='script' and self.in_json:
+                      self.jsonld.append(''.join(self.jsonbuf).strip()); self.in_json=False
+              def handle_data(self, data):
+                  if self.in_title: self.title.append(data)
+                  if self.in_json: self.jsonbuf.append(data)
+                  if self.current_button is not None: self.current_button['text'].append(data)
+                  if data.strip(): self.text.append(data.strip())
+
+          tree=ET.parse(ROOT/'sitemap.xml'); ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          urls=[x.text.strip() for x in tree.findall('.//s:loc',ns)]
+          notices.append(f'Sitemap URLs: {len(urls)}')
+          if len(urls)!=len(set(urls)): errors.append('Sitemap contains duplicate URLs')
+
+          def local_file(url):
+              p=urlparse(url).path
+              if p in ('','/'): return ROOT/'index.html'
+              if p.endswith('/'): return ROOT/p.lstrip('/')/'index.html'
+              return ROOT/p.lstrip('/')
+
+          pages={}
+          titles={}; descriptions={}
+          for u in urls:
+              f=local_file(u)
+              if not f.exists():
+                  errors.append(f'SITEMAP_MISSING_FILE | {u} | {f}')
+                  continue
+              raw=f.read_text(encoding='utf-8',errors='replace')
+              p=PageParser(); p.feed(raw); pages[u]=(p,raw,f)
+              title=''.join(p.title).strip()
+              desc=p.desc[0].strip() if p.desc else ''
+              if not title: errors.append(f'NO_TITLE | {f}')
+              elif len(title)>65: warnings.append(f'TITLE_LONG({len(title)}) | {f} | {title}')
+              if title: titles.setdefault(title,[]).append(str(f))
+              if len(p.desc)!=1 or not desc: errors.append(f'META_DESCRIPTION_COUNT({len(p.desc)}) | {f}')
+              elif len(desc)>170: warnings.append(f'META_DESCRIPTION_LONG({len(desc)}) | {f}')
+              if desc: descriptions.setdefault(desc,[]).append(str(f))
+              if p.h1!=1: errors.append(f'H1_COUNT({p.h1}) | {f}')
+              if len(p.canonical)!=1: errors.append(f'CANONICAL_COUNT({len(p.canonical)}) | {f}')
+              elif p.canonical[0]!=u: errors.append(f'CANONICAL_MISMATCH | {f} | {p.canonical[0]} != {u}')
+              langs={x[0] for x in p.hreflang}
+              if not {'en-AE','ar-AE','x-default'}.issubset(langs): errors.append(f'HREFLANG_INCOMPLETE | {f} | {sorted(langs)}')
+              if '/ar/' in u:
+                  if p.lang!='ar' or p.dir!='rtl': errors.append(f'AR_LANG_DIR | {f} | lang={p.lang} dir={p.dir}')
+              elif p.lang!='en': errors.append(f'EN_LANG | {f} | {p.lang}')
+              duplicates=sorted({x for x in p.ids if p.ids.count(x)>1})
+              if duplicates: errors.append(f'DUPLICATE_IDS | {f} | {duplicates}')
+              for img in p.images:
+                  src=img.get('src','')
+                  if img.get('alt') is None: errors.append(f'IMG_NO_ALT | {f} | {src}')
+                  if src and not src.startswith(('http://','https://','data:')):
+                      target=(f.parent/src.split('?',1)[0]).resolve() if not src.startswith('/') else (ROOT/src.lstrip('/').split('?',1)[0]).resolve()
+                      if not target.exists(): errors.append(f'IMG_MISSING_FILE | {f} | {src}')
+                  if src and (not img.get('width') or not img.get('height')): warnings.append(f'IMG_NO_DIMENSIONS | {f} | {src}')
+              for block in p.jsonld:
+                  if block:
+                      try: json.loads(block)
+                      except Exception as e: errors.append(f'INVALID_JSONLD | {f} | {e}')
+              for req in ('og:title','og:description','og:url','og:image'):
+                  if not p.og.get(req): warnings.append(f'MISSING_{req.upper()} | {f}')
+              if not p.metas.get('robots'): warnings.append(f'NO_META_ROBOTS | {f}')
+              for b in p.buttons:
+                  label=''.join(b['text']).strip() or b['attrs'].get('aria-label','')
+                  if not label: errors.append(f'UNLABELED_BUTTON | {f} | {b["attrs"]}')
+              for a in p.links:
+                  href=a.get('href','')
+                  if not href: warnings.append(f'EMPTY_HREF | {f} | {a}')
+                  if a.get('target')=='_blank' and 'noopener' not in (a.get('rel') or ''): warnings.append(f'BLANK_NO_NOOPENER | {f} | {href}')
+              if 'Your email app will open' in raw or 'Your request will open in your email app' in raw:
+                  errors.append(f'STALE_BOOKING_COPY | {f}')
+
+          for title, files in titles.items():
+              if len(files)>1: warnings.append('DUPLICATE_TITLE | '+title+' | '+', '.join(files))
+          for desc, files in descriptions.items():
+              if len(files)>1: warnings.append('DUPLICATE_DESCRIPTION | '+', '.join(files))
+
+          # Language counterpart coverage.
+          su=set(urls)
+          for u in urls:
+              path=urlparse(u).path
+              if '/ar/' in path:
+                  counterpart=BASE.rstrip('/') + path.replace('/ar','',1)
+                  if counterpart.endswith('/'): counterpart=BASE
+              else:
+                  counterpart=BASE+'ar/' if path=='/' else BASE+'ar'+path
+              if counterpart not in su: errors.append(f'MISSING_LANGUAGE_COUNTERPART | {u} -> {counterpart}')
+
+          # Every internal anchor target and local asset reference.
+          for u,(p,raw,f) in pages.items():
+              ids=set(p.ids)
+              for a in p.links:
+                  href=a.get('href','')
+                  if not href or href.startswith(('mailto:','tel:','javascript:','data:','#')): continue
+                  absu=urljoin(u,href); q=urlparse(absu)
+                  if q.netloc and q.netloc!='silwadi.ae': continue
+                  path=q.path or '/'
+                  target=ROOT/'index.html' if path=='/' else ROOT/path.lstrip('/')
+                  if path.endswith('/'): target=target/'index.html'
+                  if not target.exists(): errors.append(f'BROKEN_INTERNAL_LINK | {f} | {href} -> {target}')
+                  if q.fragment and path==urlparse(u).path and q.fragment not in ids: errors.append(f'BROKEN_SAMEPAGE_FRAGMENT | {f} | #{q.fragment}')
+              for href in p.styles+p.scripts:
+                  if not href or href.startswith(('http://','https://','//')): continue
+                  path=href.split('?',1)[0]
+                  target=ROOT/path.lstrip('/') if path.startswith('/') else f.parent/path
+                  if not target.exists(): errors.append(f'BROKEN_LOCAL_ASSET | {f} | {href}')
+
+          # Booking consistency without sending a real appointment.
+          endpoint='https://booking.silwadi.ae/booking-submit.php'
+          app=(ROOT/'app.js').read_text(encoding='utf-8',errors='replace')
+          modal=(ROOT/'booking-modal.js').read_text(encoding='utf-8',errors='replace')
+          if endpoint not in app: errors.append('BOOKING_ENDPOINT_MISSING | app.js')
+          if endpoint not in modal: errors.append('BOOKING_ENDPOINT_MISSING | booking-modal.js')
+          for path in (ROOT/'contact.html',ROOT/'ar/contact.html'):
+              raw=path.read_text(encoding='utf-8',errors='replace')
+              if 'data-consultation-form' not in raw: errors.append(f'BOOKING_FORM_HOOK_MISSING | {path}')
+              for token in ['name="name"','name="phone"','name="email"','name="treatment"','name="time"','name="clinic"','name="privacy-consent"']:
+                  if token not in raw: errors.append(f'BOOKING_FIELD_MISSING | {path} | {token}')
+
+          # Arabic visible-copy leakage scan. This intentionally reports suspects for manual review.
+          allowed_tokens={'Google','WhatsApp','Instagram','Facebook','YouTube','LinkedIn','AED','UAE','Abu','Dhabi','Silwadi','Dental','Center','Centre','Dr','Bani','Yas','Tower','Al','Raha','Mall','F14','F15','C','DOH','BDS','MSc','MClinDent','DDS','DMD','PhD','FRACDS','MOrth','UK','USA','UAE'}
+          phrase_exemptions=('Hollywood Smile','Google Maps','WhatsApp','Instagram','Silwadi Dental Center','Silwadi Dental Centre')
+          latin_re=re.compile(r'[A-Za-z]{3,}(?:[ &/+-]+[A-Za-z]{2,}){0,8}')
+          for u,(p,raw,f) in pages.items():
+              if '/ar/' not in u: continue
+              # Remove scripts/styles before extracting text again.
+              cleaned=re.sub(r'<script\b[^>]*>.*?</script>',' ',raw,flags=re.I|re.S)
+              cleaned=re.sub(r'<style\b[^>]*>.*?</style>',' ',cleaned,flags=re.I|re.S)
+              text=re.sub(r'<[^>]+>',' ',cleaned)
+              text=re.sub(r'\s+',' ',text)
+              suspects=[]
+              for m in latin_re.finditer(text):
+                  s=m.group(0).strip(' -/&+')
+                  if not s or any(ex in s for ex in phrase_exemptions): continue
+                  words=set(re.findall(r'[A-Za-z]{2,}',s))
+                  if words and words.issubset(allowed_tokens): continue
+                  if '@' in s or s.lower().startswith(('http','www')): continue
+                  if s not in suspects: suspects.append(s)
+              for s in suspects[:40]: warnings.append(f'ARABIC_LATIN_VISIBLE_SUSPECT | {f} | {s[:180]}')
+              # Known accessibility/navigation strings that should be Arabic.
+              known=['Dental implant care','Restore & replace teeth','Hollywood Smile & professional whitening','Learn about Silwadi Dental Centre since 1980','View Bani Yas Tower and Al Raha Mall locations','Open navigation','Primary navigation','Chat on WhatsApp','View profile','Book a Consultation']
+              for s in known:
+                  if s in raw: errors.append(f'ARABIC_ENGLISH_LEAK | {f} | {s}')
+
+          # robots.txt
+          robots=(ROOT/'robots.txt').read_text(encoding='utf-8',errors='replace') if (ROOT/'robots.txt').exists() else ''
+          if not robots: errors.append('ROBOTS_MISSING')
+          if 'Sitemap:' not in robots: warnings.append('ROBOTS_NO_SITEMAP')
+          if re.search(r'Disallow:\s*/\s*$',robots,re.M): errors.append('ROBOTS_BLOCKS_ALL')
+
+          # Live GET every sitemap URL; no form submission.
+          live=[]
+          sslctx=ssl.create_default_context()
+          for i,u in enumerate(urls,1):
+              t=time.time()
+              try:
+                  req=Request(u,headers={'User-Agent':'SilwadiSiteAudit/2026-09-16'})
+                  with urlopen(req,timeout=20,context=sslctx) as r:
+                      status=getattr(r,'status',200); ctype=r.headers.get('Content-Type',''); body=r.read(400000)
+                  ms=int((time.time()-t)*1000)
+                  live.append((u,status,ms,ctype))
+                  if status!=200: errors.append(f'LIVE_HTTP_{status} | {u}')
+                  if 'text/html' not in ctype.lower(): warnings.append(f'LIVE_NON_HTML | {u} | {ctype}')
+              except Exception as e:
+                  errors.append(f'LIVE_FAIL | {u} | {type(e).__name__}: {e}')
+              time.sleep(0.05)
+
+          # Booking endpoint reachability only; GET must not create/send anything.
+          try:
+              req=Request(endpoint,headers={'User-Agent':'SilwadiSiteAudit/2026-09-16'})
+              try:
+                  with urlopen(req,timeout=15,context=sslctx) as r: code=getattr(r,'status',200)
+              except HTTPError as e:
+                  code=e.code
+              notices.append(f'Booking endpoint GET response: HTTP {code} (reachability only; no appointment submitted)')
+              if code>=500: errors.append(f'BOOKING_ENDPOINT_SERVER_ERROR | HTTP {code}')
+          except Exception as e: errors.append(f'BOOKING_ENDPOINT_UNREACHABLE | {type(e).__name__}: {e}')
+
+          # Final report.
+          lines=['SILWADI FULL-SITE QA AUDIT','Generated by GitHub Actions on audit branch','']
+          lines+=['SUMMARY',f'Pages in sitemap: {len(urls)}',f'Errors: {len(errors)}',f'Warnings: {len(warnings)}','']
+          lines+=['NOTICES']+notices+['']
+          lines+=['ERRORS']+(errors or ['None'])+['']
+          lines+=['WARNINGS']+(warnings or ['None'])+['']
+          lines+=['LIVE URL RESULTS']+[f'{status} | {ms} ms | {u} | {ctype}' for u,status,ms,ctype in live]
+          (OUT/'full-site-report.txt').write_text('\n'.join(lines),encoding='utf-8')
+          PY
+
+      - name: Lighthouse representative templates
+        shell: bash
+        run: |
+          mkdir -p audit-results/lighthouse
+          for spec in \
+            'home|https://silwadi.ae/' \
+            'services|https://silwadi.ae/services.html' \
+            'doctors|https://silwadi.ae/doctors.html' \
+            'contact|https://silwadi.ae/contact.html' \
+            'locations|https://silwadi.ae/locations.html' \
+            'doctor-profile|https://silwadi.ae/doctors/dr-munir-silwadi.html' \
+            'treatment|https://silwadi.ae/treatments/endodontics.html' \
+            'pediatric|https://silwadi.ae/treatments/pediatric-dentistry.html' \
+            'arabic-home|https://silwadi.ae/ar/' \
+            'arabic-contact|https://silwadi.ae/ar/contact.html' \
+            'arabic-treatment|https://silwadi.ae/ar/treatments/endodontics.html'; do
+            name="${spec%%|*}"; url="${spec#*|}"
+            npx --yes lighthouse "$url" --quiet --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' --only-categories=performance,accessibility,best-practices,seo --output=json --output-path="audit-results/lighthouse/$name.json" || true
+          done
+          python <<'PY'
+          import json,glob,os
+          lines=['LIGHTHOUSE REPRESENTATIVE TEMPLATE SCORES','']
+          for f in sorted(glob.glob('audit-results/lighthouse/*.json')):
+              try:
+                  d=json.load(open(f)); c=d['categories']
+                  scores={k:round(v['score']*100) for k,v in c.items()}
+                  lines.append(f"{os.path.basename(f)} | performance={scores.get('performance')} accessibility={scores.get('accessibility')} best-practices={scores.get('best-practices')} seo={scores.get('seo')}")
+              except Exception as e:
+                  lines.append(f'{f} | ERROR {e}')
+          open('audit-results/lighthouse-summary.txt','w').write('\n'.join(lines))
+          PY
+
+      - name: Commit audit report to audit branch
+        shell: bash
+        run: |
+          git config user.name 'Silwadi QA Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add audit-results/full-site-report.txt audit-results/unittest.log audit-results/unittest.exit audit-results/site-contract.log audit-results/site-contract.exit audit-results/lighthouse-summary.txt
+          if ! git diff --cached --quiet; then
+            git commit -m 'audit: save full-site QA results'
+            git push origin HEAD:audit/full-site-2026-09-16
+          fi
