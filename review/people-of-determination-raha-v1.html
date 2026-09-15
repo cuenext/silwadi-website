@@ -10,7 +10,7 @@
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../styles.css">
   <style>
-    :root{--pod-deep:#052d38;--pod-navy:#083847;--pod-teal:#0f7d8c;--pod-aqua:#52dbe0;--pod-ink:#173b44;--pod-muted:#667c83;--pod-line:#dce7e9;--pod-soft:#f4f8f8;--pod-white:#fff;--pod-mint:#dff2f1;--pod-cream:#f5f1e8;--pod-slide-width:min(82vw,1120px)}
+    :root{--pod-deep:#052d38;--pod-navy:#083847;--pod-teal:#0f7d8c;--pod-aqua:#52dbe0;--pod-ink:#173b44;--pod-muted:#667c83;--pod-line:#dce7e9;--pod-soft:#f4f8f8;--pod-white:#fff;--pod-mint:#dff2f1;--pod-cream:#f5f1e8;--pod-slide-width:min(60vw,760px)}
     body{background:var(--pod-white);color:var(--pod-ink)}
     .pod-private{background:var(--pod-deep);color:#c8dce0;font-size:10px;letter-spacing:.09em;text-transform:uppercase;position:relative;z-index:100}.pod-private .container{height:34px;display:flex;align-items:center;justify-content:space-between;gap:20px}.pod-private strong{color:#9ae6eb}
     .pod-header{position:sticky;top:0;z-index:80;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(8,56,71,.08)}.pod-header__inner{height:74px;display:flex;align-items:center;gap:24px}.pod-brand img{width:62px;height:62px;object-fit:contain}.pod-header .pod-btn{margin-left:auto}
@@ -75,28 +75,31 @@
     .pod-private .container{height:28px}
     .pod-header__inner{height:64px}
     .pod-brand img{width:54px;height:54px}
-    .pod-hero{padding:48px 0 66px;background:linear-gradient(180deg,#fff 0%,#fff 66%,#f7fafb 100%);overflow:hidden}
+    .pod-hero{padding:42px 0 52px;background:linear-gradient(180deg,#fff 0%,#fff 66%,#f7fafb 100%);overflow:hidden}
     .pod-hero__intro{max-width:920px;margin:0 auto;text-align:center;padding:0 20px}
     .pod-hero h1{font-size:clamp(46px,5.2vw,68px);max-width:14ch;margin:0 auto;line-height:.98;letter-spacing:-.052em}
     .pod-hero__lead{max-width:650px;margin:20px auto 0;font-size:16px;line-height:1.65}
     .pod-hero__actions{margin-top:26px}
-    .pod-hero__gallery{margin-top:40px}
+    .pod-hero__gallery{margin-top:26px}
     .pod-hero .pod-clinic{padding:0 0 8px}
     .pod-hero .pod-clinic-viewport{padding-top:8px}
     .pod-hero .pod-clinic-slide img{border-radius:24px}
     .pod-hero .pod-clinic-controls{padding-top:2px}
     @media(max-width:700px){.pod-private{font-size:9px;letter-spacing:.08em}.pod-private .container{height:24px;justify-content:center}.pod-header__inner{height:58px}.pod-brand img{width:48px;height:48px}.pod-header .pod-btn{display:none}.pod-hero{padding:28px 0 44px}.pod-hero__intro{text-align:left;padding:0}.pod-hero .pod-eyebrow{margin-bottom:10px;font-size:10px}.pod-hero h1{font-size:clamp(38px,10.8vw,45px);max-width:10.8ch;margin:0;line-height:.99;letter-spacing:-.048em}.pod-hero__lead{font-size:15px;line-height:1.6;margin:17px 0 0}.pod-hero__actions{margin-top:21px}.pod-hero__actions .pod-btn{width:100%;max-width:370px;min-height:48px}.pod-hero__gallery{margin-top:28px}.pod-hero .pod-clinic{padding:0 0 4px}.pod-clinic-viewport{padding:6px 0 18px}.pod-clinic-controls{padding-inline:20px}}
+
+    .global-header{position:sticky;top:0;z-index:120;background:#fff;border-bottom:1px solid rgba(8,56,71,.08);box-shadow:0 3px 14px rgba(8,56,71,.035)}
+    .global-header__inner{height:76px;display:flex;align-items:center;gap:26px}.global-brand{display:flex;align-items:center;flex:0 0 auto}.global-brand img{width:76px;height:68px;object-fit:contain}.global-nav{margin-left:auto;display:flex;align-items:center;gap:27px;font-size:12px;font-weight:650;color:#375863}.global-nav a{position:relative;padding:30px 0}.global-nav a:after{content:"";position:absolute;left:0;right:100%;bottom:20px;height:1px;background:var(--pod-teal);transition:right .2s ease}.global-nav a:hover:after{right:0}.global-actions{display:flex;align-items:center;gap:10px}.global-language{height:40px;min-width:52px;padding:0 13px;border:1px solid #c8d7da;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;color:var(--pod-navy);font-size:12px;font-weight:800}.global-whatsapp{height:42px;padding:0 14px;border:1px solid #b9e5c8;border-radius:5px;background:#f4fff7;color:#0a6f3a;display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800}.global-whatsapp svg{width:16px;height:16px;color:#0dbf62}.global-book{height:42px;padding:0 17px;border-radius:4px;background:var(--pod-navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}.global-menu-button{display:none;width:42px;height:42px;border:1px solid var(--pod-line);border-radius:4px;background:#fff;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer;margin-left:auto}.global-menu-button span{display:block;width:18px;height:1.5px;background:var(--pod-navy)}.global-mobile-nav{display:none;background:#fff;border-bottom:1px solid var(--pod-line);box-shadow:0 16px 30px rgba(8,56,71,.08)}.global-mobile-nav__inner{padding:12px 0 18px;display:grid;gap:2px}.global-mobile-nav a{padding:13px 4px;border-bottom:1px solid #edf2f3;color:var(--pod-navy);font-size:13px;font-weight:700}.global-mobile-nav__actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.global-mobile-nav__actions a{border:1px solid var(--pod-line);padding:12px;text-align:center;border-radius:4px}.global-mobile-nav__actions a:last-child{background:var(--pod-navy);color:#fff;border-color:var(--pod-navy)}
+    .pod-subnav{position:sticky;top:76px;z-index:110;background:rgba(250,252,252,.97);backdrop-filter:blur(10px);border-bottom:1px solid #e7eef0}.pod-subnav__inner{min-height:42px;display:flex;align-items:center;gap:20px}.pod-subnav__label{flex:0 0 auto;color:#8a9ba1;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;padding-right:18px;border-right:1px solid var(--pod-line)}.pod-subnav__links{display:flex;align-items:center;gap:22px;min-width:0;font-size:10px;font-weight:700;color:#62777e;white-space:nowrap}.pod-subnav__links a:hover{color:var(--pod-teal)}
+    @media(max-width:760px){.global-header__inner{height:68px}.global-brand img{width:68px;height:61px}.global-nav,.global-actions{display:none}.global-menu-button{display:flex}.global-mobile-nav.is-open{display:block}.pod-subnav{top:68px}.pod-subnav__inner{min-height:42px;gap:0;overflow-x:auto;scrollbar-width:none}.pod-subnav__inner::-webkit-scrollbar{display:none}.pod-subnav__label{display:none}.pod-subnav__links{gap:20px;padding-right:10px}}
+
   </style>
 </head>
 <body class="pod-review">
   <div class="pod-private"><div class="container"><span><strong>Private review</strong> · People of Determination — Al Raha</span><span>Not published</span></div></div>
 
-  <header class="pod-header">
-    <div class="container pod-header__inner">
-      <a class="pod-brand" href="#hero" aria-label="Silwadi Dental Center review page"><img src="../assets/silwadi-logo-official.png" alt="Silwadi Dental Center"></a>
-      <a class="pod-btn pod-btn--primary" href="#consultation">Request Appointment</a>
-    </div>
-  </header>
+  <header class="global-header" id="globalHeader"><div class="container global-header__inner"><a class="global-brand" href="/" aria-label="Silwadi Dental Center home"><img src="/assets/silwadi-logo-official.png" alt="Silwadi Dental Center" width="180" height="180"></a><nav class="global-nav" aria-label="Primary navigation"><a href="/services.html">Services <span aria-hidden="true">⌄</span></a><a href="/doctors.html">Doctors</a><a href="/about.html">About</a><a href="/locations.html">Locations</a></nav><div class="global-actions"><a class="global-language" href="/ar/services.html" lang="ar" hreflang="ar" aria-label="عرض الموقع بالعربية">عربي</a><a class="global-whatsapp" href="https://wa.me/971506260418?text=Hello%20Silwadi%20Dental%20Center%2C%20I%27d%20like%20to%20book%20an%20appointment." target="_blank" rel="noopener" aria-label="Chat with Silwadi Dental Center on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2a9.84 9.84 0 0 0-8.43 14.91L2 22l5.22-1.56A9.9 9.9 0 1 0 12.04 2Zm0 17.98a8.03 8.03 0 0 1-4.09-1.12l-.29-.17-3.1.93.94-3.02-.19-.31A8.04 8.04 0 1 1 12.04 19.98Zm4.4-6.03c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.93-1.19-.71-.64-1.2-1.42-1.34-1.66-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.19-.47-.39-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.59 4.11 3.63.57.25 1.02.4 1.37.51.58.18 1.1.16 1.51.1.46-.07 1.43-.58 1.63-1.15.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"/></svg><span>WhatsApp</span></a><a class="global-book" href="/contact.html#consultation-form">Book a Consultation</a></div><button class="global-menu-button" type="button" aria-expanded="false" aria-controls="globalMobileNav" aria-label="Open navigation"><span></span><span></span></button></div></header>
+  <div class="global-mobile-nav" id="globalMobileNav"><div class="container global-mobile-nav__inner"><a href="/services.html">Services</a><a href="/doctors.html">Doctors</a><a href="/about.html">About</a><a href="/locations.html">Locations</a><a href="/ar/services.html" lang="ar" hreflang="ar">عربي</a><div class="global-mobile-nav__actions"><a href="https://wa.me/971506260418?text=Hello%20Silwadi%20Dental%20Center%2C%20I%27d%20like%20to%20book%20an%20appointment." target="_blank" rel="noopener">WhatsApp</a><a href="/contact.html#consultation-form">Book</a></div></div></div>
+  <nav class="pod-subnav" aria-label="On this page"><div class="container pod-subnav__inner"><span class="pod-subnav__label">On this page</span><div class="pod-subnav__links"><a href="#partnership">Partnership</a><a href="#individual-care">Care</a><a href="#complex-needs">Support needs</a><a href="#before-visit">Before your visit</a><a href="#raha">Al Raha</a></div></div></nav>
 
   <main>
     <section class="pod-hero" id="hero">
@@ -262,6 +265,7 @@
       requestAnimationFrame(()=>{jumpTo(trackIndex);updateActive();});
     })();
   </script>
+  <script>(function(){const b=document.querySelector('.global-menu-button');const m=document.getElementById('globalMobileNav');if(!b||!m)return;b.addEventListener('click',()=>{const open=m.classList.toggle('is-open');b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'Close navigation':'Open navigation')});m.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{m.classList.remove('is-open');b.setAttribute('aria-expanded','false');b.setAttribute('aria-label','Open navigation')}));})();</script>
   <script src="../app.js"></script>
 </body>
 </html>
