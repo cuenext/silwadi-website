@@ -17,3 +17,4 @@ jobs:
         run: python -m pip install pytest
       - name: Run treatment review polish contract
         run: python -m pytest tests/test_treatment_refresh_polish.py -q
+      # This workflow is branch-only and will be removed after verification.
