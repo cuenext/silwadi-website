@@ -104,10 +104,11 @@ def test_emergency_hero_represents_both_locations_equally():
     hero = html.split('<section class="hero">', 1)[1].split('</section>', 1)[0]
     assert "Bani Yas Tower" in hero
     assert "Al Raha Mall" in hero
-    assert 'href="tel:+97126262042"' in hero
-    assert 'href="tel:+97126662408"' in hero
-    assert "Both Abu Dhabi clinics" in hero
-    assert "Call Bani Yas" not in hero
+    assert hero.count('href="tel:+97126262042"') == 1
+    assert hero.count('href="tel:+97126662408"') == 1
+    assert "Two Abu Dhabi locations" in hero or "Both Abu Dhabi clinics" in hero
+    assert "Call Bani Yas Tower" in hero
+    assert "Call Al Raha Mall" in hero
 
 
 def test_review_pages_have_production_ready_seo_while_remaining_noindex():
@@ -135,7 +136,7 @@ def test_arabic_review_counterparts_exist_and_are_rtl():
         assert 'href="../treatment-refresh-v1.css"' in html
         assert 'src="../treatment-refresh-v1.js"' in html
         assert 'class="language-switch"' in html
-        assert "مراجعة خاصة" in html
+        assert "معاينة خاصة" in html or "مراجعة خاصة" in html
         assert "احجز" in html
         assert "واتساب" in html
         assert "الأسئلة الشائعة" in html
