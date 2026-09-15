@@ -1,0 +1,53 @@
+name: Temporary fix Endodontics review hero
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-fix-endodontics-review-hero.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Replace tooth illustration with approved clinical image
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('review/endodontics-v4.html')
+          text = path.read_text(encoding='utf-8')
+
+          old_css = '.hero-visual{position:relative;min-height:520px;border:1px solid var(--line);background:linear-gradient(145deg,#edf6f7,#dfeff1);overflow:hidden;box-shadow:var(--shadow)}.tooth-graphic{position:absolute;inset:48px 40px 118px;display:grid;place-items:center}.tooth-graphic svg{width:min(85%,360px);height:auto;filter:drop-shadow(0 20px 25px rgba(8,56,71,.08))}.visual-note{position:absolute;left:28px;right:28px;bottom:28px;padding:20px 22px;background:rgba(255,255,255,.93);border:1px solid rgba(255,255,255,.8);box-shadow:0 12px 28px rgba(8,56,71,.07)}'
+          new_css = '.hero-visual{position:relative;min-height:520px;border:1px solid var(--line);background:#dfeaec;overflow:hidden;box-shadow:var(--shadow)}.hero-visual__image{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center}.hero-visual:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,42,54,0) 42%,rgba(5,42,54,.2) 100%);pointer-events:none}.visual-note{position:absolute;z-index:2;left:28px;right:28px;bottom:28px;padding:20px 22px;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.86);box-shadow:0 12px 28px rgba(8,56,71,.12)}'
+
+          old_html = '<div class="hero-visual"><div class="tooth-graphic"><svg viewBox="0 0 220 260" role="img" aria-label="Simplified tooth and root canal illustration"><path d="M110 20c-30 0-53 12-68 33-12 17-14 36-10 56 4 22 16 34 23 53 8 21 10 62 22 73 9 8 17-1 21-20l12-57c2-9 10-9 12 0l12 57c4 19 12 28 21 20 12-11 14-52 22-73 7-19 19-31 23-53 4-20 2-39-10-56-15-21-38-33-68-33-9 0-17 4-22 4s-13-4-22-4z" fill="#fff" stroke="#0d7c90" stroke-width="4"/><path d="M109 66v128M84 78c17 17 22 36 25 56M134 78c-17 17-22 36-25 56" fill="none" stroke="#90cdd4" stroke-width="5" stroke-linecap="round"/><circle cx="109" cy="64" r="10" fill="#0d7c90"/></svg></div><div class="visual-note">'
+          new_html = '<div class="hero-visual"><img class="hero-visual__image" src="/assets/services/endodontics.webp?v=20260915-review-hero" alt="Root canal treatment under rubber dam at Silwadi Dental Center"><div class="visual-note">'
+
+          if text.count(old_css) != 1:
+              raise SystemExit(f'expected old hero CSS once, found {text.count(old_css)}')
+          if text.count(old_html) != 1:
+              raise SystemExit(f'expected old tooth graphic once, found {text.count(old_html)}')
+
+          text = text.replace(old_css, new_css, 1).replace(old_html, new_html, 1)
+          path.write_text(text, encoding='utf-8')
+
+          final = path.read_text(encoding='utf-8')
+          assert 'hero-visual__image' in final
+          assert '/assets/services/endodontics.webp?v=20260915-review-hero' in final
+          assert 'Simplified tooth and root canal illustration' not in final
+          assert 'tooth-graphic' not in final
+          PY
+
+      - name: Commit review page update
+        run: |
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add review/endodontics-v4.html
+          git commit -m "fix: replace Endodontics review hero illustration"
+          git push
