@@ -1,0 +1,118 @@
+name: Final full-site QA v2
+
+on:
+  push:
+    branches: ['audit/final-full-site-2026-09-16']
+    paths:
+      - '.github/workflows/final-full-site-audit-v2.yml'
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run repository regression suites
+        shell: bash
+        run: |
+          mkdir -p audit-results
+          set +e
+          python -m unittest discover -s tests -p 'test_*.py' -v > audit-results/unittest.txt 2>&1
+          echo $? > audit-results/unittest.exit
+          if [ -f tests/site_contract_test.py ]; then
+            python tests/site_contract_test.py > audit-results/site-contract.txt 2>&1
+            echo $? > audit-results/site-contract.exit
+          fi
+          set -e
+          echo '=== UNITTEST EXIT ==='
+          cat audit-results/unittest.exit
+          tail -n 80 audit-results/unittest.txt || true
+          if [ -f audit-results/site-contract.exit ]; then
+            echo '=== SITE CONTRACT EXIT ==='
+            cat audit-results/site-contract.exit
+            tail -n 80 audit-results/site-contract.txt || true
+          fi
+
+      - name: Run static, live, SEO, link, Arabic and booking audit
+        run: python audit/full_site_static.py
+
+      - name: Install Chromium browser QA dependencies
+        shell: bash
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install --silent playwright@1.55.0
+          npx playwright install --with-deps chromium >/dev/null
+
+      - name: Run browser interaction and mobile rendering audit
+        run: node audit/browser_audit.cjs
+
+      - name: Run Lighthouse representative templates
+        shell: bash
+        run: |
+          mkdir -p audit-results/lighthouse
+          for spec in \
+            'home|https://silwadi.ae/' \
+            'services|https://silwadi.ae/services.html' \
+            'doctors|https://silwadi.ae/doctors.html' \
+            'contact|https://silwadi.ae/contact.html' \
+            'locations|https://silwadi.ae/locations.html' \
+            'doctor-profile|https://silwadi.ae/doctors/dr-munir-silwadi.html' \
+            'treatment|https://silwadi.ae/treatments/endodontics.html' \
+            'pediatric|https://silwadi.ae/treatments/pediatric-dentistry.html' \
+            'arabic-home|https://silwadi.ae/ar/' \
+            'arabic-contact|https://silwadi.ae/ar/contact.html' \
+            'arabic-treatment|https://silwadi.ae/ar/treatments/endodontics.html'; do
+            name="${spec%%|*}"; url="${spec#*|}"
+            npx --yes lighthouse "$url" --quiet --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' --only-categories=performance,accessibility,best-practices,seo --output=json --output-path="audit-results/lighthouse/$name.json" || true
+          done
+          python <<'PY'
+          import glob, json, os
+          lines=['LIGHTHOUSE REPRESENTATIVE SCORES','']
+          for f in sorted(glob.glob('audit-results/lighthouse/*.json')):
+              try:
+                  d=json.load(open(f, encoding='utf-8'))
+                  c=d['categories']
+                  scores={k:round(v['score']*100) for k,v in c.items()}
+                  lines.append(f"{os.path.basename(f)} | performance={scores.get('performance')} accessibility={scores.get('accessibility')} best-practices={scores.get('best-practices')} seo={scores.get('seo')}")
+                  bad=[]
+                  for aid,a in d.get('audits',{}).items():
+                      score=a.get('score')
+                      mode=a.get('scoreDisplayMode')
+                      if score is not None and score < 1 and mode not in ('notApplicable','informative','manual'):
+                          bad.append((score, aid, a.get('title','')))
+                  for score,aid,title in sorted(bad, key=lambda x:(x[0],x[1]))[:20]:
+                      lines.append(f"  FAIL {score} | {aid} | {title}")
+              except Exception as e:
+                  lines.append(f'{f} | ERROR {e}')
+          open('audit-results/lighthouse-summary.txt','w',encoding='utf-8').write('\n'.join(lines))
+          PY
+          cat audit-results/lighthouse-summary.txt
+
+      - name: Print consolidated reports
+        if: always()
+        shell: bash
+        run: |
+          echo '================ STATIC/LIVE ================'
+          cat audit-results/static-live-report.txt 2>/dev/null || true
+          echo '================ BROWSER ================'
+          cat audit-results/browser-report.txt 2>/dev/null || true
+          echo '================ LIGHTHOUSE ================'
+          cat audit-results/lighthouse-summary.txt 2>/dev/null || true
+          echo '================ REGRESSION EXITS ================'
+          for f in audit-results/*.exit; do [ -f "$f" ] && echo "$f=$(cat "$f")"; done
+
+      - name: Upload complete QA evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: silwadi-final-site-audit-v2
+          path: audit-results/
+          retention-days: 7
