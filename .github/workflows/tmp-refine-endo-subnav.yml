@@ -1,0 +1,123 @@
+name: Temporary refine Endodontics subnav
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-refine-endo-subnav.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  refine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: RED - new utility-strip contract should fail first
+        run: |
+          if python3 - <<'PY'
+          from pathlib import Path
+          s = Path('treatments/endodontics.html').read_text(encoding='utf-8')
+          assert 'class="endo-subnav__label">On this page</span>' in s
+          assert 'class="endo-subnav__title"' not in s
+          assert 'class="endo-subnav__book"' not in s
+          PY
+          then
+            echo 'Pre-implementation contract unexpectedly passed.'
+            exit 1
+          else
+            echo 'Expected pre-implementation failure confirmed.'
+          fi
+
+      - name: GREEN - simplify contextual navigation
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('treatments/endodontics.html')
+          text = path.read_text(encoding='utf-8')
+
+          text, n = re.subn(
+              r'\.endo-subnav\{[^}]*\}',
+              '.endo-subnav{position:sticky;top:76px;z-index:110;background:rgba(250,252,252,.97);backdrop-filter:blur(10px);border-bottom:1px solid #e7eef0}',
+              text,
+              count=1,
+          )
+          if n != 1:
+              raise SystemExit(f'Expected one .endo-subnav rule, changed {n}')
+
+          text, n = re.subn(
+              r'\.endo-subnav__inner\{[^}]*\}',
+              '.endo-subnav__inner{min-height:42px;display:flex;align-items:center;gap:20px}',
+              text,
+              count=1,
+          )
+          if n != 1:
+              raise SystemExit(f'Expected one .endo-subnav__inner rule, changed {n}')
+
+          text, n = re.subn(
+              r'\.endo-subnav__title\{[^}]*\}',
+              '.endo-subnav__label{flex:0 0 auto;color:#8a9ba1;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;padding-right:18px;border-right:1px solid var(--line)}',
+              text,
+              count=1,
+          )
+          if n != 1:
+              raise SystemExit(f'Expected one legacy title rule, changed {n}')
+
+          text, n = re.subn(
+              r'\.endo-subnav__links\{[^}]*\}',
+              '.endo-subnav__links{display:flex;align-items:center;gap:22px;min-width:0;font-size:10px;font-weight:700;color:#62777e;white-space:nowrap}',
+              text,
+              count=1,
+          )
+          if n != 1:
+              raise SystemExit(f'Expected one .endo-subnav__links rule, changed {n}')
+
+          text, n = re.subn(r'\.endo-subnav__book\{[^}]*\}', '', text, count=1)
+          if n != 1:
+              raise SystemExit(f'Expected one .endo-subnav__book rule, removed {n}')
+
+          old_mobile = '.endo-subnav__inner{min-height:46px;gap:16px;overflow-x:auto;scrollbar-width:none}.endo-subnav__inner::-webkit-scrollbar{display:none}.endo-subnav__title{padding-right:16px}.endo-subnav__links{gap:18px}.endo-subnav__book{display:none}'
+          new_mobile = '.endo-subnav__inner{min-height:42px;gap:0;overflow-x:auto;scrollbar-width:none}.endo-subnav__inner::-webkit-scrollbar{display:none}.endo-subnav__label{display:none}.endo-subnav__links{gap:20px;padding-right:10px}'
+          if text.count(old_mobile) != 1:
+              raise SystemExit(f'Expected mobile subnav block once, found {text.count(old_mobile)}')
+          text = text.replace(old_mobile, new_mobile, 1)
+
+          old_markup = '<nav class="endo-subnav" aria-label="Endodontics section navigation"><div class="container endo-subnav__inner"><a class="endo-subnav__title" href="#hero">Endodontics</a><div class="endo-subnav__links"><a href="#symptoms">Symptoms</a><a href="#treatments">Treatments</a><a href="#process">What to expect</a><a href="#specialists">Specialists</a><a href="#faq">FAQ</a></div><a class="endo-subnav__book" href="#consultation">Book Appointment</a></div></nav>'
+          new_markup = '<nav class="endo-subnav" aria-label="On this page"><div class="container endo-subnav__inner"><span class="endo-subnav__label">On this page</span><div class="endo-subnav__links"><a href="#symptoms">Symptoms</a><a href="#treatments">Treatments</a><a href="#process">What to expect</a><a href="#specialists">Specialists</a><a href="#faq">FAQ</a></div></div></nav>'
+          if text.count(old_markup) != 1:
+              raise SystemExit(f'Expected old subnav markup once, found {text.count(old_markup)}')
+          text = text.replace(old_markup, new_markup, 1)
+
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Verify refined navigation contract
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          s = Path('treatments/endodontics.html').read_text(encoding='utf-8')
+          assert s.count('class="global-header"') == 1
+          assert s.count('class="endo-subnav"') == 1
+          assert 'class="endo-subnav__label">On this page</span>' in s
+          assert 'class="endo-subnav__title"' not in s
+          assert 'class="endo-subnav__book"' not in s
+          assert 'Book a Consultation' in s
+          assert s.count('Book Appointment') == 0
+          for anchor in ['#symptoms','#treatments','#process','#specialists','#faq']:
+              assert anchor in s
+          assert '<meta name="robots" content="index,follow,max-image-preview:large">' in s
+          assert '<link rel="canonical" href="https://silwadi.ae/treatments/endodontics.html">' in s
+          print('Refined Endodontics subnav contract passed')
+          PY
+
+      - name: Commit refined subnav
+        run: |
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add treatments/endodontics.html
+          git commit -m "refine: simplify Endodontics contextual navigation"
+          git push
