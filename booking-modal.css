@@ -31,12 +31,12 @@ body.booking-modal-open{overflow:hidden}
 .booking-modal__success-title{margin:0;color:#062f3b;font-size:clamp(30px,5vw,38px);line-height:1.08;letter-spacing:-.035em;font-weight:750}
 .booking-modal__success-copy{max-width:390px;margin:15px auto 0;color:#627b83;font-size:15px;line-height:1.65}
 .booking-modal__success-done{min-width:170px;min-height:50px;margin-top:28px;border-radius:11px}
-html[dir="rtl"] .booking-modal__surface,.booking-modal__surface[dir="rtl"]{font-family:"Tajawal",Tahoma,Arial,sans-serif;text-align:right}
+html[dir="rtl"] .booking-modal__surface,.booking-modal__surface[dir="rtl"]{font-family:"Tajawal","IBM Plex Sans Arabic",Arial,sans-serif;text-align:right}
 .booking-modal__surface[dir="rtl"] .booking-modal__close{right:auto;left:16px}
 .booking-modal__surface[dir="rtl"] .booking-modal__head{padding-right:0;padding-left:54px}
 .booking-modal__surface[dir="rtl"] .booking-modal__eyebrow{letter-spacing:0;text-transform:none}
 .booking-modal__surface[dir="rtl"] .booking-modal__head h2{letter-spacing:0;line-height:1.18}
-.booking-modal__surface[dir="rtl"] .booking-modal__form label,.booking-modal__surface[dir="rtl"] .booking-modal__form input,.booking-modal__surface[dir="rtl"] .booking-modal__form select,.booking-modal__surface[dir="rtl"] .booking-modal__form textarea{text-align:right;direction:rtl;font-family:"Tajawal",Tahoma,Arial,sans-serif}
+.booking-modal__surface[dir="rtl"] .booking-modal__form label,.booking-modal__surface[dir="rtl"] .booking-modal__form input,.booking-modal__surface[dir="rtl"] .booking-modal__form select,.booking-modal__surface[dir="rtl"] .booking-modal__form textarea{text-align:right;direction:rtl;font-family:"Tajawal","IBM Plex Sans Arabic",Arial,sans-serif}
 .booking-modal__surface[dir="rtl"] input[type="tel"],.booking-modal__surface[dir="rtl"] input[type="email"]{direction:ltr;text-align:left}
 .booking-modal__success[dir="rtl"]{text-align:center}
 .booking-modal__success[dir="rtl"] .booking-modal__success-title{letter-spacing:0;line-height:1.2}

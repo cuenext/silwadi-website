@@ -9818,12 +9818,12 @@
     "override": false
   },
   {
-    "source": "Your email app will open with the details you enter. We use them only to respond to this appointment enquiry. Please do not include sensitive medical information in the form.",
-    "arabic": "سيفتح تطبيق البريد الإلكتروني مع التفاصيل التي تدخلها. نستخدمها فقط للرد على استفسار الموعد. يرجى عدم إدخال معلومات طبية حساسة في النموذج.",
+    "source": "Your details are sent securely to our appointments team and used only to respond to this appointment enquiry. Please do not include sensitive medical information in the form.",
+    "arabic": "تُرسل بياناتك بشكل آمن إلى فريق المواعيد لدينا، وتُستخدم فقط للرد على طلب الموعد. يرجى عدم إدخال معلومات طبية حساسة في النموذج.",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   },
   {
     "source": "Your exact appointment sequence may vary depending on the tooth and diagnosis, but the process generally follows these stages.",
@@ -9834,11 +9834,11 @@
     "override": true
   },
   {
-    "source": "Your request will open in your email app addressed to the appointments team. They will confirm availability and guide you to the right clinician.",
-    "arabic": "سيفتح طلبك في تطبيق البريد الإلكتروني موجهاً إلى فريق المواعيد. سيؤكد الفريق التوافر ويوجهك إلى الطبيب المناسب.",
+    "source": "Your request is sent directly to our appointments team. They will confirm availability and guide you to the right clinician.",
+    "arabic": "يُرسل طلبك مباشرةً إلى فريق المواعيد لدينا. سيتواصلون معك لتأكيد التوافر وإرشادك إلى الطبيب المناسب.",
     "routes": [
       "contact.html"
     ],
-    "override": false
+    "override": true
   }
 ]
