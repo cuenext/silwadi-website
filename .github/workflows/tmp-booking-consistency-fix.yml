@@ -1,0 +1,92 @@
+name: Temporary booking consistency fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-booking-consistency-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply booking copy and Arabic font fixes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+
+          # Match the booking modal's Arabic typography exactly to the site-wide Arabic stack.
+          css_path = Path('booking-modal.css')
+          css = css_path.read_text(encoding='utf-8')
+          old_font = '"Tajawal",Tahoma,Arial,sans-serif'
+          new_font = '"Tajawal","IBM Plex Sans Arabic",Arial,sans-serif'
+          count = css.count(old_font)
+          if count != 2:
+              raise SystemExit(f'Expected 2 old Arabic booking font stacks, found {count}')
+          css_path.write_text(css.replace(old_font, new_font), encoding='utf-8')
+
+          # The contact-page form already submits directly; remove obsolete mail-app wording.
+          contact_path = Path('contact.html')
+          html = contact_path.read_text(encoding='utf-8')
+          replacements = {
+              'Your request will open in your email app addressed to the appointments team. They will confirm availability and guide you to the right clinician.':
+                  'Your request is sent directly to our appointments team. They will confirm availability and guide you to the right clinician.',
+              'Your email app will open with the details you enter. We use them only to respond to this appointment enquiry. Please do not include sensitive medical information in the form.':
+                  'Your details are sent securely to our appointments team and used only to respond to this appointment enquiry. Please do not include sensitive medical information in the form.',
+          }
+          for old, new in replacements.items():
+              count = html.count(old)
+              if count != 1:
+                  raise SystemExit(f'Expected one contact copy marker, found {count}: {old[:45]}')
+              html = html.replace(old, new, 1)
+          contact_path.write_text(html, encoding='utf-8')
+
+          # Provide reviewed Arabic equivalents so the generated Arabic contact page is natural.
+          overrides_path = Path('data/arabic-quality-overrides-extra.json')
+          overrides = json.loads(overrides_path.read_text(encoding='utf-8'))
+          overrides.update({
+              'Your request is sent directly to our appointments team. They will confirm availability and guide you to the right clinician.':
+                  'يُرسل طلبك مباشرةً إلى فريق المواعيد لدينا. سيتواصلون معك لتأكيد التوافر وإرشادك إلى الطبيب المناسب.',
+              'Your details are sent securely to our appointments team and used only to respond to this appointment enquiry. Please do not include sensitive medical information in the form.':
+                  'تُرسل بياناتك بشكل آمن إلى فريق المواعيد لدينا، وتُستخدم فقط للرد على طلب الموعد. يرجى عدم إدخال معلومات طبية حساسة في النموذج.'
+          })
+          overrides_path.write_text(json.dumps(overrides, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install Arabic build dependency
+        run: npm install --no-save --no-package-lock jsdom@24.1.3
+
+      - name: Rebuild static Arabic pages
+        run: |
+          node tools/remove-appointment-notice.mjs
+          node tools/build-arabic-site.mjs
+
+      - name: Verify booking and Arabic regressions
+        run: |
+          python -m unittest tests.test_booking_modal -v
+          python -m unittest tests.test_booking_success_popup -v
+          python -m unittest tests.test_booking_email_validation -v
+          python -m unittest tests.test_arabic_quality_seo_rebuild -v
+          python -m unittest tests.test_arabic_mobile_polish -v
+          git diff --check
+
+      - name: Commit verified fix
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add booking-modal.css contact.html data/arabic-quality-overrides-extra.json ar/ data/arabic-audit.json data/arabic-audit-compact.tsv sitemap.xml
+          git commit -m 'fix: align booking form copy and Arabic font [skip arabic build]'
+          git push
