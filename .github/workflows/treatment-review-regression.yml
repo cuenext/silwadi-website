@@ -1,0 +1,24 @@
+name: Treatment review regression
+
+on:
+  push:
+    paths:
+      - 'review/**'
+      - 'tests/test_treatment_refresh_review_pages.py'
+      - '.github/workflows/treatment-review-regression.yml'
+  pull_request:
+    paths:
+      - 'review/**'
+      - 'tests/test_treatment_refresh_review_pages.py'
+      - '.github/workflows/treatment-review-regression.yml'
+
+jobs:
+  treatment-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run treatment review contract
+        run: python -m pytest -q tests/test_treatment_refresh_review_pages.py
