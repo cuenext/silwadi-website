@@ -1,0 +1,209 @@
+name: Temporary full website audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-full-site-audit.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run complete Python regression suite
+        continue-on-error: true
+        run: |
+          python -m unittest discover -s tests -p 'test_*.py' -v 2>&1 | tee /tmp/unittest.log
+          echo "UNITTEST_EXIT=${PIPESTATUS[0]}" >> "$GITHUB_ENV"
+      - name: Run site contract suite
+        continue-on-error: true
+        run: |
+          python tests/site_contract_test.py 2>&1 | tee /tmp/site-contract.log
+          echo "CONTRACT_EXIT=${PIPESTATUS[0]}" >> "$GITHUB_ENV"
+      - name: Run static and live crawl audit
+        continue-on-error: true
+        run: |
+          cat > /tmp/full_audit.py <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          from urllib.parse import urljoin, urlparse, urldefrag
+          from urllib.request import Request, urlopen
+          import json, re, sys, time, xml.etree.ElementTree as ET
+
+          ROOT = Path('.')
+          BASE = 'https://silwadi.ae/'
+          errors=[]; warnings=[]; info=[]
+
+          class P(HTMLParser):
+              def __init__(self):
+                  super().__init__(convert_charrefs=True)
+                  self.title=[]; self.desc=[]; self.canonical=[]; self.hreflang=[]; self.h1=0
+                  self.links=[]; self.images=[]; self.ids=[]; self.forms=[]; self.scripts=[]; self.lang=''; self.dir=''
+                  self.jsonld=[]; self._in_title=False; self._script_json=False; self._script_buf=[]
+              def handle_starttag(self, tag, attrs):
+                  a=dict(attrs)
+                  if tag=='html': self.lang=a.get('lang',''); self.dir=a.get('dir','')
+                  if tag=='title': self._in_title=True
+                  if tag=='meta' and a.get('name','').lower()=='description': self.desc.append(a.get('content',''))
+                  if tag=='link' and a.get('rel','').lower()=='canonical': self.canonical.append(a.get('href',''))
+                  if tag=='link' and a.get('rel','').lower()=='alternate' and a.get('hreflang'): self.hreflang.append((a.get('hreflang'), a.get('href','')))
+                  if tag=='h1': self.h1+=1
+                  if tag=='a' and a.get('href') is not None: self.links.append(a.get('href'))
+                  if tag=='img': self.images.append((a.get('src',''), a.get('alt')))
+                  if a.get('id'): self.ids.append(a['id'])
+                  if tag=='form': self.forms.append(a)
+                  if tag=='script':
+                      self.scripts.append(a.get('src',''))
+                      self._script_json = a.get('type')=='application/ld+json'
+                      self._script_buf=[]
+              def handle_endtag(self, tag):
+                  if tag=='title': self._in_title=False
+                  if tag=='script' and self._script_json:
+                      self.jsonld.append(''.join(self._script_buf).strip()); self._script_json=False
+              def handle_data(self, data):
+                  if self._in_title: self.title.append(data)
+                  if self._script_json: self._script_buf.append(data)
+
+          tree=ET.parse(ROOT/'sitemap.xml')
+          ns={'s':'http://www.sitemaps.org/schemas/sitemap/0.9'}
+          urls=[x.text.strip() for x in tree.findall('.//s:loc',ns)]
+          if len(urls)!=len(set(urls)): errors.append('Sitemap contains duplicate URLs')
+          info.append(f'Sitemap URLs: {len(urls)}')
+
+          def local_path(url):
+              p=urlparse(url).path
+              if p in ('','/'): return ROOT/'index.html'
+              return ROOT/p.lstrip('/')
+
+          parsers={}
+          for u in urls:
+              f=local_path(u)
+              if not f.exists():
+                  errors.append(f'SITEMAP MISSING FILE {u} -> {f}')
+                  continue
+              raw=f.read_text(encoding='utf-8',errors='replace')
+              p=P(); p.feed(raw); parsers[u]=(p,raw,f)
+              title=''.join(p.title).strip()
+              if not title: errors.append(f'NO TITLE {f}')
+              if len(title)>65: warnings.append(f'LONG TITLE {len(title)} {f}: {title}')
+              if len(p.desc)!=1 or not p.desc[0].strip(): errors.append(f'META DESCRIPTION count={len(p.desc)} {f}')
+              elif len(p.desc[0])>170: warnings.append(f'LONG META DESCRIPTION {len(p.desc[0])} {f}')
+              if p.h1!=1: errors.append(f'H1 COUNT {p.h1} {f}')
+              if len(p.canonical)!=1: errors.append(f'CANONICAL COUNT {len(p.canonical)} {f}')
+              elif p.canonical[0]!=u: errors.append(f'CANONICAL MISMATCH {f}: {p.canonical[0]} != {u}')
+              langs={x[0] for x in p.hreflang}
+              if not {'en-AE','ar-AE','x-default'}.issubset(langs): errors.append(f'HREFLANG INCOMPLETE {f}: {sorted(langs)}')
+              if '/ar/' in u:
+                  if p.lang!='ar' or p.dir!='rtl': errors.append(f'AR LANG/DIR WRONG {f}: lang={p.lang} dir={p.dir}')
+              else:
+                  if p.lang!='en': errors.append(f'EN LANG WRONG {f}: {p.lang}')
+              dupids=sorted({x for x in p.ids if p.ids.count(x)>1})
+              if dupids: errors.append(f'DUPLICATE IDS {f}: {dupids}')
+              for src,alt in p.images:
+                  if alt is None: errors.append(f'IMG MISSING ALT ATTRIBUTE {f}: {src}')
+              for block in p.jsonld:
+                  if block:
+                      try: json.loads(block)
+                      except Exception as e: errors.append(f'INVALID JSON-LD {f}: {e}')
+              if 'Your email app will open' in raw or 'Your request will open in your email app' in raw:
+                  errors.append(f'STALE EMAIL-APP BOOKING COPY {f}')
+
+          # English/Arabic pair coverage.
+          su=set(urls)
+          for u in urls:
+              path=urlparse(u).path
+              if '/ar/' in path:
+                  counterpart=BASE.rstrip('/') + path.replace('/ar','',1)
+                  if counterpart.endswith('/'): counterpart=BASE
+              else:
+                  counterpart=BASE+'ar/' if path=='/' else BASE+'ar'+path
+              if counterpart not in su:
+                  errors.append(f'MISSING LANGUAGE COUNTERPART {u} -> {counterpart}')
+
+          # Local internal file/fragment targets.
+          for u,(p,raw,f) in parsers.items():
+              ids=set(p.ids)
+              for href in p.links:
+                  if not href or href.startswith(('mailto:','tel:','javascript:','data:')): continue
+                  absu=urljoin(u,href); parsed=urlparse(absu)
+                  if parsed.netloc and parsed.netloc!='silwadi.ae': continue
+                  path=parsed.path or '/'; target=ROOT/'index.html' if path=='/' else ROOT/path.lstrip('/')
+                  if path.endswith('/'): target=target/'index.html'
+                  if not target.exists(): errors.append(f'BROKEN INTERNAL LINK {f}: {href} -> {target}')
+                  if parsed.fragment and path==urlparse(u).path and parsed.fragment not in ids:
+                      errors.append(f'BROKEN SAME-PAGE FRAGMENT {f}: #{parsed.fragment}')
+
+          # Booking implementation consistency.
+          endpoint='https://booking.silwadi.ae/booking-submit.php'
+          app=(ROOT/'app.js').read_text(encoding='utf-8')
+          modal=(ROOT/'booking-modal.js').read_text(encoding='utf-8')
+          if endpoint not in app or endpoint not in modal: errors.append('BOOKING ENDPOINT INCONSISTENT between app.js and booking-modal.js')
+          contact=(ROOT/'contact.html').read_text(encoding='utf-8')
+          if 'data-consultation-form' not in contact: errors.append('CONTACT BOOKING FORM HOOK MISSING')
+          for token in ['name="name"','name="phone"','name="email"','name="treatment"','name="time"','name="clinic"','name="privacy-consent"']:
+              if token not in contact: errors.append(f'CONTACT FORM FIELD MISSING {token}')
+
+          # Robots basics.
+          robots=(ROOT/'robots.txt').read_text(encoding='utf-8') if (ROOT/'robots.txt').exists() else ''
+          if 'Sitemap:' not in robots: warnings.append('robots.txt has no Sitemap directive')
+          if re.search(r'Disallow:\s*/\s*$',robots,re.M): errors.append('robots.txt blocks the whole site')
+
+          # Live HTTP availability for every sitemap URL and selected assets.
+          live_fail=[]
+          for i,u in enumerate(urls,1):
+              try:
+                  req=Request(u,headers={'User-Agent':'SilwadiAudit/1.0'})
+                  with urlopen(req,timeout=15) as r:
+                      status=getattr(r,'status',200); body=r.read(300000).decode('utf-8','replace')
+                  if status!=200: live_fail.append(f'{status} {u}')
+                  if '<html' not in body.lower(): live_fail.append(f'NON-HTML {u}')
+              except Exception as e: live_fail.append(f'{u}: {type(e).__name__} {e}')
+          if live_fail: errors.extend('LIVE FAIL '+x for x in live_fail)
+
+          print('=== FULL SITE AUDIT SUMMARY ===')
+          print('\n'.join(info))
+          print(f'ERRORS={len(errors)} WARNINGS={len(warnings)}')
+          if errors:
+              print('\n=== ERRORS ==='); print('\n'.join(errors))
+          if warnings:
+              print('\n=== WARNINGS ==='); print('\n'.join(warnings))
+          sys.exit(1 if errors else 0)
+          PY
+          python /tmp/full_audit.py 2>&1 | tee /tmp/full-audit.log
+          echo "AUDIT_EXIT=${PIPESTATUS[0]}" >> "$GITHUB_ENV"
+      - name: Lighthouse key pages
+        continue-on-error: true
+        run: |
+          mkdir -p /tmp/lighthouse
+          for spec in \
+            'home|https://silwadi.ae/' \
+            'services|https://silwadi.ae/services.html' \
+            'contact|https://silwadi.ae/contact.html' \
+            'endodontics|https://silwadi.ae/treatments/endodontics.html' \
+            'arabic-home|https://silwadi.ae/ar/'; do
+            name="${spec%%|*}"; url="${spec#*|}"
+            npx --yes lighthouse "$url" --quiet --chrome-flags='--headless --no-sandbox --disable-dev-shm-usage' --only-categories=performance,accessibility,best-practices,seo --output=json --output-path="/tmp/lighthouse/$name.json" || true
+          done
+          python - <<'PY'
+          import json, glob, os
+          print('=== LIGHTHOUSE SCORES ===')
+          for f in sorted(glob.glob('/tmp/lighthouse/*.json')):
+              d=json.load(open(f)); c=d['categories']
+              print(os.path.basename(f), ' '.join(f"{k}={round(v['score']*100)}" for k,v in c.items()))
+          PY
+      - name: Final audit status
+        run: |
+          echo "Regression exit: ${UNITTEST_EXIT:-unknown}"
+          echo "Contract exit: ${CONTRACT_EXIT:-unknown}"
+          echo "Static/live audit exit: ${AUDIT_EXIT:-unknown}"
+          if [ "${UNITTEST_EXIT:-1}" != "0" ] || [ "${CONTRACT_EXIT:-1}" != "0" ] || [ "${AUDIT_EXIT:-1}" != "0" ]; then
+            echo 'Audit found issues requiring review.'
+            exit 1
+          fi
