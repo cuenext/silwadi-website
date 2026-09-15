@@ -1,0 +1,93 @@
+name: Temporary Endodontics global header integration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-endo-global-header.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  integrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Contract test should fail before implementation
+        run: |
+          if python3 - <<'PY'
+          from pathlib import Path
+          s = Path('treatments/endodontics.html').read_text(encoding='utf-8')
+          assert 'class="global-header"' in s
+          assert 'class="endo-subnav"' in s
+          PY
+          then
+            echo 'Pre-implementation contract unexpectedly passed.'
+            exit 1
+          else
+            echo 'Expected pre-implementation failure confirmed.'
+          fi
+
+      - name: Integrate global header and contextual Endodontics nav
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('treatments/endodontics.html')
+          text = path.read_text(encoding='utf-8')
+
+          old_css = '.site-header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(8,56,71,.08)}.header-inner{height:74px;display:flex;align-items:center;gap:28px}.brand img{width:62px;height:62px;object-fit:contain}.nav{margin-left:auto;display:flex;gap:24px;font-size:12px;font-weight:650;color:#405d66}.nav a:hover{color:var(--teal)}.header-actions{display:flex;gap:10px}'
+          new_css = '.global-header{position:sticky;top:0;z-index:120;background:#fff;border-bottom:1px solid rgba(8,56,71,.08);box-shadow:0 3px 14px rgba(8,56,71,.035)}.global-header__inner{height:76px;display:flex;align-items:center;gap:26px}.global-brand{display:flex;align-items:center;flex:0 0 auto}.global-brand img{width:76px;height:68px;object-fit:contain}.global-nav{margin-left:auto;display:flex;align-items:center;gap:27px;font-size:12px;font-weight:650;color:#375863}.global-nav a{position:relative;padding:30px 0}.global-nav a:after{content:"";position:absolute;left:0;right:100%;bottom:20px;height:1px;background:var(--teal);transition:right .2s ease}.global-nav a:hover:after{right:0}.global-actions{display:flex;align-items:center;gap:10px}.global-language{height:40px;min-width:52px;padding:0 13px;border:1px solid #c8d7da;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;color:var(--navy);font-size:12px;font-weight:800}.global-whatsapp{height:42px;padding:0 14px;border:1px solid #b9e5c8;border-radius:5px;background:#f4fff7;color:#0a6f3a;display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800}.global-whatsapp svg{width:16px;height:16px;color:#0dbf62}.global-book{height:42px;padding:0 17px;border-radius:4px;background:var(--navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800}.global-menu-button{display:none;width:42px;height:42px;border:1px solid var(--line);border-radius:4px;background:#fff;align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer;margin-left:auto}.global-menu-button span{display:block;width:18px;height:1.5px;background:var(--navy)}.global-mobile-nav{display:none;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 16px 30px rgba(8,56,71,.08)}.global-mobile-nav__inner{padding:12px 0 18px;display:grid;gap:2px}.global-mobile-nav a{padding:13px 4px;border-bottom:1px solid #edf2f3;color:var(--navy);font-size:13px;font-weight:700}.global-mobile-nav__actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.global-mobile-nav__actions a{border:1px solid var(--line);padding:12px;text-align:center;border-radius:4px}.global-mobile-nav__actions a:last-child{background:var(--navy);color:#fff;border-color:var(--navy)}.endo-subnav{position:sticky;top:76px;z-index:110;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}.endo-subnav__inner{min-height:52px;display:flex;align-items:center;gap:24px}.endo-subnav__title{color:var(--navy2);font-size:12px;font-weight:850;white-space:nowrap;padding-right:24px;border-right:1px solid var(--line)}.endo-subnav__links{display:flex;align-items:center;gap:23px;min-width:0;font-size:11px;font-weight:700;color:#557078;white-space:nowrap}.endo-subnav__links a:hover{color:var(--teal)}.endo-subnav__book{margin-left:auto;min-height:34px;padding:0 13px;border-radius:4px;background:var(--navy);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;white-space:nowrap}'
+
+          old_mobile = '@media(max-width:760px){.container{width:min(var(--max),calc(100% - 28px))}.nav,.header-actions{display:none}.private-note .container span:last-child{display:none}.hero{padding-bottom:58px}.hero-grid{padding-top:28px}.hero-copy h1{font-size:44px}.hero-copy .lead{font-size:15px}.section{padding:68px 0}.section-head{margin-bottom:30px}.symptom-grid,.treatment-grid,.process-grid,.doctor-grid{grid-template-columns:1fr}.doctor-card{grid-template-columns:1fr}.doctor-photo{height:auto;min-height:0;aspect-ratio:4/3}.consultation-box{padding:34px 26px;display:block}.consultation-box .btn{margin-top:24px}.footer-grid{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}.footer-bottom{display:block}.footer-bottom span{display:block;margin-top:6px}}'
+          new_mobile = '@media(max-width:760px){.container{width:min(var(--max),calc(100% - 28px))}.global-header__inner{height:68px}.global-brand img{width:68px;height:61px}.global-nav,.global-actions{display:none}.global-menu-button{display:flex}.global-mobile-nav.is-open{display:block}.endo-subnav{top:68px}.endo-subnav__inner{min-height:46px;gap:16px;overflow-x:auto;scrollbar-width:none}.endo-subnav__inner::-webkit-scrollbar{display:none}.endo-subnav__title{padding-right:16px}.endo-subnav__links{gap:18px}.endo-subnav__book{display:none}.private-note .container span:last-child{display:none}.hero{padding-bottom:58px}.hero-grid{padding-top:28px}.hero-copy h1{font-size:44px}.hero-copy .lead{font-size:15px}.section{padding:68px 0}.section-head{margin-bottom:30px}.symptom-grid,.treatment-grid,.process-grid,.doctor-grid{grid-template-columns:1fr}.doctor-card{grid-template-columns:1fr}.doctor-photo{height:auto;min-height:0;aspect-ratio:4/3}.consultation-box{padding:34px 26px;display:block}.consultation-box .btn{margin-top:24px}.footer-grid{grid-template-columns:1fr 1fr}.footer-brand{grid-column:1/-1}.footer-bottom{display:block}.footer-bottom span{display:block;margin-top:6px}}'
+
+          old_header = '<header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="Silwadi Dental Center home"><img src="https://silwadi.ae/assets/silwadi-logo-official.png" alt="Silwadi Dental Center"></a><nav class="nav" aria-label="Endodontics page navigation"><a href="#symptoms">Symptoms</a><a href="#treatments">Treatments</a><a href="#process">What to expect</a><a href="#specialists">Specialists</a><a href="#faq">FAQ</a></nav><div class="header-actions"><a class="btn btn-secondary" href="#specialists">Meet Specialists</a><a class="btn btn-primary" href="#consultation">Book Appointment</a></div></div></header>'
+          new_header = '''<header class="global-header" id="globalHeader"><div class="container global-header__inner"><a class="global-brand" href="/" aria-label="Silwadi Dental Center home"><img src="/assets/silwadi-logo-official.png" alt="Silwadi Dental Center" width="180" height="180"></a><nav class="global-nav" aria-label="Primary navigation"><a href="/services.html">Services <span aria-hidden="true">⌄</span></a><a href="/doctors.html">Doctors</a><a href="/about.html">About</a><a href="/locations.html">Locations</a></nav><div class="global-actions"><a class="global-language" href="/ar/services.html#endodontics" lang="ar" hreflang="ar" aria-label="عرض الموقع بالعربية">عربي</a><a class="global-whatsapp" href="https://wa.me/971506260418?text=Hello%20Silwadi%20Dental%20Center%2C%20I%27d%20like%20to%20book%20an%20appointment." target="_blank" rel="noopener" aria-label="Chat with Silwadi Dental Center on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2a9.84 9.84 0 0 0-8.43 14.91L2 22l5.22-1.56A9.9 9.9 0 1 0 12.04 2Zm0 17.98a8.03 8.03 0 0 1-4.09-1.12l-.29-.17-3.1.93.94-3.02-.19-.31A8.04 8.04 0 1 1 12.04 19.98Zm4.4-6.03c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.93-1.19-.71-.64-1.2-1.42-1.34-1.66-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.19-.47-.39-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.59 4.11 3.63.57.25 1.02.4 1.37.51.58.18 1.1.16 1.51.1.46-.07 1.43-.58 1.63-1.15.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"/></svg><span>WhatsApp</span></a><a class="global-book" href="/contact.html#consultation-form">Book a Consultation</a></div><button class="global-menu-button" type="button" aria-expanded="false" aria-controls="globalMobileNav" aria-label="Open navigation"><span></span><span></span></button></div></header><div class="global-mobile-nav" id="globalMobileNav"><div class="container global-mobile-nav__inner"><a href="/services.html">Services</a><a href="/doctors.html">Doctors</a><a href="/about.html">About</a><a href="/locations.html">Locations</a><a href="/ar/services.html#endodontics" lang="ar" hreflang="ar">عربي</a><div class="global-mobile-nav__actions"><a href="https://wa.me/971506260418?text=Hello%20Silwadi%20Dental%20Center%2C%20I%27d%20like%20to%20book%20an%20appointment." target="_blank" rel="noopener">WhatsApp</a><a href="/contact.html#consultation-form">Book</a></div></div></div><nav class="endo-subnav" aria-label="Endodontics section navigation"><div class="container endo-subnav__inner"><a class="endo-subnav__title" href="#hero">Endodontics</a><div class="endo-subnav__links"><a href="#symptoms">Symptoms</a><a href="#treatments">Treatments</a><a href="#process">What to expect</a><a href="#specialists">Specialists</a><a href="#faq">FAQ</a></div><a class="endo-subnav__book" href="#consultation">Book Appointment</a></div></nav>'''
+
+          if text.count(old_css) != 1:
+              raise SystemExit(f'Expected legacy header CSS once, found {text.count(old_css)}')
+          if text.count(old_mobile) != 1:
+              raise SystemExit(f'Expected mobile media block once, found {text.count(old_mobile)}')
+          if text.count(old_header) != 1:
+              raise SystemExit(f'Expected legacy header markup once, found {text.count(old_header)}')
+
+          text = text.replace(old_css, new_css, 1)
+          text = text.replace(old_mobile, new_mobile, 1)
+          text = text.replace(old_header, new_header, 1)
+
+          toggle_script = '''<script>(function(){const b=document.querySelector('.global-menu-button');const m=document.getElementById('globalMobileNav');if(!b||!m)return;b.addEventListener('click',()=>{const open=m.classList.toggle('is-open');b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'Close navigation':'Open navigation')});m.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{m.classList.remove('is-open');b.setAttribute('aria-expanded','false');b.setAttribute('aria-label','Open navigation')}));})();</script>'''
+          if '</body>' not in text:
+              raise SystemExit('Missing body close')
+          text = text.replace('</body>', toggle_script + '\n</body>', 1)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Contract test after implementation
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          s = Path('treatments/endodontics.html').read_text(encoding='utf-8')
+          assert s.count('class="global-header"') == 1
+          assert s.count('class="endo-subnav"') == 1
+          for href in ['/services.html','/doctors.html','/about.html','/locations.html']:
+              assert href in s
+          assert 'aria-label="Endodontics section navigation"' in s
+          assert 'aria-label="Endodontics page navigation"' not in s
+          assert 'globalMobileNav' in s
+          assert 'global-menu-button' in s
+          assert 'position:sticky;top:76px' in s
+          assert '<meta name="robots" content="index,follow,max-image-preview:large">' in s
+          assert '<link rel="canonical" href="https://silwadi.ae/treatments/endodontics.html">' in s
+          print('Endodontics global header contract passed')
+          PY
+
+      - name: Commit implementation
+        run: |
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add treatments/endodontics.html
+          git commit -m "feat: add global navigation to Endodontics page"
+          git push
