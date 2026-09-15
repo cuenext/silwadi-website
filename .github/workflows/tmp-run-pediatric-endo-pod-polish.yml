@@ -1,0 +1,25 @@
+name: Temporary run pediatric endo pod polish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/triggers/pediatric-endo-pod-polish.txt'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run treatment polish contracts and implementation
+        run: python3 scripts/tmp_pediatric_endo_pod_polish.py
+      - name: Commit verified changes
+        run: |
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add treatments/pediatric-dentistry.html treatments/endodontics.html review/people-of-determination-raha-v1.html services.html treatments.html sitemap.xml
+          git commit -m "feat: publish Pediatric and polish Endodontics POD" || echo "No content changes to commit"
+          git push
