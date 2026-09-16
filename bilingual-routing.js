@@ -184,11 +184,11 @@
     return details;
   };
 
-  const syncSpecializedCareNavigation = () => {
+  const syncSpecializedCareNavigation = forcedArabic => {
     removePediatricFromServicesMenus();
     document.querySelectorAll('[data-specialized-care-nav]').forEach(node => node.remove());
 
-    const arabic = isArabicUi();
+    const arabic = typeof forcedArabic === 'boolean' ? forcedArabic : isArabicUi();
     const copy = specializedCareCopy(arabic);
 
     document.querySelectorAll('.site-nav, .global-nav').forEach(nav => {
@@ -276,7 +276,7 @@
     // Google Reviews track element and its current animation position.
     api.applyLanguage(next);
     syncFooterSocials();
-    syncSpecializedCareNavigation();
+    syncSpecializedCareNavigation(next === 'ar');
 
     const target = next === 'ar'
       ? arabicPathFor(window.location.pathname)
