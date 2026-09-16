@@ -1,0 +1,82 @@
+name: Temporary POD hero heading fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/tmp-pod-heading-one-line.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: RED - reproduce wrapped desktop POD heading
+        shell: bash
+        run: |
+          set +e
+          python3 - <<'PY'
+          from pathlib import Path
+          html = Path('review/people-of-determination-raha-v1.html').read_text(encoding='utf-8')
+          desktop = '.pod-hero h1{font-size:clamp(46px,5.2vw,68px);max-width:14ch;margin:0 auto;line-height:.98;letter-spacing:-.052em}'
+          assert desktop in html, 'Expected current wrapped desktop hero rule was not found'
+          assert 'white-space:nowrap' in desktop and 'max-width:none' in desktop, 'POD desktop hero is still constrained/wrapping'
+          PY
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo 'Regression did not reproduce; aborting.'
+            exit 1
+          fi
+          echo 'RED confirmed: current desktop heading rule forces wrapping.'
+
+      - name: Apply minimal desktop-only heading fix
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('review/people-of-determination-raha-v1.html')
+          html = path.read_text(encoding='utf-8')
+
+          old_intro = '.pod-hero__intro{max-width:920px;margin:0 auto;text-align:center;padding:0 20px}'
+          new_intro = '.pod-hero__intro{max-width:1280px;margin:0 auto;text-align:center;padding:0 20px}'
+          old_h1 = '.pod-hero h1{font-size:clamp(46px,5.2vw,68px);max-width:14ch;margin:0 auto;line-height:.98;letter-spacing:-.052em}'
+          new_h1 = '.pod-hero h1{font-size:clamp(38px,2.8vw,44px);max-width:none;white-space:nowrap;margin:0 auto;line-height:1;letter-spacing:-.045em}'
+          old_mobile = '.pod-hero h1{font-size:clamp(38px,10.8vw,45px);max-width:10.8ch;margin:0;line-height:.99;letter-spacing:-.048em}'
+          new_mobile = '.pod-hero h1{font-size:clamp(38px,10.8vw,45px);max-width:10.8ch;white-space:normal;margin:0;line-height:.99;letter-spacing:-.048em}'
+
+          for old in (old_intro, old_h1, old_mobile):
+              if html.count(old) != 1:
+                  raise SystemExit(f'Expected exactly one match for: {old}')
+
+          html = html.replace(old_intro, new_intro, 1)
+          html = html.replace(old_h1, new_h1, 1)
+          html = html.replace(old_mobile, new_mobile, 1)
+          path.write_text(html, encoding='utf-8')
+          PY
+
+      - name: GREEN - verify desktop one-line and mobile wrapping contract
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          html = Path('review/people-of-determination-raha-v1.html').read_text(encoding='utf-8')
+          assert '.pod-hero__intro{max-width:1280px;' in html
+          assert '.pod-hero h1{font-size:clamp(38px,2.8vw,44px);max-width:none;white-space:nowrap;' in html
+          assert '.pod-hero h1{font-size:clamp(38px,10.8vw,45px);max-width:10.8ch;white-space:normal;' in html
+          assert '<h1>Dental Care for People of Determination in <span>Abu&nbsp;Dhabi</span></h1>' in html
+          print('POD heading contract passes')
+          PY
+          git diff --check
+
+      - name: Commit verified fix
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add review/people-of-determination-raha-v1.html
+          git commit -m 'fix: keep POD hero heading on one desktop line'
+          git push
