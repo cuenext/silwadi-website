@@ -32,6 +32,7 @@
       ['Periodontics', 'Periodontics'],
       ['Endodontics', 'Endodontics'],
       ['Paediatric Dentistry', 'Paediatric Dentistry'],
+      ['People of Determination Dental Care', 'People of Determination Dental Care'],
       ['Other / Not sure', 'Other / Not sure'],
     ],
     clinics: [
@@ -71,6 +72,7 @@
       ['Periodontics', 'علاج اللثة'],
       ['Endodontics', 'علاج جذور الأسنان'],
       ['Paediatric Dentistry', 'طب أسنان الأطفال'],
+      ['People of Determination Dental Care', 'رعاية أسنان لأصحاب الهمم'],
       ['Other / Not sure', 'أخرى / لست متأكداً'],
     ],
     clinics: [

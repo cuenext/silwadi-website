@@ -31,6 +31,16 @@ class BookingModalContract(unittest.TestCase):
         ]:
             self.assertIn(token, modal)
 
+    def test_people_of_determination_is_available_in_all_booking_treatment_lists(self):
+        contact = (ROOT / "contact.html").read_text(encoding="utf-8")
+        arabic_contact = (ROOT / "ar" / "contact.html").read_text(encoding="utf-8")
+        modal = (ROOT / "booking-modal.js").read_text(encoding="utf-8")
+
+        self.assertIn("People of Determination Dental Care", contact)
+        self.assertIn("People of Determination Dental Care", modal)
+        self.assertIn("رعاية أسنان لأصحاب الهمم", modal)
+        self.assertIn("رعاية أسنان لأصحاب الهمم", arabic_contact)
+
     def test_modal_has_global_mobile_accessible_styling(self):
         css = (ROOT / "booking-modal.css").read_text(encoding="utf-8")
         self.assertIn('.booking-modal{', css)
