@@ -1,0 +1,183 @@
+name: Temporary POD Arabic publisher
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/tmp-pod-arabic-publish.yml']
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --no-save --no-package-lock jsdom@24.1.3
+      - name: Patch POD Arabic translations and exact language route
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import json
+
+          overrides_path = Path('data/arabic-quality-overrides-critical.json')
+          overrides = json.loads(overrides_path.read_text(encoding='utf-8'))
+          overrides.update({
+            'People of Determination · Al Raha Mall':'أصحاب الهمم · الراحة مول',
+            'Dental Care for People of Determination in':'رعاية أسنان أصحاب الهمم في',
+            'Respectful dental care with an environment and visit plan shaped around the individual patient.':'رعاية أسنان باحترام واهتمام، ضمن بيئة وخطة زيارة تُهيّأ وفق احتياجات كل مريض.',
+            'Request an Appointment':'اطلب موعداً',
+            'Request Appointment':'اطلب موعداً',
+            'Official partnership · 10 April 2026':'شراكة رسمية · 10 أبريل 2026',
+            'Official Partnership with Zayed Authority for People of Determination':'شراكة رسمية مع مؤسسة زايد العليا لأصحاب الهمم',
+            'The formal MoU establishes an approved referral pathway for specialized dental services and supports more coordinated access to care for People of Determination.':'تُرسّخ مذكرة التفاهم مسار إحالة معتمداً لخدمات طب الأسنان التخصصية، وتدعم وصولاً أكثر تنسيقاً إلى الرعاية لأصحاب الهمم.',
+            'View official announcement ↗':'عرض الإعلان الرسمي',
+            'Greater Access to Specialized Care':'وصول أفضل إلى الرعاية التخصصية',
+            'A More Inclusive Community':'مجتمع أكثر شمولاً',
+            'Healthier Smiles, Brighter Futures':'ابتسامات أكثر صحة ومستقبل أكثر إشراقاً',
+            'Care designed around the individual':'رعاية مصممة حول احتياجات الفرد',
+            'Thoughtful support, without making the visit feel complicated.':'دعم مدروس من دون تعقيد تجربة الزيارة.',
+            'Practical needs can be shared before the appointment so the Al Raha team can prepare the environment, communication and clinical approach appropriately.':'يمكن مشاركة الاحتياجات العملية قبل الموعد حتى يتمكن فريق الراحة من تهيئة البيئة وطريقة التواصل والنهج السريري بالشكل المناسب.',
+            'Accessible treatment environment':'بيئة علاج ميسّرة',
+            'A dedicated treatment environment at Al Raha supports patients who may need additional space or mobility accommodation.':'توفر غرفة العلاج المخصصة في الراحة مساحة وتجهيزات تساعد المرضى الذين قد يحتاجون إلى مساحة إضافية أو ترتيبات للحركة.',
+            'Individual care planning':'تخطيط فردي للرعاية',
+            'Relevant medical, mobility and support information can be shared before the visit and considered by the clinical team.':'يمكن مشاركة المعلومات الطبية واحتياجات الحركة والدعم قبل الزيارة ليأخذها الفريق السريري في الاعتبار.',
+            'Communication & sensory support':'دعم التواصل والاحتياجات الحسية',
+            'Tell reception about communication preferences, sensory considerations or routines that may help make the appointment clearer.':'أخبر فريق الاستقبال بتفضيلات التواصل أو الاعتبارات الحسية أو الروتين الذي قد يجعل الموعد أوضح وأكثر راحة.',
+            'Family & caregiver collaboration':'التعاون مع الأسرة ومقدّم الرعاية',
+            'Where appropriate, a family member or caregiver can help communicate history, preferences and practical support needs.':'عند الحاجة، يمكن لأحد أفراد الأسرة أو مقدّم الرعاية المساعدة في توضيح التاريخ الصحي والتفضيلات واحتياجات الدعم العملية.',
+            'Designed for broader support needs':'مصمم لاحتياجات دعم أوسع',
+            'A clinical setting built with access in mind.':'بيئة سريرية تراعي سهولة الوصول.',
+            'The official Zayed Authority announcement describes the center’s treatment environment as designed to accommodate People of Determination across different support needs.':'يوضح الإعلان الرسمي أن بيئة العلاج في المركز صُممت لاستيعاب أصحاب الهمم باختلاف احتياجات الدعم.',
+            'Environment designed to accommodate wheelchair users.':'بيئة مصممة لاستيعاب مستخدمي الكراسي المتحركة.',
+            'Designed to support individuals who rely on medical support devices, including oxygen machines and feeding tubes.':'مصممة لدعم الأشخاص الذين يعتمدون على أجهزة دعم طبية، بما في ذلك أجهزة الأكسجين وأنابيب التغذية.',
+            'Staff training under the partnership includes communication and inclusive healthcare support.':'يشمل التدريب ضمن الشراكة أساليب التواصل ودعم الرعاية الصحية الشاملة.',
+            'These points reflect the Zayed Authority announcement of 10 April 2026. Individual appointment suitability and clinical requirements are assessed by the treating team.':'تعكس هذه النقاط الإعلان الرسمي الصادر في 10 أبريل 2026. وتُقيّم ملاءمة الموعد والمتطلبات السريرية لكل حالة بواسطة الفريق المعالج.',
+            'Read the official source':'قراءة المصدر الرسمي',
+            'Before your visit':'قبل زيارتك',
+            'Tell our Al Raha reception team about anything that may help us prepare appropriately.':'أخبر فريق الاستقبال في فرع الراحة بأي معلومات قد تساعدنا على الاستعداد للزيارة بالشكل المناسب.',
+            'Mobility':'الحركة',
+            'Communication':'التواصل',
+            'Sensory needs':'الاحتياجات الحسية',
+            'Medical support':'الدعم الطبي',
+            'Caregiver requirements':'متطلبات مقدّم الرعاية',
+            'Al Raha Mall branch':'فرع الراحة مول',
+            'Plan your visit to Al Raha.':'خطط لزيارتك إلى فرع الراحة.',
+            'Contact reception before your appointment if you would like to discuss access or support considerations.':'تواصل مع الاستقبال قبل موعدك إذا رغبت في مناقشة أي اعتبارات تتعلق بسهولة الوصول أو الدعم.',
+            'Opening hours':'ساعات العمل',
+            'Care setting':'بيئة الرعاية',
+            'Saturday–Thursday 10:00 AM–7:00 PM · Friday closed':'السبت–الخميس 10:00 صباحاً–7:00 مساءً · الجمعة مغلق',
+            'Accessible dental treatment room available at the Al Raha branch.':'غرفة علاج أسنان ميسّرة متاحة في فرع الراحة.',
+            'Call Al Raha':'اتصل بفرع الراحة',
+            'Tell us how we can support the visit.':'أخبرنا كيف يمكننا دعم الزيارة.',
+            'Request an appointment and share any access or support considerations with our Al Raha team in advance.':'اطلب موعداً وشارك أي اعتبارات تتعلق بسهولة الوصول أو الدعم مع فريقنا في فرع الراحة مسبقاً.',
+            'On this page':'في هذه الصفحة',
+            'Partnership':'الشراكة',
+            'Support needs':'احتياجات الدعم',
+            'Al Raha':'الراحة مول',
+            'Accessible dental treatment room photo gallery':'معرض صور غرفة علاج الأسنان الميسّرة',
+            'Accessible dental treatment room photos':'صور غرفة علاج الأسنان الميسّرة',
+            'Previous clinic photo':'الصورة السابقة للعيادة',
+            'Next clinic photo':'الصورة التالية للعيادة',
+            'Information you can share before your appointment':'معلومات يمكنك مشاركتها قبل الموعد',
+            'Official partnership logos':'شعارات الشراكة الرسمية',
+            'Wide view of the accessible dental treatment room at Silwadi Dental Center, Al Raha Mall':'منظر واسع لغرفة علاج الأسنان الميسّرة في مركز سلوادي بالراحة مول',
+            'Wide angled view of the accessible treatment room and dental equipment at Al Raha Mall':'منظر جانبي واسع لغرفة العلاج الميسّرة وتجهيزات الأسنان في الراحة مول',
+            'Elevated view of the wheelchair-accessible dental setup at Silwadi Al Raha':'منظر مرتفع لتجهيزات علاج الأسنان المهيأة لمستخدمي الكراسي المتحركة في سلوادي الراحة',
+            'Side view of the wheelchair-accessible dental chair and treatment equipment at Silwadi Al Raha':'منظر جانبي لكرسي وتجهيزات علاج الأسنان المهيأة لمستخدمي الكراسي المتحركة في سلوادي الراحة',
+            'Close view of the accessible dental chair and instrument console at Silwadi Al Raha':'منظر قريب لكرسي الأسنان الميسّر ووحدة الأدوات في سلوادي الراحة',
+            'Front view of the accessible dental room with treatment equipment at Silwadi Al Raha':'منظر أمامي لغرفة علاج الأسنان الميسّرة وتجهيزاتها في سلوادي الراحة',
+            'Close detail of the integrated accessible dental equipment beside the wheelchair at Silwadi Al Raha':'تفاصيل قريبة لتجهيزات الأسنان الميسّرة بجانب الكرسي المتحرك في سلوادي الراحة',
+            'Silwadi Dental Center Al Raha Mall location':'مركز سلوادي لطب الأسنان في الراحة مول',
+            'Dr. Mohammed Munir Dental Center People of Determination logo':'شعار مركز الدكتور محمد منير لطب الأسنان لأصحاب الهمم',
+            'Zayed Authority for People of Determination logo':'شعار مؤسسة زايد العليا لأصحاب الهمم',
+            'Signing ceremony for the partnership between Zayed Authority for People of Determination and Dr. Mohammed Munir Dental Center':'مراسم توقيع الشراكة بين مؤسسة زايد العليا لأصحاب الهمم ومركز الدكتور محمد منير لطب الأسنان'
+          })
+          overrides_path.write_text(json.dumps(overrides, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+          page = Path('treatments/people-of-determination.html')
+          html = page.read_text(encoding='utf-8')
+          html = html.replace('class="global-language" href="/ar/services.html" lang="ar" hreflang="ar"', 'class="global-language" data-page-language-switch href="/ar/treatments/people-of-determination.html" lang="ar" hreflang="ar"')
+          html = html.replace('<a href="/ar/services.html" lang="ar" hreflang="ar">عربي</a>', '<a data-page-language-switch href="/ar/treatments/people-of-determination.html" lang="ar" hreflang="ar">عربي</a>')
+          if 'property="og:locale:alternate"' not in html:
+              html = html.replace('<meta property="og:locale" content="en_AE">', '<meta property="og:locale" content="en_AE">\n<meta property="og:locale:alternate" content="ar_AE">')
+          page.write_text(html, encoding='utf-8')
+          PY
+      - name: Generate Arabic counterpart
+        run: node tools/build-arabic-site.mjs
+      - name: Keep only POD-related generated changes
+        shell: bash
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          keep = {
+            'data/arabic-quality-overrides-critical.json',
+            'treatments/people-of-determination.html',
+            'ar/treatments/people-of-determination.html',
+            'sitemap.xml',
+          }
+          rows = subprocess.check_output(['git','status','--porcelain=v1','-z']).decode().split('\0')
+          for row in rows:
+            if not row: continue
+            path = row[3:]
+            if path in keep: continue
+            if row.startswith('??'):
+              p = Path(path)
+              if p.is_file(): p.unlink()
+            else:
+              subprocess.run(['git','checkout','--',path], check=True)
+          PY
+      - name: Add and run focused POD Arabic regression
+        shell: bash
+        run: |
+          cat > tests/test_people_of_determination_arabic.py <<'PY'
+          from pathlib import Path
+          import unittest
+
+          ROOT = Path(__file__).resolve().parents[1]
+          EN = ROOT / 'treatments' / 'people-of-determination.html'
+          AR = ROOT / 'ar' / 'treatments' / 'people-of-determination.html'
+
+          class PodArabic(unittest.TestCase):
+              def test_exact_counterparts_exist(self):
+                  self.assertTrue(AR.exists())
+                  en = EN.read_text(encoding='utf-8')
+                  ar = AR.read_text(encoding='utf-8')
+                  self.assertIn('/ar/treatments/people-of-determination.html', en)
+                  self.assertIn('https://silwadi.ae/treatments/people-of-determination.html', ar)
+                  self.assertIn('<html lang="ar" dir="rtl">', ar)
+                  self.assertIn('أصحاب الهمم', ar)
+                  self.assertIn('رعاية أسنان أصحاب الهمم', ar)
+                  self.assertNotIn('علاج جذور الأسنان في أبوظبي', ar)
+
+              def test_gallery_is_preserved(self):
+                  ar = AR.read_text(encoding='utf-8')
+                  for name in ('DSCF2857.webp','DSCF2848.webp','DSCF2860.webp','DSCF2868.webp','DSCF2873.webp','DSCF2877.webp','DSCF2880.webp'):
+                      self.assertIn(name, ar)
+                  self.assertIn('<span>07</span>', ar)
+
+              def test_sitemap_contains_arabic_pod(self):
+                  sitemap = (ROOT / 'sitemap.xml').read_text(encoding='utf-8')
+                  self.assertIn('https://silwadi.ae/ar/treatments/people-of-determination.html', sitemap)
+
+          if __name__ == '__main__': unittest.main()
+          PY
+          python3 tests/test_people_of_determination_arabic.py
+          python3 tests/test_people_of_determination_gallery.py
+          git diff --check
+      - name: Commit verified POD Arabic page
+        shell: bash
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add data/arabic-quality-overrides-critical.json treatments/people-of-determination.html ar/treatments/people-of-determination.html sitemap.xml tests/test_people_of_determination_arabic.py
+          git commit -m 'fix: publish Arabic People of Determination page [skip arabic build]'
+          git push
