@@ -23,6 +23,15 @@
     }
   };
 
+  const loadSpecializedCareNavStyles = () => {
+    if (document.querySelector('link[data-specialized-care-nav-styles]')) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = '/specialized-care-nav.css?v=20260916-live1';
+    link.setAttribute('data-specialized-care-nav-styles', '');
+    document.head.appendChild(link);
+  };
+
   const syncFooterSocials = () => {
     const instagram = document.querySelector('a.footer-social-link[href*="instagram.com"]');
     if (!instagram) return;
@@ -65,11 +74,153 @@
     partnership.insertAdjacentElement('afterend', gallery);
   };
 
+  const isArabicUi = () => {
+    const apiLanguage = window.SilwadiLanguage?.getLanguage?.();
+    return apiLanguage === 'ar'
+      || document.documentElement.lang?.toLowerCase().startsWith('ar')
+      || document.documentElement.dir === 'rtl'
+      || document.body?.classList.contains('language-ar')
+      || window.location.pathname.startsWith('/ar/');
+  };
+
+  const removePediatricFromServicesMenus = () => {
+    document.querySelectorAll('.services-mega__grid a, .mobile-services__links a').forEach(link => {
+      const href = (link.getAttribute('href') || '').toLowerCase();
+      const label = (link.textContent || '').trim().toLowerCase();
+      const isPediatric = href.includes('pediatric-dentistry')
+        || href.includes('#pedodontics')
+        || label.includes('pedodontics')
+        || label.includes('طب أسنان الأطفال')
+        || label.includes('أسنان الأطفال');
+      if (isPediatric) link.remove();
+    });
+  };
+
+  const specializedCareCopy = arabic => arabic ? {
+    trigger: 'الرعاية المتخصصة',
+    eyebrow: 'مسارات رعاية مخصصة',
+    title: 'الرعاية المتخصصة',
+    description: 'رعاية مخصصة تراعي احتياجات كل مريض وتفاصيل زيارته.',
+    pediatricTitle: 'طب أسنان الأطفال',
+    pediatricDescription: 'رعاية أسنان مخصصة للأطفال',
+    pediatricCta: 'استكشف رعاية الأطفال ←',
+    podTitle: 'أصحاب الهمم',
+    podDescription: 'الراحة وسهولة الوصول والدعم المصمم لكل مريض',
+    podCta: 'استكشف الرعاية المخصصة ←',
+    aria: 'الرعاية المتخصصة'
+  } : {
+    trigger: 'Specialized Care',
+    eyebrow: 'Focused care pathways',
+    title: 'Specialized Care',
+    description: 'Dedicated care experiences designed around specific patient needs.',
+    pediatricTitle: 'Pediatric Dentistry',
+    pediatricDescription: 'Dedicated dental care for children',
+    pediatricCta: 'Explore pediatric care →',
+    podTitle: 'People of Determination',
+    podDescription: 'Comfort, accessibility & individualized support',
+    podCta: 'Explore dedicated care →',
+    aria: 'Specialized care'
+  };
+
+  const buildDesktopSpecializedCare = (arabic, copy) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'nav-specialized';
+    wrapper.setAttribute('data-specialized-care-nav', 'desktop');
+
+    const pediatricHref = arabic
+      ? '/ar/treatments/pediatric-dentistry.html'
+      : '/treatments/pediatric-dentistry.html';
+    const podHref = arabic
+      ? '/ar/treatments/people-of-determination.html'
+      : '/treatments/people-of-determination.html';
+
+    wrapper.innerHTML = `
+      <a class="nav-specialized__trigger" href="#" aria-haspopup="true" aria-expanded="false">
+        ${copy.trigger} <span class="nav-specialized__chevron" aria-hidden="true">⌄</span>
+      </a>
+      <div class="specialized-care-menu" aria-label="${copy.aria}">
+        <div class="specialized-care-menu__head">
+          <div><span class="specialized-care-menu__eyebrow">${copy.eyebrow}</span><strong>${copy.title}</strong></div>
+          <span>${copy.description}</span>
+        </div>
+        <div class="specialized-care-menu__grid">
+          <a class="specialized-care-card" href="${pediatricHref}"><span class="specialized-care-card__index">01</span><strong>${copy.pediatricTitle}</strong><small>${copy.pediatricDescription}</small><b>${copy.pediatricCta}</b></a>
+          <a class="specialized-care-card specialized-care-card--pod" href="${podHref}"><span class="specialized-care-card__index">02</span><strong>${copy.podTitle}</strong><small>${copy.podDescription}</small><b>${copy.podCta}</b></a>
+        </div>
+      </div>`;
+
+    const trigger = wrapper.querySelector('.nav-specialized__trigger');
+    trigger?.addEventListener('click', event => {
+      event.preventDefault();
+      const open = wrapper.classList.toggle('is-open');
+      trigger.setAttribute('aria-expanded', String(open));
+    });
+    wrapper.addEventListener('mouseleave', () => {
+      wrapper.classList.remove('is-open');
+      trigger?.setAttribute('aria-expanded', 'false');
+    });
+
+    return wrapper;
+  };
+
+  const buildMobileSpecializedCare = (arabic, copy) => {
+    const details = document.createElement('details');
+    details.className = 'mobile-specialized-care';
+    details.setAttribute('data-specialized-care-nav', 'mobile');
+
+    const pediatricHref = arabic
+      ? '/ar/treatments/pediatric-dentistry.html'
+      : '/treatments/pediatric-dentistry.html';
+    const podHref = arabic
+      ? '/ar/treatments/people-of-determination.html'
+      : '/treatments/people-of-determination.html';
+
+    details.innerHTML = `
+      <summary>${copy.trigger}</summary>
+      <div class="mobile-specialized-care__links">
+        <a href="${pediatricHref}"><strong>${copy.pediatricTitle}</strong><span>${copy.pediatricDescription}</span></a>
+        <a href="${podHref}"><strong>${copy.podTitle}</strong><span>${copy.podDescription}</span></a>
+      </div>`;
+    return details;
+  };
+
+  const syncSpecializedCareNavigation = () => {
+    removePediatricFromServicesMenus();
+    document.querySelectorAll('[data-specialized-care-nav]').forEach(node => node.remove());
+
+    const arabic = isArabicUi();
+    const copy = specializedCareCopy(arabic);
+
+    document.querySelectorAll('.site-nav, .global-nav').forEach(nav => {
+      const serviceContainer = nav.querySelector('.nav-services');
+      const directServiceLink = [...nav.children].find(child => {
+        if (!(child instanceof HTMLAnchorElement)) return false;
+        return (child.getAttribute('href') || '').includes('services');
+      });
+      const anchor = serviceContainer || directServiceLink;
+      if (!anchor) return;
+      anchor.insertAdjacentElement('afterend', buildDesktopSpecializedCare(arabic, copy));
+    });
+
+    document.querySelectorAll('.mobile-nav__panel, .global-mobile-nav__inner').forEach(nav => {
+      const serviceDetails = nav.querySelector('.mobile-services');
+      const directServiceLink = [...nav.children].find(child => {
+        if (!(child instanceof HTMLAnchorElement)) return false;
+        return (child.getAttribute('href') || '').includes('services');
+      });
+      const anchor = serviceDetails || directServiceLink;
+      if (!anchor) return;
+      anchor.insertAdjacentElement('afterend', buildMobileSpecializedCare(arabic, copy));
+    });
+  };
+
   loadBookingModalAssets();
+  loadSpecializedCareNavStyles();
 
   const runReadyEnhancements = () => {
     syncFooterSocials();
     placePodPartnershipBeforeGallery();
+    syncSpecializedCareNavigation();
   };
 
   if (document.readyState === 'loading') {
@@ -125,10 +276,21 @@
     // Google Reviews track element and its current animation position.
     api.applyLanguage(next);
     syncFooterSocials();
+    syncSpecializedCareNavigation();
 
     const target = next === 'ar'
       ? arabicPathFor(window.location.pathname)
       : englishPathFor(window.location.pathname);
     window.history.replaceState({}, '', `${target}${window.location.hash || ''}`);
   }, true);
+
+  document.addEventListener('silwadi:languagechange', syncSpecializedCareNavigation);
+
+  document.addEventListener('click', event => {
+    document.querySelectorAll('.nav-specialized.is-open').forEach(menu => {
+      if (menu.contains(event.target)) return;
+      menu.classList.remove('is-open');
+      menu.querySelector('.nav-specialized__trigger')?.setAttribute('aria-expanded', 'false');
+    });
+  });
 })();
