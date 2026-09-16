@@ -1,0 +1,169 @@
+name: Temporary publish approved treatment pages
+
+on:
+  push:
+    branches: [publish-approved-treatments-20260916]
+    paths:
+      - '.github/workflows/tmp-publish-approved-treatments.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Publish approved treatment pages
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import json
+          import re
+
+          ROOT = Path('.')
+          pod_source = ROOT / 'review' / 'people-of-determination-raha-v1.html'
+          pod_target = ROOT / 'treatments' / 'people-of-determination.html'
+          pediatric = ROOT / 'treatments' / 'pediatric-dentistry.html'
+          endo = ROOT / 'treatments' / 'endodontics.html'
+
+          # Pediatrics and Endodontics have already been productionized from the approved
+          # review designs. Guard them here instead of overwriting them with review-only
+          # metadata/header variants.
+          pediatric_html = pediatric.read_text(encoding='utf-8')
+          endo_html = endo.read_text(encoding='utf-8')
+          for label, html, canonical, marker in [
+              ('Pediatrics', pediatric_html, 'https://silwadi.ae/treatments/pediatric-dentistry.html', 'Al Raha Mall · Pediatric Clinic'),
+              ('Endodontics', endo_html, 'https://silwadi.ae/treatments/endodontics.html', 'Dr. Lana Almasoud'),
+          ]:
+              if 'content="index,follow' not in html or canonical not in html or marker not in html:
+                  raise SystemExit(f'{label} is not the approved productionized review version; stopping rather than overwriting it.')
+
+          html = pod_source.read_text(encoding='utf-8')
+          html = html.replace(
+              '<meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">',
+              '<meta name="robots" content="index,follow,max-image-preview:large">',
+              1,
+          )
+          html = html.replace(
+              '<title>Private Review — People of Determination Dental Care in Abu Dhabi | Silwadi</title>',
+              '<title>Dental Care for People of Determination in Abu Dhabi | Silwadi Dental Center</title>',
+              1,
+          )
+          description = 'Learn how Silwadi Dental Center supports thoughtful, respectful dental visits for People of Determination at Al Raha Mall in Abu Dhabi.'
+          meta_anchor = f'<meta name="description" content="{description}">'
+          canonical = 'https://silwadi.ae/treatments/people-of-determination.html'
+          image = 'https://silwadi.ae/assets/DSCF2857.webp'
+          schema = {
+              '@context': 'https://schema.org',
+              '@graph': [
+                  {
+                      '@type': 'WebPage',
+                      '@id': canonical + '#webpage',
+                      'url': canonical,
+                      'name': 'Dental Care for People of Determination in Abu Dhabi | Silwadi Dental Center',
+                      'description': description,
+                      'inLanguage': 'en-AE',
+                      'isPartOf': {'@id': 'https://silwadi.ae/#website'},
+                      'mainEntity': {'@id': canonical + '#service'},
+                      'primaryImageOfPage': {'@type': 'ImageObject', 'url': image},
+                  },
+                  {
+                      '@type': 'BreadcrumbList',
+                      'itemListElement': [
+                          {'@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://silwadi.ae/'},
+                          {'@type': 'ListItem', 'position': 2, 'name': 'Treatments', 'item': 'https://silwadi.ae/treatments.html'},
+                          {'@type': 'ListItem', 'position': 3, 'name': 'People of Determination Dental Care', 'item': canonical},
+                      ],
+                  },
+                  {
+                      '@type': 'Service',
+                      '@id': canonical + '#service',
+                      'name': 'Dental Care for People of Determination',
+                      'serviceType': 'Accessible and individually planned dental care for People of Determination',
+                      'url': canonical,
+                      'provider': {'@id': 'https://silwadi.ae/#organization'},
+                      'areaServed': {'@type': 'City', 'name': 'Abu Dhabi'},
+                      'availableAtOrFrom': {'@type': 'Place', 'name': 'Silwadi Dental Center - Al Raha Mall'},
+                  },
+              ],
+          }
+          production_meta = '\n'.join([
+              '<meta name="content-language" content="en">',
+              f'<link rel="canonical" href="{canonical}">',
+              '<meta property="og:type" content="website">',
+              '<meta property="og:site_name" content="Silwadi Dental Center">',
+              '<meta property="og:title" content="Dental Care for People of Determination in Abu Dhabi | Silwadi Dental Center">',
+              f'<meta property="og:description" content="{description}">',
+              f'<meta property="og:url" content="{canonical}">',
+              f'<meta property="og:image" content="{image}">',
+              '<meta property="og:locale" content="en_AE">',
+              '<meta name="twitter:card" content="summary_large_image">',
+              '<meta name="twitter:title" content="Dental Care for People of Determination in Abu Dhabi | Silwadi Dental Center">',
+              f'<meta name="twitter:description" content="{description}">',
+              f'<meta name="twitter:image" content="{image}">',
+              '<script type="application/ld+json" data-seo-schema>' + json.dumps(schema, ensure_ascii=False, separators=(',', ':')) + '</script>',
+          ])
+          if meta_anchor not in html:
+              raise SystemExit('POD description insertion point not found')
+          html = html.replace(meta_anchor, meta_anchor + '\n' + production_meta, 1)
+          html = html.replace('<body class="pod-review">', '<body class="pod-page">', 1)
+          html, removed = re.subn(
+              r'\n  <div class="pod-private"><div class="container"><span><strong>Private review</strong> · People of Determination — Al Raha</span><span>Not published</span></div></div>\n',
+              '\n',
+              html,
+              count=1,
+          )
+          if removed != 1:
+              raise SystemExit('POD private review banner not found exactly once')
+          if 'Private review' in html or 'Not published' in html:
+              raise SystemExit('Review-only copy remains in POD production page')
+          pod_target.write_text(html, encoding='utf-8')
+
+          # Add POD to the public treatment directory and its ItemList schema.
+          path = ROOT / 'treatments.html'
+          directory = path.read_text(encoding='utf-8')
+          directory = directory.replace('"numberOfItems":10', '"numberOfItems":11', 1)
+          list_anchor = '{"@type":"ListItem","position":10,"name":"Emergency Dentistry","url":"https://silwadi.ae/treatments/emergency-dentist.html"}'
+          pod_item = '{"@type":"ListItem","position":11,"name":"People of Determination Dental Care","url":"https://silwadi.ae/treatments/people-of-determination.html"}'
+          if pod_item not in directory:
+              if list_anchor not in directory:
+                  raise SystemExit('Treatment ItemList insertion point missing')
+              directory = directory.replace(list_anchor, list_anchor + ',' + pod_item, 1)
+          directory = directory.replace('<strong>10 service areas</strong><span>General and specialist dental care across ten established service areas.</span>', '<strong>11 service areas</strong><span>General, specialist and accessible dental care across eleven established service areas.</span>', 1)
+          family_anchor = '<a class="treatment-option" id="pedodontics" href="treatments/pediatric-dentistry.html"><span class="treatment-option__body"><h3>Pedodontics</h3><p>Dental visits designed for children from infancy to adolescence.</p></span><span class="treatment-option__arrow" aria-hidden="true">→</span></a>'
+          pod_card = '<a class="treatment-option" href="treatments/people-of-determination.html"><span class="treatment-option__body"><h3>People of Determination</h3><p>Thoughtful dental care and an accessible treatment environment at Al Raha Mall.</p></span><span class="treatment-option__arrow" aria-hidden="true">→</span></a>'
+          if pod_card not in directory:
+              if family_anchor not in directory:
+                  raise SystemExit('Family-care insertion point missing')
+              directory = directory.replace(family_anchor, family_anchor + pod_card, 1)
+          path.write_text(directory, encoding='utf-8')
+
+          # Publish the new canonical URL to the sitemap.
+          path = ROOT / 'sitemap.xml'
+          sitemap = path.read_text(encoding='utf-8')
+          pod_url = 'https://silwadi.ae/treatments/people-of-determination.html'
+          if f'<loc>{pod_url}</loc>' not in sitemap:
+              anchor = '  <url>\n    <loc>https://silwadi.ae/treatments/pediatric-dentistry.html</loc>\n    <lastmod>2026-09-16</lastmod>\n  </url>'
+              block = '  <url>\n    <loc>https://silwadi.ae/treatments/people-of-determination.html</loc>\n    <lastmod>2026-09-16</lastmod>\n  </url>'
+              if anchor not in sitemap:
+                  raise SystemExit('Sitemap pediatric insertion point missing')
+              sitemap = sitemap.replace(anchor, anchor + '\n' + block, 1)
+          path.write_text(sitemap, encoding='utf-8')
+          PY
+
+      - name: Verify publish contract
+        run: |
+          python -m unittest tests.test_approved_treatments_live -v
+          git diff --check
+
+      - name: Commit verified production files
+        run: |
+          git config user.name 'ADVA Site Automation'
+          git config user.email 'actions@users.noreply.github.com'
+          git add treatments/people-of-determination.html treatments.html sitemap.xml
+          git commit -m 'feat: publish People of Determination treatment page'
+          git push
