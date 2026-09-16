@@ -52,12 +52,30 @@
     }
   };
 
+  const placePodPartnershipBeforeGallery = () => {
+    const path = window.location.pathname || '';
+    const isPodPage = /(?:\/ar)?\/treatments\/people-of-determination\.html$/.test(path)
+      || path.endsWith('/review/people-of-determination-raha-v1.html');
+    if (!isPodPage) return;
+
+    const partnership = document.querySelector('.pod-partnership');
+    const gallery = document.querySelector('.pod-hero__gallery');
+    if (!partnership || !gallery) return;
+
+    partnership.insertAdjacentElement('afterend', gallery);
+  };
+
   loadBookingModalAssets();
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', syncFooterSocials, { once: true });
-  } else {
+  const runReadyEnhancements = () => {
     syncFooterSocials();
+    placePodPartnershipBeforeGallery();
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runReadyEnhancements, { once: true });
+  } else {
+    runReadyEnhancements();
   }
 
   const normalizeEnglishPath = pathname => {
