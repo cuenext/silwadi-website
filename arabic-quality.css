@@ -29,6 +29,18 @@ html[dir="rtl"] .treatment-card,html[dir="rtl"] .location-card,html[dir="rtl"] .
 .static-arabic .treatment-card,.static-arabic .location-card,.static-arabic .contact-card{direction:rtl;text-align:right}
 html[dir="rtl"] input,html[dir="rtl"] textarea,html[dir="rtl"] select,.static-arabic input,.static-arabic textarea,.static-arabic select{text-align:right}
 
+/* Pediatric specialist: in RTL the portrait sits on the right, so keep the copy clear of that edge. */
+html[dir="rtl"] .pediatric-review .pd-specialist-body,
+.static-arabic.pediatric-review .pd-specialist-body{padding-left:0!important;padding-right:66px!important}
+@media(max-width:1000px){
+  html[dir="rtl"] .pediatric-review .pd-specialist-body,
+  .static-arabic.pediatric-review .pd-specialist-body{padding-right:46px!important}
+}
+@media(max-width:760px){
+  html[dir="rtl"] .pediatric-review .pd-specialist-body,
+  .static-arabic.pediatric-review .pd-specialist-body{padding-left:0!important;padding-right:0!important}
+}
+
 /* The approved mobile hero treatment: image first, copy in its own panel so text never sits on Dr. Munir's face. */
 @media(max-width:760px){
   .premium-home-hero{display:grid!important;grid-template-rows:minmax(330px,48svh) auto!important;min-height:0!important;align-items:stretch!important;background:#061f2c!important;overflow:hidden}
