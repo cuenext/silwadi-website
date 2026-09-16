@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>مراجعة التنقل — الرعاية المتخصصة | سلوادي</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/arabic-quality.css">
+  <style>
+    body.nav-review-ar{background:#f6fbfc;font-family:"Tajawal","IBM Plex Sans Arabic",Arial,sans-serif;text-align:right}
+    .nav-review-ar .site-header{position:relative}
+    .nav-review-ar .header-inner{gap:20px;direction:rtl}
+    .nav-review-ar .site-nav{gap:22px;direction:rtl;margin-left:0;margin-right:auto}
+    .nav-review-ar .site-nav>div,.nav-review-ar .site-nav>a{flex:0 0 auto}
+    .nav-review-ar .site-nav a::after{bottom:19px}
+    .nav-specialized{position:relative}
+    .nav-specialized__trigger{display:flex;align-items:center;gap:7px;color:var(--teal)!important;font-weight:800!important;direction:rtl}
+    .nav-specialized__trigger::before{content:"";width:6px;height:6px;border-radius:50%;background:#12a2b5;box-shadow:0 0 0 4px rgba(13,124,144,.09)}
+    .nav-specialized__chevron{font-size:10px;color:#66858d;transition:transform .18s ease}
+    .nav-specialized:hover .nav-specialized__chevron,.nav-specialized:focus-within .nav-specialized__chevron{transform:rotate(180deg)}
+    .nav-specialized__trigger::after{display:none!important}
+    .specialized-care-menu{position:absolute;top:calc(100% - 7px);right:50%;width:min(520px,calc(100vw - 40px));padding:15px;background:#fff;border:1px solid #dbe7e9;border-radius:16px;box-shadow:0 24px 60px rgba(8,56,71,.14);transform:translate(50%,10px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s ease,transform .16s ease,visibility .16s ease;z-index:140;text-align:right;direction:rtl}
+    .nav-specialized:hover .specialized-care-menu,.nav-specialized:focus-within .specialized-care-menu{opacity:1;visibility:visible;pointer-events:auto;transform:translate(50%,0)}
+    .specialized-care-menu__head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:8px 8px 13px;border-bottom:1px solid #edf2f3}
+    .specialized-care-menu__eyebrow{display:block;margin-bottom:4px;color:var(--teal);font-size:9px;font-weight:850;letter-spacing:0;text-transform:none}
+    .specialized-care-menu__head strong{display:block;color:var(--navy);font-size:16px;letter-spacing:0}
+    .specialized-care-menu__head span:last-child{max-width:210px;color:#71878e;font-size:9px;line-height:1.65;text-align:left}
+    .specialized-care-menu__grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:10px}
+    .specialized-care-card{position:relative;min-height:148px;padding:18px 18px 16px!important;border:1px solid #dce7e9;border-radius:12px;background:linear-gradient(180deg,#fff 0%,#f8fbfb 100%);overflow:hidden;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;text-align:right}
+    .specialized-care-card::after{display:none!important}
+    .specialized-care-card:hover,.specialized-care-card:focus-visible{transform:translateY(-2px);border-color:#a9cdd3;box-shadow:0 12px 28px rgba(8,56,71,.08);outline:none}
+    .specialized-care-card__index{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;margin-bottom:19px;border-radius:50%;background:#e9f6f7;color:var(--teal);font-size:9px;font-weight:850;direction:ltr}
+    .specialized-care-card strong{display:block;color:var(--navy);font-size:14px;line-height:1.4}
+    .specialized-care-card small{display:block;margin-top:6px;color:#647b82;font-size:9px;line-height:1.65}
+    .specialized-care-card b{display:block;margin-top:12px;color:var(--teal);font-size:9px;font-weight:800}
+    .specialized-care-card--pod{background:linear-gradient(145deg,#f7fbfb 0%,#edf7f8 100%)}
+    .nav-review-ar .header-actions{gap:9px;direction:rtl}
+    .nav-review-ar .header-whatsapp,.nav-review-ar .header-consult{white-space:nowrap}
+    .review-hero{position:relative;min-height:calc(100vh - 76px);overflow:hidden;background:#062433;color:#fff;display:flex;align-items:center;direction:ltr}
+    .review-hero__media{position:absolute;inset:0}.review-hero__media img{width:100%;height:100%;display:block;object-fit:cover;object-position:center top}
+    .review-hero__shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(2,14,25,.96) 0%,rgba(4,23,40,.88) 29%,rgba(7,36,60,.52) 43%,rgba(8,49,76,.16) 54%,rgba(4,23,40,0) 65%)}
+    .review-hero__inner{position:relative;z-index:2;width:100%;padding:6.2rem clamp(1.5rem,4vw,4rem)}
+    .review-hero__copy{max-width:41rem;margin-left:clamp(2rem,6.4vw,7.8rem);direction:rtl;text-align:right}
+    .review-hero__copy p:first-child{margin:0 0 1rem;font-size:.88rem;font-weight:760;color:#e5fbfd}.review-hero__accent{display:block;width:3.3rem;height:3px;border-radius:999px;background:linear-gradient(90deg,#11a7bc,#71dce4);margin:0 0 1.4rem auto}
+    .review-hero h1{margin:0;max-width:12ch;color:#f9fdff;font-size:clamp(3rem,5.2vw,5.4rem);line-height:1.08;letter-spacing:-.03em;font-weight:800}.review-hero h1 span{display:block;color:#8be9ee}
+    .review-hero__lead{max-width:38rem;margin:1.35rem 0 0;color:rgba(238,249,251,.9);font-size:1rem;line-height:1.8}.review-hero__actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:1.8rem;direction:rtl}.review-hero__actions .btn--secondary{background:rgba(255,255,255,.06);border-color:rgba(230,250,252,.42);color:#fff}
+    .review-note{position:fixed;left:18px;bottom:18px;z-index:250;padding:10px 13px;border-radius:999px;background:rgba(5,42,54,.92);color:#dff7f9;font-size:9px;font-weight:800;box-shadow:0 10px 30px rgba(5,42,54,.22);backdrop-filter:blur(10px)}
+    @media(max-width:1260px){.nav-review-ar .header-inner{gap:14px}.nav-review-ar .site-nav{gap:16px;font-size:11px}.nav-review-ar .header-actions{gap:7px}.nav-review-ar .header-whatsapp{padding-inline:10px}.nav-review-ar .header-consult{padding-inline:13px;font-size:10px}}
+    @media(max-width:1040px){.nav-review-ar .site-nav,.nav-review-ar .header-actions>.header-whatsapp,.nav-review-ar .header-actions>.header-consult,.nav-review-ar .header-actions>.language-switch{display:none}.nav-review-ar .menu-button{display:flex;margin-right:auto;margin-left:0}.nav-review-ar .mobile-nav{display:none}.nav-review-ar .mobile-nav.open{display:block}}
+    .mobile-specialized-care{border-bottom:1px solid #edf2f3}.mobile-specialized-care summary{list-style:none;cursor:pointer;padding:14px 4px;color:var(--teal);font-size:13px;font-weight:800}.mobile-specialized-care summary::-webkit-details-marker{display:none}.mobile-specialized-care__links{display:grid;gap:8px;padding:0 0 14px}.mobile-specialized-care__links a{padding:13px 14px!important;border:1px solid #dce7e9!important;border-radius:10px;background:#f8fbfb}.mobile-specialized-care__links strong{display:block;color:var(--navy);font-size:12px}.mobile-specialized-care__links span{display:block;margin-top:4px;color:#6b8188;font-size:9px;line-height:1.55}
+    @media(max-width:760px){.review-hero{min-height:680px;align-items:flex-end}.review-hero__media img{object-position:76% top}.review-hero__shade{background:linear-gradient(180deg,rgba(2,14,25,0) 0%,rgba(2,14,25,.15) 46%,rgba(2,14,25,.9) 88%,rgba(2,14,25,.98) 100%)}.review-hero__inner{padding:19rem 1.1rem 3.4rem}.review-hero__copy{margin:0}.review-hero h1{font-size:clamp(2.35rem,11vw,3.2rem)}.review-hero__actions{flex-direction:column}.review-hero__actions .btn{width:100%}.review-note{left:12px;bottom:12px}}
+  </style>
+</head>
+<body class="nav-review-ar language-ar static-arabic">
+  <header class="site-header" id="siteHeader"><div class="container header-inner"><a class="brand site-brand-logo home-trust-brand" href="/ar/" aria-label="الصفحة الرئيسية لمركز سلوادي"><img src="/assets/silwadi-logo-official.png" alt="مركز سلوادي لطب الأسنان" width="600" height="600"></a><nav class="site-nav" aria-label="التنقل الرئيسي"><div class="nav-services"><a class="nav-services__trigger" href="/ar/services.html">الخدمات <span class="nav-services__chevron" aria-hidden="true">⌄</span></a></div><div class="nav-specialized"><a class="nav-specialized__trigger" href="#specialized-care-menu" aria-haspopup="true">الرعاية المتخصصة <span class="nav-specialized__chevron" aria-hidden="true">⌄</span></a><div class="specialized-care-menu" id="specialized-care-menu" aria-label="الرعاية المتخصصة"><div class="specialized-care-menu__head"><div><span class="specialized-care-menu__eyebrow">مسارات رعاية مخصصة</span><strong>الرعاية المتخصصة</strong></div><span>تجارب رعاية مهيأة حول احتياجات فئات محددة من المرضى.</span></div><div class="specialized-care-menu__grid"><a class="specialized-care-card" href="/ar/treatments/pediatric-dentistry.html"><span class="specialized-care-card__index">01</span><strong>طب أسنان الأطفال</strong><small>رعاية أسنان مخصصة للأطفال</small><b>استكشف رعاية الأطفال ←</b></a><a class="specialized-care-card specialized-care-card--pod" href="/ar/treatments/people-of-determination.html"><span class="specialized-care-card__index">02</span><strong>أصحاب الهمم</strong><small>راحة وسهولة وصول ودعم مصمم حسب احتياجات المريض</small><b>استكشف الرعاية المخصصة ←</b></a></div></div></div><a href="/ar/doctors.html">الأطباء</a><a href="/ar/about.html">عن المركز</a><a href="/ar/locations.html">الفروع</a></nav><div class="header-actions"><a class="language-switch" href="/review/home-specialized-care-v1.html" lang="en">English</a><a class="header-whatsapp" href="https://wa.me/971506260418" target="_blank" rel="noopener">واتساب</a><a class="btn btn--primary header-consult" href="/ar/contact.html#consultation-form">احجز استشارة</a><button class="menu-button" type="button" data-menu-button aria-expanded="false" aria-controls="mobileNav" aria-label="فتح القائمة"><span></span><span></span></button></div></div></header>
+  <div class="mobile-nav" id="mobileNav" data-mobile-nav><nav class="mobile-nav__panel" aria-label="التنقل على الهاتف"><a href="/ar/">الرئيسية</a><a href="/ar/services.html">الخدمات</a><details class="mobile-specialized-care"><summary>الرعاية المتخصصة</summary><div class="mobile-specialized-care__links"><a href="/ar/treatments/pediatric-dentistry.html"><strong>طب أسنان الأطفال</strong><span>رعاية أسنان مخصصة للأطفال</span></a><a href="/ar/treatments/people-of-determination.html"><strong>أصحاب الهمم</strong><span>رعاية مهيأة للراحة وسهولة الوصول والدعم الفردي</span></a></div></details><a href="/ar/doctors.html">الأطباء</a><a href="/ar/about.html">عن المركز</a><a href="/ar/locations.html">الفروع</a></nav></div>
+  <main id="main"><section class="review-hero"><div class="review-hero__media"><img src="/assets/munir-home-hero-clean.webp?v=20260906-hero-clean-final" alt="د. منير سلوادي في مركز سلوادي لطب الأسنان"></div><div class="review-hero__shade" aria-hidden="true"></div><div class="container review-hero__inner"><div class="review-hero__copy"><p>مركز د. منير سلوادي لطب الأسنان</p><span class="review-hero__accent" aria-hidden="true"></span><h1>كيف يمكننا <span>مساعدتك؟</span></h1><p class="review-hero__lead">من الفحوصات الدورية إلى الرعاية التخصصية، فريقنا في أبوظبي يساعدك في الوصول إلى العلاج الأنسب بوضوح وراحة.</p><div class="review-hero__actions"><a class="btn btn--primary" href="/ar/contact.html#consultation-form">احجز موعداً</a><a class="btn btn--secondary" href="/ar/services.html">استكشف الخدمات</a></div></div></div></section></main>
+  <div class="review-note">نسخة مراجعة فقط — الموقع المباشر غير متأثر</div>
+  <script src="/app.js"></script>
+</body>
+</html>
