@@ -22,3 +22,6 @@
 @media(max-width:560px){.about-doctor-grid{grid-template-columns:1fr}.about-doctor-card:last-child{grid-column:auto;max-width:none}.about-gallery{grid-template-columns:1fr}.about-gallery__large{grid-column:auto}.about-gallery__large img,.about-gallery img{height:280px}}
 
 @media(prefers-reduced-motion:reduce){.about-doctor-card,.about-doctor-card__photo img{transition:none}.about-doctor-card:hover{transform:none}.about-doctor-card:hover .about-doctor-card__photo img{transform:none}}
+
+/* Desktop hero copy sits slightly higher over the team photo. */
+@media(min-width:821px){.about-hero__content{transform:translateY(-48px)}}
