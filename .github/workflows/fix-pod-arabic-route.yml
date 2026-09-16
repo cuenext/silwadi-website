@@ -1,0 +1,340 @@
+name: Fix POD Arabic route
+
+on:
+  push:
+    branches:
+      - fix-pod-arabic-route
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix-pod-arabic-route
+          fetch-depth: 0
+
+      - name: Verify regression test is red before implementation
+        shell: bash
+        run: |
+          set +e
+          python tests/test_people_of_determination_arabic.py
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "Expected the regression test to fail before implementation, but it passed."
+            exit 1
+          fi
+          echo "Regression test failed before implementation as expected."
+
+      - name: Create Arabic POD page and repair language routing
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          import re
+
+          root = Path('.')
+          english_path = root / 'treatments' / 'people-of-determination.html'
+          arabic_path = root / 'ar' / 'treatments' / 'people-of-determination.html'
+          sitemap_path = root / 'sitemap.xml'
+
+          source = english_path.read_text(encoding='utf-8')
+
+          # Repair the English POD page so both language switches point to the
+          # exact Arabic counterpart instead of the generic Arabic services page.
+          english = source.replace(
+              'class="global-language" href="/ar/services.html" lang="ar" hreflang="ar" aria-label="عرض الموقع بالعربية">عربي</a>',
+              'class="global-language" href="/ar/treatments/people-of-determination.html" lang="ar" hreflang="ar" aria-label="عرض صفحة أصحاب الهمم بالعربية">عربي</a>'
+          ).replace(
+              '<a href="/ar/services.html" lang="ar" hreflang="ar">عربي</a>',
+              '<a href="/ar/treatments/people-of-determination.html" lang="ar" hreflang="ar">عربي</a>'
+          )
+          if 'hreflang="ar-AE" href="https://silwadi.ae/ar/treatments/people-of-determination.html"' not in english:
+              english = english.replace(
+                  '<link rel="canonical" href="https://silwadi.ae/treatments/people-of-determination.html">',
+                  '<link rel="canonical" href="https://silwadi.ae/treatments/people-of-determination.html">\n'
+                  '<link rel="alternate" hreflang="en-AE" href="https://silwadi.ae/treatments/people-of-determination.html">\n'
+                  '<link rel="alternate" hreflang="ar-AE" href="https://silwadi.ae/ar/treatments/people-of-determination.html">\n'
+                  '<link rel="alternate" hreflang="x-default" href="https://silwadi.ae/treatments/people-of-determination.html">'
+              )
+          english_path.write_text(english, encoding='utf-8')
+
+          # Build a real, refresh-safe static Arabic counterpart from the exact
+          # current production POD page so the gallery/layout stay in sync.
+          ar = source
+          ar = ar.replace('<html lang="en">', '<html lang="ar" dir="rtl">')
+          ar = ar.replace('<meta name="content-language" content="en">', '<meta name="content-language" content="ar">')
+          ar = ar.replace(
+              '<title>Dental Care for People of Determination in Abu Dhabi | Silwadi Dental Center</title>',
+              '<title>رعاية أسنان أصحاب الهمم في أبوظبي | مركز سلوادي لطب الأسنان</title>'
+          )
+          ar = ar.replace(
+              '<meta name="description" content="Learn how Silwadi Dental Center supports thoughtful, respectful dental visits for People of Determination at Al Raha Mall in Abu Dhabi.">',
+              '<meta name="description" content="تعرّف على رعاية الأسنان الميسّرة والمحترمة لأصحاب الهمم في مركز سلوادي بالراحة مول في أبوظبي، مع تخطيط الزيارة وفق احتياجات كل مريض.">'
+          )
+          ar = ar.replace(
+              '<link rel="canonical" href="https://silwadi.ae/treatments/people-of-determination.html">',
+              '<link rel="canonical" href="https://silwadi.ae/ar/treatments/people-of-determination.html">\n'
+              '<link rel="alternate" hreflang="en-AE" href="https://silwadi.ae/treatments/people-of-determination.html">\n'
+              '<link rel="alternate" hreflang="ar-AE" href="https://silwadi.ae/ar/treatments/people-of-determination.html">\n'
+              '<link rel="alternate" hreflang="x-default" href="https://silwadi.ae/treatments/people-of-determination.html">'
+          )
+          ar = ar.replace(
+              '<meta property="og:title" content="Dental Care for People of Determination in Abu Dhabi | Silwadi Dental Center">',
+              '<meta property="og:title" content="رعاية أسنان أصحاب الهمم في أبوظبي | مركز سلوادي لطب الأسنان">'
+          ).replace(
+              '<meta property="og:description" content="Learn how Silwadi Dental Center supports thoughtful, respectful dental visits for People of Determination at Al Raha Mall in Abu Dhabi.">',
+              '<meta property="og:description" content="رعاية أسنان ميسّرة ومحترمة لأصحاب الهمم في فرع سلوادي بالراحة مول في أبوظبي.">'
+          ).replace(
+              '<meta property="og:url" content="https://silwadi.ae/treatments/people-of-determination.html">',
+              '<meta property="og:url" content="https://silwadi.ae/ar/treatments/people-of-determination.html">'
+          ).replace(
+              '<meta property="og:locale" content="en_AE">',
+              '<meta property="og:locale" content="ar_AE">\n<meta property="og:locale:alternate" content="en_AE">'
+          ).replace(
+              '<meta name="twitter:title" content="Dental Care for People of Determination in Abu Dhabi | Silwadi Dental Center">',
+              '<meta name="twitter:title" content="رعاية أسنان أصحاب الهمم في أبوظبي | مركز سلوادي لطب الأسنان">'
+          ).replace(
+              '<meta name="twitter:description" content="Learn how Silwadi Dental Center supports thoughtful, respectful dental visits for People of Determination at Al Raha Mall in Abu Dhabi.">',
+              '<meta name="twitter:description" content="رعاية أسنان ميسّرة ومحترمة لأصحاب الهمم في فرع سلوادي بالراحة مول في أبوظبي.">'
+          )
+
+          schema = {
+              '@context': 'https://schema.org',
+              '@graph': [
+                  {
+                      '@type': 'WebPage',
+                      '@id': 'https://silwadi.ae/ar/treatments/people-of-determination.html#webpage',
+                      'url': 'https://silwadi.ae/ar/treatments/people-of-determination.html',
+                      'name': 'رعاية أسنان أصحاب الهمم في أبوظبي | مركز سلوادي لطب الأسنان',
+                      'description': 'رعاية أسنان ميسّرة ومحترمة لأصحاب الهمم في فرع سلوادي بالراحة مول في أبوظبي.',
+                      'inLanguage': 'ar-AE',
+                      'isPartOf': {'@id': 'https://silwadi.ae/#website'},
+                      'mainEntity': {'@id': 'https://silwadi.ae/ar/treatments/people-of-determination.html#service'},
+                      'primaryImageOfPage': {'@type': 'ImageObject', 'url': 'https://silwadi.ae/assets/DSCF2857.webp'},
+                  },
+                  {
+                      '@type': 'BreadcrumbList',
+                      'itemListElement': [
+                          {'@type': 'ListItem', 'position': 1, 'name': 'الرئيسية', 'item': 'https://silwadi.ae/ar/'},
+                          {'@type': 'ListItem', 'position': 2, 'name': 'العلاجات', 'item': 'https://silwadi.ae/ar/treatments.html'},
+                          {'@type': 'ListItem', 'position': 3, 'name': 'رعاية أسنان أصحاب الهمم', 'item': 'https://silwadi.ae/ar/treatments/people-of-determination.html'},
+                      ],
+                  },
+                  {
+                      '@type': 'Service',
+                      '@id': 'https://silwadi.ae/ar/treatments/people-of-determination.html#service',
+                      'name': 'رعاية أسنان أصحاب الهمم',
+                      'serviceType': 'رعاية أسنان ميسّرة ومخططة بشكل فردي لأصحاب الهمم',
+                      'url': 'https://silwadi.ae/ar/treatments/people-of-determination.html',
+                      'provider': {'@id': 'https://silwadi.ae/#organization'},
+                      'areaServed': {'@type': 'City', 'name': 'أبوظبي'},
+                      'availableAtOrFrom': {'@type': 'Place', 'name': 'مركز سلوادي لطب الأسنان - الراحة مول'},
+                  },
+              ],
+          }
+          ar = re.sub(
+              r'<script type="application/ld\+json" data-seo-schema>.*?</script>',
+              '<script type="application/ld+json" data-seo-schema>' + json.dumps(schema, ensure_ascii=False, separators=(',', ':')) + '</script>',
+              ar,
+              count=1,
+              flags=re.S,
+          )
+
+          # Paths: the Arabic page lives one directory deeper than the English page.
+          ar = ar.replace('href="../favicon.svg"', 'href="/favicon.svg"')
+          ar = ar.replace('href="../styles.css"', 'href="/styles.css"')
+          ar = ar.replace('src="../assets/', 'src="/assets/')
+          ar = ar.replace('src="../app.js"', 'src="/app.js"')
+          ar = ar.replace('href="../contact.html#consultation-form"', 'href="/ar/contact.html#consultation-form"')
+          ar = ar.replace('href="../services.html"', 'href="/ar/services.html"')
+          ar = ar.replace('href="../treatments.html"', 'href="/ar/treatments.html"')
+          ar = ar.replace('href="../doctors.html"', 'href="/ar/doctors.html"')
+          ar = ar.replace('href="../about.html"', 'href="/ar/about.html"')
+          ar = ar.replace('href="../locations.html"', 'href="/ar/locations.html"')
+          ar = ar.replace('href="../contact.html"', 'href="/ar/contact.html"')
+
+          # Arabic global navigation, with an exact English counterpart switch.
+          ar = ar.replace('href="/" aria-label="Silwadi Dental Center home"', 'href="/ar/" aria-label="الصفحة الرئيسية لمركز سلوادي لطب الأسنان"')
+          ar = ar.replace('href="/services.html"', 'href="/ar/services.html"')
+          ar = ar.replace('href="/doctors.html"', 'href="/ar/doctors.html"')
+          ar = ar.replace('href="/about.html"', 'href="/ar/about.html"')
+          ar = ar.replace('href="/locations.html"', 'href="/ar/locations.html"')
+          ar = ar.replace('href="/contact.html#consultation-form"', 'href="/ar/contact.html#consultation-form"')
+          ar = ar.replace(
+              'class="global-language" href="/ar/services.html" lang="ar" hreflang="ar" aria-label="عرض الموقع بالعربية">عربي</a>',
+              'class="global-language" href="/treatments/people-of-determination.html" lang="en" hreflang="en" aria-label="View this page in English">EN</a>'
+          )
+          ar = ar.replace(
+              '<a href="/ar/services.html" lang="ar" hreflang="ar">عربي</a>',
+              '<a href="/treatments/people-of-determination.html" lang="en" hreflang="en">EN</a>'
+          )
+          ar = ar.replace('<body class="pod-page">', '<body class="pod-page language-ar static-arabic">')
+
+          translations = {
+              'Services <span aria-hidden="true">⌄</span>': 'الخدمات <span aria-hidden="true">⌄</span>',
+              '>Doctors</a>': '>الأطباء</a>',
+              '>About</a>': '>عن المركز</a>',
+              '>Locations</a>': '>الفروع</a>',
+              '<span>WhatsApp</span>': '<span>واتساب</span>',
+              '>Book a Consultation</a>': '>احجز استشارة</a>',
+              '<a href="/ar/services.html">Services</a>': '<a href="/ar/services.html">الخدمات</a>',
+              '<span class="pod-subnav__label">On this page</span>': '<span class="pod-subnav__label">في هذه الصفحة</span>',
+              '>Partnership</a>': '>الشراكة</a>',
+              '>Care</a>': '>الرعاية</a>',
+              '>Support needs</a>': '>احتياجات الدعم</a>',
+              '>Before your visit</a>': '>قبل الزيارة</a>',
+              '>Al Raha</a>': '>الراحة مول</a>',
+              'People of Determination · Al Raha Mall': 'أصحاب الهمم · الراحة مول',
+              'Dental Care for People of Determination in <span>Abu&nbsp;Dhabi</span>': 'رعاية أسنان أصحاب الهمم في <span>أبوظبي</span>',
+              'Respectful dental care with an environment and visit plan shaped around the individual patient.': 'رعاية أسنان باحترام واهتمام، ضمن بيئة وخطة زيارة تُهيّأ وفق احتياجات كل مريض.',
+              '>Request an Appointment</a>': '>اطلب موعداً</a>',
+              '>Request Appointment</a>': '>اطلب موعداً</a>',
+              'Official partnership · 10 April 2026': 'شراكة رسمية · 10 أبريل 2026',
+              'Official Partnership with Zayed Authority for People of Determination': 'شراكة رسمية مع مؤسسة زايد العليا لأصحاب الهمم',
+              'The formal MoU establishes an approved referral pathway for specialized dental services and supports more coordinated access to care for People of Determination.': 'تُرسّخ مذكرة التفاهم مسار إحالة معتمداً لخدمات طب الأسنان التخصصية، وتدعم وصولاً أكثر تنسيقاً إلى الرعاية لأصحاب الهمم.',
+              'View official announcement ↗': 'عرض الإعلان الرسمي ↗',
+              'Greater Access to Specialized Care': 'وصول أفضل إلى الرعاية التخصصية',
+              'A More Inclusive Community': 'مجتمع أكثر شمولاً',
+              'Healthier Smiles, Brighter Futures': 'ابتسامات أكثر صحة ومستقبل أكثر إشراقاً',
+              'Care designed around the individual': 'رعاية مصممة حول احتياجات الفرد',
+              'Thoughtful support, without making the visit feel complicated.': 'دعم مدروس من دون تعقيد تجربة الزيارة.',
+              'Practical needs can be shared before the appointment so the Al Raha team can prepare the environment, communication and clinical approach appropriately.': 'يمكن مشاركة الاحتياجات العملية قبل الموعد حتى يتمكن فريق الراحة من تهيئة البيئة وطريقة التواصل والنهج السريري بالشكل المناسب.',
+              'Accessible treatment environment': 'بيئة علاج ميسّرة',
+              'A dedicated treatment environment at Al Raha supports patients who may need additional space or mobility accommodation.': 'توفر غرفة العلاج المخصصة في الراحة مساحة وتجهيزات تساعد المرضى الذين قد يحتاجون إلى مساحة إضافية أو ترتيبات للحركة.',
+              'Individual care planning': 'تخطيط فردي للرعاية',
+              'Relevant medical, mobility and support information can be shared before the visit and considered by the clinical team.': 'يمكن مشاركة المعلومات الطبية واحتياجات الحركة والدعم قبل الزيارة ليأخذها الفريق السريري في الاعتبار.',
+              'Communication &amp; sensory support': 'دعم التواصل والاحتياجات الحسية',
+              'Tell reception about communication preferences, sensory considerations or routines that may help make the appointment clearer.': 'أخبر فريق الاستقبال بتفضيلات التواصل أو الاعتبارات الحسية أو الروتين الذي قد يجعل الموعد أوضح وأكثر راحة.',
+              'Family &amp; caregiver collaboration': 'التعاون مع الأسرة ومقدّم الرعاية',
+              'Where appropriate, a family member or caregiver can help communicate history, preferences and practical support needs.': 'عند الحاجة، يمكن لأحد أفراد الأسرة أو مقدّم الرعاية المساعدة في توضيح التاريخ الصحي والتفضيلات واحتياجات الدعم العملية.',
+              'Designed for broader support needs': 'مصمم لاحتياجات دعم أوسع',
+              'A clinical setting built with access in mind.': 'بيئة سريرية تراعي سهولة الوصول.',
+              'The official Zayed Authority announcement describes the center’s treatment environment as designed to accommodate People of Determination across different support needs.': 'يوضح الإعلان الرسمي أن بيئة العلاج في المركز صُممت لاستيعاب أصحاب الهمم باختلاف احتياجات الدعم.',
+              'Environment designed to accommodate wheelchair users.': 'بيئة مصممة لاستيعاب مستخدمي الكراسي المتحركة.',
+              'Designed to support individuals who rely on medical support devices, including oxygen machines and feeding tubes.': 'مصممة لدعم الأشخاص الذين يعتمدون على أجهزة دعم طبية، بما في ذلك أجهزة الأكسجين وأنابيب التغذية.',
+              'Staff training under the partnership includes communication and inclusive healthcare support.': 'يشمل التدريب ضمن الشراكة أساليب التواصل ودعم الرعاية الصحية الشاملة.',
+              'These points reflect the Zayed Authority announcement of 10 April 2026. Individual appointment suitability and clinical requirements are assessed by the treating team.': 'تعكس هذه النقاط الإعلان الرسمي الصادر في 10 أبريل 2026. وتُقيّم ملاءمة الموعد والمتطلبات السريرية لكل حالة بواسطة الفريق المعالج.',
+              'Read the official source': 'قراءة المصدر الرسمي',
+              '<h2>Before your visit</h2>': '<h2>قبل زيارتك</h2>',
+              'Tell our Al Raha reception team about anything that may help us prepare appropriately.': 'أخبر فريق الاستقبال في فرع الراحة بأي معلومات قد تساعدنا على الاستعداد للزيارة بالشكل المناسب.',
+              '<span class="pod-tag">Mobility</span>': '<span class="pod-tag">الحركة</span>',
+              '<span class="pod-tag">Communication</span>': '<span class="pod-tag">التواصل</span>',
+              '<span class="pod-tag">Sensory needs</span>': '<span class="pod-tag">الاحتياجات الحسية</span>',
+              '<span class="pod-tag">Medical support</span>': '<span class="pod-tag">الدعم الطبي</span>',
+              '<span class="pod-tag">Caregiver requirements</span>': '<span class="pod-tag">متطلبات مقدّم الرعاية</span>',
+              'Al Raha Mall branch': 'فرع الراحة مول',
+              'Plan your visit to Al Raha.': 'خطط لزيارتك إلى فرع الراحة.',
+              'Contact reception before your appointment if you would like to discuss access or support considerations.': 'تواصل مع الاستقبال قبل موعدك إذا رغبت في مناقشة أي اعتبارات تتعلق بسهولة الوصول أو الدعم.',
+              '<strong>Location</strong>': '<strong>الموقع</strong>',
+              '<strong>Phone</strong>': '<strong>الهاتف</strong>',
+              '<strong>Opening hours</strong>': '<strong>ساعات العمل</strong>',
+              'Saturday–Thursday 10:00 AM–7:00 PM · Friday closed': 'السبت–الخميس 10:00 صباحاً–7:00 مساءً · الجمعة مغلق',
+              '<strong>Care setting</strong>': '<strong>بيئة الرعاية</strong>',
+              'Accessible dental treatment room available at the Al Raha branch.': 'غرفة علاج أسنان ميسّرة متاحة في فرع الراحة.',
+              '>Call Al Raha</a>': '>اتصل بفرع الراحة</a>',
+              'Tell us how we can support the visit.': 'أخبرنا كيف يمكننا دعم الزيارة.',
+              'Request an appointment and share any access or support considerations with our Al Raha team in advance.': 'اطلب موعداً وشارك أي اعتبارات تتعلق بسهولة الوصول أو الدعم مع فريقنا في فرع الراحة مسبقاً.',
+              'Established dental care in Abu&nbsp;Dhabi since 1980.': 'رعاية أسنان راسخة في أبوظبي منذ عام 1980.',
+              '<h3>Care</h3>': '<h3>الرعاية</h3>',
+              '>Treatment information</a>': '>معلومات العلاج</a>',
+              '<h3>Centre</h3>': '<h3>المركز</h3>',
+              '>Contact</a>': '>تواصل معنا</a>',
+              '<h3>Opening hours</h3>': '<h3>ساعات العمل</h3>',
+              '<h3>Contact</h3>': '<h3>التواصل</h3>',
+              'Excellence for Every Ability, A Smile for Every Soul.': 'التميّز لكل قدرة، وابتسامة لكل روح.',
+              'aria-label="Quick contact"': 'aria-label="تواصل سريع"',
+              '>WhatsApp</a>': '>واتساب</a>',
+              '>Call</a>': '>اتصل</a>',
+              '>Book</a>': '>احجز</a>',
+          }
+          for old, new in translations.items():
+              ar = ar.replace(old, new)
+
+          # Translate gallery/partnership accessibility text without altering assets.
+          ar = ar.replace('aria-label="Primary navigation"', 'aria-label="التنقل الرئيسي"')
+          ar = ar.replace('aria-label="Open navigation"', 'aria-label="فتح القائمة"')
+          ar = ar.replace('aria-label="On this page"', 'aria-label="في هذه الصفحة"')
+          ar = ar.replace('aria-label="Accessible dental treatment room photo gallery"', 'aria-label="معرض صور غرفة علاج الأسنان الميسّرة"')
+          ar = ar.replace('aria-label="Accessible dental treatment room photos"', 'aria-label="صور غرفة علاج الأسنان الميسّرة"')
+          ar = ar.replace('aria-label="Previous clinic photo"', 'aria-label="الصورة السابقة"')
+          ar = ar.replace('aria-label="Next clinic photo"', 'aria-label="الصورة التالية"')
+          ar = ar.replace('aria-label="Information you can share before your appointment"', 'aria-label="معلومات يمكنك مشاركتها قبل الموعد"')
+          ar = ar.replace('aria-label="Official partnership logos"', 'aria-label="شعارات الشراكة الرسمية"')
+          ar = ar.replace('alt="Silwadi Dental Center"', 'alt="مركز سلوادي لطب الأسنان"')
+          ar = ar.replace('content:"Al Raha Mall"', 'content:"الراحة مول"')
+
+          # RTL refinements for this custom POD layout.
+          rtl_css = r'''
+    html[dir="rtl"] body{direction:rtl;text-align:right}
+    html[dir="rtl"] .global-nav{margin-left:0;margin-right:auto}
+    html[dir="rtl"] .global-menu-button{margin-left:0;margin-right:auto}
+    html[dir="rtl"] .pod-subnav__label{padding-right:0;padding-left:18px;border-right:0;border-left:1px solid var(--pod-line)}
+    html[dir="rtl"] .pod-care-item+.pod-care-item{border-left:0;border-right:1px solid var(--pod-line)}
+    html[dir="rtl"] .pod-partnership__benefit+.pod-partnership__benefit{border-left:0;border-right:1px solid rgba(255,255,255,.18);padding-left:18px;padding-right:20px}
+    html[dir="rtl"] .pod-partnership__visual{margin:0 0 24px 62px}
+    html[dir="rtl"] .pod-partnership__aside{right:auto;left:20px}
+    html[dir="rtl"] .pod-tag:before{margin-right:0;margin-left:9px}
+    html[dir="rtl"] .pod-eyebrow,html[dir="rtl"] .pod-partnership__eyebrow{letter-spacing:0;text-transform:none}
+    html[dir="rtl"] .pod-partnership__eyebrow:after{order:-1}
+    @media(max-width:760px){html[dir="rtl"] .pod-subnav__links{padding-right:0;padding-left:10px}}
+    @media(max-width:700px){html[dir="rtl"] .pod-hero__intro{text-align:right}}
+          '''
+          ar = ar.replace('\n  </style>', rtl_css + '\n  </style>', 1)
+
+          # Use the standard Arabic quality layer and routing/bootstrap assets.
+          ar = ar.replace(
+              '<link rel="stylesheet" href="/styles.css">',
+              '<link rel="stylesheet" href="/styles.css">\n  <link rel="stylesheet" href="/arabic-quality.css">\n  <script src="/bilingual-routing.js"></script>'
+          )
+
+          arabic_path.parent.mkdir(parents=True, exist_ok=True)
+          arabic_path.write_text(ar, encoding='utf-8')
+
+          sitemap = sitemap_path.read_text(encoding='utf-8')
+          arabic_url = 'https://silwadi.ae/ar/treatments/people-of-determination.html'
+          if arabic_url not in sitemap:
+              entry = (
+                  '  <url>\n'
+                  f'    <loc>{arabic_url}</loc>\n'
+                  '    <lastmod>2026-09-16</lastmod>\n'
+                  '  </url>\n'
+              )
+              sitemap = sitemap.replace('</urlset>', entry + '</urlset>')
+              sitemap_path.write_text(sitemap, encoding='utf-8')
+
+          # Guard against silently producing another treatment page or a broken route.
+          generated = arabic_path.read_text(encoding='utf-8')
+          required = [
+              '<html lang="ar" dir="rtl">',
+              'رعاية أسنان أصحاب الهمم',
+              '/assets/DSCF2857.webp',
+              '/assets/DSCF2880.webp',
+              'href="/treatments/people-of-determination.html"',
+          ]
+          for marker in required:
+              if marker not in generated:
+                  raise SystemExit(f'Missing generated marker: {marker}')
+          if 'علاج جذور الأسنان في أبوظبي' in generated:
+              raise SystemExit('Arabic POD page contains Endodontics page title')
+          PY
+
+      - name: Verify implementation is green
+        run: |
+          python tests/test_people_of_determination_arabic.py
+          python tests/test_people_of_determination_gallery.py
+
+      - name: Commit verified fix
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add treatments/people-of-determination.html ar/treatments/people-of-determination.html sitemap.xml tests/test_people_of_determination_arabic.py
+          git commit -m "fix: add Arabic People of Determination page"
+          git push origin HEAD:fix-pod-arabic-route
