@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Navigation Review — Specialized Care | Silwadi</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    body.nav-review{background:#f6fbfc}
+    .nav-review .site-header{position:relative}
+    .nav-review .header-inner{gap:20px}
+    .nav-review .site-nav{gap:22px}
+    .nav-review .site-nav>div,.nav-review .site-nav>a{flex:0 0 auto}
+    .nav-review .site-nav a::after{bottom:19px}
+
+    .nav-specialized{position:relative}
+    .nav-specialized__trigger{display:flex;align-items:center;gap:7px;color:var(--teal)!important;font-weight:800!important}
+    .nav-specialized__trigger::before{content:"";width:6px;height:6px;border-radius:50%;background:#12a2b5;box-shadow:0 0 0 4px rgba(13,124,144,.09)}
+    .nav-specialized__chevron{font-size:10px;color:#66858d;transition:transform .18s ease}
+    .nav-specialized:hover .nav-specialized__chevron,.nav-specialized:focus-within .nav-specialized__chevron{transform:rotate(180deg)}
+    .nav-specialized__trigger::after{display:none!important}
+
+    .specialized-care-menu{position:absolute;top:calc(100% - 7px);left:50%;width:min(520px,calc(100vw - 40px));padding:15px;background:#fff;border:1px solid #dbe7e9;border-radius:16px;box-shadow:0 24px 60px rgba(8,56,71,.14);transform:translate(-50%,10px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .16s ease,transform .16s ease,visibility .16s ease;z-index:140}
+    .nav-specialized:hover .specialized-care-menu,.nav-specialized:focus-within .specialized-care-menu{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0)}
+    .specialized-care-menu__head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;padding:8px 8px 13px;border-bottom:1px solid #edf2f3}
+    .specialized-care-menu__eyebrow{display:block;margin-bottom:4px;color:var(--teal);font-size:9px;font-weight:850;letter-spacing:.12em;text-transform:uppercase}
+    .specialized-care-menu__head strong{display:block;color:var(--navy);font-size:16px;letter-spacing:-.02em}
+    .specialized-care-menu__head span:last-child{max-width:200px;color:#71878e;font-size:9px;line-height:1.45;text-align:right}
+    .specialized-care-menu__grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:10px}
+    .specialized-care-card{position:relative;min-height:148px;padding:18px 18px 16px!important;border:1px solid #dce7e9;border-radius:12px;background:linear-gradient(180deg,#fff 0%,#f8fbfb 100%);overflow:hidden;transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease}
+    .specialized-care-card::after{display:none!important}
+    .specialized-care-card:hover,.specialized-care-card:focus-visible{transform:translateY(-2px);border-color:#a9cdd3;box-shadow:0 12px 28px rgba(8,56,71,.08);outline:none}
+    .specialized-care-card__index{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;margin-bottom:19px;border-radius:50%;background:#e9f6f7;color:var(--teal);font-size:9px;font-weight:850}
+    .specialized-care-card strong{display:block;color:var(--navy);font-size:14px;line-height:1.25}
+    .specialized-care-card small{display:block;margin-top:6px;color:#647b82;font-size:9px;line-height:1.5}
+    .specialized-care-card b{display:block;margin-top:12px;color:var(--teal);font-size:9px;font-weight:800}
+    .specialized-care-card--pod{background:linear-gradient(145deg,#f7fbfb 0%,#edf7f8 100%)}
+
+    .nav-review .header-actions{gap:9px}
+    .nav-review .header-whatsapp{white-space:nowrap}
+    .nav-review .header-consult{white-space:nowrap}
+    .nav-review .language-switch{flex:0 0 auto}
+
+    .review-hero{position:relative;min-height:calc(100vh - 76px);overflow:hidden;background:#062433;color:#fff;display:flex;align-items:center}
+    .review-hero__media{position:absolute;inset:0}
+    .review-hero__media img{width:100%;height:100%;display:block;object-fit:cover;object-position:center top}
+    .review-hero__shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(2,14,25,.96) 0%,rgba(4,23,40,.88) 29%,rgba(7,36,60,.52) 43%,rgba(8,49,76,.16) 54%,rgba(4,23,40,0) 65%)}
+    .review-hero__inner{position:relative;z-index:2;width:100%;padding:6.2rem clamp(1.5rem,4vw,4rem)}
+    .review-hero__copy{max-width:41rem;margin-left:clamp(2rem,6.4vw,7.8rem)}
+    .review-hero__copy p:first-child{margin:0 0 1rem;font-size:.88rem;font-weight:760;letter-spacing:.11em;color:#e5fbfd}
+    .review-hero__accent{display:block;width:3.3rem;height:3px;border-radius:999px;background:linear-gradient(90deg,#11a7bc,#71dce4);margin-bottom:1.4rem}
+    .review-hero h1{margin:0;max-width:12ch;color:#f9fdff;font-size:clamp(3rem,5.2vw,5.4rem);line-height:.96;letter-spacing:-.065em;font-weight:800}
+    .review-hero h1 span{display:block;color:#8be9ee}
+    .review-hero__lead{max-width:38rem;margin:1.35rem 0 0;color:rgba(238,249,251,.9);font-size:1rem;line-height:1.65}
+    .review-hero__actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:1.8rem}
+    .review-hero__actions .btn--secondary{background:rgba(255,255,255,.06);border-color:rgba(230,250,252,.42);color:#fff}
+    .review-note{position:fixed;right:18px;bottom:18px;z-index:250;padding:10px 13px;border-radius:999px;background:rgba(5,42,54,.92);color:#dff7f9;font-size:9px;font-weight:800;letter-spacing:.06em;box-shadow:0 10px 30px rgba(5,42,54,.22);backdrop-filter:blur(10px)}
+
+    @media(max-width:1260px){
+      .nav-review .header-inner{gap:14px}
+      .nav-review .site-nav{gap:16px;font-size:11px}
+      .nav-review .header-actions{gap:7px}
+      .nav-review .header-whatsapp{padding-inline:10px}
+      .nav-review .header-consult{padding-inline:13px;font-size:10px}
+    }
+    @media(max-width:1040px){
+      .nav-review .site-nav,.nav-review .header-actions>.header-whatsapp,.nav-review .header-actions>.header-consult,.nav-review .header-actions>.language-switch{display:none}
+      .nav-review .menu-button{display:flex}
+      .nav-review .mobile-nav{display:none}
+      .nav-review .mobile-nav.is-open{display:block}
+    }
+    .mobile-specialized-care{border-bottom:1px solid #edf2f3}
+    .mobile-specialized-care summary{list-style:none;cursor:pointer;padding:14px 4px;color:var(--teal);font-size:13px;font-weight:800}
+    .mobile-specialized-care summary::-webkit-details-marker{display:none}
+    .mobile-specialized-care__links{display:grid;gap:8px;padding:0 0 14px}
+    .mobile-specialized-care__links a{padding:13px 14px!important;border:1px solid #dce7e9!important;border-radius:10px;background:#f8fbfb}
+    .mobile-specialized-care__links strong{display:block;color:var(--navy);font-size:12px}
+    .mobile-specialized-care__links span{display:block;margin-top:4px;color:#6b8188;font-size:9px;line-height:1.45}
+    @media(max-width:760px){
+      .review-hero{min-height:680px;align-items:flex-end}
+      .review-hero__media img{object-position:76% top}
+      .review-hero__shade{background:linear-gradient(180deg,rgba(2,14,25,0) 0%,rgba(2,14,25,.15) 46%,rgba(2,14,25,.9) 88%,rgba(2,14,25,.98) 100%)}
+      .review-hero__inner{padding:19rem 1.1rem 3.4rem}
+      .review-hero__copy{margin:0}
+      .review-hero h1{font-size:clamp(2.35rem,11vw,3.2rem)}
+      .review-hero__actions{flex-direction:column}
+      .review-hero__actions .btn{width:100%}
+      .review-note{right:12px;bottom:12px}
+    }
+  </style>
+</head>
+<body class="nav-review">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a class="brand site-brand-logo home-trust-brand" href="/" aria-label="Silwadi Dental Center home"><img src="/assets/silwadi-logo-official.png" alt="Silwadi Dental Center" width="600" height="600"></a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <!-- services-menu-start -->
+        <div class="nav-services"><a class="nav-services__trigger" href="/services.html">Services <span class="nav-services__chevron" aria-hidden="true">⌄</span></a><div class="services-mega" aria-label="Dental services"><div class="services-mega__head"><div><span>Dental services</span><strong>Choose the care you need</strong></div><a href="/services.html">View all services <span aria-hidden="true">→</span></a></div><div class="services-mega__grid"><a href="/services.html#prosthodontics"><strong>Prosthodontics</strong><small>Restore &amp; replace teeth</small></a><a href="/services.html#implantology"><strong>Implantology</strong><small>Dental implant care</small></a><a href="/services.html#periodontics"><strong>Periodontics</strong><small>Gum &amp; supporting tissue care</small></a><a href="/services.html#endodontics"><strong>Endodontics</strong><small>Root canal &amp; pulp care</small></a><a href="/services.html#orthodontics"><strong>Orthodontics</strong><small>Alignment &amp; bite correction</small></a><a href="/services.html#cosmetic-dentistry"><strong>Cosmetic Dentistry &amp; Teeth Whitening</strong><small>Smile design &amp; professional whitening</small></a><a href="/services.html#laser-dentistry"><strong>Laser Dentistry</strong><small>Laser-assisted procedures</small></a><a href="/services.html#preventive-dentistry"><strong>Preventive Dentistry</strong><small>Routine &amp; preventive care</small></a></div></div></div>
+        <!-- services-menu-end -->
+
+        <div class="nav-specialized">
+          <a class="nav-specialized__trigger" href="#specialized-care-menu" aria-haspopup="true">Specialized Care <span class="nav-specialized__chevron" aria-hidden="true">⌄</span></a>
+          <div class="specialized-care-menu" id="specialized-care-menu" aria-label="Specialized care">
+            <div class="specialized-care-menu__head"><div><span class="specialized-care-menu__eyebrow">Focused care pathways</span><strong>Specialized Care</strong></div><span>Dedicated care experiences designed around specific patient needs.</span></div>
+            <div class="specialized-care-menu__grid">
+              <a class="specialized-care-card" href="/treatments/pediatric-dentistry.html"><span class="specialized-care-card__index">01</span><strong>Pediatric Dentistry</strong><small>Dedicated dental care for children</small><b>Explore pediatric care →</b></a>
+              <a class="specialized-care-card specialized-care-card--pod" href="/treatments/people-of-determination.html"><span class="specialized-care-card__index">02</span><strong>People of Determination</strong><small>Comfort, accessibility &amp; individualized support</small><b>Explore dedicated care →</b></a>
+            </div>
+          </div>
+        </div>
+
+        <a href="/doctors.html">Doctors</a>
+        <a href="/about.html">About</a>
+        <a href="/locations.html">Locations</a>
+      </nav>
+      <div class="header-actions">
+        <a class="language-switch" href="/ar/" aria-label="View in Arabic">عربي</a>
+        <a class="header-whatsapp" href="https://wa.me/971506260418" target="_blank" rel="noopener" aria-label="Chat with Silwadi Dental Center on WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2a9.84 9.84 0 0 0-8.43 14.91L2 22l5.22-1.56A9.9 9.9 0 1 0 12.04 2Zm0 17.98a8.03 8.03 0 0 1-4.09-1.12l-.29-.17-3.1.93.94-3.02-.19-.31A8.04 8.04 0 1 1 12.04 19.98Zm4.4-6.03c-.24-.12-1.43-.7-1.65-.78-.22-.08-.38-.12-.54.12-.16.24-.62.78-.76.94-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.93-1.19-.71-.64-1.2-1.42-1.34-1.66-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.19-.47-.39-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.7 2.59 4.11 3.63.57.25 1.02.4 1.37.51.58.18 1.1.16 1.51.1.46-.07 1.43-.58 1.63-1.15.2-.57.2-1.06.14-1.16-.06-.1-.22-.16-.46-.28Z"></path></svg><span>WhatsApp</span></a>
+        <a class="btn btn--primary header-consult" href="/contact.html#consultation-form">Book a Consultation</a>
+        <button class="menu-button" type="button" aria-expanded="false" aria-controls="mobileNav" aria-label="Open navigation"><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <div class="mobile-nav" id="mobileNav">
+    <nav class="mobile-nav__panel" aria-label="Mobile navigation">
+      <a href="/">Home</a>
+      <details class="mobile-services"><summary>Services</summary><div class="mobile-services__links"><a href="/services.html#prosthodontics"><strong>Prosthodontics</strong><span>Restore &amp; replace teeth</span></a><a href="/services.html#implantology"><strong>Implantology</strong><span>Dental implant care</span></a><a href="/services.html#periodontics"><strong>Periodontics</strong><span>Gum &amp; supporting tissue care</span></a><a href="/services.html#endodontics"><strong>Endodontics</strong><span>Root canal &amp; pulp care</span></a><a href="/services.html#orthodontics"><strong>Orthodontics</strong><span>Alignment &amp; bite correction</span></a><a href="/services.html#cosmetic-dentistry"><strong>Cosmetic Dentistry</strong><span>Smile design &amp; whitening</span></a><a href="/services.html#laser-dentistry"><strong>Laser Dentistry</strong><span>Laser-assisted procedures</span></a><a href="/services.html#preventive-dentistry"><strong>Preventive Dentistry</strong><span>Routine &amp; preventive care</span></a></div></details>
+      <details class="mobile-specialized-care"><summary>Specialized Care</summary><div class="mobile-specialized-care__links"><a href="/treatments/pediatric-dentistry.html"><strong>Pediatric Dentistry</strong><span>Dedicated dental care for children</span></a><a href="/treatments/people-of-determination.html"><strong>People of Determination</strong><span>Comfort, accessibility &amp; individualized support</span></a></div></details>
+      <a href="/doctors.html">Doctors</a><a href="/about.html">About</a><a href="/locations.html">Locations</a>
+    </nav>
+  </div>
+
+  <main id="main">
+    <section class="review-hero">
+      <div class="review-hero__media"><img src="/assets/munir-home-hero-clean.webp?v=20260906-hero-clean-final" alt="Dr. Munir Silwadi at Dr. Munir Silwadi Dental Centre"></div>
+      <div class="review-hero__shade" aria-hidden="true"></div>
+      <div class="container review-hero__inner"><div class="review-hero__copy"><p>Dr. Munir Silwadi Dental Centre</p><span class="review-hero__accent" aria-hidden="true"></span><h1>How can we <span>help you?</span></h1><p class="review-hero__lead">From routine check-ups to specialist dental care, our Abu Dhabi team is here to help you find the right treatment with clarity and confidence.</p><div class="review-hero__actions"><a class="btn btn--primary" href="/contact.html#consultation-form">Book an Appointment</a><a class="btn btn--secondary" href="/services.html">Explore Services</a></div></div></div>
+    </section>
+  </main>
+
+  <div class="review-note">PRIVATE REVIEW · SPECIALIZED CARE NAV</div>
+  <script>
+    const menuButton=document.querySelector('.menu-button');
+    const mobileNav=document.querySelector('#mobileNav');
+    if(menuButton&&mobileNav){menuButton.addEventListener('click',()=>{const open=mobileNav.classList.toggle('is-open');menuButton.setAttribute('aria-expanded',String(open));});}
+  </script>
+</body>
+</html>
