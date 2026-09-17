@@ -1,0 +1,98 @@
+name: Apply POD SEO strengthening
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-pod-seo-strengthening.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Strengthen POD search intent, FAQ, internal linking and sitemap
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          pod_path = Path('treatments/people-of-determination.html')
+          pod = pod_path.read_text(encoding='utf-8')
+
+          old_title = 'Dental Care for People of Determination in Abu Dhabi | Silwadi Dental Center'
+          new_title = 'Dentist for People of Determination in Abu Dhabi | Silwadi Dental Center'
+          if pod.count(old_title) != 4:
+              raise SystemExit(f'Expected 4 old POD title occurrences, found {pod.count(old_title)}')
+          pod = pod.replace(old_title, new_title)
+
+          old_description = 'Learn how Silwadi Dental Center supports thoughtful, respectful dental visits for People of Determination at Al Raha Mall in Abu Dhabi.'
+          new_description = 'Accessible dental care for People of Determination in Abu Dhabi at Silwadi Al Raha Mall, with wheelchair-accessible treatment space and individual visit planning.'
+          if pod.count(old_description) != 4:
+              raise SystemExit(f'Expected 4 old POD description occurrences, found {pod.count(old_description)}')
+          pod = pod.replace(old_description, new_description)
+
+          seo_marker = '</script>\n  <meta name="theme-color" content="#083847">'
+          faq_schema = '''</script>\n<script type="application/ld+json" data-pod-faq-schema>{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do you provide dental care for People of Determination in Abu Dhabi?","acceptedAnswer":{"@type":"Answer","text":"Yes. Silwadi Dental Center's Al Raha Mall branch has a dedicated accessible dental treatment environment, and visit planning can take mobility, communication, sensory and caregiver considerations into account."}},{"@type":"Question","name":"Is the Al Raha dental clinic wheelchair accessible?","acceptedAnswer":{"@type":"Answer","text":"The dedicated treatment environment at Al Raha Mall is designed to accommodate wheelchair users. Contact reception before the visit to discuss individual access requirements."}},{"@type":"Question","name":"Can you support patients with disabilities or special needs?","acceptedAnswer":{"@type":"Answer","text":"Patients, families or caregivers can share relevant mobility, communication, sensory or medical support needs before the appointment so the clinical team can prepare appropriately. Individual suitability is assessed by the treating team."}},{"@type":"Question","name":"Can a caregiver help during the dental visit?","acceptedAnswer":{"@type":"Answer","text":"Where appropriate, a family member or caregiver can help communicate history, preferences and practical support needs with the dental team."}}]}</script>\n  <meta name="theme-color" content="#083847">'''
+          if pod.count(seo_marker) != 1:
+              raise SystemExit('Could not find unique POD SEO schema insertion marker')
+          pod = pod.replace(seo_marker, faq_schema, 1)
+
+          css_marker = '    .pod-consultation{padding:34px 0 86px}.pod-consultation__box{background:var(--pod-deep);color:#fff;padding:50px 54px;display:flex;align-items:center;justify-content:space-between;gap:38px}.pod-consultation__box h2{margin:0;font-size:35px;line-height:1.08;letter-spacing:-.035em}.pod-consultation__box p{margin:10px 0 0;color:#c5d9dd;font-size:13px;line-height:1.65;max-width:650px}.pod-consultation__box .pod-btn{background:#fff;color:var(--pod-navy);flex:0 0 auto}\n'
+          faq_css = css_marker + '''    .pod-faq{background:#fff}.pod-faq__intro{max-width:760px;margin-bottom:34px}.pod-faq__intro .pod-copy{margin:16px 0 0}.pod-faq__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--pod-line)}.pod-faq__item{padding:28px 28px 28px 0;border-bottom:1px solid var(--pod-line)}.pod-faq__item:nth-child(even){padding-left:28px;border-left:1px solid var(--pod-line)}.pod-faq__item h3{margin:0 0 10px;color:var(--pod-navy);font-size:17px;line-height:1.35}.pod-faq__item p{margin:0;color:var(--pod-muted);font-size:13px;line-height:1.7}\n'''
+          if pod.count(css_marker) != 1:
+              raise SystemExit('Could not find unique POD consultation CSS marker')
+          pod = pod.replace(css_marker, faq_css, 1)
+
+          mobile_marker = '@media(max-width:700px){.pod-private .container span:last-child{display:none}'
+          mobile_replacement = '@media(max-width:700px){.pod-faq__grid{grid-template-columns:1fr}.pod-faq__item,.pod-faq__item:nth-child(even){padding:24px 0;border-left:0}.pod-private .container span:last-child{display:none}'
+          if pod.count(mobile_marker) != 1:
+              raise SystemExit('Could not find POD mobile breakpoint marker')
+          pod = pod.replace(mobile_marker, mobile_replacement, 1)
+
+          subnav_old = '<a href="#before-visit">Before your visit</a><a href="#raha">Al Raha</a>'
+          subnav_new = '<a href="#before-visit">Before your visit</a><a href="#raha">Al Raha</a><a href="#faq">FAQ</a>'
+          if pod.count(subnav_old) != 1:
+              raise SystemExit('Could not find POD subnav marker')
+          pod = pod.replace(subnav_old, subnav_new, 1)
+
+          consultation_marker = '''    <section class="pod-consultation" id="consultation">'''
+          faq_section = '''    <section class="pod-section pod-faq" id="faq">\n      <div class="container">\n        <header class="pod-faq__intro"><p class="pod-eyebrow">Accessible dental care</p><h2 class="pod-title">Questions about People of Determination dental visits.</h2><p class="pod-copy">These answers cover common access and support questions for patients, families and caregivers planning a visit to our Al Raha Mall branch.</p></header>\n        <div class="pod-faq__grid">\n          <article class="pod-faq__item"><h3>Do you provide dental care for People of Determination in Abu Dhabi?</h3><p>Yes. Silwadi Dental Center's Al Raha Mall branch has a dedicated accessible dental treatment environment, and visit planning can take mobility, communication, sensory and caregiver considerations into account.</p></article>\n          <article class="pod-faq__item"><h3>Is the Al Raha dental clinic wheelchair accessible?</h3><p>The dedicated treatment environment at Al Raha Mall is designed to accommodate wheelchair users. Contact reception before the visit to discuss individual access requirements.</p></article>\n          <article class="pod-faq__item"><h3>Can you support patients with disabilities or special needs?</h3><p>Patients, families or caregivers can share relevant mobility, communication, sensory or medical support needs before the appointment so the clinical team can prepare appropriately. Individual suitability is assessed by the treating team.</p></article>\n          <article class="pod-faq__item"><h3>Can a caregiver help during the dental visit?</h3><p>Where appropriate, a family member or caregiver can help communicate history, preferences and practical support needs with the dental team.</p></article>\n        </div>\n      </div>\n    </section>\n\n    <section class="pod-consultation" id="consultation">'''
+          if pod.count(consultation_marker) != 1:
+              raise SystemExit('Could not find POD consultation section marker')
+          pod = pod.replace(consultation_marker, faq_section, 1)
+          pod_path.write_text(pod, encoding='utf-8')
+
+          locations_path = Path('locations.html')
+          locations = locations_path.read_text(encoding='utf-8')
+          old_actions = '<div class="location-actions"><a class="btn btn--primary" href="contact.html#consultation-form">Book a Consultation</a><a class="btn btn--secondary" href="tel:+97126662408">Call Al Raha</a><a class="btn btn--secondary" href="https://www.google.com/maps/search/?api=1&amp;query=Dr%20Munir%20Silwadi%20Dental%20Centre%20Al%20Raha%20Mall%20Abu%20Dhabi">Get Directions</a></div>'
+          new_actions = '<div class="location-actions"><a class="btn btn--primary" href="contact.html#consultation-form">Book a Consultation</a><a class="btn btn--secondary" href="treatments/people-of-determination.html">People of Determination Care</a><a class="btn btn--secondary" href="tel:+97126662408">Call Al Raha</a><a class="btn btn--secondary" href="https://www.google.com/maps/search/?api=1&amp;query=Dr%20Munir%20Silwadi%20Dental%20Centre%20Al%20Raha%20Mall%20Abu%20Dhabi">Get Directions</a></div>'
+          if locations.count(old_actions) != 1:
+              raise SystemExit('Could not find unique Al Raha action block')
+          locations = locations.replace(old_actions, new_actions, 1)
+          locations_path.write_text(locations, encoding='utf-8')
+
+          sitemap_path = Path('sitemap.xml')
+          sitemap = sitemap_path.read_text(encoding='utf-8')
+          old_sitemap = '    <loc>https://silwadi.ae/treatments/people-of-determination.html</loc>\n    <lastmod>2026-09-16</lastmod>'
+          new_sitemap = '    <loc>https://silwadi.ae/treatments/people-of-determination.html</loc>\n    <lastmod>2026-09-17</lastmod>'
+          if sitemap.count(old_sitemap) != 1:
+              raise SystemExit('Could not find POD sitemap entry dated 2026-09-16')
+          sitemap = sitemap.replace(old_sitemap, new_sitemap, 1)
+          sitemap_path.write_text(sitemap, encoding='utf-8')
+          PY
+      - name: Run POD SEO regression contract
+        run: python -m unittest tests.test_public_core_seo -v
+      - name: Commit strengthened POD SEO
+        run: |
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add treatments/people-of-determination.html locations.html sitemap.xml
+          git commit -m "Strengthen People of Determination SEO"
+          git push origin main
