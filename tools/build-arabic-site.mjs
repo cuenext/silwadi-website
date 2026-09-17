@@ -189,7 +189,7 @@ function polishArabicStructure(document, route) {
 
   if (route === 'index.html') {
     const heroTitle = document.querySelector('#premiumHomeHeroTitle');
-    if (heroTitle) heroTitle.textContent = 'كيف يمكننا مساعدتك؟';
+    if (heroTitle) heroTitle.textContent = 'رعاية أسنان في أبوظبي';
 
     const trust = [...document.querySelectorAll('.premium-home-hero__trust strong')];
     const trustCopy = [

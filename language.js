@@ -155,7 +155,7 @@
     'since 1980.': 'منذ عام 1980.',
     'Dental care in': 'رعاية أسنان في',
     'Abu Dhabi': 'أبوظبي',
-    'One established clinical team.': 'خبرات متكاملة في مختلف تخصصات طب الأسنان.',
+    'One established clinical team.': 'فريق طبي متكامل بخبرة راسخة.',
     '15 dentists & specialists': '15 طبيباً واختصاصياً',
     '15 dentists & specialists across two Abu Dhabi locations.': '15 طبيباً واختصاصياً في فرعين بأبوظبي.',
     'Explore Services': 'استكشف الخدمات',
