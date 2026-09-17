@@ -16,6 +16,7 @@ PAGES = [
     "treatments/cosmetic-dentistry.html",
     "treatments/general-dentistry.html",
     "treatments/emergency-dentist.html",
+    "treatments/people-of-determination.html",
 ]
 TREATMENT_DETAIL_PAGES = [
     "treatments/dental-implants.html",
@@ -23,6 +24,7 @@ TREATMENT_DETAIL_PAGES = [
     "treatments/cosmetic-dentistry.html",
     "treatments/general-dentistry.html",
     "treatments/emergency-dentist.html",
+    "treatments/people-of-determination.html",
 ]
 EXPECTED_OG_IMAGES = {
     "contact.html": "https://silwadi.ae/assets/locations/bani-yas-reception.webp",
@@ -129,8 +131,8 @@ class PublicCoreSeoContract(unittest.TestCase):
             self.assertTrue(description, path)
             titles.append(parser.title.strip())
             descriptions.append(description)
-        self.assertEqual(len(titles), len(set(titles)), "titles must be unique across the 10 core pages")
-        self.assertEqual(len(descriptions), len(set(descriptions)), "descriptions must be unique across the 10 core pages")
+        self.assertEqual(len(titles), len(set(titles)), "titles must be unique across core pages")
+        self.assertEqual(len(descriptions), len(set(descriptions)), "descriptions must be unique across core pages")
 
     def test_canonicals_open_graph_and_hreflang_are_consistent(self):
         for path, (_, parser) in self.parsed.items():
@@ -181,6 +183,25 @@ class PublicCoreSeoContract(unittest.TestCase):
             self.assertTrue(faqs, f"{path}: expected FAQPage schema")
             self.assertGreaterEqual(len(faqs[0].get("mainEntity", [])), 2, path)
 
+    def test_people_of_determination_page_targets_accessible_search_intent(self):
+        html, parser = self.parsed["treatments/people-of-determination.html"]
+        self.assertEqual(
+            parser.title.strip(),
+            "Dentist for People of Determination in Abu Dhabi | Silwadi Dental Center",
+        )
+        description = parser.meta.get("description", "").lower()
+        self.assertIn("accessible dental care", description)
+        self.assertIn("al raha mall", description)
+        page_copy = html.lower()
+        self.assertIn("wheelchair", page_copy)
+        self.assertIn("special needs", page_copy)
+        self.assertIn('id="faq"', html)
+
+    def test_al_raha_location_links_to_people_of_determination_care(self):
+        locations_html = self.parsed["locations.html"][0]
+        self.assertIn('href="treatments/people-of-determination.html"', locations_html)
+        self.assertIn("People of Determination", locations_html)
+
     def test_selected_pages_use_relevant_open_graph_images(self):
         for path, expected in EXPECTED_OG_IMAGES.items():
             parser = self.parsed[path][1]
@@ -201,6 +222,14 @@ class PublicCoreSeoContract(unittest.TestCase):
             )
             self.assertIsNotNone(match, f"missing sitemap entry for {url}")
             self.assertGreaterEqual(match.group(1), "2026-09-12", url)
+
+        pod_url = "https://silwadi.ae/treatments/people-of-determination.html"
+        pod_match = re.search(
+            rf"<loc>{re.escape(pod_url)}</loc>\s*<lastmod>(\d{{4}}-\d{{2}}-\d{{2}})</lastmod>",
+            sitemap,
+        )
+        self.assertIsNotNone(pod_match)
+        self.assertGreaterEqual(pod_match.group(1), "2026-09-17")
 
 
 if __name__ == "__main__":
