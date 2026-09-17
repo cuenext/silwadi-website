@@ -66,7 +66,7 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
 
     def test_homepage_arabic_hero_and_trust_copy_are_clean_and_not_repeated(self):
         source = (ROOT / "ar" / "index.html").read_text(encoding="utf-8")
-        self.assertIn('id="premiumHomeHeroTitle">كيف يمكننا مساعدتك؟</h1>', source)
+        self.assertIn('id="premiumHomeHeroTitle">رعاية أسنان في أبوظبي</h1>', source)
         self.assertNotIn('كيف يمكننا <span>مساعدتك؟</span>', source)
         self.assertNotIn('الحجز عبر الاستقبال الحجز', source)
         self.assertIn('<strong>نخدم مرضانا منذ عام 1980</strong>', source)

@@ -104,7 +104,7 @@ class PatchEightTechnicalSEOContract(unittest.TestCase):
         self.assertIsNotNone(website)
         local = json.loads(read('data/local-business.json'))
         self.assertEqual(dentist['@id'], 'https://silwadi.ae/#dentist')
-        self.assertEqual(dentist['url'], 'https://silwadi.ae/locations.html#bani-yas')
+        self.assertEqual(dentist['url'], 'https://silwadi.ae/locations/corniche.html')
         self.assertEqual(dentist['telephone'], local['phone_e164'])
         self.assertEqual(dentist['email'], local['email'])
         self.assertIn('W Corniche Road', dentist['address']['streetAddress'])

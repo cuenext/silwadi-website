@@ -88,9 +88,16 @@ class PatchSevenLocalSEOContract(unittest.TestCase):
         self.assertNotIn('not yet open', html)
         self.assertNotIn('class="location-state"', html)
 
-    def test_unverified_corniche_branch_name_is_not_used_as_nap(self):
-        for rel in ROOT_PAGES + NESTED_PAGES:
-            self.assertNotIn('Dr Munir Silwadi Dental Centre - Corniche Branch', read(rel), rel)
+    def test_public_branch_names_are_centralized_in_location_data(self):
+        data = self.local_data()
+        self.assertEqual(
+            data['google_business_name'],
+            'Dr Munir Silwadi Dental Centre - Corniche Branch',
+        )
+        self.assertEqual(
+            data['al_raha']['google_business_name'],
+            'Al Raha Branch - Dr. Mohamed Munir Dental Centre - LLC',
+        )
 
 
 if __name__ == '__main__':
