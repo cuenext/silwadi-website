@@ -1,0 +1,28 @@
+name: One-shot implant review image optimization
+
+on:
+  push:
+    paths:
+      - ".github/workflows/implant-review-image-optimize.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create optimized WebP
+        run: |
+          set -euo pipefail
+          ffmpeg -y -i assets/locations/al-raha-treatment-room.png -vf "scale='min(1600,iw)':-2" -c:v libwebp -quality 86 -compression_level 6 assets/locations/al-raha-treatment-room.webp
+          test -s assets/locations/al-raha-treatment-room.webp
+      - name: Commit optimized asset and remove workflow
+        run: |
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add assets/locations/al-raha-treatment-room.webp
+          git rm .github/workflows/implant-review-image-optimize.yml
+          git commit -m "Optimize implant review treatment room image"
+          git push
