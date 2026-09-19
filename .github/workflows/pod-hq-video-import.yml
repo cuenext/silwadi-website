@@ -1,0 +1,35 @@
+name: One-shot POD HQ video import
+
+on:
+  push:
+    paths:
+      - ".github/workflows/pod-hq-video-import.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  import-video:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download and verify HQ POD video
+        env:
+          VIDEO_URL: "https://uc97852ff6e30a1f6accaca84fa3.dl.dropboxusercontent.com/cd/0/get/DId047E_29LS9Yvzq4MfHR-CbXVFX4Ourxo2YLp1o5GOsiIi97e0YpROoVau5PmYAU2cBOycxUiMh_5ZznMavb7SZLaO2dcw1NWH0RabxZKlvmrydcMDV7kXQe20qc9jfRMpWrZ_Fm_xZcsXKEqgT1XALvjeB4DyB13wMJ0twK6qiw/file?c_luid=aadca57b"
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 --retry-delay 1 "$VIDEO_URL" -o assets/video/pod-raha-care-hq.mp4
+          echo "30447456e709eb020291549d42ba460ec6a774240961d4b014654e871bab3190  assets/video/pod-raha-care-hq.mp4" | sha256sum -c -
+          test "$(stat -c%s assets/video/pod-raha-care-hq.mp4)" -eq 1420739
+
+      - name: Commit video and remove one-shot workflow
+        run: |
+          set -euo pipefail
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add assets/video/pod-raha-care-hq.mp4
+          git rm .github/workflows/pod-hq-video-import.yml
+          git commit -m "Add HQ 30fps POD review video"
+          git push
