@@ -26,10 +26,10 @@
             </header>
 
             <div class="pod-video-review__frame">
-              <video data-pod-review-video controls playsinline preload="metadata" poster="../assets/video/pod-raha-care-review-poster.webp?v=20260919-review2" aria-label="People of Determination dental care at Silwadi Al Raha Mall">
+              <video controls playsinline preload="metadata" poster="../assets/video/pod-raha-care-review-poster.webp?v=20260920-hq30" aria-label="People of Determination dental care at Silwadi Al Raha Mall">
+                <source src="../assets/video/pod-raha-care-hq.mp4?v=20260920-hq30" type="video/mp4">
                 Your browser does not support HTML5 video.
               </video>
-              <div class="pod-video-review__loading" data-pod-video-loading>Preparing video…</div>
             </div>
 
             <div class="pod-video-review__points" aria-label="POD care highlights">
@@ -52,7 +52,7 @@
           .pod-video-review__head p:last-child{max-width:680px;margin:18px auto 0;color:var(--pod-muted,#667c83);font-size:14px;line-height:1.75}
           .pod-video-review__frame{position:relative;max-width:1160px;margin:0 auto;overflow:hidden;border-radius:24px;background:#031f27;box-shadow:0 30px 70px rgba(3,47,59,.16),0 8px 20px rgba(3,47,59,.08);border:1px solid rgba(8,56,71,.09)}
           .pod-video-review__frame:after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);pointer-events:none}
-          .pod-video-review__frame video{display:block;width:100%;height:auto;aspect-ratio:2/1;background:#031f27;object-fit:cover}.pod-video-review__loading{position:absolute;left:18px;bottom:18px;z-index:3;padding:7px 10px;border-radius:999px;background:rgba(3,31,39,.78);color:#d8f2f3;font-size:10px;font-weight:750;letter-spacing:.03em;backdrop-filter:blur(8px)}.pod-video-review__loading.is-hidden{display:none}.pod-video-review__loading.is-error{background:rgba(98,28,28,.88);color:#fff}
+          .pod-video-review__frame video{display:block;width:100%;height:auto;aspect-ratio:2/1;background:#031f27;object-fit:cover}
           .pod-video-review__points{max-width:1000px;margin:25px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
           .pod-video-review__point{min-height:52px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 16px;border:1px solid #dce7e9;border-radius:999px;background:rgba(255,255,255,.82);color:var(--pod-navy,#083847);font-size:11px;line-height:1.35;text-align:center}
           .pod-video-review__point span{width:7px;height:7px;flex:0 0 7px;border-radius:50%;background:var(--pod-teal,#0f7d8c);box-shadow:0 0 0 4px rgba(15,125,140,.08)}
@@ -70,46 +70,6 @@
         if (!html.includes(anchor)) throw new Error('POD review insertion point was not found.');
         html = html.replace('</head>', videoStyles + '</head>');
         html = html.replace(anchor, videoSection + anchor);
-        const videoBootScript = `
-          <script>
-            (() => {
-              const video = document.querySelector('[data-pod-review-video]');
-              const status = document.querySelector('[data-pod-video-loading]');
-              if (!video) return;
-              const files = ['part-00.txt','part-01.txt','part-02.txt','part-03.txt','part-04.txt','part-05.txt','part-06.txt','part-07.txt'];
-              Promise.all(files.map(name =>
-                fetch('../assets/video/pod-raha-review-b64/' + name + '?v=20260919-review2', { cache: 'no-store' })
-                  .then(response => {
-                    if (!response.ok) throw new Error('Video part failed: ' + name);
-                    return response.text();
-                  })
-              )).then(parts => {
-                const encoded = parts.join('').replace(/\\s+/g, '');
-                const binary = atob(encoded);
-                const bytes = new Uint8Array(binary.length);
-                for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
-                const blobUrl = URL.createObjectURL(new Blob([bytes], { type: 'video/mp4' }));
-                video.src = blobUrl;
-                video.load();
-                video.addEventListener('loadedmetadata', () => status?.classList.add('is-hidden'), { once: true });
-                video.addEventListener('error', () => {
-                  if (status) {
-                    status.textContent = 'Video could not be loaded';
-                    status.classList.add('is-error');
-                  }
-                }, { once: true });
-                window.addEventListener('beforeunload', () => URL.revokeObjectURL(blobUrl), { once: true });
-              }).catch(error => {
-                console.error(error);
-                if (status) {
-                  status.textContent = 'Video could not be loaded';
-                  status.classList.add('is-error');
-                }
-              });
-            })();
-          <\/script>
-        `;
-        html = html.replace('</body>', videoBootScript + '</body>');
         document.open();
         document.write(html);
         document.close();
