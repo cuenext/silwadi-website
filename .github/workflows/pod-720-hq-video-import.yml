@@ -1,0 +1,35 @@
+name: One-shot POD 720p HQ video import
+
+on:
+  push:
+    paths:
+      - ".github/workflows/pod-720-hq-video-import.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  import-video:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download and verify 720p POD video
+        env:
+          VIDEO_URL: "https://uc4dfffa6d1bf9312c0ae3c08226.dl.dropboxusercontent.com/cd/0/get/DIftUJ0nn5q66QwrzVXJlpH2QHyay0KmI3PwotFMEtjY8v5QXBUPb1l1V0OfVerIuYM_72-x0fybTDBe-7CxaC5VxRdvHtheTOUSTl9K3Nc3misdKUEjqZ0VRTfjpy7gFRdA4gxjpLAOjutXFoBIIGQxvA7RvKtLcXkosus4jpyX5w/file?c_luid=aadca57b"
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 2 --retry-delay 1 "$VIDEO_URL" -o assets/video/pod-raha-care-720-hq.mp4
+          echo "c896e97cc55caa8a33a2a58053c5e4f1152ea23690ca4ed561b650e8a10bdda5  assets/video/pod-raha-care-720-hq.mp4" | sha256sum -c -
+          test "$(stat -c%s assets/video/pod-raha-care-720-hq.mp4)" -eq 16838152
+
+      - name: Commit video and remove one-shot workflow
+        run: |
+          set -euo pipefail
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add assets/video/pod-raha-care-720-hq.mp4
+          git rm .github/workflows/pod-720-hq-video-import.yml
+          git commit -m "Add 720p HQ POD review video"
+          git push
