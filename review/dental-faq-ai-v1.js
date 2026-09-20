@@ -22,6 +22,7 @@
   const PEDIATRIC_ROLE = 'Specialist Pediatric Dentist';
   let activeController = null;
   let reviewDataPromise = null;
+  let requestSequence = 0;
 
   const containsArabic = (value) => /[\u0600-\u06FF]/.test(value || '');
 
@@ -395,6 +396,7 @@
   async function askQuestion(question) {
     const trimmed = String(question || '').trim();
     const language = languageFor(trimmed);
+    const requestId = ++requestSequence;
     setDirection(language);
 
     if (!trimmed) {
@@ -418,17 +420,23 @@
       setBusy(true, language);
       try {
         const result = await runReviewFallback(trimmed, language);
+        if (requestId !== requestSequence) return;
+        answer.dataset.responseId = String(requestId);
         if (!result.answer) {
           showFallback(language, 'unknown', true);
         } else {
           showAnswer(result.answer, language, result.mode, true);
         }
       } catch (error) {
+        if (requestId !== requestSequence) return;
+        answer.dataset.responseId = String(requestId);
         showFallback(language, 'endpoint', true);
       } finally {
-        submit.disabled = false;
-        input.disabled = false;
-        status.dataset.busy = 'false';
+        if (requestId === requestSequence) {
+          submit.disabled = false;
+          input.disabled = false;
+          status.dataset.busy = 'false';
+        }
       }
       return;
     }
@@ -456,6 +464,7 @@
       if (!response.ok) throw new Error(`Silwadi AI request failed: ${response.status}`);
 
       const payload = await response.json();
+      if (requestId !== requestSequence) return;
       const mode = ['clinic', 'general', 'fallback', 'urgent', 'unsafe'].includes(payload.mode)
         ? payload.mode
         : 'fallback';
@@ -463,24 +472,30 @@
       const responseText = typeof payload.answer === 'string' ? payload.answer.trim() : '';
 
       if (!responseText) {
+        answer.dataset.responseId = String(requestId);
         showFallback(responseLanguage);
         return;
       }
 
+      answer.dataset.responseId = String(requestId);
       showAnswer(responseText, responseLanguage, mode);
     } catch (error) {
+      if (requestId !== requestSequence) return;
       if (controller.signal.aborted) {
         status.textContent = language === 'ar'
           ? 'استغرق الرد وقتاً أطول من المتوقع.'
           : 'The answer took longer than expected.';
       }
+      answer.dataset.responseId = String(requestId);
       showFallback(language);
     } finally {
       window.clearTimeout(timeout);
       if (activeController === controller) activeController = null;
-      submit.disabled = false;
-      input.disabled = false;
-      status.dataset.busy = 'false';
+      if (requestId === requestSequence) {
+        submit.disabled = false;
+        input.disabled = false;
+        status.dataset.busy = 'false';
+      }
     }
   }
 

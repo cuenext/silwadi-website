@@ -7,10 +7,15 @@ PAGE = (ROOT / 'review' / 'dental-faq-ai-v1.html').read_text(encoding='utf-8')
 CHAT = (ROOT / 'review' / 'dental-faq-ai-chat.js').read_text(encoding='utf-8')
 
 class AiReviewRedesignTests(unittest.TestCase):
-    def test_ai_composer_precedes_conversation_thread(self):
+    def test_ai_composer_stays_below_conversation_thread(self):
         self.assertIn('data-ai-composer', PAGE)
         self.assertIn('data-ai-thread', PAGE)
-        self.assertLess(PAGE.index('data-ai-composer'), PAGE.index('data-ai-thread'))
+        self.assertLess(PAGE.index('data-ai-thread'), PAGE.index('data-ai-composer'))
+
+    def test_chat_card_has_a_branded_assistant_header(self):
+        self.assertIn('data-ai-assistant-header', PAGE)
+        self.assertIn('Silwadi Assistant', PAGE)
+        self.assertIn('../favicon.svg', PAGE)
 
     def test_old_report_style_hero_and_jump_grid_are_removed(self):
         self.assertNotIn('class="fq-hero"', PAGE)

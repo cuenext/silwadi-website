@@ -16,19 +16,18 @@ class PrivateAiFaqReviewContract(unittest.TestCase):
         text = PAGE.read_text(encoding="utf-8")
         self.assertIn('name="robots" content="noindex,nofollow', text)
         self.assertIn("Private review", text)
-        self.assertIn("Not published", text)
-        self.assertIn("Ask us a question!", text)
+        self.assertIn("Not indexed", text)
+        self.assertIn("Ask Silwadi.", text)
         self.assertIn('maxlength="500"', text)
-        self.assertIn("Silwadi AI provides general dental information", text)
+        self.assertIn("Silwadi Assistant does not diagnose", text)
         self.assertIn('data-ai-answer', text)
-        self.assertIn('data-ai-suggestions', text)
+        self.assertIn('class="ai-suggestions"', text)
         self.assertIn('data-ai-contact-actions', text)
         self.assertIn('aria-live="polite"', text)
         for question in [
             "Which doctor treats children?",
-            "What are your Al Raha opening hours?",
-            "Why do my gums bleed?",
             "Do you offer root canal treatment?",
+            "Where are your clinics?",
         ]:
             self.assertIn(question, text)
 
