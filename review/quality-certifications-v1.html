@@ -4,143 +4,157 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow,noarchive,nosnippet,noimageindex">
-<title>Private Review — Accreditations Strip | Silwadi</title>
+<title>Private Review — Accreditations | Silwadi</title>
 <meta name="theme-color" content="#083847">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../styles.css">
 <style>
 :root{
-  --a-navy:#083847;--a-deep:#052a36;--a-teal:#0d7c90;--a-gold:#b89543;
-  --a-gold-light:#e5d3a3;--a-ink:#173943;--a-muted:#6b7f86;--a-line:#e2e9ea;
-  --a-cream:#fbfaf6;--a-soft:#f7f9f9;--a-white:#fff
+  --c-deep:#052a36;--c-navy:#083847;--c-teal:#0d7c90;--c-gold:#b9954a;
+  --c-ink:#1d3e47;--c-muted:#7a8c91;--c-line:#dce5e7;--c-soft:#f6f8f8;
 }
 *{box-sizing:border-box}
-body{margin:0;background:#fff;color:var(--a-ink)}
-.reviewbar{height:34px;background:var(--a-deep);color:#c9dcdf;font-size:10px;letter-spacing:.09em;text-transform:uppercase;display:flex;align-items:center}
-.reviewbar .container{display:flex;align-items:center;justify-content:space-between;gap:20px}.reviewbar strong{color:#9ee4e8}
-.preview-top{height:78px;border-bottom:1px solid rgba(8,56,71,.07);display:flex;align-items:center;background:#fff}
-.preview-top .container{display:flex;align-items:center;justify-content:space-between}.preview-logo{width:66px;height:66px;object-fit:contain}.preview-label{font-size:11px;color:#819197}
+body{margin:0;background:#fff;color:var(--c-ink)}
+.reviewbar{height:34px;background:var(--c-deep);color:#c9dcdf;font-size:10px;letter-spacing:.09em;text-transform:uppercase;display:flex;align-items:center}
+.reviewbar .container{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.reviewbar strong{color:#9ee4e8}
+.preview-top{height:76px;border-bottom:1px solid rgba(8,56,71,.07);display:flex;align-items:center;background:#fff}
+.preview-top .container{display:flex;align-items:center;justify-content:space-between}
+.preview-logo{width:64px;height:64px;object-fit:contain}
+.preview-label{font-size:10px;color:#87979c;letter-spacing:.03em}
 
-.acc-section{padding:88px 0 92px;background:
- radial-gradient(circle at 50% -80px,rgba(184,149,67,.07),transparent 250px),
- linear-gradient(180deg,#fff 0%,#fdfdfc 100%);border-bottom:1px solid var(--a-line)}
-.acc-shell{width:min(980px,calc(100% - 36px));margin:auto;text-align:center}
-.acc-eyebrow{margin:0;color:#799097;font-size:10px;font-weight:800;letter-spacing:.19em;text-transform:uppercase}
-.acc-title{margin:10px 0 0;color:var(--a-deep);font-size:clamp(30px,4vw,44px);font-weight:580;letter-spacing:-.04em}
-.acc-title span{color:var(--a-teal)}
-.acc-intro{margin:12px auto 0;max-width:580px;color:var(--a-muted);font-size:11px;line-height:1.7}
-.acc-line{width:54px;height:1px;margin:24px auto 0;background:var(--a-gold)}
+.credential-strip{position:relative;overflow:hidden;background:#fff;border-bottom:1px solid var(--c-line);padding:74px 0 82px}
+.credential-strip:after{
+  content:"";position:absolute;left:0;right:0;top:148px;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(8,56,71,.08) 9%,rgba(8,56,71,.08) 91%,transparent 100%);
+}
+.ghost-logo{position:absolute;right:-90px;top:36px;width:360px;height:360px;object-fit:contain;opacity:.022;filter:grayscale(1);pointer-events:none}
+.cred-wrap{position:relative;z-index:2;width:min(1100px,calc(100% - 44px));margin:auto}
+.cred-head{display:grid;grid-template-columns:220px 1fr;gap:34px;align-items:end;margin-bottom:54px}
+.cred-kicker{margin:0;color:var(--c-teal);font-size:9px;font-weight:850;letter-spacing:.2em;text-transform:uppercase}
+.cred-headline{margin:8px 0 0;color:var(--c-deep);font-size:32px;line-height:1;letter-spacing:-.045em;font-weight:560}
+.cred-headcopy{margin:0 0 2px;color:var(--c-muted);font-size:10.5px;line-height:1.7;max-width:530px}
+.cred-rule{height:1px;background:linear-gradient(90deg,var(--c-gold) 0 54px,var(--c-line) 54px 100%);margin-top:22px}
 
-.acc-stage{margin:40px auto 0;width:min(850px,100%);display:grid;grid-template-columns:1fr 1.45fr 1fr;gap:18px;align-items:stretch}
-.acc-card{position:relative;overflow:hidden;min-height:245px;border:1px solid var(--a-line);background:rgba(255,255,255,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 22px;box-shadow:0 12px 38px rgba(8,56,71,.035)}
-.acc-card:after{content:"";position:absolute;inset:auto -50px -75px auto;width:150px;height:150px;border-radius:50%;border:1px solid rgba(13,124,144,.055);box-shadow:0 0 0 24px rgba(13,124,144,.018)}
-.acc-card--main{min-height:285px;background:linear-gradient(150deg,#073845 0%,#052b36 100%);border-color:#0c4756;box-shadow:0 22px 58px rgba(5,42,54,.13)}
-.acc-card--main:before{content:"";position:absolute;inset:16px;border:1px solid rgba(225,205,154,.15);pointer-events:none}
-.acc-card--main:after{width:220px;height:220px;right:-90px;bottom:-115px;border-color:rgba(229,211,163,.08);box-shadow:0 0 0 36px rgba(229,211,163,.025)}
-.acc-symbol{width:82px;height:82px;position:relative;display:grid;place-items:center;margin-bottom:24px;color:var(--a-navy)}
-.acc-symbol:before{content:"";position:absolute;inset:0;border-radius:50%;border:1px solid #cfdcdf}
-.acc-symbol:after{content:"";position:absolute;inset:8px;border-radius:50%;border:1px solid #e7eeef}
-.acc-symbol strong{position:relative;z-index:2;font-size:14px;letter-spacing:-.02em}
-.acc-symbol small{position:relative;z-index:2;display:block;margin-top:3px;font-size:7px;text-transform:uppercase;letter-spacing:.1em}
-.acc-card--main .acc-symbol{width:112px;height:112px;color:var(--a-gold-light);margin-bottom:25px}
-.acc-card--main .acc-symbol:before{border-color:rgba(229,211,163,.48)}
-.acc-card--main .acc-symbol:after{border-color:rgba(229,211,163,.19)}
-.acc-grade{font-size:45px;font-weight:540;line-height:1;letter-spacing:-.06em}
-.acc-grade-label{margin-top:5px;font-size:7.5px;font-weight:850;text-transform:uppercase;letter-spacing:.18em}
-.acc-card__kicker{color:var(--a-teal);font-size:8px;font-weight:850;letter-spacing:.13em;text-transform:uppercase;margin-bottom:7px}
-.acc-card--main .acc-card__kicker{color:#d8c489}
-.acc-card h3{margin:0;color:var(--a-deep);font-size:15px;font-weight:700;letter-spacing:-.015em}
-.acc-card--main h3{color:#fff;font-size:18px;font-weight:600}
-.acc-card p{margin:7px 0 0;max-width:170px;color:#83949a;font-size:9px;line-height:1.55}
-.acc-card--main p{color:#b9cdd1;max-width:220px}
-.acc-meta{margin-top:17px;padding-top:14px;width:100%;border-top:1px solid var(--a-line);color:#87989d;font-size:8.5px}
-.acc-card--main .acc-meta{border-top-color:rgba(255,255,255,.09);color:#a7c1c6}
-.acc-card--main .acc-meta b{color:#e5d3a3;font-weight:700}
+.ledger{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--c-line);border-bottom:1px solid var(--c-line)}
+.credential{position:relative;min-height:250px;padding:26px 34px 28px;border-right:1px solid var(--c-line);display:flex;flex-direction:column;justify-content:space-between;background:rgba(255,255,255,.75)}
+.credential:last-child{border-right:0}
+.credential-index{display:flex;align-items:center;justify-content:space-between;color:#a0adb1;font-size:8px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.credential-index span:last-child{letter-spacing:.08em}
+.credential-main{padding:24px 0 16px}
+.credential-overline{color:var(--c-teal);font-size:8px;font-weight:850;letter-spacing:.15em;text-transform:uppercase}
+.credential-big{margin-top:8px;color:var(--c-deep);font-size:64px;line-height:.88;letter-spacing:-.065em;font-weight:520}
+.credential-big--word{font-size:42px;letter-spacing:-.05em}
+.credential-big--iso{font-size:48px}
+.credential-big em{font-style:normal;color:var(--c-gold)}
+.credential-title{margin-top:14px;color:var(--c-ink);font-size:11.5px;font-weight:750}
+.credential-sub{margin-top:5px;max-width:255px;color:var(--c-muted);font-size:8.8px;line-height:1.55}
+.credential-meta{padding-top:15px;border-top:1px solid #e8edef;display:flex;align-items:center;justify-content:space-between;gap:14px;color:#829398;font-size:8.2px}
+.credential-meta strong{color:#49656d;font-weight:750}
+.credential-mark{width:9px;height:9px;border-radius:50%;border:1px solid rgba(13,124,144,.55);position:relative;flex:0 0 auto}
+.credential-mark:after{content:"";position:absolute;inset:2px;border-radius:50%;background:var(--c-teal)}
+.credential--jawda .credential-mark{border-color:rgba(185,149,74,.7)}
+.credential--jawda .credential-mark:after{background:var(--c-gold)}
 
-.acc-foot{display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;margin-top:26px}
-.acc-proof{display:flex;align-items:center;gap:8px;color:#788c92;font-size:9px}
-.acc-proof i{width:5px;height:5px;border-radius:50%;background:var(--a-gold)}
-.acc-proof strong{color:#435e66;font-weight:750}
-.details{margin:25px auto 0;width:min(600px,100%);border-top:1px solid var(--a-line);padding-top:18px}
-.details summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:8px;color:var(--a-teal);font-size:9.5px;font-weight:800;letter-spacing:.03em}
-.details summary::-webkit-details-marker{display:none}.details summary:after{content:"+";width:19px;height:19px;border-radius:50%;background:#edf5f6;display:grid;place-items:center;font-size:12px}.details[open] summary:after{content:"−"}
-.detailbox{margin-top:16px;padding:17px 19px;background:#fff;border:1px solid var(--a-line);display:grid;grid-template-columns:1fr 1fr;gap:18px;text-align:left}
-.detailitem b{display:block;color:var(--a-navy);font-size:9.5px}.detailitem span{display:block;margin-top:4px;color:#7e9096;font-size:8.5px;line-height:1.55}
-.acc-note{margin:17px auto 0;max-width:640px;color:#98a5a9;font-size:8px;line-height:1.55}
+.scope-line{display:grid;grid-template-columns:220px 1fr;gap:34px;margin-top:22px;align-items:start}
+.scope-label{color:#98a6aa;font-size:8px;font-weight:850;letter-spacing:.16em;text-transform:uppercase}
+.scope-copy{display:flex;gap:30px;flex-wrap:wrap;color:#849499;font-size:8.5px;line-height:1.5}
+.scope-copy strong{color:#49656d;font-weight:750}
+.scope-copy .dot{color:var(--c-gold)}
+.note{margin:14px 0 0 254px;color:#9aa8ac;font-size:7.8px;line-height:1.55;max-width:620px}
 
-.context{padding:50px 0 70px}.context .container{display:grid;grid-template-columns:1fr 1fr;gap:26px}
-.placeholder{height:165px;border:1px solid #edf1f2;background:linear-gradient(145deg,#fbfcfc,#fff);padding:26px}
-.placeholder p{margin:0;color:#a0adb1;font-size:9.5px}.placeholder h3{margin:8px 0 0;color:#d6dee0;font-size:26px;letter-spacing:-.04em}
+.context{padding:48px 0 70px}
+.context .container{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.placeholder{height:150px;border:1px solid #edf1f2;background:linear-gradient(145deg,#fbfcfc,#fff);padding:24px}
+.placeholder p{margin:0;color:#a0adb1;font-size:9px}
+.placeholder h3{margin:8px 0 0;color:#d7dfe1;font-size:25px;letter-spacing:-.04em;font-weight:560}
 
-@media(max-width:800px){
-  .acc-stage{grid-template-columns:1fr;max-width:440px}
-  .acc-card{min-height:190px}.acc-card--main{min-height:245px;order:-1}
-  .acc-card p{max-width:240px}.context .container{grid-template-columns:1fr}
+@media(max-width:860px){
+  .cred-head{grid-template-columns:1fr;gap:16px}
+  .credential-strip:after{display:none}
+  .ledger{grid-template-columns:1fr}
+  .credential{border-right:0;border-bottom:1px solid var(--c-line);min-height:220px}
+  .credential:last-child{border-bottom:0}
+  .scope-line{grid-template-columns:1fr;gap:10px}
+  .note{margin-left:0}
+  .ghost-logo{width:280px;height:280px;right:-110px}
 }
 @media(max-width:560px){
-  .acc-section{padding:64px 0 70px}.acc-title{font-size:32px}.acc-stage{margin-top:32px}
-  .detailbox{grid-template-columns:1fr}.reviewbar .container span:last-child{display:none}
+  .credential-strip{padding:58px 0 64px}
+  .cred-wrap{width:min(100% - 30px,1100px)}
+  .cred-headline{font-size:29px}
+  .credential{padding:24px 22px}
+  .credential-big{font-size:56px}.credential-big--word{font-size:37px}.credential-big--iso{font-size:43px}
+  .context .container{grid-template-columns:1fr}
+  .reviewbar .container span:last-child{display:none}
 }
 </style>
 </head>
 <body>
-<div class="reviewbar"><div class="container"><span><strong>Private review</strong> · Homepage accreditation strip</span><span>Not published</span></div></div>
+<div class="reviewbar"><div class="container"><span><strong>Private review</strong> · Homepage accreditation concept</span><span>Not published</span></div></div>
 <div class="preview-top"><div class="container"><img class="preview-logo" src="../assets/silwadi-logo-official.png" alt="Silwadi Dental Center"><span class="preview-label">Homepage section preview</span></div></div>
 
-<section class="acc-section">
-  <div class="acc-shell">
-    <p class="acc-eyebrow">Independent Standards</p>
-    <h1 class="acc-title">Quality &amp; <span>Accreditations</span></h1>
-    <p class="acc-intro">A concise view of the standards currently held across Silwadi’s Abu Dhabi facilities.</p>
-    <div class="acc-line"></div>
-
-    <div class="acc-stage">
-      <article class="acc-card">
-        <div class="acc-symbol"><div><strong>ADHICS</strong><small>Compliant</small></div></div>
-        <div class="acc-card__kicker">Information Security</div>
-        <h3>ADHICS Standard</h3>
-        <p>Abu Dhabi healthcare information and cyber security compliance.</p>
-        <div class="acc-meta">MF368 · MF7451</div>
-      </article>
-
-      <article class="acc-card acc-card--main">
-        <div class="acc-symbol"><div><div class="acc-grade">A</div><div class="acc-grade-label">Grade</div></div></div>
-        <div class="acc-card__kicker">JAWDA Data Certification</div>
-        <h3>Grade A</h3>
-        <p>Clinical data certification for Dr. Munir Silwadi Dental Centre.</p>
-        <div class="acc-meta"><b>MF368</b> · Corniche</div>
-      </article>
-
-      <article class="acc-card">
-        <div class="acc-symbol"><div><strong>ISO</strong><small>9001:2015</small></div></div>
-        <div class="acc-card__kicker">Quality Management</div>
-        <h3>ISO 9001:2015</h3>
-        <p>Certified quality management systems across both facilities.</p>
-        <div class="acc-meta">MF368 · MF7451</div>
-      </article>
-    </div>
-
-    <div class="acc-foot">
-      <div class="acc-proof"><i></i><span><strong>JAWDA Grade A</strong> · MF368</span></div>
-      <div class="acc-proof"><i></i><span><strong>ADHICS compliant</strong> · both facilities</span></div>
-      <div class="acc-proof"><i></i><span><strong>ISO 9001:2015</strong> · both facilities</span></div>
-    </div>
-
-    <details class="details">
-      <summary>View facility details</summary>
-      <div class="detailbox">
-        <div class="detailitem"><b>Bani Yas Tower · Corniche · MF368</b><span>JAWDA Grade A · ADHICS compliant · ISO 9001:2015 certified.</span></div>
-        <div class="detailitem"><b>Al Raha Mall · MF7451</b><span>ADHICS compliant · ISO 9001:2015 certified.</span></div>
+<section class="credential-strip">
+  <img class="ghost-logo" src="../assets/silwadi-logo-official.png" alt="" aria-hidden="true">
+  <div class="cred-wrap">
+    <div class="cred-head">
+      <div>
+        <p class="cred-kicker">Other Accreditations</p>
+        <h1 class="cred-headline">Standards we hold.</h1>
+        <div class="cred-rule"></div>
       </div>
-    </details>
+      <p class="cred-headcopy">Selected certifications and compliance standards held by Silwadi’s licensed Abu Dhabi facilities.</p>
+    </div>
 
-    <p class="acc-note">Certifications are facility-specific and subject to the scope and validity stated on the relevant certificates.</p>
+    <div class="ledger">
+      <article class="credential credential--jawda">
+        <div class="credential-index"><span>01</span><span>MF368</span></div>
+        <div class="credential-main">
+          <div class="credential-overline">JAWDA Data Certification</div>
+          <div class="credential-big"><em>A</em></div>
+          <div class="credential-title">Grade A</div>
+          <div class="credential-sub">Clinical data process certification for Dr. Munir Silwadi Dental Centre.</div>
+        </div>
+        <div class="credential-meta"><span><strong>Corniche</strong> · MF368</span><i class="credential-mark"></i></div>
+      </article>
+
+      <article class="credential">
+        <div class="credential-index"><span>02</span><span>MF368 · MF7451</span></div>
+        <div class="credential-main">
+          <div class="credential-overline">Healthcare Information Security</div>
+          <div class="credential-big credential-big--word">ADHICS</div>
+          <div class="credential-title">Compliant</div>
+          <div class="credential-sub">Abu Dhabi Healthcare Information and Cyber Security Standard.</div>
+        </div>
+        <div class="credential-meta"><span><strong>Both facilities</strong></span><i class="credential-mark"></i></div>
+      </article>
+
+      <article class="credential">
+        <div class="credential-index"><span>03</span><span>MF368 · MF7451</span></div>
+        <div class="credential-main">
+          <div class="credential-overline">Quality Management System</div>
+          <div class="credential-big credential-big--iso">9001<em>:</em>2015</div>
+          <div class="credential-title">ISO Certified</div>
+          <div class="credential-sub">Quality management systems certified across both licensed facilities.</div>
+        </div>
+        <div class="credential-meta"><span><strong>Both facilities</strong></span><i class="credential-mark"></i></div>
+      </article>
+    </div>
+
+    <div class="scope-line">
+      <div class="scope-label">Facility scope</div>
+      <div class="scope-copy">
+        <span><strong>MF368</strong> · Bani Yas Tower / Corniche <span class="dot">•</span> JAWDA · ADHICS · ISO 9001</span>
+        <span><strong>MF7451</strong> · Al Raha Mall <span class="dot">•</span> ADHICS · ISO 9001</span>
+      </div>
+    </div>
+    <p class="note">Accreditations and certifications are facility-specific and subject to the scope and validity stated on the relevant certificates.</p>
   </div>
 </section>
 
 <section class="context"><div class="container">
-  <div class="placeholder"><p>Previous homepage content</p><h3>The section is designed to sit quietly within the homepage.</h3></div>
-  <div class="placeholder"><p>Next homepage content</p><h3>No separate public accreditation page required.</h3></div>
+  <div class="placeholder"><p>Previous homepage content</p><h3>Designed as a quiet editorial break, not an awards block.</h3></div>
+  <div class="placeholder"><p>Next homepage content</p><h3>No separate public accreditation page needed.</h3></div>
 </div></section>
 </body>
 </html>
