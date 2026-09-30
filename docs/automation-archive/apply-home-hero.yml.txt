@@ -1,0 +1,49 @@
+name: Apply premium homepage hero
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/apply-home-hero.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Keep Arabic homepage hero in English position
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path('index.html')
+          html = p.read_text(encoding='utf-8')
+
+          style = '''<style id="premium-home-hero-ar-placement-fix">
+          html[dir="rtl"] .premium-home-hero,html[lang="ar"] .premium-home-hero,body[dir="rtl"] .premium-home-hero,body.is-rtl .premium-home-hero{direction:ltr}
+          html[dir="rtl"] .premium-home-hero__copy,html[lang="ar"] .premium-home-hero__copy,body[dir="rtl"] .premium-home-hero__copy,body.is-rtl .premium-home-hero__copy{margin-left:clamp(2rem,6.4vw,7.8rem)!important;margin-right:0!important;direction:rtl;text-align:right}
+          html[dir="rtl"] .premium-home-hero__actions,html[lang="ar"] .premium-home-hero__actions,body[dir="rtl"] .premium-home-hero__actions,body.is-rtl .premium-home-hero__actions{justify-content:flex-start;direction:rtl}
+          html[dir="rtl"] .premium-home-hero__trust,html[lang="ar"] .premium-home-hero__trust,body[dir="rtl"] .premium-home-hero__trust,body.is-rtl .premium-home-hero__trust{justify-content:flex-start;direction:rtl}
+          @media(max-width:1100px){html[dir="rtl"] .premium-home-hero__copy,html[lang="ar"] .premium-home-hero__copy,body[dir="rtl"] .premium-home-hero__copy,body.is-rtl .premium-home-hero__copy{margin-left:clamp(1rem,4vw,3rem)!important;margin-right:0!important}}
+          @media(max-width:760px){html[dir="rtl"] .premium-home-hero__copy,html[lang="ar"] .premium-home-hero__copy,body[dir="rtl"] .premium-home-hero__copy,body.is-rtl .premium-home-hero__copy{margin-left:0!important;margin-right:0!important}}
+          </style>'''
+
+          html = re.sub(r'<style id="premium-home-hero-ar-placement-fix">.*?</style>', '', html, flags=re.S)
+          if '</head>' not in html:
+              raise SystemExit('Missing </head> in index.html')
+          html = html.replace('</head>', style + '</head>', 1)
+
+          p.write_text(html, encoding='utf-8')
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Keep Arabic homepage hero aligned with English" || exit 0
+          git push

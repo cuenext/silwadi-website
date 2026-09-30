@@ -1,0 +1,49 @@
+name: Apply homepage featured doctors
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-homepage-featured-doctors.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Replace homepage featured doctor cards
+        run: |
+          python3 <<'PY'
+          import re
+          from pathlib import Path
+
+          english = '''<div class="featured-doctors"><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/dr-moheb-new.webp?v=20260907-fahed-moheb-final" alt="Dr. Moheb Silwadi" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Moheb Silwadi</h3><p>General Dentist</p><a href="doctors/dr-moheb-silwadi.html">View profile <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/dr-lana-new.png" alt="Dr. Lana Almasoud" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Lana Almasoud</h3><p>Specialist Endodontist</p><a href="doctors/dr-lana-masoud.html">View profile <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-kashmira-pawar-jayprakash.webp" alt="Dr. Kashmira Pawar Jayprakash" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Kashmira Pawar Jayprakash</h3><p>Specialist Pediatric Dentist</p><a href="doctors/dr-kashmira-pawar-jayprakash.html">View profile <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-dana-awad.webp" alt="Dr. Dana Awad" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Dana Awad</h3><p>General Dentist</p><a href="doctors/dr-dana-awad.html">View profile <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/dr-ahmed-new.webp" alt="Dr. Ahmed El Shehri" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Ahmed El Shehri</h3><p>Specialist Endodontist</p><a href="doctors/dr-ahmed-el-shehri.html">View profile <span>→</span></a></div></article></div>'''
+
+          arabic = '''<div class="featured-doctors"><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/dr-moheb-new.webp?v=20260907-fahed-moheb-final" alt="د. مهيب سلوادي" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. مهيب سلوادي</h3><p>طبيب أسنان عام</p><a href="/ar/doctors/dr-moheb-silwadi.html">عرض الملف <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/dr-lana-new.png" alt="د. لانا المسعود" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. لانا المسعود</h3><p>اختصاصية علاج جذور الأسنان</p><a href="/ar/doctors/dr-lana-masoud.html">عرض الملف <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-kashmira-pawar-jayprakash.webp" alt="د. كاشميرا باوار جايبراكاش" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. كاشميرا باوار جايبراكاش</h3><p>اختصاصية طب أسنان الأطفال</p><a href="/ar/doctors/dr-kashmira-pawar-jayprakash.html">عرض الملف <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-dana-awad.webp" alt="د. دانا عوض" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. دانا عوض</h3><p>طبيبة أسنان عامة</p><a href="/ar/doctors/dr-dana-awad.html">عرض الملف <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/dr-ahmed-new.webp" alt="د. أحمد الشهري" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. أحمد الشهري</h3><p>اختصاصي علاج جذور الأسنان</p><a href="/ar/doctors/dr-ahmed-el-shehri.html">عرض الملف <span>→</span></a></div></article></div>'''
+
+          replacements = [
+              (Path('index.html'), r'<div class="featured-doctors">.*?(?=<div class="section-link reveal"><a href="doctors\.html">)', english),
+              (Path('ar/index.html'), r'<div class="featured-doctors">.*?(?=<div class="section-link reveal"><a href="/ar/doctors\.html">)', arabic),
+          ]
+
+          for path, pattern, replacement in replacements:
+              text = path.read_text(encoding='utf-8')
+              updated, count = re.subn(pattern, replacement, text, count=1, flags=re.S)
+              if count != 1:
+                  raise SystemExit(f'Expected one featured-doctors block in {path}, found {count}')
+              path.write_text(updated, encoding='utf-8')
+          PY
+
+      - name: Verify requested order
+        run: python -m unittest tests.test_homepage_featured_doctors
+
+      - name: Commit homepage cards
+        run: |
+          git config user.name "Silwadi Website Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html ar/index.html
+          git commit -m "content: update homepage featured doctors"
+          git push

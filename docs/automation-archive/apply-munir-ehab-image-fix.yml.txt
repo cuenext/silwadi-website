@@ -1,0 +1,107 @@
+name: Apply Munir Ehab image fix
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/apply-munir-ehab-image-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Convert Munir and Ehab portraits and update references
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y >/dev/null
+          sudo apt-get install -y webp >/dev/null
+
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          import subprocess
+
+          repo = Path('.')
+          changed = set()
+
+          def run(cmd):
+              print('+', ' '.join(cmd))
+              subprocess.run(cmd, check=True)
+
+          def convert(src: Path, dst: Path, width=900, q=84):
+              if not src.exists():
+                  raise FileNotFoundError(f'Missing source image: {src}')
+              tmp = dst.with_suffix('.tmp.webp')
+              run(['cwebp', '-quiet', '-resize', str(width), '0', '-q', str(q), str(src), '-o', str(tmp)])
+              run(['dwebp', str(tmp), '-o', '/tmp/check.ppm'])
+              if not dst.exists() or tmp.read_bytes() != dst.read_bytes():
+                  dst.write_bytes(tmp.read_bytes())
+                  changed.add(dst.as_posix())
+              tmp.unlink(missing_ok=True)
+              size = dst.stat().st_size
+              print(f'OK {dst} {size} bytes')
+              if size < 20000:
+                  raise AssertionError(f'{dst} too small; possible bad encode')
+
+          convert(Path('assets/dr-munir-new.png'), Path('assets/dr-munir-new.webp'), width=900, q=84)
+          convert(Path('assets/dr-ehab-new.png'), Path('assets/dr-ehab-new.webp'), width=900, q=84)
+
+          replacements = [
+              (['assets/doctors/optimized/dr-munir-silwadi.webp', 'assets/doctors/dr-munir-silwadi.webp'], 'assets/dr-munir-new.webp?v=20260907-munirehab'),
+              (['assets/doctors/optimized/dr-ehab-hassouneh.webp', 'assets/doctors/dr-ehab-hassouneh.webp'], 'assets/dr-ehab-new.webp?v=20260907-munirehab'),
+          ]
+
+          text_exts = {'.html', '.js', '.json', '.xml', '.css'}
+          for path in repo.rglob('*'):
+              if path.is_dir() or '.git' in path.parts or path.suffix not in text_exts:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              new = text
+              for old_paths, new_path in replacements:
+                  for old in old_paths:
+                      pattern = re.compile(r'((?:\.\./)*|/)?' + re.escape(old) + r'(?:\?[^"\'\s<>)]*)?')
+                      new = pattern.sub(lambda m, np=new_path: (m.group(1) or '') + np, new)
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+                  changed.add(path.as_posix())
+
+          # Verify references are present and old optimized paths are removed from site html/js/json.
+          all_text = ''
+          for path in repo.rglob('*'):
+              if path.is_dir() or '.git' in path.parts or path.suffix not in {'.html', '.js', '.json'}:
+                  continue
+              try:
+                  all_text += '\n' + path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  pass
+
+          assert 'assets/dr-munir-new.webp?v=20260907-munirehab' in all_text, 'Munir new portrait reference missing'
+          assert 'assets/dr-ehab-new.webp?v=20260907-munirehab' in all_text, 'Ehab new portrait reference missing'
+          assert 'assets/doctors/optimized/dr-munir-silwadi.webp' not in all_text, 'Old Munir portrait reference still present'
+          assert 'assets/doctors/optimized/dr-ehab-hassouneh.webp' not in all_text, 'Old Ehab portrait reference still present'
+
+          for img in ['assets/dr-munir-new.webp', 'assets/dr-ehab-new.webp']:
+              run(['dwebp', img, '-o', '/tmp/verify.ppm'])
+
+          if changed:
+              run(['git', 'config', 'user.name', 'ADVA Site Automation'])
+              run(['git', 'config', 'user.email', 'actions@users.noreply.github.com'])
+              run(['git', 'add', *sorted(changed)])
+              run(['git', 'commit', '-m', 'Update Munir and Ehab doctor portraits [skip arabic build]'])
+              run(['git', 'push'])
+              print('Committed changes:')
+              for f in sorted(changed):
+                  print('-', f)
+          else:
+              print('No changes needed')
+          PY

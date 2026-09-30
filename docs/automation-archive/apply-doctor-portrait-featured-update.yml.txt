@@ -1,0 +1,145 @@
+name: Apply doctor portrait and homepage featured update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-doctor-portrait-featured-update.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Apply doctor portrait and homepage featured updates
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          import subprocess
+
+          repo = Path('.')
+          img = {
+              'nasr': 'ChatGPT Image Sep 7, 2026, 12_00_09 PM.png',
+              'moheb': 'ChatGPT Image Sep 7, 2026, 12_06_32 PM.png',
+              'ahmed': 'ChatGPT Image Sep 7, 2026, 12_28_03 PM.png',
+              'moammar': 'ChatGPT Image Sep 7, 2026, 12_28_24 PM.png',
+          }
+          for filename in img.values():
+              path = repo / 'assets' / filename
+              assert path.exists(), f'Missing uploaded image: {path}'
+              assert path.stat().st_size > 1000, f'Uploaded image looks empty: {path}'
+
+          image_map = {
+              'dr-nasr-keshkiea.webp': img['nasr'],
+              'dr-moheb-silwadi.webp': img['moheb'],
+              'dr-ahmed-el-shehri.webp': img['ahmed'],
+              'dr-moammer-rifai.webp': img['moammar'],
+              'dr-moammar-rifai.webp': img['moammar'],
+          }
+
+          text_exts = {'.html', '.js', '.json', '.css', '.xml'}
+          changed_files = set()
+
+          def update_file(path: Path, transform):
+              old = path.read_text(encoding='utf-8')
+              new = transform(old, path)
+              if new != old:
+                  path.write_text(new, encoding='utf-8')
+                  changed_files.add(path.as_posix())
+
+          def replace_portraits(text: str, path: Path) -> str:
+              for old_name, new_name in image_map.items():
+                  # Preserve relative prefix: assets/, /assets/, ../assets/, ../../assets/ etc.
+                  pattern = re.compile(r'((?:\.\./)*|/)assets/doctors/optimized/' + re.escape(old_name) + r'(?:\?[^"\'\s<>)]*)?')
+                  text = pattern.sub(lambda m, n=new_name: f'{m.group(1)}assets/{n}', text)
+              return text
+
+          for path in repo.rglob('*'):
+              if '.git' in path.parts or path.is_dir() or path.suffix not in text_exts:
+                  continue
+              update_file(path, replace_portraits)
+
+          english_featured = '''<div class="featured-doctors"><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-munir-silwadi.webp" alt="Dr. Munir Silwadi" width="720" height="720" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Munir Silwadi</h3><p>Specialist Prosthodontist &amp; Implantologist</p><a href="doctors/dr-munir-silwadi.html">View profile <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-hani-hasbini.webp" alt="Dr. Hani Hasbini" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Hani Hasbini</h3><p>Consultant Orthodontist</p><a href="doctors/dr-hani-hasbini.html">View profile <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-kashmira-pawar-jayprakash.webp" alt="Dr. Kashmira Pawar Jayprakash" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Kashmira Pawar Jayprakash</h3><p>Specialist Pediatric Dentist</p><a href="doctors/dr-kashmira-pawar-jayprakash.html">View profile <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/doctors/optimized/dr-dana-awad.webp" alt="Dr. Dana Awad" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Dana Awad</h3><p>General Dentist</p><a href="doctors/dr-dana-awad.html">View profile <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="assets/ChatGPT Image Sep 7, 2026, 12_28_03 PM.png" alt="Dr. Ahmed El Shehri" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>Dr. Ahmed El Shehri</h3><p>Specialist Endodontist</p><a href="doctors/dr-ahmed-el-shehri.html">View profile <span>→</span></a></div></article></div>'''
+
+          arabic_featured = '''<div class="featured-doctors"><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-munir-silwadi.webp" alt="د. منير سلوادي" width="720" height="720" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. منير سلوادي</h3><p>اختصاصي تركيبات وزراعة الأسنان</p><a href="/ar/doctors/dr-munir-silwadi.html">عرض الملف <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-hani-hasbini.webp" alt="د. هاني حسبيني" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. هاني حسبيني</h3><p>استشاري تقويم أسنان</p><a href="/ar/doctors/dr-hani-hasbini.html">عرض الملف <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-kashmira-pawar-jayprakash.webp" alt="د. كاشميرا باوار جايبراكاش" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. كاشميرا باوار جايبراكاش</h3><p>اختصاصي طب أسنان الأطفال</p><a href="/ar/doctors/dr-kashmira-pawar-jayprakash.html">عرض الملف <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/doctors/optimized/dr-dana-awad.webp" alt="د. دانا عوض" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. دانا عوض</h3><p>طبيب أسنان عام</p><a href="/ar/doctors/dr-dana-awad.html">عرض الملف <span>→</span></a></div></article><article class="doctor-card reveal"><div class="doctor-card__photo"><img src="/assets/ChatGPT Image Sep 7, 2026, 12_28_03 PM.png" alt="د. أحمد الشهري" width="600" height="600" loading="lazy" decoding="async"></div><div class="doctor-card__body"><h3>د. أحمد الشهري</h3><p>اختصاصي علاج جذور الأسنان</p><a href="/ar/doctors/dr-ahmed-el-shehri.html">عرض الملف <span>→</span></a></div></article></div>'''
+
+          english_avatars = '''<div class="team-proof__avatars" aria-label="Selected members of the Silwadi dental team"><span class="team-proof__avatar"><img src="assets/doctors/optimized/dr-munir-silwadi.webp" alt="Dr. Munir Silwadi" width="720" height="720" loading="lazy" decoding="async"></span><span class="team-proof__avatar"><img src="assets/doctors/optimized/dr-hani-hasbini.webp" alt="Dr. Hani Hasbini" width="600" height="600" loading="lazy" decoding="async"></span><span class="team-proof__avatar"><img src="assets/doctors/optimized/dr-kashmira-pawar-jayprakash.webp" alt="Dr. Kashmira Pawar Jayprakash" width="600" height="600" loading="lazy" decoding="async"></span><span class="team-proof__avatar"><img src="assets/doctors/optimized/dr-dana-awad.webp" alt="Dr. Dana Awad" width="600" height="600" loading="lazy" decoding="async"></span><span class="team-proof__avatar"><img src="assets/ChatGPT Image Sep 7, 2026, 12_28_03 PM.png" alt="Dr. Ahmed El Shehri" width="600" height="600" loading="lazy" decoding="async"></span></div></div></section><nav class="care-shortcuts"'''
+
+          arabic_avatars = '''<div class="team-proof__avatars" aria-label="أعضاء مختارون من فريق مركز سلوادي"><span class="team-proof__avatar"><img src="/assets/doctors/optimized/dr-munir-silwadi.webp" alt="د. منير سلوادي" width="720" height="720" loading="lazy" decoding="async"></span><span class="team-proof__avatar"><img src="/assets/doctors/optimized/dr-hani-hasbini.webp" alt="د. هاني حسبيني" width="600" height="600" loading="lazy" decoding="async"></span><span class="team-proof__avatar"><img src="/assets/doctors/optimized/dr-kashmira-pawar-jayprakash.webp" alt="د. كاشميرا باوار جايبراكاش" width="600" height="600" loading="lazy" decoding="async"></span><span class="team-proof__avatar"><img src="/assets/doctors/optimized/dr-dana-awad.webp" alt="د. دانا عوض" width="600" height="600" loading="lazy" decoding="async"></span><span class="team-proof__avatar"><img src="/assets/ChatGPT Image Sep 7, 2026, 12_28_03 PM.png" alt="د. أحمد الشهري" width="600" height="600" loading="lazy" decoding="async"></span></div></div></section><nav class="care-shortcuts"'''
+
+          def update_home(text: str, path: Path) -> str:
+              if path.as_posix() == 'index.html':
+                  text = re.sub(r'<div class="team-proof__avatars"[^>]*>.*?</div></div></section><nav class="care-shortcuts"', english_avatars, text, count=1, flags=re.S)
+                  text = re.sub(r'<div class="featured-doctors">.*?</div><div class="section-link reveal"><a href="doctors.html">', english_featured + '<div class="section-link reveal"><a href="doctors.html">', text, count=1, flags=re.S)
+              elif path.as_posix() == 'ar/index.html':
+                  text = re.sub(r'<div class="team-proof__avatars"[^>]*>.*?</div></div></section><nav class="care-shortcuts"', arabic_avatars, text, count=1, flags=re.S)
+                  text = re.sub(r'<div class="featured-doctors">.*?</div><div class="section-link reveal"><a href="/ar/doctors.html">', arabic_featured + '<div class="section-link reveal"><a href="/ar/doctors.html">', text, count=1, flags=re.S)
+              return text
+
+          for p in [Path('index.html'), Path('ar/index.html')]:
+              assert p.exists(), f'Missing homepage: {p}'
+              update_file(p, update_home)
+
+          def css_update(text: str, path: Path) -> str:
+              if path.as_posix() == 'styles.css':
+                  text = text.replace('grid-template-columns:repeat(4,1fr);gap:18px}.language-switch', 'grid-template-columns:repeat(5,minmax(0,1fr));gap:18px}.language-switch')
+              return text
+          if Path('styles.css').exists():
+              update_file(Path('styles.css'), css_update)
+
+          # Validation helpers.
+          def read(path): return Path(path).read_text(encoding='utf-8')
+          old_names = ['dr-nasr-keshkiea.webp', 'dr-moheb-silwadi.webp', 'dr-ahmed-el-shehri.webp', 'dr-moammer-rifai.webp', 'dr-moammar-rifai.webp']
+          for path in repo.rglob('*'):
+              if '.git' in path.parts or path.is_dir() or path.suffix not in {'.html', '.js', '.json'}:
+                  continue
+              text = path.read_text(encoding='utf-8')
+              for old_name in old_names:
+                  assert old_name not in text, f'Old portrait still referenced in {path}: {old_name}'
+
+          expected_refs = {
+              'Dr. Nasr Keshkiea': img['nasr'],
+              'Dr. Moheb Silwadi': img['moheb'],
+              'Dr. Ahmed El Shehri': img['ahmed'],
+              'Dr. Moammar Mohamed Rifai': img['moammar'],
+          }
+          for page in ['doctors.html', 'ar/doctors.html']:
+              text = read(page)
+              for doctor, filename in expected_refs.items():
+                  assert filename in text, f'{filename} missing from {page}'
+
+          for page in ['doctors/dr-nasr-keshkiea.html', 'doctors/dr-moheb-silwadi.html', 'doctors/dr-ahmed-el-shehri.html', 'doctors/dr-moammar-rifai.html', 'ar/doctors/dr-nasr-keshkiea.html', 'ar/doctors/dr-moheb-silwadi.html', 'ar/doctors/dr-ahmed-el-shehri.html', 'ar/doctors/dr-moammar-rifai.html']:
+              if Path(page).exists():
+                  text = read(page)
+                  if 'nasr' in page: assert img['nasr'] in text, f'Nasr image missing from {page}'
+                  if 'moheb' in page: assert img['moheb'] in text, f'Moheb image missing from {page}'
+                  if 'ahmed' in page: assert img['ahmed'] in text, f'Ahmed image missing from {page}'
+                  if 'moammar' in page: assert img['moammar'] in text, f'Moammar image missing from {page}'
+
+          def featured_names(page, ar=False):
+              text = read(page)
+              block = re.search(r'<div class="featured-doctors">(.*?)</div><div class="section-link reveal">', text, flags=re.S).group(1)
+              return re.findall(r'<h3>(.*?)</h3>', block)
+          assert featured_names('index.html') == ['Dr. Munir Silwadi', 'Dr. Hani Hasbini', 'Dr. Kashmira Pawar Jayprakash', 'Dr. Dana Awad', 'Dr. Ahmed El Shehri'], featured_names('index.html')
+          assert featured_names('ar/index.html') == ['د. منير سلوادي', 'د. هاني حسبيني', 'د. كاشميرا باوار جايبراكاش', 'د. دانا عوض', 'د. أحمد الشهري'], featured_names('ar/index.html')
+          assert 'repeat(5,minmax(0,1fr))' in read('styles.css'), 'Featured doctors CSS not updated to five columns'
+
+          if changed_files:
+              subprocess.run(['git', 'config', 'user.name', 'ADVA Site Automation'], check=True)
+              subprocess.run(['git', 'config', 'user.email', 'actions@users.noreply.github.com'], check=True)
+              subprocess.run(['git', 'add', *sorted(changed_files)], check=True)
+              subprocess.run(['git', 'commit', '-m', 'Update doctor portraits and homepage featured doctors [skip arabic build]'], check=True)
+              subprocess.run(['git', 'push'], check=True)
+              print('Updated files:')
+              for f in sorted(changed_files):
+                  print('-', f)
+          else:
+              print('No changes needed; site already matches requested update.')
+          PY

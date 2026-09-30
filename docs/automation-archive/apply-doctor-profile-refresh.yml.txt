@@ -1,0 +1,35 @@
+name: Apply doctor profile refresh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/refresh_doctor_profiles.py'
+      - '.github/workflows/apply-doctor-profile-refresh.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Refresh doctor profiles
+        run: python scripts/refresh_doctor_profiles.py
+      - name: Run content contract
+        run: python -m unittest tests.test_doctor_profile_refresh
+      - name: Commit refreshed profiles
+        shell: bash
+        run: |
+          git config user.name "Silwadi Website Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add doctors.html ar/doctors.html doctors ar/doctors
+          if git diff --cached --quiet; then
+            echo "No profile changes to commit"
+            exit 0
+          fi
+          git commit -m "content: refresh doctor profiles"
+          git push origin HEAD:main

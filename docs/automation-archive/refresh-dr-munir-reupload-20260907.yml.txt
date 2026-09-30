@@ -1,0 +1,105 @@
+name: Refresh Dr Munir reupload
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/refresh-dr-munir-reupload-20260907.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh-munir:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Regenerate Dr Munir WebP and update cache busting
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y >/dev/null
+          sudo apt-get install -y webp >/dev/null
+
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          import subprocess
+
+          def run(cmd):
+              print('+', ' '.join(cmd))
+              subprocess.run(cmd, check=True)
+
+          src = Path('assets/dr-munir-new.png')
+          dst = Path('assets/dr-munir-new.webp')
+          if not src.exists():
+              raise SystemExit('assets/dr-munir-new.png not found')
+
+          tmp = Path('assets/dr-munir-new.tmp.webp')
+          run(['cwebp', '-quiet', '-resize', '900', '0', '-q', '84', str(src), '-o', str(tmp)])
+          run(['dwebp', str(tmp), '-o', '/tmp/munir-check.ppm'])
+          if tmp.stat().st_size < 20000:
+              raise SystemExit(f'Optimized Munir image is suspiciously small: {tmp.stat().st_size}')
+          dst.write_bytes(tmp.read_bytes())
+          tmp.unlink(missing_ok=True)
+          print(f'OK {dst} {dst.stat().st_size} bytes')
+
+          version = '20260907-munirrefresh2'
+          changed = {'assets/dr-munir-new.webp'}
+          text_exts = {'.html', '.js', '.json', '.xml', '.css'}
+          for path in Path('.').rglob('*'):
+              if path.is_dir() or '.git' in path.parts or path.suffix not in text_exts:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              new = re.sub(
+                  r'((?:\.\./)*|/)?assets/dr-munir-new\.webp(?:\?[^"\'\s<>)]*)?',
+                  lambda m: (m.group(1) or '') + f'assets/dr-munir-new.webp?v={version}',
+                  text,
+              )
+              # Also switch any remaining old Munir portrait references to the refreshed asset.
+              new = re.sub(
+                  r'((?:\.\./)*|/)?assets/doctors/optimized/dr-munir-silwadi\.webp(?:\?[^"\'\s<>)]*)?',
+                  lambda m: (m.group(1) or '') + f'assets/dr-munir-new.webp?v={version}',
+                  new,
+              )
+              new = re.sub(
+                  r'((?:\.\./)*|/)?assets/doctors/dr-munir-silwadi\.webp(?:\?[^"\'\s<>)]*)?',
+                  lambda m: (m.group(1) or '') + f'assets/dr-munir-new.webp?v={version}',
+                  new,
+              )
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+                  changed.add(path.as_posix())
+
+          # Verify all relevant pages now contain the refreshed Munir path.
+          required = [
+              Path('index.html'),
+              Path('ar/index.html'),
+              Path('doctors.html'),
+              Path('ar/doctors.html'),
+              Path('doctors/dr-munir-silwadi.html'),
+              Path('ar/doctors/dr-munir-silwadi.html'),
+          ]
+          for page in required:
+              if not page.exists():
+                  raise SystemExit(f'Missing expected page: {page}')
+              text = page.read_text(encoding='utf-8')
+              if 'assets/dr-munir-new.webp?v=20260907-munirrefresh2' not in text and '/assets/dr-munir-new.webp?v=20260907-munirrefresh2' not in text and '../assets/dr-munir-new.webp?v=20260907-munirrefresh2' not in text:
+                  raise SystemExit(f'Refreshed Munir image missing in {page}')
+
+          run(['dwebp', 'assets/dr-munir-new.webp', '-o', '/tmp/munir-verify.ppm'])
+
+          run(['git', 'config', 'user.name', 'ADVA Site Automation'])
+          run(['git', 'config', 'user.email', 'actions@users.noreply.github.com'])
+          run(['git', 'add', *sorted(changed)])
+          run(['git', 'commit', '-m', 'Refresh Dr Munir portrait from reupload [skip arabic build]'])
+          run(['git', 'push'])
+          print('Committed changes:')
+          for item in sorted(changed):
+              print('-', item)
+          PY

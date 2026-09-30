@@ -1,0 +1,176 @@
+name: Optimize large visual assets
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/optimize-large-visual-assets.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  optimize-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install WebP tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y webp file
+
+      - name: Optimize hero and doctor portraits
+        run: |
+          set -euo pipefail
+
+          # Confirm the source files exist before touching references.
+          test -s assets/munir-home-hero-clean.png
+          test -s assets/dr-nasr-new.png
+          test -s assets/dr-moheb-new.png
+          test -s assets/dr-ahmed-new.png
+          test -s assets/dr-moammer-new.png
+
+          # Convert big PNGs into browser-friendly WebP assets.
+          cwebp -quiet -q 82 -resize 1920 0 -metadata none assets/munir-home-hero-clean.png -o assets/munir-home-hero-clean.webp
+          cwebp -quiet -q 82 -resize 900 0 -metadata none assets/dr-nasr-new.png -o assets/dr-nasr-new.webp
+          cwebp -quiet -q 82 -resize 900 0 -metadata none assets/dr-moheb-new.png -o assets/dr-moheb-new.webp
+          cwebp -quiet -q 82 -resize 900 0 -metadata none assets/dr-ahmed-new.png -o assets/dr-ahmed-new.webp
+          cwebp -quiet -q 82 -resize 900 0 -metadata none assets/dr-moammer-new.png -o assets/dr-moammer-new.webp
+
+          # Fail fast if an optimized image somehow stays too heavy.
+          python3 <<'PY'
+          from pathlib import Path
+          limits = {
+              'assets/munir-home-hero-clean.webp': 350_000,
+              'assets/dr-nasr-new.webp': 180_000,
+              'assets/dr-moheb-new.webp': 180_000,
+              'assets/dr-ahmed-new.webp': 180_000,
+              'assets/dr-moammer-new.webp': 180_000,
+          }
+          for file, limit in limits.items():
+              p = Path(file)
+              assert p.exists() and p.stat().st_size > 1000, f'Missing/empty optimized asset: {file}'
+              assert p.stat().st_size <= limit, f'{file} too large: {p.stat().st_size} > {limit}'
+              print(file, p.stat().st_size)
+          PY
+
+      - name: Switch site references to optimized assets
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          replacements = {
+              'assets/munir-home-hero-clean.png': 'assets/munir-home-hero-clean.webp',
+              '/assets/munir-home-hero-clean.png': '/assets/munir-home-hero-clean.webp',
+              'assets/dr-nasr-new.png': 'assets/dr-nasr-new.webp',
+              '/assets/dr-nasr-new.png': '/assets/dr-nasr-new.webp',
+              'assets/dr-moheb-new.png': 'assets/dr-moheb-new.webp',
+              '/assets/dr-moheb-new.png': '/assets/dr-moheb-new.webp',
+              'assets/dr-ahmed-new.png': 'assets/dr-ahmed-new.webp',
+              '/assets/dr-ahmed-new.png': '/assets/dr-ahmed-new.webp',
+              'assets/dr-moammer-new.png': 'assets/dr-moammer-new.webp',
+              '/assets/dr-moammer-new.png': '/assets/dr-moammer-new.webp',
+              'assets/dr-nasr-new': 'assets/dr-nasr-new.webp',
+              '/assets/dr-nasr-new': '/assets/dr-nasr-new.webp',
+              'assets/dr-moheb-new': 'assets/dr-moheb-new.webp',
+              '/assets/dr-moheb-new': '/assets/dr-moheb-new.webp',
+              'assets/dr-ahmed-new': 'assets/dr-ahmed-new.webp',
+              '/assets/dr-ahmed-new': '/assets/dr-ahmed-new.webp',
+              'assets/dr-moammer-new': 'assets/dr-moammer-new.webp',
+              '/assets/dr-moammer-new': '/assets/dr-moammer-new.webp',
+              'assets/ChatGPT Image Sep 7, 2026, 12_00_09 PM.png': 'assets/dr-nasr-new.webp',
+              '/assets/ChatGPT Image Sep 7, 2026, 12_00_09 PM.png': '/assets/dr-nasr-new.webp',
+              'assets/ChatGPT Image Sep 7, 2026, 12_06_32 PM.png': 'assets/dr-moheb-new.webp',
+              '/assets/ChatGPT Image Sep 7, 2026, 12_06_32 PM.png': '/assets/dr-moheb-new.webp',
+              'assets/ChatGPT Image Sep 7, 2026, 12_28_03 PM.png': 'assets/dr-ahmed-new.webp',
+              '/assets/ChatGPT Image Sep 7, 2026, 12_28_03 PM.png': '/assets/dr-ahmed-new.webp',
+              'assets/ChatGPT Image Sep 7, 2026, 12_28_24 PM.png': 'assets/dr-moammer-new.webp',
+              '/assets/ChatGPT Image Sep 7, 2026, 12_28_24 PM.png': '/assets/dr-moammer-new.webp',
+          }
+
+          text_exts = {'.html', '.js', '.json', '.css', '.xml'}
+          changed = set()
+          for path in Path('.').rglob('*'):
+              if path.is_dir() or '.git' in path.parts or '.github' in path.parts or path.suffix not in text_exts:
+                  continue
+              text = path.read_text(encoding='utf-8')
+              new = text
+              # Longer keys first prevents extensionless fallback from producing .webp.webp.
+              for old, new_ref in sorted(replacements.items(), key=lambda item: len(item[0]), reverse=True):
+                  new = new.replace(old, new_ref)
+              new = re.sub(r'\.webp\.webp\b', '.webp', new)
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+                  changed.add(path.as_posix())
+
+          # Preload the home hero so the header starts earlier.
+          def add_preload(page, href):
+              p = Path(page)
+              text = p.read_text(encoding='utf-8')
+              if 'munir-home-hero-clean.webp' not in text:
+                  raise AssertionError(f'Hero WebP not referenced in {page}')
+              preload = f'<link rel="preload" as="image" href="{href}" type="image/webp" fetchpriority="high">'
+              if preload not in text:
+                  text = text.replace('<link rel="stylesheet" href=', preload + '<link rel="stylesheet" href=', 1)
+                  p.write_text(text, encoding='utf-8')
+                  changed.add(p.as_posix())
+          add_preload('index.html', 'assets/munir-home-hero-clean.webp')
+          add_preload('ar/index.html', '/assets/munir-home-hero-clean.webp')
+
+          # Add high-priority loading to the visible hero image when it exists as an img.
+          for page in ['index.html', 'ar/index.html']:
+              p = Path(page)
+              text = p.read_text(encoding='utf-8')
+              new = re.sub(r'(<img[^>]+munir-home-hero-clean\.webp[^>]*)(>)', lambda m: m.group(1) + (' fetchpriority="high"' if 'fetchpriority=' not in m.group(1) else '') + m.group(2), text, count=1)
+              if new != text:
+                  p.write_text(new, encoding='utf-8')
+                  changed.add(p.as_posix())
+
+          # Validation: live pages should not reference the heavy PNGs for these visible assets.
+          forbidden = [
+              'munir-home-hero-clean.png',
+              'dr-nasr-new.png', 'dr-moheb-new.png', 'dr-ahmed-new.png', 'dr-moammer-new.png',
+              'ChatGPT Image Sep 7, 2026, 12_00_09 PM.png',
+              'ChatGPT Image Sep 7, 2026, 12_06_32 PM.png',
+              'ChatGPT Image Sep 7, 2026, 12_28_03 PM.png',
+              'ChatGPT Image Sep 7, 2026, 12_28_24 PM.png',
+          ]
+          for path in Path('.').rglob('*'):
+              if path.is_dir() or '.git' in path.parts or '.github' in path.parts or path.suffix not in {'.html', '.js', '.json', '.css'}:
+                  continue
+              text = path.read_text(encoding='utf-8')
+              for bad in forbidden:
+                  assert bad not in text, f'Heavy/corrupt image reference remains in {path}: {bad}'
+
+          for required in [
+              'assets/munir-home-hero-clean.webp',
+              'assets/dr-nasr-new.webp', 'assets/dr-moheb-new.webp',
+              'assets/dr-ahmed-new.webp', 'assets/dr-moammer-new.webp',
+          ]:
+              assert Path(required).exists(), f'Missing {required}'
+
+          if changed:
+              print('Changed text files:')
+              for f in sorted(changed): print('-', f)
+          else:
+              print('No text references needed changes.')
+          PY
+
+      - name: Commit optimized assets and references
+        run: |
+          set -euo pipefail
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add assets/munir-home-hero-clean.webp assets/dr-nasr-new.webp assets/dr-moheb-new.webp assets/dr-ahmed-new.webp assets/dr-moammer-new.webp
+          git add index.html ar/index.html doctors.html ar/doctors.html doctors/*.html ar/doctors/*.html *.js *.json *.css *.xml || true
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Optimize hero and doctor portrait loading [skip arabic build]"
+            git push
+          fi

@@ -1,0 +1,113 @@
+name: Apply homepage Arabic and trust links fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-homepage-arabic-links-fix.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply Arabic wording audit fixes and homepage links
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          # 1) Fix awkward literal Arabic translations while preserving medically correct
+          # uses such as "تقييم سريري" and "دقة سريرية".
+          lang_path = Path('language.js')
+          language = lang_path.read_text(encoding='utf-8')
+          replacements = {
+              "'One established clinical team.': 'فريق سريري واحد متكامل.'": "'One established clinical team.': 'فريق طبي متكامل بخبرة راسخة.'",
+              '"One connected clinical team": "فريق سريري واحد متكامل"': '"One connected clinical team": "فريق طبي متكامل بخبرة راسخة"',
+              "'From the front desk to the clinical team, our centre is designed to make every step feel clear and comfortable.': 'من الاستقبال إلى الفريق السريري، صُمم مركزنا لتكون كل خطوة واضحة ومريحة.'": "'From the front desk to the clinical team, our centre is designed to make every step feel clear and comfortable.': 'من الاستقبال إلى الفريق الطبي، صُمم مركزنا لتكون كل خطوة واضحة ومريحة.'",
+              "'Our clinical team': 'فريقنا السريري'": "'Our clinical team': 'فريقنا الطبي'",
+              '"Clinical base": "الموقع السريري"': '"Clinical base": "الفرع"',
+              '"From the reception team to the clinical staff, our centre is built around clear conversations and a comfortable visit.": "من فريق الاستقبال إلى الطاقم السريري، صُمم مركزنا ليقدم حواراً واضحاً وزيارة مريحة."': '"From the reception team to the clinical staff, our centre is built around clear conversations and a comfortable visit.": "من فريق الاستقبال إلى الطاقم الطبي، صُمم مركزنا ليقدم حواراً واضحاً وزيارة مريحة."',
+              '"Silwadi Dental Centre clinical team in Abu Dhabi": "الفريق السريري في مركز السلوادي لطب الأسنان بأبوظبي"': '"Silwadi Dental Centre clinical team in Abu Dhabi": "الفريق الطبي في مركز السلوادي لطب الأسنان بأبوظبي"',
+              '"A familiar clinical team.": "فريق سريري مألوف."': '"A familiar clinical team.": "فريق طبي موثوق وذو خبرة."',
+          }
+          for old, new in replacements.items():
+              if old not in language:
+                  print('warning: language mapping not found:', old[:90])
+              language = language.replace(old, new)
+
+          # Catch any remaining team/staff/base literal wording without touching legitimate
+          # phrases such as clinical assessment/precision/tools.
+          language = language.replace('فريق سريري واحد متكامل', 'فريق طبي متكامل بخبرة راسخة')
+          language = language.replace('فريقنا السريري', 'فريقنا الطبي')
+          language = language.replace('الفريق السريري', 'الفريق الطبي')
+          language = language.replace('الطاقم السريري', 'الطاقم الطبي')
+          language = language.replace('الموقع السريري', 'الفرع')
+          language = language.replace('فريق سريري مألوف', 'فريق طبي موثوق وذو خبرة')
+          # No need to retain a homepage-only phrase that was removed from the UI.
+          language = re.sub(r"\n\s*['\"]Reception-led['\"]:\s*['\"][^'\"]*['\"],?", '', language)
+          language = re.sub(r"\n\s*['\"]Reception-led booking['\"]:\s*['\"][^'\"]*['\"],?", '', language)
+          lang_path.write_text(language, encoding='utf-8')
+
+          # 2) English homepage: make first two trust items links and remove the third.
+          en_path = Path('index.html')
+          en = en_path.read_text(encoding='utf-8')
+          new_en_trust = '''<ul class="premium-home-hero__trust" aria-label="Clinic highlights"><li><a class="premium-home-hero__trust-link" href="about.html" aria-label="Learn about Silwadi Dental Centre since 1980"><span class="premium-home-hero__icon" aria-hidden="true">✓</span><strong>Serving patients<br>since 1980</strong></a></li><li><a class="premium-home-hero__trust-link" href="locations.html" aria-label="View Bani Yas Tower and Al Raha Mall locations"><span class="premium-home-hero__icon" aria-hidden="true">⌖</span><strong>Bani Yas Tower<br>&amp; Al Raha Mall</strong></a></li></ul>'''
+          en, count = re.subn(r'<ul class="premium-home-hero__trust" aria-label="Clinic highlights">.*?</ul>', new_en_trust, en, count=1, flags=re.S)
+          assert count == 1, 'English homepage trust list not found'
+
+          link_css = '.premium-home-hero__trust-link{display:flex;align-items:center;gap:.68rem;width:100%;color:inherit;text-decoration:none;border-radius:.75rem;transition:transform .18s ease,background .18s ease}.premium-home-hero__trust-link:hover,.premium-home-hero__trust-link:focus-visible{background:rgba(255,255,255,.075);transform:translateY(-1px);outline:none}.premium-home-hero__trust-link:focus-visible{box-shadow:0 0 0 2px rgba(139,233,238,.72)}\n'
+          marker = '.premium-home-hero__trust li{display:flex;align-items:center;gap:.68rem;min-width:10.25rem}\n'
+          assert marker in en, 'English hero trust CSS marker missing'
+          if '.premium-home-hero__trust-link{' not in en:
+              en = en.replace(marker, marker + link_css, 1)
+          en = en.replace('grid-template-columns:repeat(3,minmax(0,1fr))', 'grid-template-columns:repeat(2,minmax(0,1fr))')
+          en_path.write_text(en, encoding='utf-8')
+
+          # 3) Arabic homepage: same interactions, natural wording, no reception item.
+          ar_path = Path('ar/index.html')
+          ar = ar_path.read_text(encoding='utf-8')
+          new_ar_trust = '''<ul class="premium-home-hero__trust" aria-label="مميزات المركز"><li><a class="premium-home-hero__trust-link" href="/ar/about.html" aria-label="تعرّف إلى مسيرة مركز سلوادي منذ عام 1980"><span class="premium-home-hero__icon" aria-hidden="true">✓</span><strong>نخدم مرضانا منذ عام 1980</strong></a></li><li><a class="premium-home-hero__trust-link" href="/ar/locations.html" aria-label="عرض فرعي برج بني ياس والراحة مول"><span class="premium-home-hero__icon" aria-hidden="true">⌖</span><strong>برج بني ياس والراحة مول</strong></a></li></ul>'''
+          ar, count = re.subn(r'<ul class="premium-home-hero__trust" aria-label="مميزات المركز">.*?</ul>', new_ar_trust, ar, count=1, flags=re.S)
+          assert count == 1, 'Arabic homepage trust list not found'
+          ar = ar.replace('<p>فريق طبي متكامل.</p>', '<p>فريق طبي متكامل بخبرة راسخة.</p>', 1)
+          assert 'فريق طبي متكامل بخبرة راسخة.' in ar, 'Arabic team wording not updated'
+          assert marker in ar, 'Arabic hero trust CSS marker missing'
+          if '.premium-home-hero__trust-link{' not in ar:
+              ar = ar.replace(marker, marker + link_css, 1)
+          ar = ar.replace('grid-template-columns:repeat(3,minmax(0,1fr))', 'grid-template-columns:repeat(2,minmax(0,1fr))')
+          ar_path.write_text(ar, encoding='utf-8')
+
+          # 4) Audit fix on the static Arabic About page where the same literal wording existed.
+          about_path = Path('ar/about.html')
+          about = about_path.read_text(encoding='utf-8')
+          about = about.replace('فريق سريري واحد متكامل', 'فريق طبي متكامل بخبرة راسخة')
+          about_path.write_text(about, encoding='utf-8')
+          PY
+      - name: Verify changes before commit
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          language = Path('language.js').read_text(encoding='utf-8')
+          en = Path('index.html').read_text(encoding='utf-8')
+          ar = Path('ar/index.html').read_text(encoding='utf-8')
+          banned = ['فريق سريري', 'فريقنا السريري', 'الفريق السريري', 'الطاقم السريري', 'الموقع السريري']
+          all_ar = language + '\n' + '\n'.join(p.read_text(encoding='utf-8') for p in Path('ar').rglob('*.html'))
+          assert not any(x in all_ar for x in banned)
+          assert 'فريق طبي متكامل بخبرة راسخة.' in ar
+          assert 'href="about.html"' in en and 'href="locations.html"' in en
+          assert 'Reception-led' not in en
+          assert 'href="/ar/about.html"' in ar and 'href="/ar/locations.html"' in ar
+          assert 'الحجز عبر الاستقبال' not in ar
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html ar/index.html ar/about.html language.js
+          git commit -m "fix: natural Arabic wording and homepage trust links [skip arabic build]"
+          git push

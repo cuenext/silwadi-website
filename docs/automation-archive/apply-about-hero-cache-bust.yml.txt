@@ -1,0 +1,65 @@
+name: Apply About hero cache bust
+
+on:
+  push:
+    paths:
+      - '.github/workflows/apply-about-hero-cache-bust.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Confirm stale stylesheet references reproduce the issue
+        shell: python
+        run: |
+          from pathlib import Path
+          en = Path('about.html').read_text(encoding='utf-8')
+          ar = Path('ar/about.html').read_text(encoding='utf-8')
+          assert 'href="about-redesign.css"' in en, 'English About page is already cache-busted'
+          assert 'href="/about-redesign.css"' in ar, 'Arabic About page is already cache-busted'
+          print('RED reproduced: both About pages still reference the unversioned stylesheet URL.')
+
+      - name: Cache-bust the About stylesheet on both language pages
+        shell: python
+        run: |
+          from pathlib import Path
+          version = '20260916-hero-position-2'
+          replacements = {
+              Path('about.html'): ('href="about-redesign.css"', f'href="about-redesign.css?v={version}"'),
+              Path('ar/about.html'): ('href="/about-redesign.css"', f'href="/about-redesign.css?v={version}"'),
+          }
+          for path, (old, new) in replacements.items():
+              text = path.read_text(encoding='utf-8')
+              if old not in text:
+                  raise SystemExit(f'Expected stylesheet reference not found in {path}')
+              path.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+      - name: Verify fresh hero CSS is forced and desktop offset exists
+        shell: python
+        run: |
+          from pathlib import Path
+          version = '20260916-hero-position-2'
+          en = Path('about.html').read_text(encoding='utf-8')
+          ar = Path('ar/about.html').read_text(encoding='utf-8')
+          css = Path('about-redesign.css').read_text(encoding='utf-8')
+          assert f'about-redesign.css?v={version}' in en
+          assert f'/about-redesign.css?v={version}' in ar
+          assert 'padding:44px 0 190px' in css
+          assert '@media(max-width:820px){.about-hero' in css and '.about-hero__content{padding:32px 0 58px' in css
+          print('GREEN: English and Arabic pages force the updated desktop hero CSS while mobile remains unchanged.')
+
+      - name: Commit patch
+        run: |
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add about.html ar/about.html
+          git diff --cached --quiet && exit 0
+          git commit -m "Force refreshed About hero position"
+          git push

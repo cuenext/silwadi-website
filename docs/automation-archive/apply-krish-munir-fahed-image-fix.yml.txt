@@ -1,0 +1,154 @@
+name: Apply Krish Munir Fahed image fix
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/apply-krish-munir-fahed-image-fix.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Convert new portraits, fix Fahed, update references
+        run: |
+          set -euo pipefail
+          sudo apt-get update -y >/dev/null
+          sudo apt-get install -y webp >/dev/null
+
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+          import subprocess
+          import os
+
+          repo = Path('.')
+          changed = set()
+
+          def run(cmd):
+              print('+', ' '.join(cmd))
+              subprocess.run(cmd, check=True)
+
+          def write_if_changed(path: Path, text: str):
+              old = path.read_text(encoding='utf-8')
+              if text != old:
+                  path.write_text(text, encoding='utf-8')
+                  changed.add(path.as_posix())
+
+          def convert(src: Path, dst: Path, width=900, q=82):
+              if not src.exists():
+                  print(f'MISSING source: {src}')
+                  return False
+              tmp = dst.with_suffix('.tmp.webp')
+              run(['cwebp', '-quiet', '-resize', str(width), '0', '-q', str(q), str(src), '-o', str(tmp)])
+              # Decode check. If it cannot decode, do not commit it.
+              run(['dwebp', str(tmp), '-o', '/tmp/check.ppm'])
+              if not dst.exists() or tmp.read_bytes() != dst.read_bytes():
+                  dst.write_bytes(tmp.read_bytes())
+                  changed.add(dst.as_posix())
+              tmp.unlink(missing_ok=True)
+              print(f'OK {dst} {dst.stat().st_size} bytes')
+              return True
+
+          # Convert the newly uploaded Krish portrait.
+          krish_ok = convert(Path('assets/dr-krish-new.png'), Path('assets/dr-krish-new.webp'), width=900, q=82)
+
+          # Convert Dr. Munir only if the uploaded source actually exists in assets.
+          munir_source = None
+          for candidate in [Path('assets/dr-munir-new.png'), Path('assets/dr-munir-new'), Path('assets/dr-munir-new.jpg'), Path('assets/dr-munir-new.jpeg')]:
+              if candidate.exists():
+                  munir_source = candidate
+                  break
+          munir_ok = False
+          if munir_source:
+              munir_ok = convert(munir_source, Path('assets/dr-munir-new.webp'), width=900, q=84)
+          else:
+              print('NO_MUNIR_SOURCE_FOUND: keeping existing Dr. Munir image unchanged')
+
+          # Regenerate Fahed's optimized asset from the known good source PNG.
+          fahed_ok = convert(Path('assets/doctors/dr-fahed-khalil.png'), Path('assets/doctors/optimized/dr-fahed-khalil.webp'), width=900, q=82)
+
+          text_exts = {'.html', '.js', '.json', '.xml', '.css'}
+          replacement_groups = []
+          if krish_ok:
+              replacement_groups.append((
+                  ['assets/doctors/optimized/dr-krishnamurthy-katta-balajee.webp', 'assets/doctors/dr-krishnamurthy-katta-balajee.webp'],
+                  'assets/dr-krish-new.webp'
+              ))
+          if munir_ok:
+              replacement_groups.append((
+                  ['assets/doctors/optimized/dr-munir-silwadi.webp', 'assets/doctors/dr-munir-silwadi.webp'],
+                  'assets/dr-munir-new.webp'
+              ))
+
+          for path in repo.rglob('*'):
+              if path.is_dir() or '.git' in path.parts or path.suffix not in text_exts:
+                  continue
+              try:
+                  text = path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              new = text
+
+              for old_paths, new_path in replacement_groups:
+                  for old in old_paths:
+                      # Preserve relative prefixes like ../ and absolute /.
+                      pattern = re.compile(r'((?:\.\./)*|/)?' + re.escape(old) + r'(?:\?[^"\'\s<>)]*)?')
+                      def repl(m, new_path=new_path):
+                          prefix = m.group(1) or ''
+                          return prefix + new_path
+                      new = pattern.sub(repl, new)
+
+              # Keep Fahed on the regenerated optimized asset and bust cache everywhere.
+              new = re.sub(
+                  r'((?:\.\./)*|/)?assets/doctors/optimized/dr-fahed-khalil\.webp(?:\?[^"\'\s<>)]*)?',
+                  lambda m: (m.group(1) or '') + 'assets/doctors/optimized/dr-fahed-khalil.webp?v=20260907-fahedfix',
+                  new
+              )
+
+              write_if_changed(path, new)
+
+          # Verification.
+          all_text = ''
+          for path in repo.rglob('*'):
+              if path.is_dir() or '.git' in path.parts or path.suffix not in {'.html', '.js', '.json'}:
+                  continue
+              try:
+                  all_text += '\n' + path.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  pass
+
+          if krish_ok:
+              assert 'assets/dr-krish-new.webp' in all_text, 'Krish WebP reference missing from site text'
+          if munir_ok:
+              assert 'assets/dr-munir-new.webp' in all_text, 'Munir WebP reference missing from site text'
+          assert 'assets/doctors/optimized/dr-fahed-khalil.webp?v=20260907-fahedfix' in all_text, 'Fahed cache-busted reference missing'
+
+          # Check image decodability for touched webps.
+          for img in [Path('assets/dr-krish-new.webp'), Path('assets/doctors/optimized/dr-fahed-khalil.webp')]:
+              if img.exists():
+                  run(['dwebp', str(img), '-o', '/tmp/verify.ppm'])
+                  assert img.stat().st_size > 20000, f'{img} too small; likely bad encode'
+          if Path('assets/dr-munir-new.webp').exists():
+              run(['dwebp', 'assets/dr-munir-new.webp', '-o', '/tmp/verify.ppm'])
+              assert Path('assets/dr-munir-new.webp').stat().st_size > 20000, 'Munir WebP too small; likely bad encode'
+
+          if changed:
+              run(['git', 'config', 'user.name', 'ADVA Site Automation'])
+              run(['git', 'config', 'user.email', 'actions@users.noreply.github.com'])
+              run(['git', 'add', *sorted(changed)])
+              run(['git', 'commit', '-m', 'Update Krish and repair Fahed doctor images [skip arabic build]'])
+              run(['git', 'push'])
+              print('Committed changes:')
+              for f in sorted(changed):
+                  print('-', f)
+          else:
+              print('No changes needed')
+          PY

@@ -1,0 +1,63 @@
+name: Apply footer branch contacts
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-footer-branch-contacts.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Add both branch contact blocks to every footer
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          en_inner = '''<strong>Dr. Munir Silwadi Dental Centre</strong><span>Bani Yas Tower (Corniche)</span><span>Bani Yas Tower, Building 117 C Floor</span><span>Sultan Bin Zayed The First St, W Corniche Road, Abu Dhabi, UAE</span><a href="tel:+97126262042">+971 2 626 2042</a><span class="footer-address__divider" aria-hidden="true"></span><strong>Dr. Munir Silwadi Dental Centre - Al Raha Mall</strong><span>F14 &amp; F15, Level 1, Al Raha Mall</span><span>Channel St, Al Rahah, Abu Dhabi, UAE</span><a href="tel:+97126662408">+971 2 666 2408</a><a href="mailto:info@silwadidentalcentres.ae">info@silwadidentalcentres.ae</a>'''
+          ar_inner = '''<strong>مركز د. منير سلوادي لطب الأسنان</strong><span>برج بني ياس (الكورنيش)</span><span>برج بني ياس، المبنى 117، الطابق C</span><span>شارع سلطان بن زايد الأول، طريق الكورنيش الغربي، أبوظبي، الإمارات العربية المتحدة</span><a href="tel:+97126262042">+971 2 626 2042</a><span class="footer-address__divider" aria-hidden="true"></span><strong>مركز د. منير سلوادي لطب الأسنان - الراحة مول</strong><span>F14 و F15، الطابق الأول، الراحة مول</span><span>شارع القناة، الراحة، أبوظبي، الإمارات العربية المتحدة</span><a href="tel:+97126662408">+971 2 666 2408</a><a href="mailto:info@silwadidentalcentres.ae">info@silwadidentalcentres.ae</a>'''
+
+          changed = []
+          pattern = re.compile(r'<address class="footer-address">.*?</address>', re.S)
+          for path in Path('.').rglob('*.html'):
+              text = path.read_text(encoding='utf-8')
+              if '<footer class="site-footer">' not in text or '<address class="footer-address">' not in text:
+                  continue
+              is_ar = 'lang="ar"' in text[:700] or path.as_posix().startswith('ar/') or '/ar/' in path.as_posix()
+              replacement = '<address class="footer-address">' + (ar_inner if is_ar else en_inner) + '</address>'
+              new, count = pattern.subn(replacement, text, count=1)
+              if count != 1:
+                  raise SystemExit(f'Could not replace footer address in {path}')
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+                  changed.append(str(path))
+
+          css_path = Path('styles.css')
+          css = css_path.read_text(encoding='utf-8')
+          if '.footer-address__divider' not in css:
+              css += '''\n\n/* Separate Bani Yas and Al Raha contact details in the shared footer. */\n.footer-address__divider{display:block;width:100%;height:0;margin:13px 0 12px;border-top:1px solid var(--line);}\n.footer-address__divider+strong{margin-top:0;}\n@media(max-width:720px){.footer-address__divider{margin:11px 0 10px;}}\n'''
+              css_path.write_text(css, encoding='utf-8')
+              changed.append('styles.css')
+
+          print(f'Updated {len(changed)} files')
+          for item in changed:
+              print(item)
+          if not changed:
+              raise SystemExit('No files changed; footer pattern may already be updated')
+          PY
+      - name: Commit footer update
+        run: |
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add '*.html' 'ar/**/*.html' 'doctors/**/*.html' styles.css || true
+          git add -u
+          git commit -m "fix: add Al Raha contact details to site footer [skip arabic build]"
+          git push

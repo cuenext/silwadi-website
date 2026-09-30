@@ -1,0 +1,56 @@
+name: Apply Google authority schema patch
+
+on:
+  push:
+    paths:
+      - 'scripts/apply_google_authority.py'
+      - '.github/workflows/apply-google-authority.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.ref == 'refs/heads/seo-authority-integration-0913'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: seo-authority-integration-0913
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply entity graph patch
+        run: |
+          python scripts/apply_google_authority.py
+          python - <<'PY'
+          from scripts.apply_google_authority import mutate_jsonld_script, patch_core_branches
+          mutate_jsonld_script('ar/locations.html', 'data-seo-schema', lambda data: patch_core_branches(data, 'ar'))
+          mutate_jsonld_script('ar/contact.html', 'data-seo-schema', lambda data: patch_core_branches(data, 'ar'))
+          PY
+      - name: Run authority contract before committing generated changes
+        run: python -m unittest tests.test_google_authority -v
+      - name: Guard against visible or out-of-scope file changes
+        shell: bash
+        run: |
+          changed="$(git diff --name-only)"
+          echo "$changed"
+          disallowed="$(printf '%s\n' "$changed" | grep -Ev '^(index\.html|about\.html|locations\.html|contact\.html|doctors\.html|services\.html|treatments\.html|doctors/(dr-munir-silwadi|dr-moheb-silwadi|dr-hani-hasbini|dr-moammar-rifai|dr-ahmed-el-shehri|dr-fahed-khalil|dr-afnan-mashal|dr-krishnamurthy-katta-balajee|dr-ehab-hassouneh|dr-sara-ismail|dr-nasr-keshkiea|dr-dana-awad|dr-kashmira-pawar-jayprakash|dr-nachiket-shah|dr-lana-masoud)\.html|treatments/(dental-implants|orthodontics|cosmetic-dentistry|general-dentistry|emergency-dentist)\.html|ar/(index|services|treatments|locations|contact)\.html|ar/treatments/(dental-implants|orthodontics|cosmetic-dentistry|general-dentistry|emergency-dentist)\.html|ar/doctors/(dr-munir-silwadi|dr-moheb-silwadi|dr-hani-hasbini|dr-moammar-rifai|dr-ahmed-el-shehri|dr-fahed-khalil|dr-afnan-mashal|dr-krishnamurthy-katta-balajee|dr-ehab-hassouneh|dr-sara-ismail|dr-nasr-keshkiea|dr-dana-awad|dr-kashmira-pawar-jayprakash|dr-nachiket-shah|dr-lana-masoud)\.html)$' || true)"
+          if [ -n "$disallowed" ]; then
+            echo "Unexpected generated files:" >&2
+            echo "$disallowed" >&2
+            exit 1
+          fi
+      - name: Commit generated schema-only HTML changes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git config user.name "ADVA"
+          git config user.email "abdullahavadoglu@gmail.com"
+          git add index.html about.html locations.html contact.html doctors.html services.html treatments.html doctors/*.html treatments/*.html ar/index.html ar/services.html ar/treatments.html ar/locations.html ar/contact.html ar/treatments/*.html ar/doctors/*.html
+          git commit -m "seo: integrate bilingual Silwadi entity graph onto current main"
+          git push origin HEAD:seo-authority-integration-0913

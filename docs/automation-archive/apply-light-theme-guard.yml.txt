@@ -1,0 +1,47 @@
+name: Apply light theme guard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-light-theme-guard.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Opt the site out of browser auto-dark transformations
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('styles.css')
+          css = path.read_text(encoding='utf-8')
+
+          root_old = ':root{\n'
+          root_new = ':root{\n  /* Silwadi is intentionally light-only; prevent Samsung/Chromium auto-dark transformations. */\n  color-scheme:only light;\n'
+          if 'color-scheme:only light' not in css:
+              if root_old not in css:
+                  raise SystemExit('Could not locate :root block')
+              css = css.replace(root_old, root_new, 1)
+
+          html_old = 'html{scroll-behavior:smooth}'
+          html_new = 'html{scroll-behavior:smooth;color-scheme:only light;background:#fff}'
+          if html_old in css:
+              css = css.replace(html_old, html_new, 1)
+          elif html_new not in css:
+              raise SystemExit('Could not locate html rule')
+
+          path.write_text(css, encoding='utf-8')
+          PY
+      - name: Commit light-theme protection
+        run: |
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add styles.css
+          git diff --cached --quiet || git commit -m "fix: prevent browser-forced dark mode [skip arabic build]"
+          git push

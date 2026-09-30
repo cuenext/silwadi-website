@@ -1,0 +1,80 @@
+name: Apply bright Munir hero fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-hero-brightness-fix.yml'
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Brighten Munir and confine shade to text side
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          pages = [Path('index.html'), Path('ar/index.html')]
+          replacements = [
+              (
+                  '.premium-home-hero__media img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block;filter:saturate(.96) contrast(1.02) brightness(.94)}',
+                  '.premium-home-hero__media img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;filter:none}'
+              ),
+              (
+                  '.premium-home-hero__shade{position:absolute;inset:0;z-index:-3;background:linear-gradient(90deg,rgba(2,14,25,.985) 0%,rgba(4,23,40,.94) 30%,rgba(7,36,60,.72) 52%,rgba(8,49,76,.32) 70%,rgba(8,49,76,.06) 100%)}',
+                  '.premium-home-hero__shade{position:absolute;inset:0;z-index:-3;background:linear-gradient(90deg,rgba(2,14,25,.96) 0%,rgba(4,23,40,.88) 28%,rgba(7,36,60,.52) 42%,rgba(8,49,76,.18) 52%,rgba(4,23,40,0) 60%,rgba(4,23,40,0) 100%)}'
+              ),
+              (
+                  '@media(max-width:1100px){.premium-home-hero__copy{margin-left:clamp(1rem,4vw,3rem)}.premium-home-hero__shade{background:linear-gradient(90deg,rgba(2,14,25,.985) 0%,rgba(4,23,40,.92) 42%,rgba(9,39,64,.58) 100%)}}',
+                  '@media(max-width:1100px){.premium-home-hero__copy{margin-left:clamp(1rem,4vw,3rem)}.premium-home-hero__shade{background:linear-gradient(90deg,rgba(2,14,25,.97) 0%,rgba(4,23,40,.86) 34%,rgba(7,36,60,.42) 46%,rgba(4,23,40,0) 60%,rgba(4,23,40,0) 100%)}}'
+              ),
+              (
+                  '.premium-home-hero__media img{object-position:76% top;filter:saturate(.96) contrast(1.02) brightness(.92)}',
+                  '.premium-home-hero__media img{object-position:76% top;filter:none}'
+              ),
+              (
+                  '.premium-home-hero__shade{background:linear-gradient(180deg,rgba(2,14,25,.05) 0%,rgba(2,14,25,.18) 24%,rgba(2,14,25,.62) 53%,rgba(2,14,25,.95) 100%),linear-gradient(90deg,rgba(2,14,25,.74) 0%,rgba(2,14,25,.28) 44%,rgba(2,14,25,0) 100%)}',
+                  '.premium-home-hero__shade{background:linear-gradient(180deg,rgba(2,14,25,0) 0%,rgba(2,14,25,0) 55%,rgba(2,14,25,.34) 68%,rgba(2,14,25,.88) 100%),linear-gradient(90deg,rgba(2,14,25,.68) 0%,rgba(2,14,25,.24) 42%,rgba(2,14,25,0) 58%,rgba(2,14,25,0) 100%)}'
+              ),
+          ]
+
+          for path in pages:
+              text = path.read_text(encoding='utf-8')
+              for old, new in replacements:
+                  if new in text:
+                      continue
+                  if old not in text:
+                      raise SystemExit(f'Missing expected hero CSS in {path}: {old[:80]}')
+                  text = text.replace(old, new, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+      - name: Verify requested hero behavior before commit
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          for page in ['index.html', 'ar/index.html']:
+              html = Path(page).read_text(encoding='utf-8')
+              assert 'object-position:center top;display:block;filter:none' in html
+              assert 'rgba(4,23,40,0) 60%' in html
+              assert 'object-position:76% top;filter:none' in html
+              assert 'rgba(2,14,25,0) 55%' in html
+              assert 'brightness(.94)' not in html
+              assert 'brightness(.92)' not in html
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name "ADVA Site Automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add index.html ar/index.html
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+            exit 0
+          fi
+          git commit -m "fix: keep Munir bright in homepage hero [skip arabic build]"
+          git push origin HEAD:main
