@@ -1,6 +1,7 @@
 name: Doctor photo and homepage featured order regression
 
 on:
+  pull_request:
   push:
     branches: [main]
     paths:
@@ -35,8 +36,8 @@ jobs:
               new_sha = subprocess.check_output(['git','hash-object',path], text=True).strip()
               assert new_sha != old_sha, f'{path} still has the old photo blob'
 
-          desired_en = ['Dr. Munir Silwadi','Dr. Hani Hasbini','Dr. Kashmira Pawar Jayprakash','Dr. Dana Awad','Dr. Ahmed El Shehri']
-          desired_ar = ['د. منير سلوادي','د. هاني حسبيني','د. كاشميرا باوار جايبراكاش','د. دانا عوض','د. أحمد الشهري']
+          desired_en = ['Dr. Moheb Silwadi','Dr. Lana Almasoud','Dr. Kashmira Pawar Jayprakash','Dr. Dana Awad','Dr. Ahmed El Shehri']
+          desired_ar = ['د. مهيب سلوادي','د. لانا المسعود','د. كاشميرا باوار جايبراكاش','د. دانا عوض','د. أحمد الشهري']
 
           def featured_names(path):
               text = Path(path).read_text(encoding='utf-8')
@@ -48,7 +49,7 @@ jobs:
           assert featured_names('ar/index.html') == desired_ar, featured_names('ar/index.html')
 
           css = Path('styles.css').read_text(encoding='utf-8')
-          assert '.featured-doctors{display:grid;grid-template-columns:repeat(5,1fr)' in css, 'Desktop featured grid is not 5 columns'
+          assert '@media(min-width:1101px){.featured-doctors{grid-template-columns:repeat(5,minmax(0,1fr))}}' in css, 'Desktop featured grid is not 5 columns'
           print('Doctor photo replacements and homepage featured order verified')
           PY
 
