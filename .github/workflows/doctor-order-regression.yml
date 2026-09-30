@@ -55,5 +55,5 @@ jobs:
               html = Path(page).read_text(encoding='utf-8')
               html_order = [canonical(name) for name in re.findall(r'data-name="([^"]+)"', html)]
               assert html_order == expected, f'Wrong static card order in {page}:\n{html_order}'
-              assert 'app.js?v=20260906-doctor-slots-1' in html, f'Fresh app.js cache key missing in {page}'
+              assert 'app.js?v=20260930-security' in html, f'Fresh app.js cache key missing in {page}'
           PY

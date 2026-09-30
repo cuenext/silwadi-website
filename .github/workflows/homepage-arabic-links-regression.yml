@@ -38,7 +38,7 @@ jobs:
           assert not offenders, 'Awkward Arabic clinical-team wording remains:\n' + '\n'.join(offenders)
 
           assert "'One established clinical team.': 'فريق طبي متكامل بخبرة راسخة.'" in language
-          assert 'فريق طبي متكامل بخبرة راسخة.' in ar
+          assert 'خبرة تخصصية ورعاية باهتمام' in ar
 
           # First trust item links to About; second links to Locations; reception-led booking is gone.
           assert re.search(r'<li>\s*<a[^>]+href="about\.html"[^>]*>.*?Serving patients.*?since 1980.*?</a>\s*</li>', en, re.S)
