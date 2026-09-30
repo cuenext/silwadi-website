@@ -141,7 +141,7 @@ class DoctorProfileRefreshContract(unittest.TestCase):
                     self.text.append(data)
 
         # Proper names and established clinical/accreditation abbreviations.
-        allowed = {"CECSMO", "RGUHS", "UniCamillus", "CEREC", "ISCD", "PALS", "IAPD", "CBCT"}
+        allowed = {"CECSMO", "RGUHS", "UniCamillus", "CEREC", "ISCD", "PALS", "IAPD", "CBCT", "DUOL", "ESLO"}
         paths = sorted((ROOT / "ar/doctors").glob("*.html"))
         self.assertTrue(paths)
         for path in paths:
