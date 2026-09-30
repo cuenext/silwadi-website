@@ -4,10 +4,40 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Python generated files
+# Dependencies / generated content
+node_modules/
 __pycache__/
 *.py[cod]
 
-# Temporary files
+# Temporary / local working files
+.tmp/
 *.tmp
 *.log
+
+# Environment and secret files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.jks
+*.keystore
+
+# Local credentials / deployment material
+credentials*
+secrets*
+*.secret
+*.credentials
+id_rsa
+id_ed25519
+
+# Backups / archives that should not be committed
+*.bak
+*.backup
+*.sql
+*.sqlite
+*.sqlite3
