@@ -18,6 +18,20 @@
   };
 
   const arabic = {
+    "Accreditations": "الاعتمادات",
+    "JAWDA Data Certification": "شهادة جودة البيانات «جودة»",
+    "99.55 accuracy score · Grade A": "درجة دقة البيانات: 99.55 · الفئة A",
+    "Dr. Munir Silwadi Dental Centre · MF368": "مركز الدكتور منير سلوادي لطب الأسنان · MF368",
+    "Effective 4 October 2026": "سارية اعتباراً من 4 أكتوبر 2026",
+    "ADHICS Compliance": "الامتثال لمعيار ADHICS",
+    "Dr. Mohamed Munir Dental Centre": "مركز الدكتور محمد منير لطب الأسنان",
+    "MF368 · Corniche": "MF368 · الكورنيش",
+    "MF7451 · Al Raha Mall": "MF7451 · الراحة مول",
+    "ADHICS audit score: 98%. Certifications and compliance recognitions are facility-specific and subject to the scope stated on the relevant certificate.": "درجة تدقيق ADHICS: 98%. تخص الشهادات وإقرارات الامتثال كل منشأة على حدة، وتخضع للنطاق المحدد في الشهادة ذات الصلة.",
+    "Silwadi accreditations and certifications": "اعتمادات وشهادات سلوادي",
+    "Accreditation carousel controls": "أزرار التنقل بين الاعتمادات",
+    "Previous accreditation": "الاعتماد السابق",
+    "Next accreditation": "الاعتماد التالي",
     'Skip to content': 'انتقل إلى المحتوى',
     'Home': 'الرئيسية',
     'Services': 'الخدمات',
@@ -633,6 +647,8 @@
     if (arabic[clean]) return arabic[clean];
     const caseInsensitiveKey = Object.keys(arabic).find(key => key.toLocaleLowerCase() === clean.toLocaleLowerCase());
     if (caseInsensitiveKey) return arabic[caseInsensitiveKey];
+    const accreditationSlide = clean.match(/^Go to accreditation slide (\d+)$/);
+    if (accreditationSlide) return `انتقل إلى شريحة الاعتماد ${accreditationSlide[1]}`;
     const learnMoreMatch = clean.match(/^Learn More about (.+)$/i);
     if (learnMoreMatch) {
       const service = translate(learnMoreMatch[1], 'ar');
