@@ -27,3 +27,5 @@ jobs:
           node --check app.js
           node --check booking-modal.js
           node --check language.js
+      - name: Validate booking server input rules
+        run: php tests/server/test-booking-validation.php
