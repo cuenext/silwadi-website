@@ -2,6 +2,7 @@ import unittest
 from pathlib import Path
 from html.parser import HTMLParser
 from urllib.parse import urlsplit
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -119,6 +120,38 @@ class DoctorProfileRefreshContract(unittest.TestCase):
             "Radiographic assessment, routine cleaning",
         ):
             self.assertNotIn(phrase, text)
+
+    def test_arabic_profiles_have_no_untranslated_english_sentences(self):
+        class VisibleText(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.ignored = 0
+                self.text = []
+
+            def handle_starttag(self, tag, attrs):
+                if tag in {"script", "style"}:
+                    self.ignored += 1
+
+            def handle_endtag(self, tag):
+                if tag in {"script", "style"} and self.ignored:
+                    self.ignored -= 1
+
+            def handle_data(self, data):
+                if not self.ignored:
+                    self.text.append(data)
+
+        # Proper names and established clinical/accreditation abbreviations.
+        allowed = {"CECSMO", "RGUHS", "UniCamillus", "CEREC", "ISCD", "PALS", "IAPD", "CBCT"}
+        paths = sorted((ROOT / "ar/doctors").glob("*.html"))
+        self.assertTrue(paths)
+        for path in paths:
+            parser = VisibleText()
+            parser.feed(path.read_text(encoding="utf-8"))
+            visible = " ".join(parser.text)
+            visible = re.sub(r"[\\w.+-]+@[\\w.-]+", "", visible)
+            visible = re.sub(r"@[\\w.]+", "", visible)
+            remaining = set(re.findall(r"[A-Za-z]{4,}", visible)) - allowed
+            self.assertFalse(remaining, f"{path.name}: untranslated text {sorted(remaining)}")
 
     def test_arabic_profiles_are_refreshed(self):
         expected = {
