@@ -1,6 +1,7 @@
 name: Homepage Arabic and trust links regression
 
 on:
+  pull_request:
   push:
     branches: [main]
     paths:

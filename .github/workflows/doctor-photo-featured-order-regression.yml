@@ -1,6 +1,7 @@
 name: Doctor photo and homepage featured order regression
 
 on:
+  pull_request:
   push:
     branches: [main]
     paths:

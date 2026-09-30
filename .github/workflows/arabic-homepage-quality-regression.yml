@@ -1,5 +1,6 @@
 name: Arabic homepage quality regression
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
