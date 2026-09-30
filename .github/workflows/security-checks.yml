@@ -29,3 +29,5 @@ jobs:
           node --check language.js
       - name: Validate booking server input rules
         run: php tests/server/test-booking-validation.php
+      - name: Validate current doctor profile content and Arabic qualifications
+        run: python -m unittest tests.test_doctor_profile_refresh -v
