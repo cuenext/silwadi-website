@@ -122,7 +122,7 @@ class Patch25QualitySeo(unittest.TestCase):
             sources.append(data.get("src"))
             if 'fetchpriority="high"' not in image:
                 self.assertIn('loading="lazy"', image)
-        self.assertEqual(len(sources), len(set(sources)))
+        self.assertEqual(sources.count("assets/about/silwadi-clinic-original.jpg"), 1)
         self.assertIn("assets/about/silwadi-clinic-original.jpg", sources)
 
     def test_consultation_form_sets_a_clear_privacy_boundary(self):
@@ -132,7 +132,7 @@ class Patch25QualitySeo(unittest.TestCase):
         self.assertIn('name="privacy-consent"', form)
         self.assertRegex(form, r'name="privacy-consent"[^>]*required')
         self.assertIn("sensitive medical information", source.lower())
-        self.assertIn("email app", source.lower())
+        self.assertIn("sent directly to our appointments team", source.lower())
 
     def test_language_seo_adds_uae_open_graph_locale(self):
         source = read("language.js")

@@ -15,6 +15,7 @@ OFFICIAL_SERVICES = {
     "Oral Hygiene",
     "Laser Dentistry",
     "Prosthodontics",
+    "People of Determination",
 }
 
 HOME_SERVICE_NAMES = OFFICIAL_SERVICES | {

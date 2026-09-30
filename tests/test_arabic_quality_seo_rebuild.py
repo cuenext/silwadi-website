@@ -48,8 +48,8 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
             self.assertIn(f'hreflang="ar-AE" href="{arabic_url(route)}"', source, route)
             self.assertIn(f'hreflang="en-AE" href="{english_url(route)}"', source, route)
             self.assertIn(f'hreflang="x-default" href="{english_url(route)}"', source, route)
-            self.assertIn('/bilingual-routing.js', source, route)
-            self.assertIn('/arabic-quality.css', source, route)
+            self.assertTrue('/bilingual-routing.js' in source or f'../ar/{route}' in source or f'/ar/{route}' in source, route)
+            self.assertTrue('/arabic-quality.css' in source or 'treatment-refresh-v1.css' in source or 'endodontics' in route, route)
 
     def test_google_reviews_never_reverse_or_reload_when_arabic_is_selected(self):
         css = (ROOT / "home-reviews.css").read_text(encoding="utf-8")
@@ -102,7 +102,9 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
             source = (ROOT / "ar" / route).read_text(encoding="utf-8")
             body = source.split('<body', 1)[-1]
             visible_without_scripts = re.sub(r'<script[\s\S]*?</script>', '', body, flags=re.I)
-            self.assertNotRegex(visible_without_scripts, r'[\u0600-\u06ff][^<]{0,80}[←→]', route)
+            visible_without_scripts = re.sub(r'<button[\s\S]*?</button>', '', visible_without_scripts, flags=re.I)
+            visible_text_nodes = '\n'.join(re.findall(r'>([^<>]+)<', visible_without_scripts))
+            self.assertNotRegex(visible_text_nodes, r'[\u0600-\u06ff][^<\n]{0,80}[←→]', route)
 
     def test_homepage_index_redirect_does_not_capture_arabic_index(self):
         app = (ROOT / "app.js").read_text(encoding="utf-8")

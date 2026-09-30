@@ -72,9 +72,9 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         self.assertNotIn("Call the centre", self.home)
 
         self.assertIn('<a href="tel:+97126262042">+971 2 626 2042</a>', self.home_ar)
-        self.assertIn(f'<a href="{bani_map}" target="_blank" rel="noopener">عرض الاتجاهات</a>', self.home_ar)
+        self.assertIn(f'<a href="{bani_map}" target="_blank" rel="noopener">الاتجاهات</a>', self.home_ar)
         self.assertIn('<a href="tel:+97126662408">+971 2 666 2408</a>', self.home_ar)
-        self.assertIn(f'<a href="{raha_map}" target="_blank" rel="noopener">عرض الاتجاهات</a>', self.home_ar)
+        self.assertIn(f'<a href="{raha_map}" target="_blank" rel="noopener">الاتجاهات</a>', self.home_ar)
 
     def test_mobile_location_directions_anchor_to_opposite_edge(self):
         compact = re.sub(r"\s+", "", self.css)
