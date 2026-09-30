@@ -148,8 +148,8 @@ class DoctorProfileRefreshContract(unittest.TestCase):
             parser = VisibleText()
             parser.feed(path.read_text(encoding="utf-8"))
             visible = " ".join(parser.text)
-            visible = re.sub(r"[\\w.+-]+@[\\w.-]+", "", visible)
-            visible = re.sub(r"@[\\w.]+", "", visible)
+            visible = re.sub(r"[\w.+-]+@[\w.-]+", "", visible)
+            visible = re.sub(r"@[\w.]+", "", visible)
             remaining = set(re.findall(r"[A-Za-z]{4,}", visible)) - allowed
             self.assertFalse(remaining, f"{path.name}: untranslated text {sorted(remaining)}")
 
