@@ -28,9 +28,9 @@ TREATMENT_DETAIL_PAGES = [
 ]
 EXPECTED_OG_IMAGES = {
     "contact.html": "https://silwadi.ae/assets/locations/bani-yas-reception.webp",
-    "treatments/dental-implants.html": "https://silwadi.ae/assets/services/implantology.webp",
+    "treatments/dental-implants.html": "https://silwadi.ae/assets/locations/al-raha-treatment-room.webp",
     "treatments/orthodontics.html": "https://silwadi.ae/assets/services/orthodontics.webp",
-    "treatments/cosmetic-dentistry.html": "https://silwadi.ae/assets/services/cosmetic-dentistry.webp",
+    "treatments/cosmetic-dentistry.html": "https://silwadi.ae/assets/services/cosmetics.webp",
 }
 
 

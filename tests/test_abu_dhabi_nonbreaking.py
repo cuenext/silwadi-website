@@ -1,18 +1,30 @@
 import re
+from html.parser import HTMLParser
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SKIP_BLOCKS = re.compile(r"(?is)<(?:script|style|noscript|template)\b.*?</(?:script|style|noscript|template)\s*>")
-TAGS = re.compile(r"(?is)<[^>]+>")
 PLAIN = re.compile(r"Abu[ \t\r\n]+Dhabi")
 
+class VisibleTextParser(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.hidden = 0
+        self.parts = []
+    def handle_starttag(self, tag, attrs):
+        if tag in {'head', 'script', 'style', 'noscript', 'template'}:
+            self.hidden += 1
+    def handle_endtag(self, tag):
+        if tag in {'head', 'script', 'style', 'noscript', 'template'}:
+            self.hidden = max(0, self.hidden - 1)
+    def handle_data(self, data):
+        if not self.hidden:
+            self.parts.append(data)
 
 def visible_body_text(html: str) -> str:
-    match = re.search(r"(?is)<body\b[^>]*>(.*)</body\s*>", html)
-    body = match.group(1) if match else html
-    body = SKIP_BLOCKS.sub("", body)
-    return TAGS.sub("", body)
+    parser = VisibleTextParser()
+    parser.feed(html)
+    return ''.join(parser.parts)
 
 
 class AbuDhabiNonbreakingContract(unittest.TestCase):

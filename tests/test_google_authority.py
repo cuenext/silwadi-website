@@ -133,8 +133,8 @@ class GoogleAuthorityContract(unittest.TestCase):
                 self.assertEqual(entity.get("parentOrganization", {}).get("@id"), ORG_ID)
                 self.assertEqual(entity.get("email"), "info@silwadidentalcentres.ae")
                 self.assertIsInstance(entity.get("geo"), dict, f"{path} branch entity must include geo")
-            self.assertEqual(bani.get("url"), f"{BASE}{locale_prefix}/locations.html#bani-yas")
-            self.assertEqual(raha.get("url"), f"{BASE}{locale_prefix}/locations.html#al-raha")
+            self.assertEqual(bani.get("url"), f"{BASE}{locale_prefix}/locations/corniche.html")
+            self.assertEqual(raha.get("url"), f"{BASE}{locale_prefix}/locations/al-raha.html")
 
     def test_doctor_branch_assignments_are_exact_in_both_languages(self):
         for filename, expected in DOCTOR_BRANCHES.items():

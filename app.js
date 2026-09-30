@@ -183,6 +183,7 @@ document.querySelectorAll('[data-consultation-form]').forEach(form => {
       notes: String(data.get('message') || '').trim(),
       language,
       website: String(data.get('website') || '').trim(),
+          consent: data.get('privacy-consent') === 'on',
     };
 
     const status = form.querySelector('[data-consultation-status]');

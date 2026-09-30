@@ -11,3 +11,21 @@ __pycache__/
 # Temporary files
 *.tmp
 *.log
+
+# Credentials and deployment internals
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*
+node_modules/
+*.sql
+*.sql.gz
+*.bak
+*.backup
+*.zip
+.worktrees/
+public-bundle/

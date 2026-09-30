@@ -10,11 +10,14 @@ on:
       - '.github/workflows/doctor-order-regression.yml'
 
 # Post-fix verification: these are literal card-slot swaps, not a loose preferred order.
+permissions:
+  contents: read
+
 jobs:
   verify-doctor-order:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Verify literal requested card swaps
         run: |
           python3 <<'PY'

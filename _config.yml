@@ -1,0 +1,18 @@
+exclude:
+  - docs
+  - tests
+  - tools
+  - scripts
+  - data
+  - review
+  - ai
+  - worker
+  - node_modules
+  - README.md
+  - assets/silwadi-pediatric-gallery-optimized.zip
+  - CONNECT-GITHUB.bat
+  - DIAGNOSE-PHONE-ACCESS.bat
+  - ENABLE-PHONE-ACCESS.bat
+  - FIX-GITHUB-SILWADI.bat
+  - PULL-LATEST.bat
+  - START-SILWADI.bat

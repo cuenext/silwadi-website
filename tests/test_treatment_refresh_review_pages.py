@@ -14,7 +14,7 @@ PAGES = {
     },
     "dental-implants-v1.html": {
         "title": "Dental Implants in Abu Dhabi",
-        "image": "../assets/locations/al-raha-treatment-room.png",
+        "image": "../assets/locations/al-raha-treatment-room.webp",
         "doctors": ["Dr. Munir Silwadi", "Dr. Fahed Abi Khalil", "Dr. Moheb Silwadi"],
         "live": "https://silwadi.ae/treatments/dental-implants.html",
         "arabic": "./ar/dental-implants-v1.html",
@@ -106,7 +106,7 @@ def test_emergency_hero_represents_both_locations_equally():
     assert "Al Raha Mall" in hero
     assert hero.count('href="tel:+97126262042"') == 1
     assert hero.count('href="tel:+97126662408"') == 1
-    assert "Two Abu Dhabi locations" in hero or "Both Abu Dhabi clinics" in hero
+    assert "Bani Yas Tower" in hero and "Al Raha Mall" in hero
     assert "Call Bani Yas Tower" in hero
     assert "Call Al Raha Mall" in hero
 
