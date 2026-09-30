@@ -1,6 +1,7 @@
 name: Arabic homepage no-English-leak regression
 
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
@@ -28,6 +29,6 @@ jobs:
           assert not offenders, 'English UI/accessibility copy leaked into Arabic homepage:\n' + '\n'.join(offenders)
           assert 'رعاية زراعة الأسنان' in ar, 'Missing Arabic implant navigation subtitle'
           assert 'هوليوود سمايل والتبييض الاحترافي' in ar, 'Missing Arabic cosmetic navigation subtitle'
-          assert 'تعرّف على مركز سلوادي لطب الأسنان منذ عام 1980' in ar, 'Missing Arabic about accessibility label'
+          assert 'تعرّف إلى مركز سلوادي لطب الأسنان منذ عام 1980' in ar, 'Missing Arabic about accessibility label'
           assert 'عرض فرعي برج بني ياس والراحة مول' in ar, 'Missing Arabic locations accessibility label'
           PY
