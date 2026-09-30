@@ -12,6 +12,9 @@ on:
       - 'assets/dr-ehab-new-v2.webp'
       - '.github/workflows/doctor-profile-content-test.yml'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

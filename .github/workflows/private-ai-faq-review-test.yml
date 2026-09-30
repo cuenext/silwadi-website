@@ -18,6 +18,9 @@ on:
       - '.github/workflows/private-ai-faq-review-test.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

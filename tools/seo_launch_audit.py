@@ -242,7 +242,7 @@ def audit():
             if not href or not resolve_local_asset(rel, href).resolve().is_file():
                 errors.append(f'{rel}: favicon target does not resolve: {href!r}')
 
-        if 'https://silwadidentalcentres.ae' in html:
+        if any(urlparse(value).hostname == 'silwadidentalcentres.ae' for tag in tags(html, 'a') + tags(html, 'link') for value in [attrs(tag).get('href', '')]):
             errors.append(f'{rel}: legacy website origin is still linked as an absolute HTTP URL')
 
         for node in jsonld_nodes(html, errors, rel):

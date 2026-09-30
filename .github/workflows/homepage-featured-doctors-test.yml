@@ -9,6 +9,9 @@ on:
       - 'ar/index.html'
       - '.github/workflows/homepage-featured-doctors-test.yml'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

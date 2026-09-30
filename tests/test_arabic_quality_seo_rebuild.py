@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import re
+from html.parser import HTMLParser
 import subprocess
 import sys
 import unittest
@@ -17,6 +18,22 @@ def english_url(route: str) -> str:
 
 def arabic_url(route: str) -> str:
     return "https://silwadi.ae/ar/" if route == "index.html" else f"https://silwadi.ae/ar/{route}"
+
+
+class CtaTextParser(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.hidden = 0
+        self.parts = []
+    def handle_starttag(self, tag, attrs):
+        if tag in {'head', 'script', 'style', 'button'}:
+            self.hidden += 1
+    def handle_endtag(self, tag):
+        if tag in {'head', 'script', 'style', 'button'}:
+            self.hidden = max(0, self.hidden - 1)
+    def handle_data(self, data):
+        if not self.hidden:
+            self.parts.append(data)
 
 
 class ArabicQualitySeoRebuild(unittest.TestCase):
@@ -100,10 +117,9 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
     def test_generated_arabic_ctas_do_not_embed_directional_arrow_text(self):
         for route in SEO:
             source = (ROOT / "ar" / route).read_text(encoding="utf-8")
-            body = source.split('<body', 1)[-1]
-            visible_without_scripts = re.sub(r'<script[\s\S]*?</script>', '', body, flags=re.I)
-            visible_without_scripts = re.sub(r'<button[\s\S]*?</button>', '', visible_without_scripts, flags=re.I)
-            visible_text_nodes = '\n'.join(re.findall(r'>([^<>]+)<', visible_without_scripts))
+            parser = CtaTextParser()
+            parser.feed(source)
+            visible_text_nodes = '\n'.join(parser.parts)
             self.assertNotRegex(visible_text_nodes, r'[\u0600-\u06ff][^<\n]{0,80}[←→]', route)
 
     def test_homepage_index_redirect_does_not_capture_arabic_index(self):

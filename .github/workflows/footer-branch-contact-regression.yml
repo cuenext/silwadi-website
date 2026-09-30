@@ -9,6 +9,9 @@ on:
       - '.github/workflows/footer-branch-contact-regression.yml'
 
 # Verification refresh after applying the shared footer update.
+permissions:
+  contents: read
+
 jobs:
   verify-footer-branch-contacts:
     runs-on: ubuntu-latest

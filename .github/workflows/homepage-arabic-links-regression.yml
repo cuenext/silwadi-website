@@ -9,6 +9,9 @@ on:
       - 'language.js'
       - '.github/workflows/homepage-arabic-links-regression.yml'
 
+permissions:
+  contents: read
+
 jobs:
   verify:
     runs-on: ubuntu-latest

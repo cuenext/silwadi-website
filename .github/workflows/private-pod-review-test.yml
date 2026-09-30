@@ -9,6 +9,9 @@ on:
       - '.github/workflows/private-pod-review-test.yml'
 
 # Verifies the final private POD review contract.
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

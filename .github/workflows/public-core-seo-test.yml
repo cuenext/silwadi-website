@@ -29,6 +29,9 @@ on:
       - 'tests/test_public_core_seo.py'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

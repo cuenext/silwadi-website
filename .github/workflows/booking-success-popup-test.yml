@@ -18,6 +18,9 @@ on:
       - tests/test_booking_email_validation.py
       - .github/workflows/booking-success-popup-test.yml
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

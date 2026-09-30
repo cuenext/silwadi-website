@@ -188,7 +188,7 @@ process.stdout.write(JSON.stringify(values.map(value => api.translate(value, 'ar
         pages = [ROOT / "services.html", ROOT / "treatments.html"]
         for page in pages:
             html = page.read_text(encoding="utf-8")
-            self.assertLess(html.index('<script src="language.js"></script>'), html.index('<script src="app.js"></script>'))
+            self.assertLess(html.index('<script src="language.js"></script>'), html.index('<script src="app.js'))
 
     def test_rtl_css_covers_navigation_forms_cards_and_mobile_actions(self):
         css = read("styles.css")

@@ -8,6 +8,9 @@ on:
       - 'tests/test_abu_dhabi_nonbreaking.py'
       - '.github/workflows/abu-dhabi-nonbreaking-test.yml'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

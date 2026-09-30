@@ -23,6 +23,9 @@ on:
       - 'ar/doctors/dr-krishnamurthy-katta-balajee.html'
       - '.github/workflows/ehab-sara-portrait-test.yml'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

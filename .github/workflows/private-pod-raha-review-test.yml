@@ -10,6 +10,9 @@ on:
   workflow_dispatch:
 
 # Verifies the final Al Raha private-review contract.
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

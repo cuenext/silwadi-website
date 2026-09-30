@@ -12,6 +12,9 @@ on:
       - 'ar/doctors/**.html'
       - '.github/workflows/doctor-portrait-zoom-test.yml'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

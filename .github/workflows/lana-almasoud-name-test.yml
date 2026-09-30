@@ -10,6 +10,9 @@ on:
       - 'tests/test_lana_almasoud_name.py'
       - '.github/workflows/lana-almasoud-name-test.yml'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

@@ -10,6 +10,9 @@ on:
       - 'assets/doctors/optimized/*.webp'
       - '.github/workflows/doctor-photo-featured-order-regression.yml'
 
+permissions:
+  contents: read
+
 jobs:
   verify-doctor-photos-and-featured-order:
     runs-on: ubuntu-latest

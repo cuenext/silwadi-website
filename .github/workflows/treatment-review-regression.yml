@@ -12,6 +12,9 @@ on:
       - 'tests/test_treatment_refresh_review_pages.py'
       - '.github/workflows/treatment-review-regression.yml'
 
+permissions:
+  contents: read
+
 jobs:
   treatment-review:
     runs-on: ubuntu-latest

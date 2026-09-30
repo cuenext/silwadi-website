@@ -14,6 +14,9 @@ on:
       - 'assets/review/pediatric-clinic/**'
       - '.github/workflows/private-pediatric-review-test.yml'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

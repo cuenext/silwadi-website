@@ -9,6 +9,9 @@ on:
       - 'tests/test_doctor_profiles_seo.py'
       - '.github/workflows/doctor-profiles-seo-test.yml'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

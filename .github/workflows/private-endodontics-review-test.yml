@@ -8,6 +8,9 @@ on:
       - 'review/endodontics-v4.html'
       - '.github/workflows/private-endodontics-review-test.yml'
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest

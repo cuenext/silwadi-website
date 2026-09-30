@@ -8,6 +8,9 @@ on:
       - '.github/workflows/light-theme-regression.yml'
 
 # Protects the clinic's light visual identity from browser auto-dark transformations.
+permissions:
+  contents: read
+
 jobs:
   verify-light-only:
     runs-on: ubuntu-latest
