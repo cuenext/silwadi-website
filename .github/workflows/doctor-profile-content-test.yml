@@ -1,6 +1,7 @@
 name: Doctor profile content test
 
 on:
+  pull_request:
   push:
     branches: [main]
     paths:
@@ -9,7 +10,7 @@ on:
       - 'ar/doctors.html'
       - 'doctors/**.html'
       - 'ar/doctors/**.html'
-      - 'assets/dr-ehab-new-v2.webp'
+      - 'assets/dr-ehab-new.png'
       - '.github/workflows/doctor-profile-content-test.yml'
 
 permissions:

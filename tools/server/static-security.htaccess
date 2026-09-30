@@ -1,0 +1,28 @@
+# Production static website only; stage and test before the October 6 cutover.
+# Merge into the existing .htaccess. Preserve preview Basic Auth and cPanel SSL rules.
+# This is NOT the booking API configuration.
+Options -Indexes -MultiViews
+
+<FilesMatch "(^\.|\.(?:env|pem|key|p12|pfx|sql|sqlite|sqlite3|db|bak|backup|log|ini|sh|py|yml|yaml|php)$)">
+    Require all denied
+</FilesMatch>
+
+# Required: mod_headers. Do not silently omit these protections.
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "DENY"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+Header always set Content-Security-Policy "object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+
+# Observe a stricter policy in browser developer tools before enforcing it.
+# No report endpoint is configured: no patient URLs or details are transmitted.
+Header always set Content-Security-Policy-Report-Only "default-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://booking.silwadi.ae; media-src 'self'; frame-src https://www.google.com https://maps.google.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+
+# Enable only after the production hostname has a valid certificate on Tasjeel.
+# A temporary redirect allows rollback without a cached permanent redirect.
+RewriteEngine On
+RewriteCond %{HTTP_HOST} ^(?:www\.)?silwadi\.ae$ [NC]
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://silwadi.ae%{REQUEST_URI} [R=302,L]
+
+# HSTS deliberately waits for successful cutover and stable HTTPS.

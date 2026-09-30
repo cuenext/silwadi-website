@@ -1,5 +1,8 @@
 import unittest
 from pathlib import Path
+from html.parser import HTMLParser
+from urllib.parse import urlsplit
+import re
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -69,12 +72,86 @@ class DoctorProfileRefreshContract(unittest.TestCase):
         self.assertIn('<p class="consultant-specialty">General Dentist</p>', text)
         self.assertNotIn('<p class="consultant-specialty">Prosthodontic Specialist</p>', text)
 
-    def test_ehab_uses_new_portrait_asset(self):
-        text = self.read("doctors/dr-ehab-hassouneh.html")
-        directory = self.read("doctors.html")
-        self.assertIn("dr-ehab-new-v2.webp", text)
-        self.assertIn("dr-ehab-new-v2.webp", directory)
-        self.assertTrue((ROOT / "assets/dr-ehab-new-v2.webp").exists())
+    def test_ehab_uses_approved_portrait_asset(self):
+        class Portraits(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.paths = []
+
+            def handle_starttag(self, tag, attrs):
+                if tag != "img":
+                    return
+                attrs = dict(attrs)
+                if "doctor-crop-ehab" in attrs.get("class", "").split():
+                    self.paths.append(urlsplit(attrs.get("src", "")).path)
+
+        expected = "assets/dr-ehab-new.png"
+        for page in (
+            "doctors/dr-ehab-hassouneh.html",
+            "ar/doctors/dr-ehab-hassouneh.html",
+            "doctors.html",
+            "ar/doctors.html",
+        ):
+            parser = Portraits()
+            parser.feed(self.read(page))
+            self.assertTrue(parser.paths, f"{page} missing Ehab portrait")
+            for path in parser.paths:
+                self.assertEqual(path.removeprefix("../").lstrip("/"), expected)
+        self.assertTrue((ROOT / expected).is_file())
+
+    def test_ehab_arabic_qualifications_and_clinical_focus_are_translated(self):
+        text = self.read("ar/doctors/dr-ehab-hassouneh.html")
+        translated = (
+            "بكالوريوس جراحة الأسنان من كلية رأس الخيمة لطب الأسنان",
+            "تدريب امتياز في طب الأسنان",
+            "التهدئة الواعية باستخدام أكسيد النيتروز",
+            "الترميز التأميني في أبوظبي",
+            "طب الأسنان الترميمي والتجميلي",
+            "طب الأسنان الرقمي والتركيبات السنية",
+            "التقييم بالأشعة، وتنظيف الأسنان الدوري",
+        )
+        for phrase in translated:
+            self.assertIn(phrase, text)
+        for phrase in (
+            "Bachelor of Dental Surgery",
+            "Dental internship training",
+            "Certifications in Nitrous Oxide",
+            "Previous experience in healthcare",
+            "Radiographic assessment, routine cleaning",
+        ):
+            self.assertNotIn(phrase, text)
+
+    def test_arabic_profiles_have_no_untranslated_english_sentences(self):
+        class VisibleText(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.ignored = 0
+                self.text = []
+
+            def handle_starttag(self, tag, attrs):
+                if tag in {"script", "style"}:
+                    self.ignored += 1
+
+            def handle_endtag(self, tag):
+                if tag in {"script", "style"} and self.ignored:
+                    self.ignored -= 1
+
+            def handle_data(self, data):
+                if not self.ignored:
+                    self.text.append(data)
+
+        # Proper names and established clinical/accreditation abbreviations.
+        allowed = {"CECSMO", "RGUHS", "UniCamillus", "CEREC", "ISCD", "PALS", "IAPD", "CBCT", "DUOL", "ESLO"}
+        paths = sorted((ROOT / "ar/doctors").glob("*.html"))
+        self.assertTrue(paths)
+        for path in paths:
+            parser = VisibleText()
+            parser.feed(path.read_text(encoding="utf-8"))
+            visible = " ".join(parser.text)
+            visible = re.sub(r"[\w.+-]+@[\w.-]+", "", visible)
+            visible = re.sub(r"@[\w.]+", "", visible)
+            remaining = set(re.findall(r"[A-Za-z]{4,}", visible)) - allowed
+            self.assertFalse(remaining, f"{path.name}: untranslated text {sorted(remaining)}")
 
     def test_arabic_profiles_are_refreshed(self):
         expected = {
