@@ -22,10 +22,14 @@ class ArabicMobilePolishContract(unittest.TestCase):
 
     def test_mobile_reviews_are_swipeable_and_the_track_stays_ltr(self):
         css = (ROOT / "home-reviews.css").read_text(encoding="utf-8")
-        self.assertIn(".google-reviews-viewport{overflow-x:auto;scroll-snap-type:x mandatory", css)
+        self.assertIn(".google-reviews-viewport{overflow-x:auto;scroll-snap-type:none", css)
         self.assertIn(".google-reviews-track{animation:none!important;transform:none!important;direction:ltr", css)
         self.assertIn(".google-review-card{scroll-snap-align:start", css)
+        js = (ROOT / "app.js").read_text(encoding="utf-8")
+        self.assertIn("viewport.scrollLeft += elapsed * 0.035", js)
+        self.assertIn("!reducedMotion.matches", js)
 
 
 if __name__ == "__main__":
     unittest.main()
+

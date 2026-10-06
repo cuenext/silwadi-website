@@ -80,9 +80,9 @@
 .language-ar .review-dialog__close{right:auto;left:16px}
 .language-ar .review-dialog__top{direction:rtl;padding-right:0;padding-left:46px}
 
-/* Mobile reviews are deliberately swipeable instead of animated. This avoids RTL transform conflicts and keeps the first review visible immediately. */
+/* Mobile reviews advance through scrollLeft and remain swipeable. The CSS transform animation stays off to preserve RTL layout. */
 @media(max-width:760px){
-  .google-reviews-viewport{overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:18px;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;padding:4px 18px 12px;scrollbar-width:none}
+   .google-reviews-viewport{overflow-x:auto;scroll-snap-type:none;scroll-padding-inline:18px;-webkit-overflow-scrolling:touch;overscroll-behavior-inline:contain;padding:4px 18px 12px;scrollbar-width:none}
   .google-reviews-viewport::-webkit-scrollbar{display:none}
   .google-reviews-track{animation:none!important;transform:none!important;direction:ltr;will-change:auto;display:flex;width:max-content}
   .google-reviews-group{display:flex;gap:14px;padding-right:14px}

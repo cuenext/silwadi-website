@@ -344,3 +344,38 @@ document.addEventListener('keydown', event => {
 })();
 
 window.SilwadiLanguage?.init?.();
+
+
+// On narrow screens the review strip remains swipeable and advances automatically.
+// Pause after touch or keyboard interaction so a patient can read a card.
+(() => {
+  const viewport = document.querySelector('.google-reviews-viewport');
+  const track = viewport?.querySelector('.google-reviews-track');
+  const mobile = window.matchMedia('(max-width: 760px)');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (!viewport || !track || !track.firstElementChild) return;
+
+  let lastFrame = 0;
+  let pauseUntil = 0;
+  let touching = false;
+  const pause = () => { pauseUntil = performance.now() + 5000; };
+  viewport.addEventListener('pointerdown', () => { touching = true; pause(); }, { passive: true });
+  window.addEventListener('pointerup', () => { touching = false; pause(); }, { passive: true });
+  viewport.addEventListener('wheel', pause, { passive: true });
+  viewport.addEventListener('focusin', pause);
+
+  function advance(now) {
+    const elapsed = lastFrame ? Math.min(now - lastFrame, 80) : 0;
+    lastFrame = now;
+    if (mobile.matches && !reducedMotion.matches && !touching &&
+        now >= pauseUntil && document.visibilityState === 'visible') {
+      const groupWidth = track.firstElementChild.getBoundingClientRect().width;
+      if (groupWidth > 0) {
+        viewport.scrollLeft += elapsed * 0.035;
+        if (viewport.scrollLeft >= groupWidth) viewport.scrollLeft -= groupWidth;
+      }
+    }
+    requestAnimationFrame(advance);
+  }
+  requestAnimationFrame(advance);
+})();

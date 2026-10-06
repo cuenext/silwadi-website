@@ -92,7 +92,7 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         self.assertIn('4.6', self.home)
         self.assertIn('Google', self.home)
         self.assertIn('https://maps.app.goo.gl/Ln2vEZmQmgWjb3ETA', self.home)
-        for reviewer in ("Ahmed H", "Emily Campbell Scully", "Victoriya Davydova", "Sanaa Freihat", "Sahar Alsalman"):
+        for reviewer in ("Mz2006", "Ba Zim", "Victoriya Davydova", "Sanaa Freihat", "Sahar Alsalman"):
             self.assertIn(reviewer, self.home)
         cards = len(re.findall(r'class="google-review-card', self.home))
         self.assertGreaterEqual(cards, 6)
