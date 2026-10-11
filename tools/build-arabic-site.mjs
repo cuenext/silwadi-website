@@ -259,7 +259,7 @@ function makeArabicPage(source, route) {
     switcher.textContent = 'English';
     switcher.lang = 'en';
     switcher.hreflang = 'en';
-    switcher.setAttribute('aria-label', 'View this page in English');
+    switcher.setAttribute('aria-label', 'عرض هذه الصفحة باللغة الإنجليزية');
   });
 
   if (!document.querySelector('link[href="/arabic-quality.css"]')) {
