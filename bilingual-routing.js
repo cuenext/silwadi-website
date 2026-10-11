@@ -272,6 +272,22 @@
 
     try { localStorage.setItem('silwadi-language', next); } catch (_) {}
 
+    // Subpages use their fully translated, indexable Arabic counterparts.
+    // Keep the homepage transition in place to preserve the Google Reviews marquee.
+    const isHomepage = ['/', '/index.html', '/ar/', '/ar/index.html'].includes(window.location.pathname);
+    if (!isHomepage) {
+      const target = next === 'ar'
+        ? arabicPathFor(window.location.pathname)
+        : englishPathFor(window.location.pathname);
+      const destination = new URL(target, window.location.origin);
+      const searchParams = new URLSearchParams(window.location.search);
+      searchParams.delete('lang');
+      destination.search = searchParams.toString();
+      destination.hash = window.location.hash;
+      window.location.assign(destination.href);
+      return;
+    }
+
     // Translate the existing DOM in place. This intentionally preserves the
     // Google Reviews track element and its current animation position.
     api.applyLanguage(next);

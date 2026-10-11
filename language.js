@@ -731,7 +731,7 @@
 
     if (languageButton) {
       languageButton.textContent = currentLanguage === 'ar' ? 'English' : 'عربي';
-      languageButton.setAttribute('aria-label', currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية');
+      languageButton.setAttribute('aria-label', currentLanguage === 'ar' ? 'التبديل إلى الإنجليزية' : 'Switch to Arabic');
     }
     try { localStorage.setItem(STORAGE_KEY, currentLanguage); } catch (_) {}
     if (typeof document.dispatchEvent === 'function' && typeof CustomEvent === 'function') {
@@ -1326,6 +1326,36 @@
     "Ongoing periodontal review based on clinical needs.": "مراجعة دورية للثة وفق الاحتياجات السريرية.",
     "Dr. Nasr Keshkiea is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Bani Yas Tower.": "يُدرج الدكتور نصر كشكية كطبيب أسنان عام في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في برج بني ياس.",
     "Dr. Sara Ismail is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.": "تُدرج الدكتورة سارة إسماعيل كطبيبة أسنان عامة في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
+  });
+
+  // Keep direct language switching aligned with the reviewed, static Arabic pages.
+  Object.assign(arabic, {
+      "Praised Dr. Dana’s attentive care and said the treatment felt comfortable and welcoming.": "إشادة باهتمام الدكتورة دانا وحرصها على راحة المريض، وبالاستقبال الودود في المركز.",
+      "Thanked Dr. Ahmed El Shehri for urgent root canal care and the reception team for follow-up.": "تضمّن التقييم شكراً للدكتور أحمد الشهري على علاج الجذور العاجل، ولفريق الاستقبال على المتابعة.",
+      "Shared a positive experience with professional cleaning and Dr. Lujain, noting the clinic was clean and the visit well organized.": "أشادت بتجربة تنظيف الأسنان مع الدكتورة لجين، وبنظافة العيادة وحسن تنظيم الزيارة.",
+      "Praised the professional work and friendly staff, with a special mention for Aliyah.": "أشادت بجودة العمل ولطف فريق المركز، وخصّت Aliyah بالذكر.",
+      "Current location": "فرع الكورنيش",
+      "Now open": "فرع الراحة",
+      "Branch details": "تفاصيل الفرع",
+      "Bani Yas Tower (Corniche)": "برج بني ياس (الكورنيش)",
+      "Sun–Wed: 09:00 AM to 09:00 PM": "الأحد–الأربعاء: ٩:٠٠ صباحاً – ٩:٠٠ مساءً",
+      "Thu & Sat: 09:00 AM to 06:00 PM": "الخميس والسبت: ٩:٠٠ صباحاً – ٦:٠٠ مساءً",
+      "Sat–Thu: 10:00 AM to 07:00 PM": "السبت–الخميس: ١٠:٠٠ صباحاً – ٧:٠٠ مساءً",
+      "Saturday–Thursday 10:00 AM–7:00 PM · Friday closed": "السبت إلى الخميس: ١٠:٠٠ صباحاً – ٧:٠٠ مساءً · الجمعة: مغلق",
+      "F14 & F15, Level 1, Al Raha Mall": "الوحدتان F14 وF15، الطابق الأول، الراحة مول",
+      "Channel St, Al Rahah, Abu Dhabi, UAE": "شارع القناة، منطقة الراحة، أبوظبي، الإمارات العربية المتحدة",
+      "F14 & F15, Level 1, Al Raha Mall, Channel St, Al Rahah, Abu Dhabi, UAE": "الوحدتان F14 وF15، الطابق الأول، الراحة مول، شارع القناة، منطقة الراحة، أبوظبي، الإمارات العربية المتحدة",
+      "Excellence for Every Ability, A Smile for Every Soul.": "رعاية تراعي كل القدرات، وابتسامة لكل إنسان.",
+      "Crowns, bridges, dentures and restorative planning around your bite.": "تيجان وجسور وأطقم أسنان، مع تخطيط العلاج الترميمي وفقاً للإطباق.",
+      "Prosthodontic restorations": "تركيبات الأسنان",
+      "Cosmetic dentistry and teeth whitening": "تجميل الأسنان وتبييضها",
+      "Treatment room at Silwadi Dental Centre, Bani Yas Tower with Abu Dhabi Corniche view": "غرفة علاج في مركز سلوادي لطب الأسنان ببرج بني ياس مع إطلالة على كورنيش أبوظبي",
+      "Specialist Periodontist & Implantologist": "اختصاصي أمراض اللثة وزراعة الأسنان",
+      "View Bani Yas Tower and Al Raha Mall locations": "عرض موقعي فرعي برج بني ياس والراحة مول",
+      "Inside the centre": "داخل المركز",
+      "BDS, 2001": "بكالوريوس جراحة الأسنان (BDS)، 2001",
+      "AAMEN and Department of Health Abu Dhabi marks shown on the ADHICS certificate": "شعارا AAMEN ودائرة الصحة – أبوظبي الظاهران على شهادة ADHICS",
+      "UKS Egypt certification body logo": "شعار جهة منح الشهادة UKS Egypt"
   });
 
   return { init, applyLanguage, getLanguage, getRequestedLanguage, translate, withLanguageQuery };
