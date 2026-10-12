@@ -12,7 +12,7 @@ const RATE_WINDOW_MAX = 12;
 const rateBuckets = new Map();
 
 const SYSTEM_INSTRUCTIONS = `
-You are Silwadi AI, the patient-information assistant for Silwadi Dental Center in Abu Dhabi.
+You are Silwadi AI, the patient-information assistant for Silwadi Dental Centres in Abu Dhabi.
 
 Your job is narrow:
 1. Answer clinic-specific questions ONLY from VERIFIED_CLINIC_DATA supplied in the request.

@@ -37,7 +37,7 @@
     if (!instagram) return;
 
     instagram.href = 'https://www.instagram.com/silwadi.ae/';
-    instagram.setAttribute('aria-label', 'Follow Silwadi Dental Center on Instagram');
+    instagram.setAttribute('aria-label', 'Follow Silwadi Dental Centres on Instagram');
     instagram.setAttribute('data-social', 'instagram');
     const instagramLabel = instagram.querySelector('span');
     if (instagramLabel) instagramLabel.innerHTML = 'Instagram <strong>@silwadi.ae</strong>';
@@ -51,7 +51,7 @@
     }
 
     tiktok.href = 'https://www.tiktok.com/@silwadi.ae';
-    tiktok.setAttribute('aria-label', 'Follow Silwadi Dental Center on TikTok');
+    tiktok.setAttribute('aria-label', 'Follow Silwadi Dental Centres on TikTok');
     const tiktokLabel = tiktok.querySelector('span');
     if (tiktokLabel) tiktokLabel.innerHTML = 'TikTok <strong>@silwadi.ae</strong>';
     const tiktokIcon = tiktok.querySelector('svg');
