@@ -32,7 +32,7 @@ class PatchSevenLocalSEOContract(unittest.TestCase):
         path = ROOT / 'data/local-business.json'
         self.assertTrue(path.is_file(), 'data/local-business.json')
         data = self.local_data()
-        self.assertEqual(data['brand_name'], 'Dr. Munir Silwadi Dental Centre')
+        self.assertEqual(data['brand_name'], 'Silwadi Dental Centres')
         self.assertEqual(data['branch_label'], 'Bani Yas Tower')
         self.assertEqual(data['phone_e164'], '+97126262042')
         self.assertEqual(data['service_area'], 'Abu Dhabi')

@@ -187,7 +187,7 @@ class PublicCoreSeoContract(unittest.TestCase):
         html, parser = self.parsed["treatments/people-of-determination.html"]
         self.assertEqual(
             parser.title.strip(),
-            "Dentist for People of Determination in Abu Dhabi | Silwadi Dental Center",
+            "Dentist for People of Determination in Abu Dhabi | Silwadi Dental Centres",
         )
         description = parser.meta.get("description", "").lower()
         self.assertIn("accessible dental care", description)

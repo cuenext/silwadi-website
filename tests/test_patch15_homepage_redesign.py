@@ -24,7 +24,7 @@ class PatchFifteenHomepageRedesign(unittest.TestCase):
         self.assertNotIn('<img src="assets/silwadi-logo-original.jpeg"', self.home)
         self.assertRegex(
             self.home,
-            r'<img[^>]+src="assets/silwadi-logo-official\.png"[^>]+alt="Silwadi Dental Center"[^>]+width="[0-9]+"[^>]+height="[0-9]+"',
+            r'<img[^>]+src="assets/silwadi-logo-official\.png"[^>]+alt="Silwadi Dental Centres"[^>]+width="[0-9]+"[^>]+height="[0-9]+"',
         )
 
     def test_approved_compact_home_patterns_are_restored(self):

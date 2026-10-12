@@ -23,8 +23,8 @@ const vm = require('vm');
 const attrs = {{}};
 const meta = {{
   description: {{ content: 'Explore dental services in Abu Dhabi.' }},
-  ogTitle: {{ content: 'Dental Services in Abu Dhabi | Silwadi Dental Center' }},
-  ogDescription: {{ content: 'Explore dental services at Silwadi Dental Center in Abu Dhabi.' }},
+  ogTitle: {{ content: 'Dental Services in Abu Dhabi | Silwadi Dental Centres' }},
+  ogDescription: {{ content: 'Explore dental services at Silwadi Dental Centres in Abu Dhabi.' }},
   contentLanguage: {{ content: 'en' }},
 }};
 const storage = {storage};
@@ -50,7 +50,7 @@ function metaFor(selector) {{
   return null;
 }}
 const doc = {{
-  title: 'Dental Services in Abu Dhabi | Silwadi Dental Center',
+  title: 'Dental Services in Abu Dhabi | Silwadi Dental Centres',
   documentElement: {{ setAttribute(k,v) {{ attrs[k] = String(v); }} }},
   body: {{ classList: {{ toggle() {{}} }} }},
   head: {{ appendChild(node) {{ (this.children ||= []).push(node); }} }},
@@ -140,7 +140,7 @@ process.stdout.write(JSON.stringify({{
 
     def test_arabic_updates_metadata_without_dirtying_canonical(self):
         state = self.run_language("?lang=ar", "en", pathname="/services.html", click=False)
-        self.assertNotEqual(state["title"], "Dental Services in Abu Dhabi | Silwadi Dental Center")
+        self.assertNotEqual(state["title"], "Dental Services in Abu Dhabi | Silwadi Dental Centres")
         self.assertIn("خدمات", state["title"])
         self.assertIn("أبوظبي", state["description"])
         self.assertIn("أبوظبي", state["ogDescription"])

@@ -1,4 +1,4 @@
-# Silwadi Dental Center Website
+# Silwadi Dental Centres Website
 
 ## Run locally
 

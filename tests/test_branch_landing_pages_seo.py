@@ -104,12 +104,12 @@ class BranchLandingPageSeoTests(unittest.TestCase):
     def test_branch_schema_uses_the_public_business_profile_names_and_branch_urls(self):
         expected = {
             "locations/corniche.html": (
-                "Dr Munir Silwadi Dental Centre - Corniche Branch",
+                "Silwadi Dental Centres - Corniche Branch",
                 "https://silwadi.ae/locations/corniche.html",
                 "+97126262042",
             ),
             "locations/al-raha.html": (
-                "Al Raha Branch - Dr. Mohamed Munir Dental Centre - LLC",
+                "Silwadi Dental Centres - Al Raha Branch",
                 "https://silwadi.ae/locations/al-raha.html",
                 "+97126662408",
             ),
