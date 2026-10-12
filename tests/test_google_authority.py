@@ -100,7 +100,7 @@ class GoogleAuthorityContract(unittest.TestCase):
         for path in ("index.html", "ar/index.html"):
             organization = entity_by_id(path, ORG_ID)
             self.assertIsNotNone(organization, f"{path} must define the parent Silwadi organization")
-            self.assertEqual(organization.get("name"), "Silwadi Dental Center")
+            self.assertEqual(organization.get("name"), "Silwadi Dental Centres")
             self.assertEqual(str(organization.get("foundingDate")), "1980")
             bani = entity_by_id(path, BANI_ID)
             raha = entity_by_id(path, RAHA_ID)

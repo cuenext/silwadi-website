@@ -149,13 +149,13 @@ const meta = {
   locale: { content: 'en_AE' },
   alternate: { content: 'ar_AE' },
   description: { content: 'Dental care in Abu Dhabi.' },
-  ogTitle: { content: 'Silwadi Dental Center' },
+  ogTitle: { content: 'Silwadi Dental Centres' },
   ogDescription: { content: 'Dental care in Abu Dhabi.' },
   contentLanguage: { content: 'en' },
 };
 const attrs = {};
 const doc = {
-  title: 'Silwadi Dental Center',
+  title: 'Silwadi Dental Centres',
   documentElement: { setAttribute(k, v) { attrs[k] = String(v); } },
   body: { classList: { toggle() {} } },
   querySelector(selector) {

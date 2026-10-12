@@ -69,7 +69,7 @@ class PatchTwelveLaunchSEOContract(unittest.TestCase):
                 rel,
             )
             self.assertEqual(
-                len(re.findall(r'<meta\s+property="og:site_name"\s+content="Silwadi Dental Center"\s*/?>', html, re.I)),
+                len(re.findall(r'<meta\s+property="og:site_name"\s+content="Silwadi Dental Centres"\s*/?>', html, re.I)),
                 1,
                 rel,
             )

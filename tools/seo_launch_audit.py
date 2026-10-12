@@ -9,7 +9,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 ORIGIN = 'https://silwadi.ae'
-SITE_NAME = 'Silwadi Dental Center'
+SITE_NAME = 'Silwadi Dental Centres'
 ROBOTS_POLICY = 'index,follow,max-image-preview:large'
 SITEMAP_NS = {'sm': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
 ATTR_RE = re.compile(r'([:\w-]+)\s*=\s*["\']([^"\']*)["\']', re.I)

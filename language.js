@@ -24,7 +24,7 @@
     "Dr. Munir Silwadi Dental Centre · MF368": "مركز الدكتور منير سلوادي لطب الأسنان · MF368",
     "Effective 4 October 2026": "سارية اعتباراً من 4 أكتوبر 2026",
     "ADHICS Compliance": "الامتثال لمعيار ADHICS",
-    "Dr. Mohamed Munir Dental Centre": "مركز الدكتور محمد منير لطب الأسنان",
+    "Silwadi Dental Centres - Al Raha Mall": "مركز الدكتور محمد منير لطب الأسنان",
     "MF368 · Corniche": "MF368 · الكورنيش",
     "MF7451 · Al Raha Mall": "MF7451 · الراحة مول",
     "ADHICS audit score: 98%. Certifications and compliance recognitions are facility-specific and subject to the scope stated on the relevant certificate.": "درجة تدقيق ADHICS: 98%. تخص الشهادات وإقرارات الامتثال كل منشأة على حدة، وتخضع للنطاق المحدد في الشهادة ذات الصلة.",
@@ -180,7 +180,7 @@
     'Choose a treatment area, or contact us if you are not sure where to start.': 'اختر مجال العلاج، أو تواصل معنا إذا لم تكن متأكداً من أين تبدأ.',
     'Our story': 'قصتنا',
     'Serving Abu Dhabi since 1980.': 'في خدمة مجتمع أبوظبي منذ عام 1980.',
-    'For more than four decades, Silwadi Dental Center has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.': 'لأكثر من أربعة عقود، يقدّم مركز سلوادي لطب الأسنان رعاية تتمحور حول المريض، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.',
+    'For more than four decades, Silwadi Dental Centres has focused on patient-centred care, personalized treatment, comfort, patient education and open communication.': 'لأكثر من أربعة عقود، يقدّم مركز سلوادي لطب الأسنان رعاية تتمحور حول المريض، مع خطط علاج مخصّصة واهتمام بالراحة والتوعية والتواصل الواضح.',
     'Learn more about the centre': 'اعرف المزيد عن المركز',
     'Specialist expertise. Personal care.': 'خبرة تخصصية ورعاية شخصية.',
     'Meet some of our dentists and specialists, or browse the full team by specialty.': 'تعرّف إلى عدد من أطبائنا واختصاصيينا، أو تصفّح الفريق كاملاً حسب التخصص.',
@@ -298,7 +298,7 @@
     'Speak with reception': 'تواصل مع الاستقبال',
     'Check availability': 'تحقق من المواعيد المتاحة',
     'Modern dentistry, with a human welcome.': 'طب أسنان حديث بترحيب إنساني.',
-    'For more than four decades, Silwadi Dental Centre has cared for Abu Dhabi families through clear advice, specialist expertise and a calm, welcoming experience.': 'على مدى أكثر من أربعة عقود، قدّم مركز سلوادي لطب الأسنان الرعاية لعائلات أبوظبي من خلال نصائح واضحة وخبرة تخصصية وتجربة هادئة ترحّب بالجميع.',
+    'For more than four decades, Silwadi Dental Centres has cared for Abu Dhabi families through clear advice, specialist expertise and a calm, welcoming experience.': 'على مدى أكثر من أربعة عقود، قدّم مركز سلوادي لطب الأسنان الرعاية لعائلات أبوظبي من خلال نصائح واضحة وخبرة تخصصية وتجربة هادئة ترحّب بالجميع.',
     'Meet our doctors →': 'تعرّف إلى أطبائنا ←',
     'The Silwadi story': 'قصة سلوادي',
     'A centre built around trust.': 'مركز يقوم على الثقة.',
@@ -333,7 +333,7 @@
     'Digital dentistry': 'طب الأسنان الرقمي',
     'Digital X-rays, CAD/CAM, 3D printing, laser dentistry and intraoral imaging support careful treatment planning.': 'تدعم الأشعة الرقمية وتقنيات CAD/CAM والطباعة ثلاثية الأبعاد وطب الأسنان بالليزر والتصوير داخل الفم تخطيط العلاج بدقة.',
     // Premium homepage hero translations
-    "Dr. Munir Silwadi Dental Centre": "مركز د. منير سلوادي لطب الأسنان",
+    "Silwadi Dental Centres": "مركز د. منير سلوادي لطب الأسنان",
     "How can we": "كيف يمكننا",
     "help you?": "مساعدتك؟",
     "How can we help you?": "كيف يمكننا مساعدتك؟",
@@ -658,7 +658,7 @@
     if (countMatch) return `${countMatch[1]} طبيباً واختصاصياً`;
     const clinicianMatch = clean.match(/^(\d+) clinicians?$/);
     if (clinicianMatch) return `${clinicianMatch[1]} من أفراد الفريق الطبي`;
-    const doctorCaptionMatch = clean.match(/^(.+?) · Silwadi Dental Center, Abu Dhabi$/i);
+    const doctorCaptionMatch = clean.match(/^(.+?) · Silwadi Dental Centres, Abu Dhabi$/i);
     if (doctorCaptionMatch) {
       const name = translate(doctorCaptionMatch[1], 'ar');
       return `${name} · مركز سلوادي لطب الأسنان، أبوظبي`;
@@ -762,9 +762,9 @@
     return applyLanguage(currentLanguage);
   }
 
-  Object.assign(arabic, {"Serving Abu Dhabi families with care that feels personal.":"نخدم عائلات أبوظبي برعاية إنسانية تشعر معها بالاهتمام.","For more than four decades, Silwadi Dental Centre has welcomed Abu Dhabi families with clear advice, trusted expertise and thoughtful care at every visit.":"على مدى أكثر من أربعة عقود، رحّب مركز السلوادي لطب الأسنان بعائلات أبوظبي من خلال نصائح واضحة وخبرة موثوقة ورعاية مدروسة في كل زيارة."});
+  Object.assign(arabic, {"Serving Abu Dhabi families with care that feels personal.":"نخدم عائلات أبوظبي برعاية إنسانية تشعر معها بالاهتمام.","For more than four decades, Silwadi Dental Centres has welcomed Abu Dhabi families with clear advice, trusted expertise and thoughtful care at every visit.":"على مدى أكثر من أربعة عقود، رحّب مركز السلوادي لطب الأسنان بعائلات أبوظبي من خلال نصائح واضحة وخبرة موثوقة ورعاية مدروسة في كل زيارة."});
   Object.assign(arabic, {"Care for every smile in Abu Dhabi":"رعاية لكل ابتسامة في أبوظبي","Since 1980, our dentists have welcomed Abu Dhabi families with clear advice and thoughtful care.":"منذ عام 1980، يرحّب أطباؤنا بعائلات أبوظبي من خلال نصائح واضحة ورعاية مدروسة."});
-  Object.assign(arabic, {"Our story":"قصتنا","A familiar name in Abu Dhabi dentistry.":"اسمٌ مألوف في طب الأسنان بأبوظبي.","Silwadi Dental Centre has cared for patients in Abu Dhabi since 1980. What began with Dr. Munir Silwadi continues today through a team of general dentists and specialists working together.":"يعتني مركز السلوادي لطب الأسنان بمرضى أبوظبي منذ عام 1980. وما بدأه الدكتور منير السلوادي يستمر اليوم من خلال فريق من أطباء الأسنان العامين والاختصاصيين الذين يعملون معاً.","We keep the experience simple: listen carefully, explain your options clearly and build a treatment plan around you.":"نحافظ على بساطة التجربة: نستمع باهتمام، ونشرح خياراتك بوضوح، ونضع خطة علاج تناسبك.","Learn about Dr. Munir Silwadi":"تعرّف إلى الدكتور منير السلوادي","Silwadi Dental Centre opens in Abu Dhabi.":"افتتاح مركز السلوادي لطب الأسنان في أبوظبي.","General dentists and specialists care for families across two locations.":"أطباء عامون واختصاصيون يعتنون بالعائلات في موقعين."});
+  Object.assign(arabic, {"Our story":"قصتنا","A familiar name in Abu Dhabi dentistry.":"اسمٌ مألوف في طب الأسنان بأبوظبي.","Silwadi Dental Centres has cared for patients in Abu Dhabi since 1980. What began with Dr. Munir Silwadi continues today through a team of general dentists and specialists working together.":"يعتني مركز السلوادي لطب الأسنان بمرضى أبوظبي منذ عام 1980. وما بدأه الدكتور منير السلوادي يستمر اليوم من خلال فريق من أطباء الأسنان العامين والاختصاصيين الذين يعملون معاً.","We keep the experience simple: listen carefully, explain your options clearly and build a treatment plan around you.":"نحافظ على بساطة التجربة: نستمع باهتمام، ونشرح خياراتك بوضوح، ونضع خطة علاج تناسبك.","Learn about Dr. Munir Silwadi":"تعرّف إلى الدكتور منير السلوادي","Silwadi Dental Centres opens in Abu Dhabi.":"افتتاح مركز السلوادي لطب الأسنان في أبوظبي.","General dentists and specialists care for families across two locations.":"أطباء عامون واختصاصيون يعتنون بالعائلات في موقعين."});
   Object.assign(arabic, {"Everything your smile needs in one place":"كل ما تحتاجه ابتسامتك في مكان واحد","General dentistry and specialist care for children and adults, delivered by an experienced team.":"طب أسنان عام ومتخصص للأطفال والكبار، يقدمه فريق ذو خبرة."});
   Object.assign(arabic, {"Care for every smile in Abu Dhabi":"رعاية لكل ابتسامة في أبوظبي","From check-ups to specialist treatment, our team is here to make dental care feel simple.":"من الفحوصات الدورية إلى العلاجات المتخصصة، نحرص على أن تكون رعاية أسنانك سهلة وواضحة."});
   Object.assign(arabic, {
@@ -786,7 +786,7 @@
     "Building 117 C Floor, Sultan Bin Zayed The First St, W Corniche Road, Abu Dhabi.": "المبنى 117، الطابق C، شارع سلطان بن زايد الأول، طريق الكورنيش الغربي، أبوظبي.",
     "F14 & F15, Level 1, Al Raha Mall, Abu Dhabi.": "F14 وF15، الطابق الأول، الراحة مول، أبوظبي.",
     "Call reception or book a consultation online for help choosing the appropriate appointment.": "اتصل بالاستقبال أو احجز استشارة عبر الإنترنت لمساعدتك في اختيار الموعد المناسب.",
-    "Silwadi Dental Centre": "مركز سلوادي لطب الأسنان",
+    "Silwadi Dental Centres": "مركز سلوادي لطب الأسنان",
     "Call, email or send a consultation request. If you are not sure who to book with, reception can guide you.": "اتصل أو أرسل بريداً إلكترونياً أو طلب استشارة. إذا لم تعرف الطبيب المناسب، يمكن للاستقبال إرشادك.",
     "One centre, clear next steps": "مركز واحد وخطوات واضحة",
     "Call, email or start with a general consultation enquiry. Reception can help direct your request.": "اتصل أو أرسل بريداً إلكترونياً أو ابدأ باستفسار عام عن الاستشارة. يساعدك الاستقبال في توجيه طلبك.",
@@ -814,7 +814,7 @@
     "Ready to arrange your visit?": "هل أنت مستعد لترتيب زيارتك؟",
     "Choose the contact method that works best for you. Reception can help with appointment availability and route treatment enquiries appropriately.": "اختر طريقة التواصل الأنسب لك. يساعدك الاستقبال في معرفة المواعيد وتوجيه استفسارات العلاج إلى الطبيب المناسب.",
     "Email a Request": "أرسل طلباً بالبريد الإلكتروني",
-    "Silwadi Dental Centre now welcomes patients at Bani Yas Tower and Al Raha Mall.": "يستقبل مركز سلوادي لطب الأسنان المرضى الآن في برج بني ياس والراحة مول.",
+    "Silwadi Dental Centres now welcomes patients at Bani Yas Tower and Al Raha Mall.": "يستقبل مركز سلوادي لطب الأسنان المرضى الآن في برج بني ياس والراحة مول.",
     "Open": "مفتوح",
     "F14 & F15, Level 1, Al Raha Mall, Channel St, Al Rahah, Abu Dhabi, UAE.": "F14 وF15، الطابق الأول، الراحة مول، شارع تشانل، الراحة، أبوظبي، الإمارات العربية المتحدة.",
     "Al Raha Mall, Level 1": "الراحة مول، الطابق الأول",
@@ -824,7 +824,7 @@
     "09:00 AM to 06:00 PM": "09:00 ص إلى 06:00 م",
     "Bani Yas Tower, Building 117 C Floor, Sultan Bin Zayed The First St, W Corniche Road, Abu Dhabi, UAE": "برج بني ياس، المبنى 117، الطابق C، شارع سلطان بن زايد الأول، طريق الكورنيش الغربي، أبوظبي، الإمارات العربية المتحدة",
     "Bani Yas Tower, Building 117 C Floor, Sultan Bin Zayed The First St, W Corniche Road, Abu Dhabi.": "برج بني ياس، المبنى 117، الطابق C، شارع سلطان بن زايد الأول، طريق الكورنيش الغربي، أبوظبي.",
-    "© 2026 Dr. Munir Silwadi Dental Centre": "© 2026 مركز الدكتور منير السلوادي لطب الأسنان",
+    "© 2026 Silwadi Dental Centres": "© 2026 مركز الدكتور منير السلوادي لطب الأسنان",
     "Our services": "خدماتنا",
     "Dental services for every smile in": "خدمات أسنان لكل ابتسامة في",
     "Aesthetic care with a restorative foundation.": "رعاية تجميلية تبدأ من أساس ترميمي سليم.",
@@ -875,7 +875,7 @@
 
   Object.assign(arabic, {
     "Important notice": "تنبيه مهم",
-    "To our valued patients, please beware of false online offers promising free treatments at Silwadi Dental Centre.": "مرضانا الكرام، يرجى الحذر من العروض الإلكترونية المضللة التي تعد بعلاجات مجانية في مركز السلوادي لطب الأسنان.",
+    "To our valued patients, please beware of false online offers promising free treatments at Silwadi Dental Centres.": "مرضانا الكرام، يرجى الحذر من العروض الإلكترونية المضللة التي تعد بعلاجات مجانية في مركز السلوادي لطب الأسنان.",
     "Book your appointment": "احجز موعدك",
     "Share a few details and our appointments team will confirm availability with you.": "أدخل بعض التفاصيل وسيتواصل معك فريق المواعيد لتأكيد التوفر.",
     "Full name": "الاسم الكامل",
@@ -903,7 +903,7 @@
 
   Object.assign(arabic, {
     "Dental services for every smile in": "خدمات أسنان لكل ابتسامة في",
-    "From preventive visits to specialist treatment, Silwadi Dental Center brings general dentists and specialists together across a broad range of dental care.": "من الزيارات الوقائية إلى العلاج التخصصي، يجمع مركز سلوادي لطب الأسنان أطباء عامين واختصاصيين لتقديم مجالات متنوعة من رعاية الأسنان.",
+    "From preventive visits to specialist treatment, Silwadi Dental Centres brings general dentists and specialists together across a broad range of dental care.": "من الزيارات الوقائية إلى العلاج التخصصي، يجمع مركز سلوادي لطب الأسنان أطباء عامين واختصاصيين لتقديم مجالات متنوعة من رعاية الأسنان.",
     "Start here": "ابدأ من هنا",
     "Start with what you need.": "ابدأ بما تحتاج إليه.",
     "Not sure which service fits? Begin with the reason you are visiting and follow the link that feels closest. Your dentist will confirm the right next step.": "لست متأكداً من الخدمة المناسبة؟ ابدأ بسبب زيارتك، وسيساعدك طبيب الأسنان في تحديد الخطوة التالية.",
@@ -931,7 +931,7 @@
     "Not sure which service you need?": "لست متأكداً من الخدمة التي تحتاجها؟",
     "Tell reception what you would like help with and the team can guide your appointment enquiry.": "أخبر الاستقبال بما تحتاج إليه، وسيساعدك الفريق في توجيه طلب موعدك.",
     "Dental care": "رعاية الأسنان",
-    "Explore Silwadi Dental Center’s dental service areas, or contact us if you are not sure where to start.": "استكشف مجالات رعاية الأسنان في مركز سلوادي، أو تواصل معنا إذا لم تعرف من أين تبدأ.",
+    "Explore Silwadi Dental Centres’s dental service areas, or contact us if you are not sure where to start.": "استكشف مجالات رعاية الأسنان في مركز سلوادي، أو تواصل معنا إذا لم تعرف من أين تبدأ.",
     "10 service areas": "10 مجالات للرعاية",
     "General and specialist dental care across ten established service areas.": "رعاية أسنان عامة وتخصصية ضمن عشرة مجالات واضحة.",
     "Choose a service that matches your next step.": "اختر الخدمة التي تناسب خطوتك التالية.",
@@ -999,17 +999,17 @@
     "Treatment overview": "نظرة عامة على العلاج",
     "Filter doctors by specialty": "تصفية الأطباء حسب التخصص",
     "Read Silwadi reviews on Google Maps": "اقرأ تقييمات سلوادي على خرائط Google",
-    "Silwadi Dental Center home": "الصفحة الرئيسية لمركز سلوادي لطب الأسنان",
-    "Chat with Silwadi Dental Center on WhatsApp": "تواصل مع مركز سلوادي لطب الأسنان عبر واتساب",
-    "WhatsApp Silwadi Dental Center": "تواصل مع مركز سلوادي لطب الأسنان عبر واتساب",
-    "Follow Silwadi Dental Center on Instagram": "تابع مركز سلوادي لطب الأسنان على Instagram",
+    "Silwadi Dental Centres home": "الصفحة الرئيسية لمركز سلوادي لطب الأسنان",
+    "Chat with Silwadi Dental Centres on WhatsApp": "تواصل مع مركز سلوادي لطب الأسنان عبر واتساب",
+    "WhatsApp Silwadi Dental Centres": "تواصل مع مركز سلوادي لطب الأسنان عبر واتساب",
+    "Follow Silwadi Dental Centres on Instagram": "تابع مركز سلوادي لطب الأسنان على Instagram",
     "Open patient review": "فتح تقييم المريض",
     "Close review": "إغلاق التقييم",
     "4.6 out of 5 stars": "4.6 من 5 نجوم",
     "5 out of 5 stars": "5 من 5 نجوم",
     "Choose a starting point": "اختر نقطة البداية",
-    "Map showing Dr. Munir Silwadi Dental Centre at Al Raha Mall, Abu Dhabi": "خريطة توضح موقع مركز الدكتور منير السلوادي لطب الأسنان في الراحة مول بأبوظبي",
-    "Map showing Dr. Munir Silwadi Dental Centre at Bani Yas Tower, Abu Dhabi": "خريطة توضح موقع مركز الدكتور منير السلوادي لطب الأسنان في برج بني ياس بأبوظبي",
+    "Map showing Silwadi Dental Centres at Al Raha Mall, Abu Dhabi": "خريطة توضح موقع مركز الدكتور منير السلوادي لطب الأسنان في الراحة مول بأبوظبي",
+    "Map showing Silwadi Dental Centres at Bani Yas Tower, Abu Dhabi": "خريطة توضح موقع مركز الدكتور منير السلوادي لطب الأسنان في برج بني ياس بأبوظبي",
     "Cosmetic dentistry": "طب الأسنان التجميلي",
     "Orthodontic care": "رعاية تقويم الأسنان",
     "Periodontal care": "رعاية اللثة",
@@ -1019,14 +1019,14 @@
 
   Object.assign(arabic, {
     "Since 1980, our dentists and specialists have cared for Abu Dhabi families with clear advice and a warm welcome.": "منذ عام 1980، يعتني أطباؤنا واختصاصيونا بعائلات أبوظبي من خلال نصائح واضحة وترحيب دافئ.",
-    "Silwadi Dental Centre began serving patients in Abu Dhabi in 1980. Today, a multi-specialty, multidisciplinary team of general dentists and specialists works together across prosthodontics, implantology, orthodontics, endodontics and everyday dental care.": "بدأ مركز السلوادي لطب الأسنان خدمة المرضى في أبوظبي عام 1980. ويعمل اليوم فريق متعدد التخصصات من أطباء الأسنان العامين والاختصاصيين معاً في التركيبات والزراعة والتقويم وعلاج الجذور والرعاية اليومية.",
+    "Silwadi Dental Centres began serving patients in Abu Dhabi in 1980. Today, a multi-specialty, multidisciplinary team of general dentists and specialists works together across prosthodontics, implantology, orthodontics, endodontics and everyday dental care.": "بدأ مركز السلوادي لطب الأسنان خدمة المرضى في أبوظبي عام 1980. ويعمل اليوم فريق متعدد التخصصات من أطباء الأسنان العامين والاختصاصيين معاً في التركيبات والزراعة والتقويم وعلاج الجذور والرعاية اليومية.",
     "There is time for questions at every visit. We explain treatment in plain language, keep your comfort in mind and help you find the right next step.": "نخصص وقتاً لأسئلتك في كل زيارة. نشرح العلاج بلغة واضحة، ونضع راحتك في الاعتبار، ونساعدك في اختيار الخطوة التالية المناسبة.",
     "The people and place behind your care.": "الأشخاص والمكان وراء رعايتك.",
     "From the reception team to the clinical staff, our centre is built around clear conversations and a comfortable visit.": "من فريق الاستقبال إلى الطاقم الطبي، صُمم مركزنا ليقدم حواراً واضحاً وزيارة مريحة.",
-    "The Silwadi Dental Centre team in Abu Dhabi": "فريق مركز السلوادي لطب الأسنان في أبوظبي",
-    "Silwadi Dental Centre clinical team in Abu Dhabi": "الفريق الطبي في مركز السلوادي لطب الأسنان بأبوظبي",
-    "Silwadi Dental Centre team meeting": "اجتماع فريق مركز السلوادي لطب الأسنان",
-    "Silwadi Dental Centre clinicians at the Bani Yas clinic": "أطباء مركز السلوادي لطب الأسنان في عيادة بني ياس",
+    "The Silwadi Dental Centres team in Abu Dhabi": "فريق مركز السلوادي لطب الأسنان في أبوظبي",
+    "Silwadi Dental Centres clinical team in Abu Dhabi": "الفريق الطبي في مركز السلوادي لطب الأسنان بأبوظبي",
+    "Silwadi Dental Centres team meeting": "اجتماع فريق مركز السلوادي لطب الأسنان",
+    "Silwadi Dental Centres clinicians at the Bani Yas clinic": "أطباء مركز السلوادي لطب الأسنان في عيادة بني ياس",
     "One team, working together.": "فريق واحد يعمل معاً.",
     "Care planned together.": "رعاية نخطط لها معاً.",
     "A familiar clinical team.": "فريق طبي موثوق وذو خبرة.",
@@ -1210,7 +1210,7 @@
     "Explore Dental Implants →": "استكشف زراعة الأسنان ←",
     "Email the centre": "راسل المركز",
     "Established dental care in Abu Dhabi since 1980.": "رعاية أسنان راسخة في أبوظبي منذ عام 1980.",
-    "Dr. Munir Silwadi Dental Centre": "مركز الدكتور منير السلوادي لطب الأسنان",
+    "Silwadi Dental Centres": "مركز الدكتور منير السلوادي لطب الأسنان",
     "Bani Yas Tower, Building 117 C Floor": "برج بني ياس، المبنى 117، الطابق C",
     "Sultan Bin Zayed The First St, W Corniche Road, Abu Dhabi, UAE": "شارع سلطان بن زايد الأول، طريق الكورنيش الغربي، أبوظبي، الإمارات العربية المتحدة",
     "F14 & F15, Level 1, Al Raha Mall, Abu Dhabi, UAE": "F14 وF15، الطابق الأول، الراحة مول، أبوظبي، الإمارات العربية المتحدة",
@@ -1266,8 +1266,8 @@
     "A minimally invasive approach aimed at preserving natural tooth structure where clinically possible.": "نهج قليل التدخل يهدف إلى الحفاظ على بنية السن الطبيعية متى كان ذلك ممكناً سريرياً.",
     "His public profile references digital radiography and 3D imaging as part of endodontic assessment.": "يذكر ملفه المنشور التصوير الشعاعي الرقمي والتصوير ثلاثي الأبعاد ضمن تقييم علاج الجذور.",
     "His current centre profile emphasizes patient education, conservative treatment planning and the use of diagnostic imaging to support endodontic care.": "يركز ملفه الحالي في المركز على تثقيف المريض والتخطيط المحافظ للعلاج واستخدام التصوير التشخيصي لدعم علاج الجذور.",
-    "Dr. Dana Awad is a dedicated General Dentist at Dr. Munir Silwadi Dental Centre, providing comprehensive dental care with a strong focus on preventive, restorative, and esthetic dentistry. She is committed to delivering evidence-based, patient-centered treatment while creating a comfortable and reassuring experience for every patient.": "الدكتورة دانا عوض طبيبة أسنان عامة في مركز الدكتور منير السلوادي لطب الأسنان، وتقدم رعاية شاملة مع تركيز على طب الأسنان الوقائي والترميمي والتجميلي. وهي حريصة على تقديم علاج يستند إلى الدليل ويتمحور حول المريض، مع توفير تجربة مريحة ومطمئنة لكل مريض.",
-    "Dr. Ehab Hassouneh is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.": "يُدرج الدكتور إيهاب حسونة كطبيب أسنان عام في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في الراحة مول.",
+    "Dr. Dana Awad is a dedicated General Dentist at Silwadi Dental Centres, providing comprehensive dental care with a strong focus on preventive, restorative, and esthetic dentistry. She is committed to delivering evidence-based, patient-centered treatment while creating a comfortable and reassuring experience for every patient.": "الدكتورة دانا عوض طبيبة أسنان عامة في مركز الدكتور منير السلوادي لطب الأسنان، وتقدم رعاية شاملة مع تركيز على طب الأسنان الوقائي والترميمي والتجميلي. وهي حريصة على تقديم علاج يستند إلى الدليل ويتمحور حول المريض، مع توفير تجربة مريحة ومطمئنة لكل مريض.",
+    "Dr. Ehab Hassouneh is listed as a General Dentist at Silwadi Dental Centres. The centre's updated medical team list confirms practice at Al Raha Mall.": "يُدرج الدكتور إيهاب حسونة كطبيب أسنان عام في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في الراحة مول.",
     "Assessment and management of common dental concerns.": "تقييم المشكلات السنية الشائعة وإدارتها.",
     "Routine examinations and preventive planning.": "فحوصات دورية وتخطيط وقائي.",
     "Restorative treatment based on clinical findings.": "علاج ترميمي يستند إلى نتائج الفحص السريري.",
@@ -1282,8 +1282,8 @@
     "Orthodontic treatment planning across different ages and case types.": "تخطيط علاج تقويم الأسنان لمختلف الأعمار والحالات.",
     "His public profile records longstanding university teaching and postgraduate orthodontic involvement.": "يسجل ملفه المنشور خبرة طويلة في التدريس الجامعي والمشاركة في برامج تقويم الأسنان للدراسات العليا.",
     "His centre profile also records professional memberships across Lebanese, French, Arab, European and international orthodontic organisations.": "يسجل ملفه في المركز أيضاً عضوياته المهنية في منظمات تقويم الأسنان اللبنانية والفرنسية والعربية والأوروبية والدولية.",
-    "Dr. Kashmira Pawar Jayprakash is listed as a Pediatric Dentist at Dr. Munir Silwadi Dental Centre. The centre’s updated medical team list confirms practice at Al Raha Mall.": "تُدرج الدكتورة كاشميرا باوار جايبراكاش كاختصاصية في طب أسنان الأطفال في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
-    "Dr. Kashmira Pawar Jayprakash is listed as a Pediatric Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.": "تُدرج الدكتورة كاشميرا باوار جايبراكاش كاختصاصية في طب أسنان الأطفال في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
+    "Dr. Kashmira Pawar Jayprakash is listed as a Pediatric Dentist at Silwadi Dental Centres. The centre’s updated medical team list confirms practice at Al Raha Mall.": "تُدرج الدكتورة كاشميرا باوار جايبراكاش كاختصاصية في طب أسنان الأطفال في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
+    "Dr. Kashmira Pawar Jayprakash is listed as a Pediatric Dentist at Silwadi Dental Centres. The centre's updated medical team list confirms practice at Al Raha Mall.": "تُدرج الدكتورة كاشميرا باوار جايبراكاش كاختصاصية في طب أسنان الأطفال في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
     "Dental assessment and care for children and adolescents.": "تقييم ورعاية أسنان الأطفال واليافعين.",
     "Age-appropriate preventive guidance and planning.": "إرشادات وتخطيط وقائيان يناسبان العمر.",
     "Clear explanations for children and their families.": "شرح واضح للأطفال وعائلاتهم.",
@@ -1296,11 +1296,11 @@
     "Fellow, Pierre Fauchard Academy": "زميل أكاديمية بيير فوشار",
     "Active membership, European Society of Lingual Orthodontics (ESLO), as recorded by the centre": "عضوية فعالة في الجمعية الأوروبية للتقويم اللساني (ESLO)، وفق سجلات المركز",
     "His centre profile describes work across preventive, interceptive, teen and adult orthodontics using contemporary fixed and aligner systems.": "يصف ملفه في المركز خبرته في تقويم الأسنان الوقائي والاعتراضي وتقويم اليافعين والكبار باستخدام أنظمة التقويم والصفافات الحديثة.",
-    "Dr. Lana Masoud is listed as a Endodontist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.": "تُدرج الدكتورة لانا مسعود كاختصاصية في علاج الجذور في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
+    "Dr. Lana Masoud is listed as a Endodontist at Silwadi Dental Centres. The centre's updated medical team list confirms practice at Al Raha Mall.": "تُدرج الدكتورة لانا مسعود كاختصاصية في علاج الجذور في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
     "Diagnosis of conditions affecting the dental pulp and root canal system.": "تشخيص الحالات التي تصيب لب السن وقنوات الجذر.",
     "Root canal treatment planning based on clinical findings.": "تخطيط علاج الجذور استناداً إلى نتائج الفحص السريري.",
     "Care focused on preserving natural teeth where clinically appropriate.": "رعاية تركز على الحفاظ على الأسنان الطبيعية عندما يكون ذلك مناسباً سريرياً.",
-    "Dr. Moammar Mohamed Rifai is a specialist orthodontist whose public profile records clinical practice in Abu Dhabi since 2000 and work with Silwadi Dental Center since 2011.": "الدكتور معمر محمد الرفاعي اختصاصي تقويم أسنان، ويسجل ملفه المنشور ممارسة سريرية في أبوظبي منذ عام 2000 وعمله مع مركز سلوادي لطب الأسنان منذ عام 2011.",
+    "Dr. Moammar Mohamed Rifai is a specialist orthodontist whose public profile records clinical practice in Abu Dhabi since 2000 and work with Silwadi Dental Centres since 2011.": "الدكتور معمر محمد الرفاعي اختصاصي تقويم أسنان، ويسجل ملفه المنشور ممارسة سريرية في أبوظبي منذ عام 2000 وعمله مع مركز سلوادي لطب الأسنان منذ عام 2011.",
     "Assessment and treatment planning for alignment and bite correction.": "تقييم وتخطيط علاج اصطفاف الأسنان وتصحيح الإطباق.",
     "His public profile lists straight-wire, self-ligating and orthopaedic appliances among the techniques he uses.": "يذكر ملفه المنشور أجهزة السلك المستقيم والربط الذاتي والأجهزة التقويمية العظمية ضمن التقنيات التي يستخدمها.",
     "Clear aligner treatment is also listed among his orthodontic approaches.": "ويذكر الملف أيضاً علاج الصفافات الشفافة ضمن أساليبه في التقويم.",
@@ -1319,13 +1319,13 @@
     "Digital workflows for selected crowns, veneers and aesthetic restorations.": "سير عمل رقمي لتيجان وقشور وترميمات تجميلية مختارة.",
     "Digital visual planning used to support restorative and aesthetic communication.": "تخطيط بصري رقمي لدعم التواصل حول الترميم والنتيجة التجميلية.",
     "Dr. Silwadi's published centre profile highlights immediate implants, All-on-4 / All-on-6 concepts, computer-guided implant treatment, full-mouth rehabilitation, CAD/CAM veneers and crowns, and digital smile design. Suitability for any treatment is determined after clinical assessment.": "يبرز ملف الدكتور سلوادي المنشور في المركز الزراعة الفورية ومفاهيم All-on-4 وAll-on-6 وعلاج الزراعة الموجّه بالحاسوب وإعادة تأهيل الفم بالكامل وقشور وتيجان CAD/CAM وتصميم الابتسامة الرقمي. وتُحدد ملاءمة أي علاج بعد التقييم السريري.",
-    "Silwadi Dental Center's multidisciplinary team includes clinicians across orthodontics, periodontics, endodontics and general dentistry.": "يضم فريق مركز سلوادي متعدد التخصصات أطباء في تقويم الأسنان وأمراض اللثة وعلاج الجذور وطب الأسنان العام.",
-    "Dr. Nachiket Shah is listed as a Periodontist & Implantologist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.": "يُدرج الدكتور ناشيكيت شاه كاختصاصي في أمراض اللثة وزراعة الأسنان في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في الراحة مول.",
+    "Silwadi Dental Centres's multidisciplinary team includes clinicians across orthodontics, periodontics, endodontics and general dentistry.": "يضم فريق مركز سلوادي متعدد التخصصات أطباء في تقويم الأسنان وأمراض اللثة وعلاج الجذور وطب الأسنان العام.",
+    "Dr. Nachiket Shah is listed as a Periodontist & Implantologist at Silwadi Dental Centres. The centre's updated medical team list confirms practice at Al Raha Mall.": "يُدرج الدكتور ناشيكيت شاه كاختصاصي في أمراض اللثة وزراعة الأسنان في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في الراحة مول.",
     "Assessment and care for the gums and supporting tissues.": "تقييم اللثة والأنسجة الداعمة والعناية بها.",
     "Implant assessment and treatment planning for suitable patients.": "تقييم الزراعة وتخطيط العلاج للمرضى المناسبين.",
     "Ongoing periodontal review based on clinical needs.": "مراجعة دورية للثة وفق الاحتياجات السريرية.",
-    "Dr. Nasr Keshkiea is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Bani Yas Tower.": "يُدرج الدكتور نصر كشكية كطبيب أسنان عام في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في برج بني ياس.",
-    "Dr. Sara Ismail is listed as a General Dentist at Dr. Munir Silwadi Dental Centre. The centre's updated medical team list confirms practice at Al Raha Mall.": "تُدرج الدكتورة سارة إسماعيل كطبيبة أسنان عامة في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
+    "Dr. Nasr Keshkiea is listed as a General Dentist at Silwadi Dental Centres. The centre's updated medical team list confirms practice at Bani Yas Tower.": "يُدرج الدكتور نصر كشكية كطبيب أسنان عام في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارسته في برج بني ياس.",
+    "Dr. Sara Ismail is listed as a General Dentist at Silwadi Dental Centres. The centre's updated medical team list confirms practice at Al Raha Mall.": "تُدرج الدكتورة سارة إسماعيل كطبيبة أسنان عامة في مركز الدكتور منير السلوادي لطب الأسنان. وتؤكد قائمة الفريق الطبي المحدثة في المركز ممارستها في الراحة مول.",
   });
 
   // Keep direct language switching aligned with the reviewed, static Arabic pages.
@@ -1349,7 +1349,7 @@
       "Crowns, bridges, dentures and restorative planning around your bite.": "تيجان وجسور وأطقم أسنان، مع تخطيط العلاج الترميمي وفقاً للإطباق.",
       "Prosthodontic restorations": "تركيبات الأسنان",
       "Cosmetic dentistry and teeth whitening": "تجميل الأسنان وتبييضها",
-      "Treatment room at Silwadi Dental Centre, Bani Yas Tower with Abu Dhabi Corniche view": "غرفة علاج في مركز سلوادي لطب الأسنان ببرج بني ياس مع إطلالة على كورنيش أبوظبي",
+      "Treatment room at Silwadi Dental Centres, Bani Yas Tower with Abu Dhabi Corniche view": "غرفة علاج في مركز سلوادي لطب الأسنان ببرج بني ياس مع إطلالة على كورنيش أبوظبي",
       "Specialist Periodontist & Implantologist": "اختصاصي أمراض اللثة وزراعة الأسنان",
       "View Bani Yas Tower and Al Raha Mall locations": "عرض موقعي فرعي برج بني ياس والراحة مول",
       "Inside the centre": "داخل المركز",
