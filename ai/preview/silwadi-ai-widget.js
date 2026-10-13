@@ -50,7 +50,7 @@ document.body.appendChild(mount);
 const shadow=mount.attachShadow({mode:"open"});
 const sheet=document.createElement("link");
 sheet.rel="stylesheet";
-sheet.href=new URL("silwadi-ai-widget.css?v=20261012a",base).href;
+sheet.href=new URL("silwadi-ai-widget.css?v=20261013b",base).href;
 shadow.appendChild(sheet);
 const markup=[
 '<div class="sw-root">',
@@ -108,7 +108,7 @@ function languageUI(lang){
  one("[data-code-help]").textContent=t("codeHelp");
  one("[data-code-label]").textContent=t("code");
  one("[data-code-submit]").textContent=t("codeSave");
- one("[data-language]").textContent=lang==="en"?"عربي":"EN";
+ one("button.sw-language").textContent=lang==="en"?"عربي":"EN";
  one("[data-new]").setAttribute("aria-label",t("restart"));
  one("[data-close]").setAttribute("aria-label",t("close"));
  input.placeholder=t("prompt");
@@ -226,7 +226,7 @@ function reset(){
 launch.addEventListener("click",()=>setOpen(!opened));
 one("[data-close]").addEventListener("click",()=>setOpen(false));
 one("[data-scrim]").addEventListener("click",()=>setOpen(false));
-one("[data-language]").addEventListener("click",()=>languageUI(language==="en"?"ar":"en"));
+one("button.sw-language").addEventListener("click",()=>languageUI(language==="en"?"ar":"en"));
 one("[data-new]").addEventListener("click",reset);
 one("[data-privacy]").addEventListener("click",()=>{const box=one("[data-config]");box.hidden=!box.hidden;if(!box.hidden)scrollEnd();});
 one("[data-code-form]").addEventListener("submit",event=>{event.preventDefault();
