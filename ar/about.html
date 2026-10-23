@@ -40,6 +40,15 @@
 .acc-card h3:after{content:"";display:block;width:42px;height:4px;border-radius:6px;background:#79b5d1;margin:14px auto 0}
 .acc-card p{margin:15px auto 0;max-width:290px;min-height:64px;color:#6f8798;font-size:16px;line-height:1.45}
 .acc-card p small{display:block;margin-top:5px;font-size:13px;color:#93a3ad}
+.acc-card--scored{border-color:#bed6e1}
+.acc-card--scored h3{min-height:78px;line-height:1.3}
+.acc-card--scored h3:after{display:none}
+.acc-card__authority{display:block;margin-bottom:8px;color:#58788b;font-size:13px;font-weight:600;letter-spacing:0;line-height:1.4}
+.acc-card__result{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:16px}
+.acc-card__score{color:#12354a;font-size:clamp(40px,3.5vw,52px);font-weight:750;letter-spacing:-.045em;line-height:1;white-space:nowrap;direction:ltr;unicode-bidi:isolate}
+.acc-card__score span{font-size:.55em;margin-inline-start:2px;letter-spacing:0}
+.acc-card__grade{display:inline-block;padding:7px 16px;border-radius:999px;background:#e8f3f8;color:#12354a;font-size:13px;font-weight:750;letter-spacing:.08em;line-height:1.2}
+.acc-card--scored p{margin-top:20px}
 .acc-iso-mark{display:flex;flex-direction:column;align-items:center;justify-content:center;color:#4c4c4c}
 .acc-iso-mark span{font-family:Georgia,serif;font-size:82px;line-height:.85;font-weight:700;letter-spacing:-.06em}
 .acc-iso-mark small{margin-top:16px;color:#1885c1;font-size:15px;font-weight:800;letter-spacing:.08em}
@@ -162,20 +171,23 @@
 
         <div class="acc-viewport">
           <div class="acc-track" id="accTrack" aria-label="اعتمادات وشهادات سلوادي">
-            <article class="acc-card acc-card--jawda">
+            <article class="acc-card acc-card--jawda acc-card--scored">
               <div class="acc-card__visual"><img src="/assets/jawda-tasneef-mark.png" alt="شهادة بيانات جودة mark supplied by TASNEEF" width="480" height="479" loading="lazy" decoding="async"></div>
-              <h3>دائرة الصحة - نتيجة جودة JAWDA - 99.55% - التصنيف A</h3>
+              <h3><span class="acc-card__authority">دائرة الصحة</span>نتيجة جودة JAWDA</h3>
+              <div class="acc-card__result"><strong class="acc-card__score">99.55<span>%</span></strong><span class="acc-card__grade">التصنيف A</span></div>
             </article>
 
-            <article class="acc-card acc-card--adhics">
+            <article class="acc-card acc-card--adhics acc-card--scored">
               <div class="acc-card__visual"><img src="/assets/adhics-aamen-doh-mark.webp" alt="شعارا AAMEN ودائرة الصحة – أبوظبي الظاهران على شهادة ADHICS" width="420" height="193" loading="lazy" decoding="async"></div>
-              <h3>الامتثال لمعيار ADHICS</h3>
+              <h3><span class="acc-card__authority">دائرة الصحة</span>نتيجة ADHICS</h3>
+              <div class="acc-card__result"><strong class="acc-card__score">98<span>%</span></strong><span class="acc-card__grade">التصنيف A</span></div>
               <p>مركز د. منير سلوادي لطب الأسنان<small>MF368 · الكورنيش</small></p>
             </article>
 
-            <article class="acc-card acc-card--adhics">
+            <article class="acc-card acc-card--adhics acc-card--scored">
               <div class="acc-card__visual"><img src="/assets/adhics-aamen-doh-mark.webp" alt="شعارا AAMEN ودائرة الصحة – أبوظبي الظاهران على شهادة ADHICS" width="420" height="193" loading="lazy" decoding="async"></div>
-              <h3>الامتثال لمعيار ADHICS</h3>
+              <h3><span class="acc-card__authority">دائرة الصحة</span>نتيجة ADHICS</h3>
+              <div class="acc-card__result"><strong class="acc-card__score">98<span>%</span></strong><span class="acc-card__grade">التصنيف A</span></div>
               <p>مركز د. محمد منير لطب الأسنان<small>MF7451 · الراحة مول</small></p>
             </article>
 
