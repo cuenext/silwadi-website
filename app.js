@@ -232,7 +232,7 @@ document.querySelectorAll('[data-faq-button]').forEach(button => {
 (function routeConsultationCtas() {
   const path = window.location.pathname || '';
   if (path.endsWith('/contact.html') || path.endsWith('contact.html')) return;
-  const nested = /\/(doctors|treatments)\/[^/]+\.html$/.test(path);
+  const nested = /\/(doctors|treatments|locations)\/[^/]+\.html$/.test(path);
   const target = nested ? '../contact.html#consultation-form' : 'contact.html#consultation-form';
   const languageApi = window.SilwadiLanguage;
   const activeLanguage = languageApi?.getRequestedLanguage?.() || languageApi?.getLanguage?.() || 'en';
