@@ -163,7 +163,7 @@ def organization_entity(locale="en"):
     return {
         "@type": "Organization",
         "@id": ORG_ID,
-        "name": "Silwadi Dental Center",
+        "name": "Silwadi Dental Centres",
         "alternateName": "Dr. Munir Silwadi Dental Centre",
         "url": f"{BASE}/",
         "logo": {"@type": "ImageObject", "url": f"{BASE}/assets/silwadi-logo-official.png"},
@@ -182,13 +182,17 @@ def patch_home(data, locale="en"):
         raise RuntimeError("Homepage WebSite entity missing")
     website["publisher"] = {"@id": ORG_ID}
     website["alternateName"] = ["Dr. Munir Silwadi Dental Centre", "Silwadi"]
+    organization = organization_entity(locale)
+    existing_organization = by_id(items, ORG_ID)
+    if existing_organization and "legalName" in existing_organization:
+        organization["legalName"] = existing_organization["legalName"]
 
     items[:] = [
         item for item in items
         if not (isinstance(item, dict) and item.get("@id") in {ORG_ID, BANI_ID, RAHA_ID})
     ]
     website_index = items.index(website)
-    items[website_index:website_index] = [organization_entity(locale)]
+    items[website_index:website_index] = [organization]
     items.extend([bani_entity(locale), raha_entity(locale)])
 
 

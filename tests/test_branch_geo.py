@@ -88,10 +88,19 @@ class BranchGeoTest(unittest.TestCase):
 
     def test_homepage_schema_helper_retains_site_names_when_updating_branches(self):
         website = {"@type": "WebSite", "@id": BASE + "/#website", "name": "Silwadi Dental Centres"}
-        data = {"@graph": [website]}
+        data = {"@graph": [website, {"@type": "Organization", "@id": BASE + "/#organization",
+                                    "legalName": "Dr. Munir Silwadi Dental Centres"}]}
         patch_home(data)
         self.assertEqual(website.get("alternateName"), ["Dr. Munir Silwadi Dental Centre", "Silwadi"])
         self.assertEqual(website["name"], "Silwadi Dental Centres")
+        organization = next(node for node in data["@graph"] if node.get("@id") == BASE + "/#organization")
+        self.assertEqual(organization["name"], "Silwadi Dental Centres")
+        self.assertEqual(organization["alternateName"], "Dr. Munir Silwadi Dental Centre")
+        self.assertEqual(organization.get("legalName"), "Dr. Munir Silwadi Dental Centres")
+        without_legal_name = {"@graph": [dict(website)]}
+        patch_home(without_legal_name)
+        self.assertNotIn("legalName", next(node for node in without_legal_name["@graph"]
+                                          if node.get("@id") == BASE + "/#organization"))
         for node in data["@graph"]:
             if node.get("@id") in BRANCHES:
                 self.assert_branch(node)

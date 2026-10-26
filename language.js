@@ -358,8 +358,8 @@
 
   const arabicSeo = {
     'index.html': {
-      title: 'طبيب أسنان في أبوظبي | مركز الدكتور منير السلوادي لطب الأسنان',
-      description: 'رعاية أسنان عامة وتخصصية في أبوظبي لدى مركز الدكتور منير السلوادي لطب الأسنان، في برج بني ياس والراحة مول، منذ عام 1980.',
+      title: 'Silwadi Dental Centres | طبيب أسنان في أبوظبي',
+      description: 'Silwadi Dental Centres: رعاية أسنان عامة وتخصصية في أبوظبي منذ عام 1980 في فرعي برج بني ياس والراحة مول، مع فريق من أطباء الأسنان والاختصاصيين.',
     },
     'services.html': {
       title: 'خدمات طب الأسنان في أبوظبي | مركز سلوادي لطب الأسنان',
@@ -724,6 +724,11 @@
         if (element.hasAttribute(attribute)) translateAttribute(element, attribute, currentLanguage);
       });
     });
+
+    if (pageKey() === 'index.html') {
+      const homepageEyebrow = document.querySelector?.('.premium-home-hero__eyebrow');
+      if (homepageEyebrow) homepageEyebrow.textContent = 'Silwadi Dental Centres';
+    }
 
     updateLocalizedSeo(currentLanguage);
     updateCurrentUrl(currentLanguage);
