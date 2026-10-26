@@ -97,7 +97,7 @@ def bani_entity(locale="en"):
             "addressLocality": "Abu Dhabi",
             "addressCountry": "AE",
         },
-        "geo": {"@type": "GeoCoordinates", "latitude": 24.443115, "longitude": 54.394263},
+        "geo": {"@type": "GeoCoordinates", "latitude": 24.4935218, "longitude": 54.3610125},
         "areaServed": {"@type": "City", "name": "Abu Dhabi"},
         "openingHoursSpecification": [
             {
@@ -138,7 +138,7 @@ def raha_entity(locale="en"):
             "addressLocality": "Abu Dhabi",
             "addressCountry": "AE",
         },
-        "geo": {"@type": "GeoCoordinates", "latitude": 24.432323448790137, "longitude": 54.468755061562355},
+        "geo": {"@type": "GeoCoordinates", "latitude": 24.4388317, "longitude": 54.5744795},
         "areaServed": {"@type": "City", "name": "Abu Dhabi"},
         "openingHoursSpecification": [
             {
@@ -181,6 +181,7 @@ def patch_home(data, locale="en"):
     if website is None:
         raise RuntimeError("Homepage WebSite entity missing")
     website["publisher"] = {"@id": ORG_ID}
+    website["alternateName"] = ["Dr. Munir Silwadi Dental Centre", "Silwadi"]
 
     items[:] = [
         item for item in items
