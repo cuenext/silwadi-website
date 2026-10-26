@@ -253,6 +253,10 @@ function makeArabicPage(source, route) {
 
   translateDocument(document, route, dom.window);
   polishArabicStructure(document, route);
+  if (route === 'index.html') {
+    const homepageEyebrow = document.querySelector('.premium-home-hero__eyebrow');
+    if (homepageEyebrow) homepageEyebrow.textContent = 'Silwadi Dental Centres';
+  }
 
   document.querySelectorAll('[data-page-language-switch]').forEach(switcher => {
     switcher.href = englishUrl(route);
