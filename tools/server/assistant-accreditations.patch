@@ -1,0 +1,19 @@
+diff --git a/lib/natural-ai.mjs b/lib/natural-ai.mjs
+--- a/lib/natural-ai.mjs
++++ b/lib/natural-ai.mjs
+@@ -1,6 +1,7 @@
+ import {answerQuestion,normalize,REPLIES,visitSupportAnswer} from './safety.mjs';
+ import {DOCTORS,doctorAnswer} from './doctors.mjs';
+ import {clinicFactsAnswer,clinicDoctors} from './clinic-facts.mjs';
++import {accreditationAnswer} from './accreditations.mjs';
+ const FACTS=`Silwadi Dental Centre, Abu Dhabi. Branches: Bani Yas Tower (Corniche), Building 117 C Floor, phone +971 2 626 2042; Al Raha Mall F14/F15 Level 1, phone +971 2 666 2408. Services: preventive dentistry, endodontics/root canals, orthodontics, children's dentistry, implantology, prosthodontics, periodontics, cosmetic dentistry/whitening, laser dentistry. Published hours: Corniche Sun-Wed 9am-9pm, Thu/Sat 9am-6pm; Al Raha Sat-Thu 10am-7pm; Friday closed. Reception must confirm current hours, availability, prices, insurance and bookings. No confirmed prices, guarantees or doctor schedules are available.
+ General prevention from NHS guidance: brush gently with fluoride toothpaste twice daily for about two minutes, clean between teeth daily, spit after brushing rather than rinsing straight away, reduce frequent sugary snacks/drinks. Other high-level dental education can explain concepts; no individual medical recommendation.
+ People of Determination (POD / أصحاب الهمم) dental care is a published Silwadi service at Al Raha Mall. The public service page describes an accessible treatment environment, wheelchair accommodation and visit preparation for mobility, communication, sensory and caregiver needs. Reception discusses support needs privately; the treating team assesses individual suitability and clinical requirements. Do not promise suitability for everyone, a particular accommodation, treatment, pricing, coverage or availability. For vague POD enquiries in this clinic context, ask whether they mean People of Determination care and explain the published service; do not invent medical acronym expansions like post-operative discomfort. If they explicitly mean another expansion, use that clarification rather than overriding it. Source: https://silwadi.ae/treatments/people-of-determination.html .
+@@ -147,6 +148,7 @@
+  if(/^(?:كيف|شو|ماذا).{0,12}(?:اجهز|استعد|اييب|اجيب).{0,20}(?:زيار|موعد)/.test(normalize(question)))return {language:fallback.language,mode:'reviewed',category:'clarification',answer:visitSupportAnswer('preparation',fallback.language),choices:['booking']};
+  if(['anxiety','preparation'].includes(fallback.category))return {...fallback,answer:visitSupportAnswer(fallback.category,fallback.language),category:'clarification',choices:['booking']};
+  if(/(?:can|may|could) (?:someone|a friend|my (?:friend|mother|father|parent|partner)) (?:come|go|accompany)|(?:can|may|could) i bring (?:someone|a friend|my (?:friend|mother|father|parent|partner))|(?:ممكن|اقدر).{0,15}(?:حد|احد|امي|ابوي).{0,15}(?:معاي|معي)/i.test(normalize(question)))return {language:fallback.language,mode:'reviewed',category:'clarification',answer:fallback.language==='ar'?'تأكد من الاستقبال قبل الزيارة؛ يقدرون يؤكدون ترتيبات المرافق في الفرع المفضل عندك. تواصل معهم بشكل خاص عن احتياجات الدعم.':'Please check with reception before your visit; they can confirm companion arrangements at your preferred branch. Discuss any support needs with the team privately.'};
++ const accreditation=accreditationAnswer(question,fallback.language);if(accreditation)return accreditation;
+  const bookingProcess=bookingProcessAnswer(question,context,fallback.language);if(bookingProcess)return bookingProcess;
+  const overview=serviceOverview(question,fallback.language);if(overview)return overview;
+  const selection=serviceSelection(question,fallback.language);if(selection)return selection;
