@@ -131,7 +131,7 @@ class GoogleAuthorityContract(unittest.TestCase):
             self.assertIsNotNone(raha, f"{path} missing Al Raha entity")
             for entity in (bani, raha):
                 self.assertEqual(entity.get("parentOrganization", {}).get("@id"), ORG_ID)
-                self.assertEqual(entity.get("email"), "info@silwadidentalcentres.ae")
+                self.assertEqual(entity.get("email"), "info@silwadi.ae")
                 self.assertIsInstance(entity.get("geo"), dict, f"{path} branch entity must include geo")
             self.assertEqual(bani.get("url"), f"{BASE}{locale_prefix}/locations/corniche.html")
             self.assertEqual(raha.get("url"), f"{BASE}{locale_prefix}/locations/al-raha.html")

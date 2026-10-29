@@ -37,7 +37,7 @@ class Patch23MobileUx(unittest.TestCase):
         for path in ("index.html", "contact.html", "locations.html"):
             html = self.read(path)
             self.assertIn('href="tel:+97126262042"', html)
-            self.assertIn('href="mailto:info@silwadidentalcentres.ae"', html)
+            self.assertIn('href="mailto:info@silwadi.ae"', html)
 
     def test_menu_close_contract_is_preserved(self):
         js = self.read("app.js")
