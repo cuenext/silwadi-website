@@ -139,6 +139,7 @@ function rewriteUrl(value, route, attribute = 'href') {
   let url;
   try { url = new URL(value, base); } catch (_) { return value; }
   if (url.hostname !== 'silwadi.ae' && url.hostname !== 'www.silwadi.ae') return value;
+  if (attribute === 'href' && url.pathname === '/ai/') return '/ai/?lang=ar';
   url.searchParams.delete('lang');
   const paired = routeFromPathname(url.pathname);
   if (attribute === 'href' && paired) {

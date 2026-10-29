@@ -22,6 +22,14 @@ jobs:
         run: python -m unittest discover -s tests -p test_security_publication.py -v
       - name: Validate bundle builder
         run: python -m unittest discover -s tests -p test_public_bundle.py -v
+      - name: Keep assistant scripts and FAQ links on every published page
+        run: |
+          node tests/assistant-integration.test.mjs
+          node tests/assistant-roster.test.mjs
+      - name: Build and validate the actual public upload artifact
+        run: |
+          python tools/public_bundle.py /tmp/public-bundle-security
+          node tests/assistant-integration.test.mjs /tmp/public-bundle-security
       - name: Validate booking browser scripts
         run: |
           node --check app.js

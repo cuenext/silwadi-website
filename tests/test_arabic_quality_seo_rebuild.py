@@ -54,7 +54,8 @@ class ArabicQualitySeoRebuild(unittest.TestCase):
             self.assertIn(f'hreflang="ar-AE" href="{arabic_url(route)}"', source, route)
             self.assertIn(f'hreflang="en-AE" href="{english_url(route)}"', source, route)
             self.assertIn(f'hreflang="x-default" href="{english_url(route)}"', source, route)
-            self.assertNotIn("?lang=ar", source, route)
+            # The bilingual assistant has one canonical page; patient pages retain static Arabic routes.
+            self.assertNotIn("?lang=ar", source.replace('/ai/?lang=ar', '/ai/'), route)
             self.assertIn('data-arabic-page-schema', source, route)
             self.assertIn('"inLanguage":"ar-AE"', source, route)
             self.assertIn('/arabic-static.js', source, route)
