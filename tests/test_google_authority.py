@@ -17,7 +17,7 @@ DOCTOR_FILES = [
     "dr-moammar-rifai.html", "dr-ahmed-el-shehri.html", "dr-fahed-khalil.html",
     "dr-afnan-mashal.html", "dr-krishnamurthy-katta-balajee.html",
     "dr-ehab-hassouneh.html", "dr-sara-ismail.html", "dr-nasr-keshkiea.html",
-    "dr-dana-awad.html", "dr-kashmira-pawar-jayprakash.html",
+    "dr-dana-awad.html", "dr-mithra-pothancheri.html", "dr-kashmira-pawar-jayprakash.html",
     "dr-nachiket-shah.html", "dr-lana-masoud.html",
 ]
 
@@ -34,6 +34,7 @@ DOCTOR_BRANCHES = {
     "dr-sara-ismail.html": {RAHA_ID},
     "dr-nasr-keshkiea.html": {BANI_ID},
     "dr-dana-awad.html": {BANI_ID},
+    "dr-mithra-pothancheri.html": {BANI_ID},
     "dr-kashmira-pawar-jayprakash.html": {RAHA_ID},
     "dr-nachiket-shah.html": {RAHA_ID},
     "dr-lana-masoud.html": {RAHA_ID},

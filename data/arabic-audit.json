@@ -119,8 +119,8 @@
     "override": false
   },
   {
-    "source": "15 dentists & specialists",
-    "arabic": "15 طبيباً واختصاصياً",
+    "source": "16 dentists & specialists",
+    "arabic": "16 طبيباً واختصاصياً",
     "routes": [
       "index.html",
       "about.html",
@@ -129,8 +129,8 @@
     "override": true
   },
   {
-    "source": "15 dentists and specialists across general and specialist dentistry.",
-    "arabic": "15 طبيباً واختصاصياً في طب الأسنان العام والتخصصي.",
+    "source": "16 dentists and specialists across general and specialist dentistry.",
+    "arabic": "16 طبيباً واختصاصياً في طب الأسنان العام والتخصصي.",
     "routes": [
       "doctors.html"
     ],

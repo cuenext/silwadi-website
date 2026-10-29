@@ -11,7 +11,7 @@ DOCTORS_PAGE = ROOT / "doctors.html"
 class AiKnowledgeV1Contract(unittest.TestCase):
     def test_verified_branch_and_contact_facts(self):
         data = json.loads(CLINIC.read_text(encoding="utf-8"))
-        self.assertEqual(data["contact"]["email"], "info@silwadidentalcentres.ae")
+        self.assertEqual(data["contact"]["email"], "info@silwadi.ae")
         self.assertEqual(data["contact"]["whatsapp"], "+971506260418")
         self.assertEqual(data["branches"]["bani-yas"]["phone"], "+971 2 626 2042")
         self.assertEqual(data["branches"]["al-raha"]["phone"], "+971 2 666 2408")
@@ -20,15 +20,18 @@ class AiKnowledgeV1Contract(unittest.TestCase):
         self.assertIn("Fri closed", data["branches"]["bani-yas"]["hours"])
         self.assertIn("Fri closed", data["branches"]["al-raha"]["hours"])
 
-    def test_current_team_has_fifteen_doctors_and_critical_roles(self):
+    def test_current_team_has_sixteen_doctors_and_critical_roles(self):
         data = json.loads(CLINIC.read_text(encoding="utf-8"))
         doctors = {d["name"]: d for d in data["doctors"]}
-        self.assertEqual(len(doctors), 15)
+        self.assertEqual(len(doctors), 16)
         self.assertEqual(doctors["Dr. Kashmira Pawar Jayprakash"]["role"], "Specialist Pediatric Dentist")
         self.assertEqual(doctors["Dr. Lana Almasoud"]["role"], "Specialist Endodontist")
         self.assertEqual(doctors["Dr. Ahmed El Shehri"]["role"], "Specialist Endodontist")
         self.assertEqual(doctors["Dr. Munir Silwadi"]["role"], "Specialist Prosthodontist & Implantologist")
         self.assertEqual(doctors["Dr. Nasr Keshkiea"]["role"], "General Dentist")
+        self.assertEqual(doctors["Dr. Mithra Pothancheri"]["role"], "General Dentist")
+        self.assertEqual(doctors["Dr. Mithra Pothancheri"]["additionalRole"], "Clinical Quality Coordinator")
+        self.assertEqual(doctors["Dr. Mithra Pothancheri"]["branches"], ["bani-yas"])
 
     def test_doctor_name_matches_current_public_directory(self):
         page = DOCTORS_PAGE.read_text(encoding="utf-8")

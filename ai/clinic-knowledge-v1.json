@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-11",
+  "version": "2026-10-29",
   "clinicName": "Silwadi Dental Centres",
   "established": 1980,
   "history": {
@@ -8,7 +8,7 @@
     "summary": "Silwadi Dental Centres was founded and is led by Dr. Munir Silwadi and has served Abu Dhabi since 1980."
   },
   "contact": {
-    "email": "info@silwadidentalcentres.ae",
+    "email": "info@silwadi.ae",
     "whatsapp": "+971506260418",
     "bookingUrl": "https://silwadi.ae/contact.html#consultation-form",
     "locationsUrl": "https://silwadi.ae/locations.html",
@@ -64,6 +64,22 @@
       "name": "Dr. Dana Awad",
       "role": "General Dentist",
       "branches": ["bani-yas"]
+    },
+    {
+      "name": "Dr. Mithra Pothancheri",
+      "role": "General Dentist",
+      "additionalRole": "Clinical Quality Coordinator",
+      "license": "DOH-licensed",
+      "branches": ["bani-yas"],
+      "credentials": "Bachelor of Dental Surgery (BDS), A.J. Shetty College of Dental Sciences, Rajiv Gandhi University of Health Sciences",
+      "clinicalFocus": [
+        "Comprehensive oral examinations and treatment planning",
+        "Clinical photography for documentation and patient communication",
+        "TRIOS 3Shape intra-oral scanning for restorative, prosthodontic and clear-aligner workflows",
+        "Preventive dentistry and prophylaxis",
+        "Professional teeth whitening after clinical assessment",
+        "Clinical governance, documentation and coding-quality coordination"
+      ]
     },
     {
       "name": "Dr. Afnan Mashal",

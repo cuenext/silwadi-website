@@ -154,7 +154,7 @@ class PublicCoreSeoContract(unittest.TestCase):
         self.assertTrue(nodes_of_type(doctors, "CollectionPage"))
         doctor_lists = nodes_of_type(doctors, "ItemList")
         self.assertTrue(doctor_lists)
-        self.assertGreaterEqual(len(doctor_lists[0].get("itemListElement", [])), 15)
+        self.assertGreaterEqual(len(doctor_lists[0].get("itemListElement", [])), 16)
 
         treatments = self.parsed["treatments.html"][1]
         self.assertTrue(nodes_of_type(treatments, "CollectionPage"))

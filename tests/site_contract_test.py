@@ -53,14 +53,15 @@ class PatchTwoDoctorsContract(unittest.TestCase):
             'Dr. Fahed Abi Khalil', 'Dr. Afnan Mashal',
             'Dr. Krishnamurthy Balajee', 'Dr. Ehab Hassouneh',
             'Dr. Sara Ismail', 'Dr. Nasr Keshkiea', 'Dr. Dana Awad',
+            'Dr. Mithra Pothancheri',
             'Dr. Kashmira Pawar Jayprakash', 'Dr. Nachiket Shah',
-            'Dr. Lana Masoud'
+            'Dr. Lana Almasoud'
         ]:
             self.assertIn(name, html)
         self.assertIn('data-doctor-search', html)
         self.assertIn('data-specialty-filter', html)
         self.assertIn('href="doctors/dr-munir-silwadi.html"', html)
-        self.assertEqual(html.count('data-doctor-card'), 15)
+        self.assertEqual(html.count('data-doctor-card'), 16)
 
     def test_doctor_directory_uses_real_assets_and_accessible_images(self):
         html = read('doctors.html')

@@ -38,6 +38,12 @@ class DoctorProfileRefreshContract(unittest.TestCase):
                 "Diploma in Advanced Esthetic Dentistry",
                 "Arabic and English",
             ],
+            "doctors/dr-mithra-pothancheri.html": [
+                "DOH-licensed",
+                "A.J. Shetty College of Dental Sciences",
+                "TRIOS 3Shape",
+                "Clinical Quality Coordinator",
+            ],
         }
         for path, snippets in expected.items():
             text = self.read(path)
@@ -61,6 +67,7 @@ class DoctorProfileRefreshContract(unittest.TestCase):
             "doctors/dr-ehab-hassouneh.html",
             "doctors/dr-nachiket-shah.html",
             "doctors/dr-sara-ismail.html",
+            "doctors/dr-mithra-pothancheri.html",
         ]
         for path in paths:
             text = self.read(path).lower()
@@ -141,7 +148,7 @@ class DoctorProfileRefreshContract(unittest.TestCase):
                     self.text.append(data)
 
         # Proper names and established clinical/accreditation abbreviations.
-        allowed = {"CECSMO", "RGUHS", "UniCamillus", "CEREC", "ISCD", "PALS", "IAPD", "CBCT", "DUOL", "ESLO"}
+        allowed = {"CECSMO", "RGUHS", "UniCamillus", "CEREC", "ISCD", "PALS", "IAPD", "CBCT", "DUOL", "ESLO", "TRIOS", "Shape"}
         paths = sorted((ROOT / "ar/doctors").glob("*.html"))
         self.assertTrue(paths)
         for path in paths:
@@ -160,6 +167,7 @@ class DoctorProfileRefreshContract(unittest.TestCase):
             "ar/doctors/dr-ehab-hassouneh.html": "كلية رأس الخيمة لطب الأسنان",
             "ar/doctors/dr-nachiket-shah.html": "أكثر من 14 عاماً",
             "ar/doctors/dr-sara-ismail.html": "جامعة عجمان",
+            "ar/doctors/dr-mithra-pothancheri.html": "جامعة راجيف غاندي للعلوم الصحية",
         }
         for path, snippet in expected.items():
             self.assertIn(snippet, self.read(path), f"{path} missing refreshed Arabic content")

@@ -101,6 +101,7 @@ const preferredDoctorOrder = [
   'Dr. Ahmed El Shehri',
   'Dr. Hani Hasbini',
   'Dr. Dana Awad',
+  'Dr. Mithra Pothancheri',
   'Dr. Afnan Mashal',
   'Dr. Lana Almasoud',
   'Dr. Fahed Abi Khalil',

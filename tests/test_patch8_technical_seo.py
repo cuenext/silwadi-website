@@ -28,6 +28,7 @@ PAGE_URLS = {
     'doctors/dr-sara-ismail.html': 'https://silwadi.ae/doctors/dr-sara-ismail.html',
     'doctors/dr-nasr-keshkiea.html': 'https://silwadi.ae/doctors/dr-nasr-keshkiea.html',
     'doctors/dr-dana-awad.html': 'https://silwadi.ae/doctors/dr-dana-awad.html',
+    'doctors/dr-mithra-pothancheri.html': 'https://silwadi.ae/doctors/dr-mithra-pothancheri.html',
     'doctors/dr-kashmira-pawar-jayprakash.html': 'https://silwadi.ae/doctors/dr-kashmira-pawar-jayprakash.html',
     'doctors/dr-nachiket-shah.html': 'https://silwadi.ae/doctors/dr-nachiket-shah.html',
     'doctors/dr-lana-masoud.html': 'https://silwadi.ae/doctors/dr-lana-masoud.html',
