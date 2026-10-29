@@ -43,6 +43,9 @@ def local_target(page, target_rel):
 def bilingual_urls(canonical):
     parsed = urlsplit(canonical)
     path = parsed.path or "/"
+    if path == "/ai/":
+        # The assistant switches language on one canonical page, unlike patient routes.
+        return "https://silwadi.ae/ai/", "https://silwadi.ae/ai/?lang=ar"
     if path == "/ar/" or path.startswith("/ar/"):
         ar_url = canonical
         english_path = path[3:] or "/"
@@ -55,6 +58,16 @@ def bilingual_urls(canonical):
 
 
 class Patch25QualitySeo(unittest.TestCase):
+    def test_faq_uses_query_language_variants_without_changing_patient_routes(self):
+        self.assertEqual(
+            ("https://silwadi.ae/ai/", "https://silwadi.ae/ai/?lang=ar"),
+            bilingual_urls("https://silwadi.ae/ai/"),
+        )
+        self.assertEqual(
+            ("https://silwadi.ae/about.html", "https://silwadi.ae/ar/about.html"),
+            bilingual_urls("https://silwadi.ae/about.html"),
+        )
+
     def test_local_html_links_and_fragments_resolve(self):
         failures = []
         for page in ROOT.rglob("*.html"):

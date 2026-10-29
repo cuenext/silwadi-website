@@ -25,6 +25,10 @@ jobs:
           node-version: '24'
       - run: node tests/assistant-integration.test.mjs
       - run: python tools/public_bundle.py /tmp/public-bundle
+      - name: Validate the exact upload artifact
+        run: |
+          python tools/public_bundle.py /tmp/public-bundle --validate-only
+          node tests/assistant-integration.test.mjs /tmp/public-bundle
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: /tmp/public-bundle
