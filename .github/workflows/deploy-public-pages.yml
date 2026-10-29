@@ -20,6 +20,10 @@ jobs:
           python-version: '3.12'
       - run: python -m unittest discover -s tests -p test_security_publication.py -v
       - run: python -m unittest discover -s tests -p test_public_bundle.py -v
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - run: node tests/assistant-integration.test.mjs
       - run: python tools/public_bundle.py /tmp/public-bundle
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:

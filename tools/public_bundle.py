@@ -13,10 +13,18 @@ ASSET_EXTENSIONS = {
 }
 ROOT_EXTENSIONS = PAGE_EXTENSIONS | {".svg"}
 ROOT_NAMES = {"robots.txt", "sitemap.xml"}
+PUBLIC_AI_FILES = {
+    "ai/index.html", "ai/privacy.html", "ai/silwadi-ai-page.css",
+    "ai/site-shell.css", "ai/site-shell.js", "ai/assets/assistant.svg",
+    "ai/assets/faq.js", "ai/assets/clinic-text.js", "ai/assets/booking.js",
+    "ai/assets/silwadi-ai-widget.js", "ai/assets/silwadi-ai-widget.css",
+}
 
 
 def public_file(relative: Path) -> bool:
     parts = relative.parts
+    if parts[0] == "ai":
+        return relative.as_posix() in PUBLIC_AI_FILES
     if len(parts) == 1:
         return relative.name in ROOT_NAMES or relative.suffix.lower() in ROOT_EXTENSIONS
     if parts[0] in PAGE_DIRS:

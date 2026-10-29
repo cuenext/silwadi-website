@@ -2,10 +2,16 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from tools.public_bundle import build_public_bundle
+from tools.public_bundle import build_public_bundle, public_file, PUBLIC_AI_FILES
 
 
 class PublicBundleTests(unittest.TestCase):
+    def test_only_reviewed_public_assistant_files_are_published(self):
+        for name in PUBLIC_AI_FILES:
+            self.assertTrue(public_file(Path(name)), name)
+        for name in ('ai/config.php', 'ai/.env', 'ai/knowledge.json', 'ai/private.js', 'ai/preview/index.html', 'ai/backup/index.html'):
+            self.assertFalse(public_file(Path(name)), name)
+
     def test_copies_public_pages_and_assets_without_source_material(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
