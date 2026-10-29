@@ -82,6 +82,14 @@ class DoctorProfileAdvertisingCompliance(unittest.TestCase):
                 "Preventive & Periodontal Care",
                 "Restorative Dentistry",
             ),
+            "dr-mithra-pothancheri.html": (
+                "Dr. Mithra Pothancheri",
+                "Clinical Quality Coordinator",
+                "A.J. Shetty College of Dental Sciences",
+                "Rajiv Gandhi University of Health Sciences",
+                "TRIOS 3Shape",
+                "Clinical governance",
+            ),
         }
         failures = []
         for filename, required in expectations.items():

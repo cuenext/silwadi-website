@@ -1,12 +1,19 @@
 from pathlib import Path
 from html.parser import HTMLParser
 import html as html_lib
+import importlib.util
 import json
 import re
+import tempfile
 import unittest
+from unittest import mock
 from urllib.parse import urljoin
 
 ROOT = Path(__file__).resolve().parents[1]
+SCRIPT_PATH = ROOT / "scripts" / "apply_doctor_profiles_seo.py"
+SCRIPT_SPEC = importlib.util.spec_from_file_location("apply_doctor_profiles_seo", SCRIPT_PATH)
+SEO_SCRIPT = importlib.util.module_from_spec(SCRIPT_SPEC)
+SCRIPT_SPEC.loader.exec_module(SEO_SCRIPT)
 TODAY = "2026-09-12"
 PAGES = [
     "doctors/dr-munir-silwadi.html",
@@ -21,6 +28,7 @@ PAGES = [
     "doctors/dr-sara-ismail.html",
     "doctors/dr-nasr-keshkiea.html",
     "doctors/dr-dana-awad.html",
+    "doctors/dr-mithra-pothancheri.html",
     "doctors/dr-kashmira-pawar-jayprakash.html",
     "doctors/dr-nachiket-shah.html",
     "doctors/dr-lana-masoud.html",
@@ -133,8 +141,8 @@ class DoctorProfileSeoContract(unittest.TestCase):
     def setUpClass(cls):
         cls.parsed = {path: parse(path) for path in PAGES}
 
-    def test_all_15_profiles_are_indexable_and_have_unique_metadata(self):
-        self.assertEqual(len(self.parsed), 15)
+    def test_all_16_profiles_are_indexable_and_have_unique_metadata(self):
+        self.assertEqual(len(self.parsed), 16)
         titles = []
         descriptions = []
         for path, (source, parser) in self.parsed.items():
@@ -146,7 +154,12 @@ class DoctorProfileSeoContract(unittest.TestCase):
             self.assertIn("Abu Dhabi", parser.title, path)
             description = parser.meta.get("description", "")
             self.assertIn(name, description, path)
-            self.assertIn(specialty, description, path)
+            description_specialty = (
+                "General Dentist and Clinical Quality Coordinator"
+                if path.endswith("dr-mithra-pothancheri.html")
+                else specialty
+            )
+            self.assertIn(description_specialty, description, path)
             self.assertIn("Abu Dhabi", description, path)
             titles.append(parser.title)
             descriptions.append(description)
@@ -214,6 +227,45 @@ class DoctorProfileSeoContract(unittest.TestCase):
             match = re.search(rf'<loc>{re.escape(url)}</loc>\s*<lastmod>([^<]+)</lastmod>', sitemap)
             self.assertIsNotNone(match, path)
             self.assertGreaterEqual(match.group(1), TODAY, path)
+
+
+class DoctorProfileSeoScriptTest(unittest.TestCase):
+    def test_sitemap_update_preserves_newer_lastmod_and_is_idempotent(self):
+        older_path = "doctors/dr-munir-silwadi.html"
+        newer_path = "doctors/dr-mithra-pothancheri.html"
+        original = """<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://silwadi.ae/doctors/dr-munir-silwadi.html</loc>
+    <lastmod>2026-08-01</lastmod>
+  </url>
+  <url>
+    <loc>https://silwadi.ae/doctors/dr-mithra-pothancheri.html</loc>
+    <lastmod>2026-10-29</lastmod>
+  </url>
+</urlset>
+"""
+
+        with tempfile.TemporaryDirectory(dir=ROOT) as temp_dir:
+            sitemap = Path(temp_dir) / "sitemap.xml"
+            sitemap.write_text(original, encoding="utf-8")
+            with (
+                mock.patch.object(SEO_SCRIPT, "ROOT", Path(temp_dir)),
+                mock.patch.object(SEO_SCRIPT, "PAGES", [older_path, newer_path]),
+                mock.patch.object(SEO_SCRIPT, "TODAY", "2026-09-12"),
+            ):
+                SEO_SCRIPT.update_sitemap()
+                first_update = sitemap.read_text(encoding="utf-8")
+                SEO_SCRIPT.update_sitemap()
+                second_update = sitemap.read_text(encoding="utf-8")
+
+        self.assertIn("<lastmod>2026-09-12</lastmod>", first_update)
+        self.assertIn(
+            "<loc>https://silwadi.ae/doctors/dr-mithra-pothancheri.html</loc>\n"
+            "    <lastmod>2026-10-29</lastmod>",
+            first_update,
+        )
+        self.assertEqual(second_update, first_update)
 
 
 if __name__ == "__main__":

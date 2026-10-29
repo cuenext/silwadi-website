@@ -13,6 +13,7 @@ DOCTORS = {
     'dr-sara-ismail': ('Dr. Sara Ismail', 'General Dentist', None, 'Al Raha Mall, Abu Dhabi'),
     'dr-nasr-keshkiea': ('Dr. Nasr Keshkiea', 'General Dentist', None, 'Bani Yas Tower, Abu Dhabi'),
     'dr-dana-awad': ('Dr. Dana Awad', 'General Dentist', 'dr-dana-awad.webp', 'Bani Yas Tower, Abu Dhabi'),
+    'dr-mithra-pothancheri': ('Dr. Mithra Pothancheri', 'General Dentist & Clinical Quality Coordinator', 'dr-mithra-pothancheri.webp', 'Bani Yas Tower, Abu Dhabi'),
     'dr-munir-silwadi': ('Dr. Munir Silwadi', 'Specialist Prosthodontist & Implantologist', 'dr-munir-silwadi.webp', 'Both locations, Abu Dhabi'),
     'dr-ahmed-el-shehri': ('Dr. Ahmed El Shehri', 'Endodontist', 'dr-ahmed-el-shehri.webp', 'Bani Yas Tower, Abu Dhabi'),
     'dr-fahed-khalil': ('Dr. Fahed Abi Khalil', 'Periodontist & Implantologist', 'dr-fahed-khalil.webp', 'Bani Yas Tower, Abu Dhabi'),
@@ -21,7 +22,7 @@ DOCTORS = {
     'dr-krishnamurthy-katta-balajee': ('Dr. Krishnamurthy Balajee', 'Orthodontist', 'dr-krishnamurthy-katta-balajee.webp', 'Both locations, Abu Dhabi'),
     'dr-kashmira-pawar-jayprakash': ('Dr. Kashmira Pawar Jayprakash', 'Pediatric Dentist', None, 'Al Raha Mall, Abu Dhabi'),
     'dr-nachiket-shah': ('Dr. Nachiket Shah', 'Periodontist & Implantologist', None, 'Al Raha Mall, Abu Dhabi'),
-    'dr-lana-masoud': ('Dr. Lana Masoud', 'Endodontist', None, 'Al Raha Mall, Abu Dhabi'),
+    'dr-lana-masoud': ('Dr. Lana Almasoud', 'Endodontist', None, 'Al Raha Mall, Abu Dhabi'),
 }
 BANNED = ['best dentist', 'world-class', 'cutting-edge', 'state-of-the-art', 'guaranteed', 'pain-free', 'completely painless', 'personal promise', 'highest quality of care']
 
@@ -36,7 +37,7 @@ def jsonld_nodes(rel):
     return nodes
 
 class PatchTenDoctorAuthority(unittest.TestCase):
-    def test_all_fifteen_profiles_exist_and_have_core_identity(self):
+    def test_all_sixteen_profiles_exist_and_have_core_identity(self):
         for slug, (name, specialty, image, location) in DOCTORS.items():
             rel = f'doctors/{slug}.html'; path = ROOT / rel
             self.assertTrue(path.is_file(), rel); html = path.read_text(encoding='utf-8')
@@ -59,7 +60,7 @@ class PatchTenDoctorAuthority(unittest.TestCase):
             self.assertEqual(person['url'], canonical, rel); self.assertEqual(person['worksFor']['@id'], 'https://silwadi.ae/#dentist', rel)
             if image:
                 expected = f'https://silwadi.ae/assets/doctors/{image.replace(".webp", ".png")}'
-                if slug in {'dr-dana-awad', 'dr-ehab-hassouneh'}:
+                if slug in {'dr-dana-awad', 'dr-ehab-hassouneh', 'dr-mithra-pothancheri'}:
                     expected = f'https://silwadi.ae/assets/doctors/optimized/{image}'
                 self.assertEqual(person['image'], expected, rel)
             else: self.assertNotIn('image', person, rel)
@@ -69,7 +70,7 @@ class PatchTenDoctorAuthority(unittest.TestCase):
     def test_directory_links_every_approved_doctor_to_a_profile(self):
         html = read('doctors.html')
         for slug, (name, _, _, _) in DOCTORS.items(): self.assertIn(name, html); self.assertIn(f'href="doctors/{slug}.html"', html, slug)
-        self.assertEqual(html.count('data-doctor-card'), 15); self.assertIn('15 dentists &amp; specialists', html)
+        self.assertEqual(html.count('data-doctor-card'), 16); self.assertIn('16 dentists &amp; specialists', html)
 
     def test_verified_profile_facts_are_preserved_without_inventing_new_credentials(self):
         expectations = {
@@ -80,6 +81,7 @@ class PatchTenDoctorAuthority(unittest.TestCase):
             'doctors/dr-afnan-mashal.html': ['35 years', 'CAD/CAM', 'full-mouth rehabilitation'],
             'doctors/dr-krishnamurthy-katta-balajee.html': ['25 years', 'Pierre Fauchard Academy', 'lingual braces', 'clear aligners'],
             'doctors/dr-dana-awad.html': ['Istanbul Medipol University', 'University of Sharjah', 'Mastery Dental Academy'],
+            'doctors/dr-mithra-pothancheri.html': ['A.J. Shetty College of Dental Sciences', 'Rajiv Gandhi University of Health Sciences', 'TRIOS 3Shape'],
         }
         for rel, terms in expectations.items():
             html = read(rel)

@@ -82,7 +82,7 @@ class PrivateAiFaqReviewContract(unittest.TestCase):
         self.assertTrue(DENTAL.exists(), "ai/dental-guidance-v1.json must exist")
         self.assertTrue(WORKER.exists(), "worker/silwadi-ai-worker.js must exist")
         clinic = json.loads(CLINIC.read_text(encoding="utf-8"))
-        self.assertEqual(clinic["contact"]["email"], "info@silwadidentalcentres.ae")
+        self.assertEqual(clinic["contact"]["email"], "info@silwadi.ae")
         self.assertIn("bani-yas", clinic["branches"])
         self.assertIn("al-raha", clinic["branches"])
 

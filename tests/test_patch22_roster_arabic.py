@@ -14,6 +14,7 @@ APPROVED_DOCTORS = [
     "Dr. Sara Ismail",
     "Dr. Nasr Keshkiea",
     "Dr. Dana Awad",
+    "Dr. Mithra Pothancheri",
     "Dr. Munir Silwadi",
     "Dr. Ahmed El Shehri",
     "Dr. Fahed Abi Khalil",
@@ -22,7 +23,7 @@ APPROVED_DOCTORS = [
     "Dr. Krishnamurthy Balajee",
     "Dr. Kashmira Pawar Jayprakash",
     "Dr. Nachiket Shah",
-    "Dr. Lana Masoud",
+    "Dr. Lana Almasoud",
 ]
 
 REMOVED_DOCTORS = [
@@ -38,12 +39,12 @@ def read(path):
 
 
 class ApprovedDoctorRosterContract(unittest.TestCase):
-    def test_directory_contains_exactly_the_approved_fifteen_doctors(self):
+    def test_directory_contains_exactly_the_approved_sixteen_doctors(self):
         html = read("doctors.html")
         displayed = re.findall(r'data-doctor-card[^>]+data-name="([^"]+)"', html)
         self.assertCountEqual(displayed, APPROVED_DOCTORS)
-        self.assertEqual(len(displayed), 15)
-        self.assertIn("15 dentists &amp; specialists", html)
+        self.assertEqual(len(displayed), 16)
+        self.assertIn("16 dentists &amp; specialists", html)
 
     def test_removed_doctors_are_not_featured_anywhere_patient_facing(self):
         patient_facing = read("index.html") + read("doctors.html")
@@ -115,7 +116,8 @@ const after = { label: button.textContent, lang: attrs.lang, dir: attrs.dir, sto
 process.stdout.write(JSON.stringify({ before, after, doctor: context.SilwadiLanguage.translate('Find a Doctor', 'ar') }));
 '''
         result = subprocess.run(
-            ["node", "-e", script], cwd=ROOT, text=True, capture_output=True, check=True
+            ["node", "-e", script], cwd=ROOT, text=True, encoding="utf-8",
+            capture_output=True, check=True
         )
         state = json.loads(result.stdout)
         self.assertEqual(state["before"], {"label": "عربي", "lang": "en", "dir": "ltr"})
@@ -127,17 +129,18 @@ process.stdout.write(JSON.stringify({ before, after, doctor: context.SilwadiLang
 const api = require('./language.js');
 const values = [
   'Doctors', 'General Dentist', 'Orthodontics', 'Search doctors',
-  'Name or specialty', 'Book a Consultation', '15 dentists & specialists'
+  'Name or specialty', 'Book a Consultation', '16 dentists & specialists'
 ];
 process.stdout.write(JSON.stringify(values.map(value => api.translate(value, 'ar'))));
 '''
         result = subprocess.run(
-            ["node", "-e", script], cwd=ROOT, text=True, capture_output=True, check=True
+            ["node", "-e", script], cwd=ROOT, text=True, encoding="utf-8",
+            capture_output=True, check=True
         )
         translated = json.loads(result.stdout)
         self.assertEqual(translated, [
             "الأطباء", "طبيب أسنان عام", "تقويم الأسنان", "ابحث عن طبيب",
-            "الاسم أو التخصص", "احجز استشارة", "15 طبيباً واختصاصياً",
+            "الاسم أو التخصص", "احجز استشارة", "16 طبيباً واختصاصياً",
         ])
 
 

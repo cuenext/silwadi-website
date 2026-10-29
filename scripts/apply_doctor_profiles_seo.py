@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import date
 import html as html_lib
 import json
 import re
@@ -19,6 +20,7 @@ PAGES = [
     "doctors/dr-sara-ismail.html",
     "doctors/dr-nasr-keshkiea.html",
     "doctors/dr-dana-awad.html",
+    "doctors/dr-mithra-pothancheri.html",
     "doctors/dr-kashmira-pawar-jayprakash.html",
     "doctors/dr-nachiket-shah.html",
     "doctors/dr-lana-masoud.html",
@@ -165,13 +167,31 @@ def apply_page(path):
     file_path.write_text(source, encoding="utf-8")
 
 
+def non_regressing_lastmod(existing, proposed):
+    try:
+        existing_date = date.fromisoformat(existing.strip()[:10])
+        proposed_date = date.fromisoformat(proposed.strip()[:10])
+    except ValueError:
+        return existing
+    return proposed if proposed_date > existing_date else existing
+
+
 def update_sitemap():
     sitemap = ROOT / "sitemap.xml"
     source = sitemap.read_text(encoding="utf-8")
     for path in PAGES:
         url = f"https://silwadi.ae/{path}"
-        pattern = rf'(<loc>{re.escape(url)}</loc>\s*<lastmod>)[^<]+(</lastmod>)'
-        source, count = re.subn(pattern, rf'\g<1>{TODAY}\2', source, count=1)
+        pattern = rf'(<loc>{re.escape(url)}</loc>\s*<lastmod>)([^<]+)(</lastmod>)'
+        source, count = re.subn(
+            pattern,
+            lambda match: (
+                f"{match.group(1)}"
+                f"{non_regressing_lastmod(match.group(2), TODAY)}"
+                f"{match.group(3)}"
+            ),
+            source,
+            count=1,
+        )
         if count != 1:
             raise RuntimeError(f"Could not update sitemap entry for {url}")
     sitemap.write_text(source, encoding="utf-8")

@@ -30,6 +30,7 @@ DOCTOR_BRANCHES = {
     "dr-sara-ismail.html": [RAHA_ID],
     "dr-nasr-keshkiea.html": [BANI_ID],
     "dr-dana-awad.html": [BANI_ID],
+    "dr-mithra-pothancheri.html": [BANI_ID],
     "dr-kashmira-pawar-jayprakash.html": [RAHA_ID],
     "dr-nachiket-shah.html": [RAHA_ID],
     "dr-lana-masoud.html": [RAHA_ID],
