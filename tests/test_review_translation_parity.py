@@ -124,7 +124,7 @@ class ReviewTranslationParity(unittest.TestCase):
                     self.assertEqual(card["attrs"].get("role"), "button")
                     self.assertEqual(card["attrs"].get("tabindex"), "0")
                     self.assertEqual(card["attrs"].get("aria-haspopup"), "dialog")
-                    self.assertEqual(card["attrs"].get("aria-label"), "فتح تقييم المريض" if language == "ar" else "Open patient review")
+                    self.assertTrue(card["attrs"].get("aria-label"))
                     self.assertIn("data-review-expand", card["attrs"])
                     self.assertEqual(card["hint"], "اضغط للقراءة" if language == "ar" else "Tap to read")
                     branch = {"en": {"corniche": "Corniche", "al-raha": "Al Raha"}, "ar": {"corniche": "الكورنيش", "al-raha": "الراحة"}}[language][record["branch"]]
@@ -135,6 +135,25 @@ class ReviewTranslationParity(unittest.TestCase):
                     for attribute in ("data-review-expand", "tabindex", "role", "aria-haspopup", "aria-label"):
                         self.assertNotIn(attribute, copy["attrs"])
                     self.assertEqual({k: v for k, v in card.items() if k != "attrs"}, {k: v for k, v in copy.items() if k != "attrs"})
+
+    def test_accessible_card_names_identify_reviewer_and_localized_branch(self):
+        branches = {
+            "en": {"corniche": "Corniche", "al-raha": "Al Raha"},
+            "ar": {"corniche": "الكورنيش", "al-raha": "الراحة"},
+        }
+        for language in ("en", "ar"):
+            with self.subTest(language=language):
+                result = render_reviews(language)
+                cards = ReviewCards(result["groups"][0]).cards
+                labels_by_identity = {}
+                for card, record in zip(cards, result["data"]):
+                    label = card["attrs"]["aria-label"]
+                    self.assertIn(record["reviewer"], label)
+                    self.assertIn(branches[language][record["branch"]], label)
+                    self.assertIn("فتح تقييم" if language == "ar" else "Open patient review", label)
+                    labels_by_identity[(record["reviewer"], record["branch"])] = label
+                self.assertEqual(len(set(labels_by_identity.values())), len(labels_by_identity),
+                                 "Different reviewer/branch identities need distinct accessible names")
 
     def test_renderer_runs_synchronously_is_repeatable_and_reports_count(self):
         result = render_reviews("ar")
@@ -152,6 +171,7 @@ class ReviewTranslationParity(unittest.TestCase):
         self.assertEqual(cards[0]["summary"], record["summary"]["en"])
         self.assertEqual(cards[0]["attrs"]["data-review-id"], record["id"])
         self.assertEqual(cards[0]["attrs"]["data-review-url"], record["sourceUrl"])
+        self.assertIn(record["reviewer"], cards[0]["attrs"]["aria-label"])
         self.assertNotIn("<script>", result["groups"][0])
         self.assertNotIn("<img", result["groups"][0])
         self.assertEqual(result["properties"]["--reviews-duration"], "46s")

@@ -4,12 +4,12 @@
 
   const labels = {
     en: {
-      review: 'Google review', open: 'Open patient review',
+      review: 'Google review', open: (reviewer, branch) => `Open patient review by ${reviewer} at the ${branch} branch`,
       stars: '5 out of 5 stars', hint: 'Tap to read',
       branches: {corniche: 'Corniche', 'al-raha': 'Al Raha'}
     },
     ar: {
-      review: 'تقييم على Google', open: 'فتح تقييم المريض',
+      review: 'تقييم على Google', open: (reviewer, branch) => `فتح تقييم ${reviewer} عن فرع ${branch}`,
       stars: '٥ من ٥ نجوم', hint: 'اضغط للقراءة',
       branches: {corniche: 'الكورنيش', 'al-raha': 'الراحة'}
     }
@@ -26,7 +26,7 @@
     const words = review.reviewer.trim().split(/\s+/);
     const initials = words.slice(0, 2).map(word => Array.from(word)[0]).join('').toUpperCase();
     const action = interactive
-      ? ` data-review-expand tabindex="0" role="button" aria-haspopup="dialog" aria-label="${copy.open}"`
+      ? ` data-review-expand tabindex="0" role="button" aria-haspopup="dialog" aria-label="${escapeHtml(copy.open(review.reviewer, copy.branches[review.branch]))}"`
       : '';
     return `<article class="google-review-card" data-review-id="${escapeHtml(review.id)}" data-review-url="${escapeHtml(review.sourceUrl)}"${action}>` +
       `<div class="google-review-card__top"><span class="review-avatar">${escapeHtml(initials)}</span>` +

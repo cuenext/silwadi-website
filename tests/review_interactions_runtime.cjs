@@ -178,6 +178,17 @@ if (scenario === 'dialog-url') {
   const language = document.documentElement.lang;
   assert.equal(interactive()[0].querySelector('p').textContent, window.SILWADI_GOOGLE_REVIEWS[0].summary[language]);
   click(interactive()[0]); assert.equal(dialog.open, true);
+} else if (scenario === 'mobile-wrap') {
+  groups[0].width = 1000;
+  tick(100);
+  viewport.scrollLeft = 999;
+  tick(180);
+  // 80ms at 35px/s moves 2.8px: crossing 1000px must retain 1.8px.
+  assert.ok(Math.abs(viewport.scrollLeft - 1.8) < 1e-9,
+    'mobile looping must subtract one group width and preserve the overshoot');
+  tick(260);
+  assert.ok(Math.abs(viewport.scrollLeft - 4.6) < 1e-9,
+    'mobile scrolling must continue smoothly after the wrap');
 } else if (scenario === 'mobile-reinit') {
   for (let i = 0; i < 3; i++) {
     viewport.scrollLeft = 300;

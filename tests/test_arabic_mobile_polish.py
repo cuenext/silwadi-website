@@ -11,6 +11,11 @@ class ArabicMobilePolishContract(unittest.TestCase):
     def test_review_render_restarts_one_mobile_animation_and_listener_set(self):
         run_review_scenario("mobile-reinit")
 
+    def test_mobile_review_wrap_preserves_overshoot(self):
+        for language in ("en", "ar"):
+            with self.subTest(language=language):
+                run_review_scenario("mobile-wrap", language)
+
     def test_desktop_reviews_consume_count_scaled_duration_and_reduce_motion(self):
         css = (ROOT / "home-reviews.css").read_text(encoding="utf-8")
         self.assertRegex(css, r"animation:reviews-marquee\s+var\(--reviews-duration,\s*46s\)\s+linear infinite")
