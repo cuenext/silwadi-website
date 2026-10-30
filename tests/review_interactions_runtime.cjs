@@ -136,9 +136,15 @@ if (scenario === 'dialog-url') {
   const cards = [interactive()[126], interactive()[0]];
   assert.notEqual(cards[0].getAttribute('data-review-url'), cards[1].getAttribute('data-review-url'));
   for (const card of cards) {
+    const canonical = window.SILWADI_GOOGLE_REVIEWS.find(
+      review => review.id === card.getAttribute('data-review-id')
+    );
+    assert.ok(canonical, 'rendered cards must resolve to the trusted review dataset');
+    card.setAttribute('data-review-url', 'javascript:alert(1)');
     card.focus(); click(card.querySelector('p'));
     assert.equal(dialog.open, true);
-    assert.equal(maps.getAttribute('href'), card.getAttribute('data-review-url'), 'dialog must use the selected branch URL');
+    assert.equal(maps.getAttribute('href'), canonical.sourceUrl,
+      'dialog must use the trusted dataset URL rather than mutable DOM text');
     assert.equal(fields['[data-review-text]'].textContent, card.querySelector('p').textContent);
     dialog.close();
   }

@@ -266,11 +266,13 @@ function openReviewDialog(card) {
   const dialogText = reviewDialog.querySelector('[data-review-text]');
   const dialogStars = reviewDialog.querySelector('[data-review-stars]');
   const dialogMaps = reviewDialog.querySelector('.review-dialog__maps');
+  const reviewId = card.getAttribute('data-review-id');
+  const verifiedReview = (window.SILWADI_GOOGLE_REVIEWS || []).find(review => review.id === reviewId);
   if (dialogName) dialogName.textContent = name;
   if (dialogAvatar) dialogAvatar.textContent = avatar;
   if (dialogText) dialogText.textContent = text;
-  if (dialogMaps && card.getAttribute('data-review-url')) {
-    dialogMaps.setAttribute('href', card.getAttribute('data-review-url'));
+  if (dialogMaps && verifiedReview?.sourceUrl) {
+    dialogMaps.setAttribute('href', verifiedReview.sourceUrl);
   }
   if (dialogStars) {
     dialogStars.textContent = starText;
