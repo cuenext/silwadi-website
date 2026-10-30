@@ -1,12 +1,21 @@
 from pathlib import Path
 import json
 import unittest
+from tests.test_patch21_reviews_footer_socials import run_review_scenario
 
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class ArabicMobilePolishContract(unittest.TestCase):
+    def test_review_render_restarts_one_mobile_animation_and_listener_set(self):
+        run_review_scenario("mobile-reinit")
+
+    def test_desktop_reviews_consume_count_scaled_duration_and_reduce_motion(self):
+        css = (ROOT / "home-reviews.css").read_text(encoding="utf-8")
+        self.assertRegex(css, r"animation:reviews-marquee\s+var\(--reviews-duration,\s*46s\)\s+linear infinite")
+        self.assertRegex(css, r"@media\(prefers-reduced-motion:reduce\)\{[^}]*\}\.google-reviews-track\{animation:none;")
+
     def test_prominent_arabic_heading_uses_one_natural_phrase(self):
         overrides = json.loads((ROOT / "data" / "arabic-quality-overrides-critical.json").read_text(encoding="utf-8"))
         self.assertEqual(
