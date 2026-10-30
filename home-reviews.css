@@ -12,7 +12,7 @@
 .google-rating-card>span:nth-of-type(3){color:#526a73;font-size:10px;align-self:center}
 .google-rating-card b{grid-column:1/-1;margin-top:8px;color:#0b7182;font-size:10px}
 .google-reviews-viewport{width:100%;overflow:hidden;padding:4px 0 10px}
-.google-reviews-track{display:flex;width:max-content;animation:reviews-marquee 46s linear infinite;will-change:transform}
+.google-reviews-track{display:flex;width:max-content;animation:reviews-marquee var(--reviews-duration,46s) linear infinite;will-change:transform}
 .google-reviews-track:hover,.google-reviews-track:focus-within{animation-play-state:paused}
 .google-reviews-group{display:flex;gap:16px;padding-right:16px}
 .google-review-card{width:340px;min-height:212px;padding:24px;border:1px solid #dce5e7;border-radius:18px;background:#fff;box-shadow:0 8px 26px rgba(8,56,71,.05);display:flex;flex-direction:column}

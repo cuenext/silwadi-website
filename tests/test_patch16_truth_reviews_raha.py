@@ -5,7 +5,6 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 # Homepage location cards must expose each branch phone plus direct Google Maps directions.
 
-
 class PatchSixteenTruthReviewsRaha(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -92,10 +91,12 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         self.assertIn('4.6', self.home)
         self.assertIn('Google', self.home)
         self.assertIn('https://maps.app.goo.gl/Ln2vEZmQmgWjb3ETA', self.home)
-        for reviewer in ("Mz2006", "Ba Zim", "Victoriya Davydova", "Sanaa Freihat", "Sahar Alsalman"):
-            self.assertIn(reviewer, self.home)
-        cards = len(re.findall(r'class="google-review-card', self.home))
-        self.assertGreaterEqual(cards, 6)
+        for home in (self.home, self.home_ar):
+            self.assertIn('data-reviews-mount', home)
+            self.assertEqual(home.count('class="google-reviews-group"'), 2)
+            self.assertIn('class="google-reviews-group" aria-hidden="true"', home)
+            self.assertNotIn('<article class="google-review-card"', home)
+            self.assertIn('data-review-dialog', home)
 
     def test_reviews_carousel_moves_and_respects_reduced_motion(self):
         self.assertIn('google-reviews-track', self.home)

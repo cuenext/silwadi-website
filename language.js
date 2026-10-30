@@ -740,6 +740,7 @@
     updateLocalizedSeo(currentLanguage);
     updateCurrentUrl(currentLanguage);
     decorateInternalLinks(currentLanguage);
+    if (typeof window !== 'undefined') window.renderSilwadiGoogleReviews?.(currentLanguage);
 
     if (languageButton) {
       languageButton.textContent = currentLanguage === 'ar' ? 'English' : 'عربي';

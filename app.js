@@ -251,7 +251,7 @@ document.querySelectorAll('[data-faq-button]').forEach(button => {
 // Expandable Google review dialog.
 const reviewDialog = document.querySelector('[data-review-dialog]');
 const reviewClose = document.querySelector('[data-review-close]');
-const reviewTriggers = [...document.querySelectorAll('[data-review-expand]')];
+let activeReviewTrigger = null;
 
 function openReviewDialog(card) {
   if (!reviewDialog || !card) return;
@@ -265,25 +265,39 @@ function openReviewDialog(card) {
   const dialogAvatar = reviewDialog.querySelector('[data-review-avatar]');
   const dialogText = reviewDialog.querySelector('[data-review-text]');
   const dialogStars = reviewDialog.querySelector('[data-review-stars]');
+  const dialogMaps = reviewDialog.querySelector('.review-dialog__maps');
+  const reviewId = card.getAttribute('data-review-id');
+  const verifiedReview = (window.SILWADI_GOOGLE_REVIEWS || []).find(review => review.id === reviewId);
   if (dialogName) dialogName.textContent = name;
   if (dialogAvatar) dialogAvatar.textContent = avatar;
   if (dialogText) dialogText.textContent = text;
+  if (dialogMaps && verifiedReview?.sourceUrl) {
+    dialogMaps.setAttribute('href', verifiedReview.sourceUrl);
+  }
   if (dialogStars) {
     dialogStars.textContent = starText;
     dialogStars.setAttribute('aria-label', starLabel);
   }
+  activeReviewTrigger = card;
   if (typeof reviewDialog.showModal === 'function') reviewDialog.showModal();
   else reviewDialog.setAttribute('open', '');
 }
 
-reviewTriggers.forEach(card => {
-  card.addEventListener('click', () => openReviewDialog(card));
-  card.addEventListener('keydown', event => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      openReviewDialog(card);
-    }
-  });
+// Delegate to the document so language rendering can replace every card.
+document.addEventListener('click', event => {
+  const card = event.target.closest?.('[data-review-expand]');
+  if (card) openReviewDialog(card);
+});
+document.addEventListener('keydown', event => {
+  const card = event.target.closest?.('[data-review-expand]');
+  if (card && (event.key === 'Enter' || event.key === ' ')) {
+    event.preventDefault();
+    openReviewDialog(card);
+  }
+});
+reviewDialog?.addEventListener('close', () => {
+  if (activeReviewTrigger?.isConnected) activeReviewTrigger.focus();
+  activeReviewTrigger = null;
 });
 
 reviewClose?.addEventListener('click', () => reviewDialog?.close());
@@ -350,33 +364,51 @@ window.SilwadiLanguage?.init?.();
 // On narrow screens the review strip remains swipeable and advances automatically.
 // Pause after touch or keyboard interaction so a patient can read a card.
 (() => {
-  const viewport = document.querySelector('.google-reviews-viewport');
-  const track = viewport?.querySelector('.google-reviews-track');
-  const mobile = window.matchMedia('(max-width: 760px)');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (!viewport || !track || !track.firstElementChild) return;
+  let cleanupReviews = () => {};
+  function setupMobileReviews() {
+    cleanupReviews();
+    cleanupReviews = () => {};
+    const viewport = document.querySelector('.google-reviews-viewport');
+    const track = viewport?.querySelector('.google-reviews-track');
+    const mobile = window.matchMedia('(max-width: 760px)');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (!viewport || !track || !track.firstElementChild) return;
 
-  let lastFrame = 0;
-  let pauseUntil = 0;
-  let touching = false;
-  const pause = () => { pauseUntil = performance.now() + 5000; };
-  viewport.addEventListener('pointerdown', () => { touching = true; pause(); }, { passive: true });
-  window.addEventListener('pointerup', () => { touching = false; pause(); }, { passive: true });
-  viewport.addEventListener('wheel', pause, { passive: true });
-  viewport.addEventListener('focusin', pause);
+    viewport.scrollLeft = 0;
+    let lastFrame = 0;
+    let pauseUntil = 0;
+    let touching = false;
+    let frameId;
+    const pause = () => { pauseUntil = performance.now() + 5000; };
+    const pointerDown = () => { touching = true; pause(); };
+    const pointerUp = () => { touching = false; pause(); };
+    viewport.addEventListener('pointerdown', pointerDown, { passive: true });
+    window.addEventListener('pointerup', pointerUp, { passive: true });
+    viewport.addEventListener('wheel', pause, { passive: true });
+    viewport.addEventListener('focusin', pause);
 
-  function advance(now) {
-    const elapsed = lastFrame ? Math.min(now - lastFrame, 80) : 0;
-    lastFrame = now;
-    if (mobile.matches && !reducedMotion.matches && !touching &&
-        now >= pauseUntil && document.visibilityState === 'visible') {
-      const groupWidth = track.firstElementChild.getBoundingClientRect().width;
-      if (groupWidth > 0) {
-        viewport.scrollLeft += elapsed * 0.035;
-        if (viewport.scrollLeft >= groupWidth) viewport.scrollLeft -= groupWidth;
+    function advance(now) {
+      const elapsed = lastFrame ? Math.min(now - lastFrame, 80) : 0;
+      lastFrame = now;
+      if (mobile.matches && !reducedMotion.matches && !touching &&
+          now >= pauseUntil && document.visibilityState === 'visible') {
+        const groupWidth = track.firstElementChild.getBoundingClientRect().width;
+        if (groupWidth > 0) {
+          viewport.scrollLeft += elapsed * 0.035;
+          if (viewport.scrollLeft >= groupWidth) viewport.scrollLeft -= groupWidth;
+        }
       }
+      frameId = requestAnimationFrame(advance);
     }
-    requestAnimationFrame(advance);
+    frameId = requestAnimationFrame(advance);
+    cleanupReviews = () => {
+      cancelAnimationFrame(frameId);
+      viewport.removeEventListener('pointerdown', pointerDown);
+      window.removeEventListener('pointerup', pointerUp);
+      viewport.removeEventListener('wheel', pause);
+      viewport.removeEventListener('focusin', pause);
+    };
   }
-  requestAnimationFrame(advance);
+  document.addEventListener('silwadi:reviews-rendered', setupMobileReviews);
+  setupMobileReviews();
 })();

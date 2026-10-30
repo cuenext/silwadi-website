@@ -2,6 +2,7 @@ from pathlib import Path
 import html as html_lib
 import re
 import unittest
+from tests.test_review_translation_parity import ReviewCards, render_reviews
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -60,12 +61,12 @@ class Patch18ServicesAboutImagery(unittest.TestCase):
             self.assertIn('assets/services/', row)
 
     def test_google_review_cards_show_individual_star_rows(self):
-        html = self.read("index.html")
-        cards = re.findall(r'<article class="google-review-card.*?</article>', html, re.S)
-        self.assertGreaterEqual(len(cards), 3)
+        result = render_reviews("en")
+        cards = [card for markup in result["groups"] for card in ReviewCards(markup).cards]
+        self.assertEqual(len(cards), 314)
         for card in cards:
-            self.assertIn('review-stars', card)
-            self.assertRegex(card, r'aria-label="[1-5] out of 5 stars"')
+            self.assertEqual(card["stars"], "★★★★★")
+            self.assertEqual(card["starLabel"], "5 out of 5 stars")
 
     def test_stale_al_hilal_bank_landmark_is_removed_everywhere(self):
         offenders = []
