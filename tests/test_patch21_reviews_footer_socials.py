@@ -1,6 +1,7 @@
 from pathlib import Path
 import re
 import unittest
+from tests.test_review_translation_parity import ReviewCards, render_reviews
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -26,9 +27,16 @@ class Patch21ReviewsFooterSocials(unittest.TestCase):
         self.assertIn('.rating-star--half', self.css)
 
     def test_review_cards_are_tappable_and_open_accessible_dialog(self):
-        cards = re.findall(r'class="google-review-card[^\"]*"', self.home)
-        self.assertGreaterEqual(len(cards), 10)  # five visible + five aria-hidden marquee copies
-        self.assertEqual(self.home.count('data-review-expand'), 5)
+        result = render_reviews("en")
+        cards, copies = [ReviewCards(markup).cards for markup in result["groups"]]
+        self.assertEqual(len(cards), 157)
+        self.assertEqual(len(copies), 157)
+        for card in cards:
+            self.assertIn("data-review-expand", card["attrs"])
+            self.assertEqual(card["attrs"].get("tabindex"), "0")
+            self.assertEqual(card["attrs"].get("role"), "button")
+            self.assertEqual(card["attrs"].get("aria-haspopup"), "dialog")
+        self.assertTrue(all("data-review-expand" not in card["attrs"] for card in copies))
         self.assertIn('<dialog class="review-dialog"', self.home)
         self.assertIn('data-review-dialog', self.home)
         self.assertIn('data-review-close', self.home)
