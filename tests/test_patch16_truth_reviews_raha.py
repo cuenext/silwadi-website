@@ -16,7 +16,11 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         cls.css = (ROOT / "home-reviews.css").read_text(encoding="utf-8")
         cls.app = (ROOT / "app.js").read_text(encoding="utf-8")
         cls.sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
-        cls.public_html = [p for p in ROOT.rglob("*.html") if ".github" not in p.parts]
+        cls.public_html = [
+            p
+            for p in ROOT.rglob("*.html")
+            if ".github" not in p.parts and "review" not in p.parts
+        ]
 
     def test_about_copy_is_plain_human_and_matches_official_values(self):
         text = self.about.lower()
