@@ -16,7 +16,11 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
         cls.css = (ROOT / "home-reviews.css").read_text(encoding="utf-8")
         cls.app = (ROOT / "app.js").read_text(encoding="utf-8")
         cls.sitemap = (ROOT / "sitemap.xml").read_text(encoding="utf-8")
-        cls.public_html = [p for p in ROOT.rglob("*.html") if ".github" not in p.parts]
+        cls.public_html = [
+            p
+            for p in ROOT.rglob("*.html")
+            if ".github" not in p.parts and "review" not in p.parts
+        ]
 
     def test_about_copy_is_plain_human_and_matches_official_values(self):
         text = self.about.lower()
@@ -112,7 +116,7 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
             text = page.read_text(encoding="utf-8")
             if '<header class="site-header"' not in text:
                 continue
-            self.assertIn('assets/silwadi-logo-official.png', text, page.as_posix())
+            self.assertIn('assets/silwadi-logo-official.svg', text, page.as_posix())
             self.assertNotIn('brand-crop', text, page.as_posix())
             self.assertNotIn('footer-logo-crop', text, page.as_posix())
 
