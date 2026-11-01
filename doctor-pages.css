@@ -67,3 +67,12 @@
 .doctor-directory-card__photo img.doctor-crop-ehab{transform:scale(1);object-position:50% 30%}
 .consultant-portrait__frame img.doctor-crop-ehab{transform:scale(1);object-position:50% 30%}
 
+
+/* Show Mithra’s complete portrait without a fixed-height letterbox. */
+.doctor-directory-card__photo img.doctor-crop-mithra{object-fit:cover;object-position:center 15%;transform:none}
+.consultant-portrait--mithra{width:100%;max-width:416px;justify-self:center}
+.consultant-portrait--mithra .consultant-portrait__frame{height:auto;background:transparent;border:0}
+.consultant-portrait__frame img.doctor-crop-mithra{width:100%;height:auto;object-fit:contain;transform:none}
+@media(max-width:1024px){.consultant-portrait--mithra{max-width:376px}}
+@media(max-width:720px){.consultant-portrait--mithra{max-width:344px}}
+

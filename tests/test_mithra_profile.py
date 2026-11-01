@@ -92,7 +92,7 @@ class MithraProfileContract(unittest.TestCase):
         self.assertEqual(person["worksFor"]["@id"], "https://silwadi.ae/#dentist")
         self.assertEqual(
             person["image"],
-            f"https://silwadi.ae/assets/doctors/optimized/{SLUG}.webp",
+            f"https://silwadi.ae/assets/doctors/optimized/{SLUG}.webp?v=20261101",
         )
         self.assertIn("Professional teeth whitening", person["knowsAbout"])
 
