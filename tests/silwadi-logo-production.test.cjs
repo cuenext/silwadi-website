@@ -166,3 +166,33 @@ test('page-local logo rules preserve the approved ratio instead of square boxes'
     }
   }
 });
+
+test('every consumer cache-busts the logo-sizing stylesheets', () => {
+  const token = '20261101-logo-size';
+  const expected = new Map([
+    ['styles.css', 60],
+    ['home-reviews.css', 2],
+    ['treatment-refresh-v1.css', 5]
+  ]);
+  const counts = new Map([...expected.keys()].map((name) => [name, 0]));
+
+  for (const file of publicFiles('.html')) {
+    const html = fs.readFileSync(file, 'utf8');
+    const tags = html.match(/<link\b[^>]*\brel=["']stylesheet["'][^>]*>/gi) ?? [];
+
+    for (const tag of tags) {
+      const href = attribute(tag, 'href');
+      const name = path.posix.basename(href.split(/[?#]/)[0]);
+      if (!expected.has(name)) continue;
+
+      assert.match(
+        href,
+        new RegExp(`\\?v=${token}(?:[&#]|$)`),
+        `${path.relative(root, file)}: ${name} must use the current logo-size cache token`
+      );
+      counts.set(name, counts.get(name) + 1);
+    }
+  }
+
+  assert.deepEqual(counts, expected);
+});

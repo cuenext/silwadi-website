@@ -14,7 +14,7 @@ class PatchFifteenHomepageRedesign(unittest.TestCase):
 
     def test_home_uses_approved_trust_layout_and_reviews_stylesheet(self):
         self.assertIn('href="home-trust.css"', self.home)
-        self.assertIn('href="home-reviews.css"', self.home)
+        self.assertIn('href="home-reviews.css?v=20261101-logo-size"', self.home)
         self.assertNotIn('href="home-premium.css"', self.home)
 
     def test_uploaded_official_logo_is_used_without_legacy_crop_hack(self):
