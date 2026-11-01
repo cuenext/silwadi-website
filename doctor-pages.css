@@ -67,3 +67,6 @@
 .doctor-directory-card__photo img.doctor-crop-ehab{transform:scale(1);object-position:50% 30%}
 .consultant-portrait__frame img.doctor-crop-ehab{transform:scale(1);object-position:50% 30%}
 
+
+/* Keep Mithra’s full portrait visible at the reference doctors’ scale. */
+.doctor-directory-card__photo img.doctor-crop-mithra,.consultant-portrait__frame img.doctor-crop-mithra{object-fit:contain;object-position:center top;transform:none}
