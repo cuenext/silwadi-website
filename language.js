@@ -19,6 +19,10 @@
 
   const arabic = {
     "Accreditations": "الاعتمادات",
+    "Department of Health": "دائرة الصحة",
+    "JAWDA Quality Score": "نتيجة جودة JAWDA",
+    "ADHICS Score": "نتيجة ADHICS",
+    "GRADE A": "التصنيف A",
     "JAWDA Data Certification": "شهادة جودة البيانات «جودة»",
     "99.55 accuracy score · Grade A": "درجة دقة البيانات: 99.55 · الفئة A",
     "Dr. Munir Silwadi Dental Centre · MF368": "مركز الدكتور منير سلوادي لطب الأسنان · MF368",

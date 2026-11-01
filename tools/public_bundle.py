@@ -109,6 +109,117 @@ def validate_assistant_bundle(root: Path) -> int:
     return count
 
 
+class AccreditationMarkup(HTMLParser):
+    """Read visible accreditation cards and their real asset imports."""
+
+    def __init__(self):
+        super().__init__()
+        self.section_depth = 0
+        self.sections = 0
+        self.cards = []
+        self.card = None
+        self.capture = []
+        self.stylesheets = []
+        self.scripts = []
+
+    def handle_starttag(self, tag, attrs):
+        data = dict(attrs)
+        classes = set(data.get('class', '').split())
+        if tag == 'link' and 'stylesheet' in data.get('rel', '').split():
+            self.stylesheets.append(data.get('href', ''))
+        if tag == 'script' and data.get('type', '').lower() in ('', 'module', 'text/javascript', 'application/javascript'):
+            self.scripts.append(data.get('src', ''))
+        if tag == 'section':
+            if self.section_depth:
+                self.section_depth += 1
+            elif 'about-accreditations' in classes:
+                self.sections += 1
+                self.section_depth = 1
+        if not self.section_depth:
+            return
+        if tag == 'article' and 'acc-card' in classes:
+            self.card = {key: [] for key in ('text', 'heading', 'authority', 'score', 'grade', 'images')}
+            self.card['classes'] = classes
+        if self.card is None:
+            return
+        if tag == 'img':
+            self.card['images'].append(data.get('src', ''))
+        field = next((field for field in ('authority', 'score', 'grade') if 'acc-card__' + field in classes), None)
+        if tag == 'h3':
+            field = 'heading'
+        if field:
+            self.capture.append((tag, field))
+
+    def handle_endtag(self, tag):
+        if self.capture and self.capture[-1][0] == tag:
+            self.capture.pop()
+        if tag == 'article' and self.card is not None:
+            self.cards.append(self.card)
+            self.card = None
+            self.capture = []
+        if tag == 'section' and self.section_depth:
+            self.section_depth -= 1
+
+    def handle_data(self, data):
+        if self.card is not None:
+            self.card['text'].append(data)
+            for _, field in self.capture:
+                self.card[field].append(data)
+
+
+def validate_accreditations_bundle(root: Path) -> int:
+    """Validate the four public scorecard pages in the actual upload folder."""
+    root = root.resolve()
+    assets = ('accreditations.css', 'accreditations.js', 'assets/jawda-tasneef-mark.png',
+              'assets/adhics-aamen-doh-mark.webp', 'assets/uks-certification-logo.jpg')
+    for name in assets:
+        file = root / name
+        if not file.is_file() or not file.stat().st_size:
+            raise ValueError(f'Missing or empty accreditation dependency: {name}')
+
+    for name in ('index.html', 'ar/index.html', 'about.html', 'ar/about.html'):
+        file = root / name
+        if not file.is_file():
+            raise ValueError(f'Missing accreditation page: {name}')
+        markup = AccreditationMarkup()
+        markup.feed(file.read_text(encoding='utf-8'))
+
+        def require(condition, detail):
+            if not condition:
+                raise ValueError(f'{name}: {detail}')
+
+        require(markup.sections == 1 and len(markup.cards) == 5, 'expected one section with five accreditation cards')
+        if name.endswith('index.html'):
+            require('/accreditations.css' in markup.stylesheets, 'missing accreditation stylesheet import')
+            require('/accreditations.js' in markup.scripts, 'missing accreditation carousel script')
+        arabic = name.startswith('ar/')
+        authority = 'دائرة الصحة' if arabic else 'Department of Health'
+        grade = 'التصنيف A' if arabic else 'GRADE A'
+        titles = ('نتيجة جودة JAWDA', 'نتيجة ADHICS') if arabic else ('JAWDA Quality Score', 'ADHICS Score')
+        facilities = (
+            ('MF368', 'مركز د. منير سلوادي لطب الأسنان' if arabic else 'Dr. Munir Silwadi Dental Centre', 'الكورنيش' if arabic else 'Corniche'),
+            ('MF7451', 'مركز د. محمد منير لطب الأسنان' if arabic else 'Dr. Mohamed Munir Dental Centre', 'الراحة مول' if arabic else 'Al Raha Mall'),
+        )
+        for index, card in enumerate(markup.cards):
+            text = ' '.join(' '.join(card['text']).split())
+            heading = ''.join(card['heading'])
+            image = '/assets/' + ('jawda-tasneef-mark.png' if index == 0 else 'adhics-aamen-doh-mark.webp' if index < 3 else 'uks-certification-logo.jpg')
+            require(card['images'] == [image], f'card {index + 1}: incorrect certificate image')
+            if index < 3:
+                require('acc-card--scored' in card['classes'], f'card {index + 1}: missing scored card layout')
+                require(titles[0 if index == 0 else 1] in heading, f'card {index + 1}: incorrect score heading')
+                require(''.join(card['authority']).strip() == authority, f'card {index + 1}: incorrect score authority')
+                require(''.join(card['score']).strip() == ('99.55%' if index == 0 else '98%'), f'card {index + 1}: incorrect score')
+                require(''.join(card['grade']).strip() == grade, f'card {index + 1}: incorrect grade')
+            else:
+                require(heading.strip() == 'ISO 9001:2015', f'card {index + 1}: incorrect ISO standard')
+            if index:
+                expected = facilities[(index - 1) % 2]
+                require(expected[1] + ' ' + expected[0] in text and expected[2] in text,
+                        f'card {index + 1}: incorrect facility mapping')
+    return 4
+
+
 def public_file(relative: Path) -> bool:
     parts = relative.parts
     if parts[0] == "ai":
@@ -155,6 +266,10 @@ if __name__ == "__main__":
     parser.add_argument('--validate-only', action='store_true', help='Check an existing upload folder without modifying it')
     args = parser.parse_args()
     if args.validate_only:
-        print(f'Assistant/FAQ validation passed on {validate_assistant_bundle(args.output)} bundled patient pages')
+        pages = validate_assistant_bundle(args.output)
+        validate_accreditations_bundle(args.output)
+        print(f'Assistant/FAQ validation passed on {pages} bundled patient pages; all four accreditation pages passed')
     else:
-        print(f"Copied {build_public_bundle(Path.cwd(), args.output)} validated public files to {args.output}")
+        count = build_public_bundle(Path.cwd(), args.output)
+        validate_accreditations_bundle(args.output)
+        print(f"Copied {count} validated public files to {args.output}; all four accreditation pages passed")
