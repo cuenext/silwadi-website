@@ -131,18 +131,18 @@ test('shared, homepage, and treatment shells use the approved responsive sizes',
 
   assert.ok(hasCssRule(styles, '.site-brand-logo', { width: '96px', height: '72px', flex: '0 0 96px' }));
   assert.ok(hasCssRule(styles, '.site-brand-logo', { width: '84px', height: '62px', 'flex-basis': '84px' }));
-  assert.ok(hasCssRule(styles, '.site-brand-logo img', { width: '82px', height: 'auto', 'aspect-ratio': '259/225' }));
-  assert.ok(hasCssRule(styles, '.site-brand-logo img', { width: '72px', height: 'auto' }));
+  assert.ok(hasCssRule(styles, '.site-brand-logo img', { width: '74px', height: 'auto', 'aspect-ratio': '259/225' }));
+  assert.ok(hasCssRule(styles, '.site-brand-logo img', { width: '65px', height: 'auto' }));
   assert.ok(hasCssRule(styles, '.site-footer-logo', { width: '128px', height: 'auto', 'aspect-ratio': '259/225', 'mix-blend-mode': 'normal' }));
 
   assert.ok(hasCssRule(home, '.home-trust-brand', { width: '96px', height: '72px' }));
   assert.ok(hasCssRule(home, '.home-trust-brand', { width: '84px', height: '62px' }));
-  assert.ok(hasCssRule(home, '.home-trust-brand img', { width: '82px', height: 'auto', 'aspect-ratio': '259/225' }));
-  assert.ok(hasCssRule(home, '.home-trust-brand img', { width: '72px', height: 'auto' }));
+  assert.ok(hasCssRule(home, '.home-trust-brand img', { width: '74px', height: 'auto', 'aspect-ratio': '259/225' }));
+  assert.ok(hasCssRule(home, '.home-trust-brand img', { width: '65px', height: 'auto' }));
   assert.ok(hasCssRule(home, '.home-trust-footer-logo', { width: '128px', height: 'auto', 'aspect-ratio': '259/225', 'mix-blend-mode': 'normal' }));
 
-  assert.ok(hasCssRule(treatment, '.global-brand img', { width: '82px', height: 'auto', 'aspect-ratio': '259/225' }));
-  assert.ok(hasCssRule(treatment, '.global-brand img', { width: '72px', height: 'auto' }));
+  assert.ok(hasCssRule(treatment, '.global-brand img', { width: '74px', height: 'auto', 'aspect-ratio': '259/225' }));
+  assert.ok(hasCssRule(treatment, '.global-brand img', { width: '65px', height: 'auto' }));
   assert.doesNotMatch(styles + arabic, /\.site-footer-logo\s*\{[^}]*mix-blend-mode\s*:\s*multiply/);
 });
 
@@ -159,8 +159,8 @@ test('page-local logo rules preserve the approved ratio instead of square boxes'
   for (const relative of files) {
     const html = fs.readFileSync(path.join(root, relative), 'utf8');
     const selector = relative === 'treatments/endodontics.html' ? '.brand img' : '.global-brand img';
-    assert.ok(hasCssRule(html, selector, { width: '82px', height: 'auto', 'aspect-ratio': '259/225' }), `${relative}: desktop logo sizing`);
-    assert.ok(hasCssRule(html, selector, { width: '72px', height: 'auto' }), `${relative}: mobile logo sizing`);
+    assert.ok(hasCssRule(html, selector, { width: '74px', height: 'auto', 'aspect-ratio': '259/225' }), `${relative}: desktop logo sizing`);
+    assert.ok(hasCssRule(html, selector, { width: '65px', height: 'auto' }), `${relative}: mobile logo sizing`);
     if (relative.endsWith('endodontics.html')) {
       assert.ok(hasCssRule(html, '.site-footer-logo', { width: '128px', height: 'auto', 'aspect-ratio': '259/225', 'mix-blend-mode': 'normal' }), `${relative}: footer logo sizing`);
     }
