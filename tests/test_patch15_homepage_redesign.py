@@ -19,12 +19,12 @@ class PatchFifteenHomepageRedesign(unittest.TestCase):
 
     def test_uploaded_official_logo_is_used_without_legacy_crop_hack(self):
         self.assertTrue((ROOT / "assets" / "silwadi-logo-official.png").exists())
-        self.assertIn('src="assets/silwadi-logo-official.png"', self.home)
+        self.assertIn('src="assets/silwadi-logo-official.svg"', self.home)
         self.assertNotIn('class="brand-crop"', self.home)
         self.assertNotIn('<img src="assets/silwadi-logo-original.jpeg"', self.home)
         self.assertRegex(
             self.home,
-            r'<img[^>]+src="assets/silwadi-logo-official\.png"[^>]+alt="Silwadi Dental Centres"[^>]+width="[0-9]+"[^>]+height="[0-9]+"',
+            r'<img[^>]+src="assets/silwadi-logo-official\.svg"[^>]+alt="Silwadi Dental Centres"[^>]+width="259"[^>]+height="225"',
         )
 
     def test_approved_compact_home_patterns_are_restored(self):

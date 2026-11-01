@@ -112,7 +112,7 @@ class PatchSixteenTruthReviewsRaha(unittest.TestCase):
             text = page.read_text(encoding="utf-8")
             if '<header class="site-header"' not in text:
                 continue
-            self.assertIn('assets/silwadi-logo-official.png', text, page.as_posix())
+            self.assertIn('assets/silwadi-logo-official.svg', text, page.as_posix())
             self.assertNotIn('brand-crop', text, page.as_posix())
             self.assertNotIn('footer-logo-crop', text, page.as_posix())
 
