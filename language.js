@@ -18,7 +18,8 @@
   };
 
   const arabic = {
-    "Accreditations": "الاعتمادات",
+    "Accreditations": "الإنجازات",
+    "Achievements": "الإنجازات",
     "Department of Health": "دائرة الصحة",
     "JAWDA Quality Score": "نتيجة جودة JAWDA",
     "ADHICS Score": "نتيجة ADHICS",
